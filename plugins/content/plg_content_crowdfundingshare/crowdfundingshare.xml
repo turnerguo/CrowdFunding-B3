@@ -1,0 +1,604 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="2.5" type="plugin" group="content" method="upgrade">
+    <name>PLG_CONTENT_CROWDFUNDINGSHARE</name>
+    <author>Todor Iliev</author>
+    <creationDate>January, 2013</creationDate>
+    <copyright>Copyright (C) 2010 Todor Iliev ( ITPrism.com ). All rights reserved.</copyright>
+    <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+    <authorEmail>todor@itprism.com</authorEmail>
+    <authorUrl>http://itprism.com</authorUrl>
+    <version>1.0</version>
+    <description>PLG_CONTENT_CROWDFUNDINGSHARE_DESC</description>
+    
+    <languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.plg_content_crowdfundingshare.ini</language>
+        <language tag="en-GB">en-GB/en-GB.plg_content_crowdfundingshare.sys.ini</language>
+    </languages> 
+    
+    <files>
+        <filename plugin="crowdfundingshare">crowdfundingshare.php</filename>
+        <filename>index.html</filename>
+        <filename>style.css</filename>
+    </files>
+    
+    <help url="PLG_CONTENT_CROWDFUNDINGSHARE_HELP_URL"/>
+    
+    <config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="spacer1" type="spacer" class="text" label="PLG_CONTENT_CROWDFUNDINGSHARE_TWITTER_SETTINGS" />
+                <field name="twitterButton" type="radio" default="0" label="PLG_CONTENT_CROWDFUNDINGSHARE_TWITTER_BUTTON" description="PLG_CONTENT_CROWDFUNDINGSHARE_TWITTER_BUTTON_DESC" >
+                   <option value="0">JHIDE</option>
+                   <option value="1">JSHOW</option>
+                </field>
+                <field name="twitterName" type="text" default="" size="80" label="PLG_CONTENT_CROWDFUNDINGSHARE_TWITTER_NAME" description="PLG_CONTENT_CROWDFUNDINGSHARE_TWITTER_NAME_DESC" />
+                <field name="twitterRecommend" type="text" default="" size="80" label="PLG_CONTENT_CROWDFUNDINGSHARE_TWITTER_RECOMMEND" description="PLG_CONTENT_CROWDFUNDINGSHARE_TWITTER_RECOMMEND_DESC" />
+                <field name="twitterHashtag" type="text" default="" size="80" label="PLG_CONTENT_CROWDFUNDINGSHARE_TWITTER_HASHTAGS" description="PLG_CONTENT_CROWDFUNDINGSHARE_TWITTER_HASHTAGS_DESC" />
+                <field name="twitterSize" type="list" default="small" label="PLG_CONTENT_CROWDFUNDINGSHARE_TWITTER_SIZE" description="PLG_CONTENT_CROWDFUNDINGSHARE_TWITTER_SIZE_DESC" >
+                   <option value="small">PLG_CONTENT_CROWDFUNDINGSHARE_SMALL</option>
+                   <option value="large">PLG_CONTENT_CROWDFUNDINGSHARE_LARGE</option>
+                </field>
+                <field name="twitterCounter" type="list" default="horizontal" label="PLG_CONTENT_CROWDFUNDINGSHARE_TWITTER_COUNTER" description="PLG_CONTENT_CROWDFUNDINGSHARE_TWITTER_COUNTER_DESC" >
+                   <option value="none">JHIDE</option>
+                   <option value="vertical">PLG_CONTENT_CROWDFUNDINGSHARE_VERTICAL</option>
+                   <option value="horizontal">PLG_CONTENT_CROWDFUNDINGSHARE_HORIZONTAL</option>
+                </field>
+                <field name="twitterLanguage" type="list" default="en" label="PLG_CONTENT_CROWDFUNDINGSHARE_TWITTER_LANGUAGE" description="PLG_CONTENT_CROWDFUNDINGSHARE_TWITTER_LANGUAGE_DESC" >
+                   <option value="ar">PLG_CONTENT_CROWDFUNDINGSHARE_ARABIC</option>
+                   <option value="eu">PLG_CONTENT_CROWDFUNDINGSHARE_BASQUE</option>
+                   <option value="ca">PLG_CONTENT_CROWDFUNDINGSHARE_CATALAN</option>
+                   <option value="zh-cn">PLG_CONTENT_CROWDFUNDINGSHARE_CHINESE_ZH</option>
+                   <option value="zh-tw">PLG_CONTENT_CROWDFUNDINGSHARE_CHINESE_TW</option>
+                   <option value="cs">PLG_CONTENT_CROWDFUNDINGSHARE_CZECH</option>
+                   <option value="da">PLG_CONTENT_CROWDFUNDINGSHARE_DANISH</option>
+                   <option value="nl">PLG_CONTENT_CROWDFUNDINGSHARE_DUTCH</option>
+                   <option value="en">PLG_CONTENT_CROWDFUNDINGSHARE_ENGLISH</option>
+                   <option value="fa">PLG_CONTENT_CROWDFUNDINGSHARE_FARSI</option>
+                   <option value="fil">PLG_CONTENT_CROWDFUNDINGSHARE_FILIPINO</option>
+                   <option value="fr">PLG_CONTENT_CROWDFUNDINGSHARE_FRENCH_FR</option>
+                   <option value="fi">PLG_CONTENT_CROWDFUNDINGSHARE_FINNISH</option>
+                   <option value="de">PLG_CONTENT_CROWDFUNDINGSHARE_GERMAN</option>
+                   <option value="el">PLG_CONTENT_CROWDFUNDINGSHARE_GREEK</option>
+                   <option value="hi">PLG_CONTENT_CROWDFUNDINGSHARE_HINDI</option>
+                   <option value="hu">PLG_CONTENT_CROWDFUNDINGSHARE_HUNGARIAN</option>
+                   <option value="it">PLG_CONTENT_CROWDFUNDINGSHARE_ITALIAN</option>
+                   <option value="id">PLG_CONTENT_CROWDFUNDINGSHARE_INDONESIAN</option>
+                   <option value="uk">PLG_CONTENT_CROWDFUNDINGSHARE_UKRAINIAN</option>
+                   <option value="ur">PLG_CONTENT_CROWDFUNDINGSHARE_URDU</option>
+                   <option value="ko">PLG_CONTENT_CROWDFUNDINGSHARE_KOREAN</option>
+                   <option value="msa">PLG_CONTENT_CROWDFUNDINGSHARE_MALAY</option>
+                   <option value="ru">PLG_CONTENT_CROWDFUNDINGSHARE_RUSSIAN</option>
+                   <option value="es">PLG_CONTENT_CROWDFUNDINGSHARE_SPANISH</option>
+                   <option value="sv">PLG_CONTENT_CROWDFUNDINGSHARE_SWEDISH</option>
+                   <option value="no">PLG_CONTENT_CROWDFUNDINGSHARE_NORWEGIAN</option>
+                   <option value="pl">PLG_CONTENT_CROWDFUNDINGSHARE_POLISH</option>
+                   <option value="pt">PLG_CONTENT_CROWDFUNDINGSHARE_PORTUGUESE</option>
+                   <option value="th">PLG_CONTENT_CROWDFUNDINGSHARE_THAI</option>
+                   <option value="tr">PLG_CONTENT_CROWDFUNDINGSHARE_TURKISH</option>
+                   <option value="jp">PLG_CONTENT_CROWDFUNDINGSHARE_JAPANESE</option>
+                </field>
+                <field name="spacer2" type="spacer" class="text" label="PLG_CONTENT_CROWDFUNDINGSHARE_TUMBLR_SETTINGS" />
+                <field name="tumblrButton" type="radio" default="0" label="PLG_CONTENT_CROWDFUNDINGSHARE_TUMBLR_BUTTON" description="PLG_CONTENT_CROWDFUNDINGSHARE_TUMBLR_BUTTON_DESC" >
+                   <option value="0">JHIDE</option>
+                   <option value="1">JSHOW</option>
+                </field>
+                <field name="tumblrType" type="list" default="0" label="PLG_CONTENT_CROWDFUNDINGSHARE_TUMBLR_TYPE" description="PLG_CONTENT_CROWDFUNDINGSHARE_TUMBLR_TYPE_DESC" >
+                   <option value="0">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_1</option>
+                   <option value="1">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_2</option>
+                   <option value="2">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_3</option>
+                   <option value="3">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_4</option>
+                   <option value="4">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_5</option>
+                   <option value="5">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_6</option>
+                   <option value="6">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_7</option>
+                   <option value="7">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_8</option>
+                </field>
+                
+                <field name="spacer3" type="spacer" class="text" label="PLG_CONTENT_CROWDFUNDINGSHARE_FACEBOOK_SETTINGS" />
+                <field name="facebookLikeButton" type="radio" default="0" label="PLG_CONTENT_CROWDFUNDINGSHARE_FACEBOOK_BUTTON" description="PLG_CONTENT_CROWDFUNDINGSHARE_FACEBOOK_BUTTON_DESC" >
+                   <option value="0">JHIDE</option>
+                   <option value="1">JSHOW</option>
+                </field>
+                <field name="facebookLikeRenderer" type="list" default="2" label="PLG_CONTENT_CROWDFUNDINGSHARE_FACEBOOK_RENDERER" description="PLG_CONTENT_CROWDFUNDINGSHARE_FACEBOOK_RENDERER_DESC" >
+                   <option value="0">iframe</option>
+                   <option value="1">XFBML</option>
+                   <option value="2">HTML5</option>
+                </field>
+                <field name="facebookLikeAction" type="list" default="like" label="PLG_CONTENT_CROWDFUNDINGSHARE_FACEBOOK_TEXT" description="PLG_CONTENT_CROWDFUNDINGSHARE_FACEBOOK_TEXT_DESC" >
+                   <option value="like">PLG_CONTENT_CROWDFUNDINGSHARE_LIKE</option>
+                   <option value="recommend">PLG_CONTENT_CROWDFUNDINGSHARE_RECOMMEND</option>
+                </field>
+                <field name="facebookLikeType" type="list" default="button_count" label="PLG_CONTENT_CROWDFUNDINGSHARE_FACEBOOK_TYPE" description="PLG_CONTENT_CROWDFUNDINGSHARE_FACEBOOK_TYPE_DESC" >
+                    <option value="standard">PLG_CONTENT_CROWDFUNDINGSHARE_STANDARD</option>
+                    <option value="box_count">PLG_CONTENT_CROWDFUNDINGSHARE_BOX_COUNT</option>
+                    <option value="button_count">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_COUNT</option>
+                </field>
+                <field name="facebookLikeFaces" type="radio" default="0" label="PLG_CONTENT_CROWDFUNDINGSHARE_FACEBOOK_FACES" description="PLG_CONTENT_CROWDFUNDINGSHARE_FACEBOOK_FACES_DESC" >
+                   <option value="0">JHIDE</option>
+                   <option value="1">JSHOW</option>
+                </field>
+                <field name="facebookLikeColor" type="list" default="light" label="PLG_CONTENT_CROWDFUNDINGSHARE_FACEBOOK_FONT" description="PLG_CONTENT_CROWDFUNDINGSHARE_FACEBOOK_FONT_DESC" >
+                   <option value="light">PLG_CONTENT_CROWDFUNDINGSHARE_LIGHT</option>
+                   <option value="dark">PLG_CONTENT_CROWDFUNDINGSHARE_DARK</option>
+                </field>
+                <field name="facebookLikeFont" type="list" default="" label="Facebook Like Font" description="The font to display in the button. Options: 'arial', 'lucida grande', 'segoe ui', 'tahoma', 'trebuchet ms', 'verdana' " >
+                   <option value=""></option>
+                    <option value="arial">arial</option>
+                    <option value="lucida grande">lucida grande</option>
+                    <option value="segoe ui">segoe ui</option>
+                    <option value="tahoma">tahoma</option>
+                    <option value="trebuchet ms">trebuchet ms</option>
+                    <option value="verdana">verdana</option>
+                </field>
+                <field name="facebookLikeWidth" type="text" default="90" label="PLG_CONTENT_CROWDFUNDINGSHARE_FACEBOOK_WIDTH" description="PLG_CONTENT_CROWDFUNDINGSHARE_FACEBOOK_WIDTH_DESC" />
+                <field name="fbLocale" type="list" default="en_US" label="PLG_CONTENT_CROWDFUNDINGSHARE_LANGUAGE" description="PLG_CONTENT_CROWDFUNDINGSHARE_LANGUAGE_DESC">
+                    <option value="af_ZA">PLG_CONTENT_CROWDFUNDINGSHARE_AFRIKAANS</option>
+                    <option value="ar_AR">PLG_CONTENT_CROWDFUNDINGSHARE_ARABIC</option>
+                    <option value="sq_AL">PLG_CONTENT_CROWDFUNDINGSHARE_ALBANIAN</option>
+                    <option value="ay_BO">PLG_CONTENT_CROWDFUNDINGSHARE_AYMARA</option>
+                    <option value="az_AZ">PLG_CONTENT_CROWDFUNDINGSHARE_AZERI</option>
+                    <option value="be_BY">PLG_CONTENT_CROWDFUNDINGSHARE_BELARUSIAN</option>
+                    <option value="bg_BG">PLG_CONTENT_CROWDFUNDINGSHARE_BULGARIAN</option>
+                    <option value="bn_IN">PLG_CONTENT_CROWDFUNDINGSHARE_BENGALI</option>
+                    <option value="bs_BA">PLG_CONTENT_CROWDFUNDINGSHARE_BOSNIAN</option>
+                    <option value="ca_ES">PLG_CONTENT_CROWDFUNDINGSHARE_CATALAN</option>
+                    <option value="zh_CN">PLG_CONTENT_CROWDFUNDINGSHARE_CHINESE_ZH</option>
+                    <option value="zh_HK">PLG_CONTENT_CROWDFUNDINGSHARE_CHINESE_HK</option>
+                    <option value="zh_TW">PLG_CONTENT_CROWDFUNDINGSHARE_CHINESE_TW</option>
+                    <option value="ck_US">PLG_CONTENT_CROWDFUNDINGSHARE_CHEROKEE</option>
+                    <option value="cs_CZ">PLG_CONTENT_CROWDFUNDINGSHARE_CZECH</option>
+                    <option value="cy_GB">PLG_CONTENT_CROWDFUNDINGSHARE_WELSH</option>
+                    <option value="da_DK">PLG_CONTENT_CROWDFUNDINGSHARE_DANISH</option>
+                    <option value="de_DE">PLG_CONTENT_CROWDFUNDINGSHARE_GERMAN</option>
+                    <option value="el_GR">PLG_CONTENT_CROWDFUNDINGSHARE_GREEK</option>
+                    <option value="en_GB">PLG_CONTENT_CROWDFUNDINGSHARE_ENGLISH_GB</option>
+                    <option value="en_PI">PLG_CONTENT_CROWDFUNDINGSHARE_ENGLISH_PI</option>
+                    <option value="en_UD">PLG_CONTENT_CROWDFUNDINGSHARE_ENGLISH_UD</option>
+                    <option value="en_US">PLG_CONTENT_CROWDFUNDINGSHARE_ENGLISH</option>
+                    <option value="eo_EO">PLG_CONTENT_CROWDFUNDINGSHARE_ESPERANTO</option>
+                    <option value="es_CL">PLG_CONTENT_CROWDFUNDINGSHARE_SPANISH_CL</option>
+                    <option value="es_CO">PLG_CONTENT_CROWDFUNDINGSHARE_SPANISH_CO</option>
+                    <option value="es_ES">PLG_CONTENT_CROWDFUNDINGSHARE_SPANISH_ES</option>
+                    <option value="es_LA">PLG_CONTENT_CROWDFUNDINGSHARE_SPANISH</option>
+                    <option value="es_MX">PLG_CONTENT_CROWDFUNDINGSHARE_SPANISH_MX</option>
+                    <option value="es_VE">PLG_CONTENT_CROWDFUNDINGSHARE_SPANISH_VE</option>
+                    <option value="et_EE">PLG_CONTENT_CROWDFUNDINGSHARE_ESTONIAN</option>
+                    <option value="eu_ES">PLG_CONTENT_CROWDFUNDINGSHARE_BASQUE</option>
+                    <option value="fa_IR">PLG_CONTENT_CROWDFUNDINGSHARE_PERSIAN</option>
+                    <option value="fb_LT">PLG_CONTENT_CROWDFUNDINGSHARE_LEET_SPEAK</option>
+                    <option value="fi_FI">PLG_CONTENT_CROWDFUNDINGSHARE_FINNISH</option>
+                    <option value="fo_FO">PLG_CONTENT_CROWDFUNDINGSHARE_FAROESE</option>
+                    <option value="fr_CA">PLG_CONTENT_CROWDFUNDINGSHARE_FRENCH_CA</option>
+                    <option value="fr_FR">PLG_CONTENT_CROWDFUNDINGSHARE_FRENCH_FR</option>
+                    <option value="ga_IE">PLG_CONTENT_CROWDFUNDINGSHARE_IRISH</option>
+                    <option value="gl_ES">PLG_CONTENT_CROWDFUNDINGSHARE_GALICIAN</option>
+                    <option value="gn_PY">PLG_CONTENT_CROWDFUNDINGSHARE_GUARANI</option>
+                    <option value="gu_IN">PLG_CONTENT_CROWDFUNDINGSHARE_GUJARATI</option>
+                    <option value="he_IL">PLG_CONTENT_CROWDFUNDINGSHARE_HEBREW</option>
+                    <option value="hi_IN">PLG_CONTENT_CROWDFUNDINGSHARE_HINDI</option>
+                    <option value="hr_HR">PLG_CONTENT_CROWDFUNDINGSHARE_CROATIAN</option>
+                    <option value="hu_HU">PLG_CONTENT_CROWDFUNDINGSHARE_HUNGARIAN</option>
+                    <option value="hy_AM">PLG_CONTENT_CROWDFUNDINGSHARE_ARMENIAN</option>
+                    <option value="id_ID">PLG_CONTENT_CROWDFUNDINGSHARE_INDONESIAN</option>
+                    <option value="is_IS">PLG_CONTENT_CROWDFUNDINGSHARE_ICELANDIC</option>
+                    <option value="it_IT">PLG_CONTENT_CROWDFUNDINGSHARE_ITALIAN</option>
+                    <option value="ja_JP">PLG_CONTENT_CROWDFUNDINGSHARE_JAPANESE</option>
+                    <option value="jv_ID">PLG_CONTENT_CROWDFUNDINGSHARE_JAVANESE</option>
+                    <option value="ka_GE">PLG_CONTENT_CROWDFUNDINGSHARE_GEORGIAN</option>
+                    <option value="kk_KZ">PLG_CONTENT_CROWDFUNDINGSHARE_KAZAKH</option>
+                    <option value="km_KH">PLG_CONTENT_CROWDFUNDINGSHARE_KHMER</option>
+                    <option value="kn_IN">PLG_CONTENT_CROWDFUNDINGSHARE_KANNADA</option>
+                    <option value="ko_KR">PLG_CONTENT_CROWDFUNDINGSHARE_KOREAN</option>
+                    <option value="ku_TR">PLG_CONTENT_CROWDFUNDINGSHARE_KURDISH</option>
+                    <option value="la_VA">PLG_CONTENT_CROWDFUNDINGSHARE_LATIN</option>
+                    <option value="li_NL">PLG_CONTENT_CROWDFUNDINGSHARE_LIMBURGISH</option>
+                    <option value="lt_LT">PLG_CONTENT_CROWDFUNDINGSHARE_LITHUANIAN</option>
+                    <option value="lv_LV">PLG_CONTENT_CROWDFUNDINGSHARE_LATVIAN</option>
+                    <option value="mg_MG">PLG_CONTENT_CROWDFUNDINGSHARE_MALAGASY</option>
+                    <option value="mk_MK">PLG_CONTENT_CROWDFUNDINGSHARE_MACEDONIAN</option>
+                    <option value="ml_IN">PLG_CONTENT_CROWDFUNDINGSHARE_MALAYalam</option>
+                    <option value="mn_MN">PLG_CONTENT_CROWDFUNDINGSHARE_MONGOLIAN</option>
+                    <option value="mr_IN">PLG_CONTENT_CROWDFUNDINGSHARE_MARATHI</option>
+                    <option value="ms_MY">PLG_CONTENT_CROWDFUNDINGSHARE_MALAY</option>
+                    <option value="mt_MT">PLG_CONTENT_CROWDFUNDINGSHARE_MALTESE</option>
+                    <option value="nb_NO">PLG_CONTENT_CROWDFUNDINGSHARE_NORWEGIAN_NB</option>
+                    <option value="nn_NO">PLG_CONTENT_CROWDFUNDINGSHARE_NORWEGIAN_NN</option>
+                    <option value="ne_NP">PLG_CONTENT_CROWDFUNDINGSHARE_NEPALI</option>
+                    <option value="nl_BE">PLG_CONTENT_CROWDFUNDINGSHARE_DUTCH_BE</option>
+                    <option value="nl_NL">PLG_CONTENT_CROWDFUNDINGSHARE_DUTCH</option>
+                    <option value="pa_IN">PLG_CONTENT_CROWDFUNDINGSHARE_PUNJABI</option>
+                    <option value="pl_PL">PLG_CONTENT_CROWDFUNDINGSHARE_POLISH</option>
+                    <option value="ps_AF">PLG_CONTENT_CROWDFUNDINGSHARE_PASHTO</option>
+                    <option value="pt_BR">PLG_CONTENT_CROWDFUNDINGSHARE_PORTUGUESE_BR</option>
+                    <option value="pt_PT">PLG_CONTENT_CROWDFUNDINGSHARE_PORTUGUESE_PT</option>
+                    <option value="qu_PE">PLG_CONTENT_CROWDFUNDINGSHARE_QUECHUA</option>
+                    <option value="rm_CH">PLG_CONTENT_CROWDFUNDINGSHARE_ROMANSH</option>
+                    <option value="ro_RO">PLG_CONTENT_CROWDFUNDINGSHARE_ROMANIAN</option>
+                    <option value="ru_RU">PLG_CONTENT_CROWDFUNDINGSHARE_RUSSIAN</option>
+                    <option value="sa_IN">PLG_CONTENT_CROWDFUNDINGSHARE_SANSKRIT</option>
+                    <option value="se_NO">PLG_CONTENT_CROWDFUNDINGSHARE_NORTHERN_SAMI</option>
+                    <option value="sk_SK">PLG_CONTENT_CROWDFUNDINGSHARE_SLOVAK</option>
+                    <option value="sl_SI">PLG_CONTENT_CROWDFUNDINGSHARE_SLOVENIAN</option>
+                    <option value="so_SO">PLG_CONTENT_CROWDFUNDINGSHARE_SOMALI</option>
+                    <option value="sr_RS">PLG_CONTENT_CROWDFUNDINGSHARE_SERBIAN</option>
+                    <option value="sv_SE">PLG_CONTENT_CROWDFUNDINGSHARE_SWEDISH</option>
+                    <option value="sw_KE">PLG_CONTENT_CROWDFUNDINGSHARE_SWAHILI</option>
+                    <option value="sy_SY">PLG_CONTENT_CROWDFUNDINGSHARE_SYRIAC</option>
+                    <option value="ta_IN">PLG_CONTENT_CROWDFUNDINGSHARE_TAMIL</option>
+                    <option value="te_IN">PLG_CONTENT_CROWDFUNDINGSHARE_TELUGU</option>
+                    <option value="tg_TJ">PLG_CONTENT_CROWDFUNDINGSHARE_TAJIK</option>
+                    <option value="th_TH">PLG_CONTENT_CROWDFUNDINGSHARE_THAI</option>
+                    <option value="tl_PH">PLG_CONTENT_CROWDFUNDINGSHARE_FILIPINO</option>
+                    <option value="tl_ST">PLG_CONTENT_CROWDFUNDINGSHARE_KLINGON</option>
+                    <option value="tr_TR">PLG_CONTENT_CROWDFUNDINGSHARE_TURKISH</option>
+                    <option value="tt_RU">PLG_CONTENT_CROWDFUNDINGSHARE_TATAR</option>
+                    <option value="uk_UA">PLG_CONTENT_CROWDFUNDINGSHARE_UKRAINIAN</option>
+                    <option value="ur_PK">PLG_CONTENT_CROWDFUNDINGSHARE_URDU</option>
+                    <option value="uz_UZ">PLG_CONTENT_CROWDFUNDINGSHARE_UZBEK</option>
+                    <option value="vi_VN">PLG_CONTENT_CROWDFUNDINGSHARE_VIETNAMESE</option>
+                    <option value="xh_ZA">PLG_CONTENT_CROWDFUNDINGSHARE_XHOSA</option>
+                    <option value="yi_DE">PLG_CONTENT_CROWDFUNDINGSHARE_YIDDISH</option>
+                    <option value="zu_ZA">PLG_CONTENT_CROWDFUNDINGSHARE_ZULU</option>
+                </field>
+                
+                <field name="spacer4" type="spacer" class="text" label="PLG_CONTENT_CROWDFUNDINGSHARE_STUMBLEUPON_SETTINGS" />
+                <field name="stumbleButton" type="radio" default="0" label="PLG_CONTENT_CROWDFUNDINGSHARE_STUMBLEUPON_BUTTON" description="PLG_CONTENT_CROWDFUNDINGSHARE_STUMBLEUPON_BUTTON_DESC" >
+                   <option value="0">JHIDE</option>
+                   <option value="1">JSHOW</option>
+                </field>  
+                <field name="stumbleType" type="list" default="1" label="PLG_CONTENT_CROWDFUNDINGSHARE_STUMBLEUPON_TYPE" description="PLG_CONTENT_CROWDFUNDINGSHARE_STUMBLEUPON_TYPE_DESC" >
+                   <option value="1">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_1</option>
+                   <option value="2">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_2</option>
+                   <option value="3">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_3</option>
+                   <option value="4">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_4</option>
+                   <option value="5">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_5</option>
+                   <option value="6">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_6</option>
+                </field>  
+                
+                <field name="spacer5" type="spacer" class="text" label="PLG_CONTENT_CROWDFUNDINGSHARE_LINKEDIN_SETTINGS" />
+                <field name="linkedInButton" type="radio" default="0" label="PLG_CONTENT_CROWDFUNDINGSHARE_LINKEDIN_BUTTON" description="PLG_CONTENT_CROWDFUNDINGSHARE_LINKEDIN_BUTTON_DESC" >
+                   <option value="0">JHIDE</option>
+                   <option value="1">JSHOW</option>
+                </field>
+                <field name="linkedInType" type="list" default="right" label="PLG_CONTENT_CROWDFUNDINGSHARE_LINKEDIN_TYPE" description="PLG_CONTENT_CROWDFUNDINGSHARE_LINKEDIN_TYPE_DESC" >
+                   <option value="none">PLG_CONTENT_CROWDFUNDINGSHARE_COUNTER_NONE</option>
+                   <option value="top">PLG_CONTENT_CROWDFUNDINGSHARE_COUNTER_TOP</option>
+                   <option value="right">PLG_CONTENT_CROWDFUNDINGSHARE_COUNTER_RIGHT</option>
+                </field>  
+                
+                <field name="spacer6" type="spacer" class="text" label="PLG_CONTENT_CROWDFUNDINGSHARE_REDDIT_SETTINGS" />
+                <field name="redditButton" type="radio" default="0" label="PLG_CONTENT_CROWDFUNDINGSHARE_REDDIT_BUTTON" description="PLG_CONTENT_CROWDFUNDINGSHARE_REDDIT_BUTTON_DESC" >
+                   <option value="0">JHIDE</option>
+                   <option value="1">JSHOW</option>
+                </field>
+                <field name="redditType" type="list" default="0" label="PLG_CONTENT_CROWDFUNDINGSHARE_REDDIT_STYLE" description="PLG_CONTENT_CROWDFUNDINGSHARE_REDDIT_STYLE_DESC" >
+                   <option value="0">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_1</option>
+                   <option value="1">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_2</option>
+                   <option value="2">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_3</option>
+                   <option value="3">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_4</option>
+                   <option value="4">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_5</option>
+                   <option value="5">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_6</option>
+                   <option value="6">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_7</option>
+                   <option value="7">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_8</option>
+                   <option value="8">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_9</option>
+                   <option value="9">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_10</option>
+                   <option value="10">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_11</option>
+                   <option value="11">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_12</option>
+                   <option value="12">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_13</option>
+                   <option value="13">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_14</option>
+                   <option value="14">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_15</option>
+                   <option value="15">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_16</option>
+                   <option value="16">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_17</option>
+                   <option value="17">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_18</option>
+                   <option value="18">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_19</option>
+                   <option value="19">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_20</option>
+                   <option value="20">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_21</option>
+                   <option value="21">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_22</option>
+                   <option value="22">PLG_CONTENT_CROWDFUNDINGSHARE_BUTTON_23</option>
+                </field>
+                <field name="redditBgColor" type="text" default="" label="PLG_CONTENT_CROWDFUNDINGSHARE_REDDIT_BG_COLOR" description="PLG_CONTENT_CROWDFUNDINGSHARE_REDDIT_BG_COLOR_DESC" />
+                <field name="redditBorderColor" type="text" default="" label="PLG_CONTENT_CROWDFUNDINGSHARE_REDDIT_BORDER_COLOR" description="PLG_CONTENT_CROWDFUNDINGSHARE_REDDIT_BORDER_COLOR_DESC" />
+                <field name="redditNewTab" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGSHARE_REDDIT_NEW_TAB" description="PLG_CONTENT_CROWDFUNDINGSHARE_REDDIT_NEW_TAB_DESC" >
+                   <option value="0">JNO</option>
+                   <option value="1">JYES</option>
+                </field>
+                
+                <field name="spacer7" type="spacer" class="text" label="PLG_CONTENT_CROWDFUNDINGSHARE_GOOGLE_ONE_SETTINGS" />
+                <field name="plusButton" type="radio" default="0" label="PLG_CONTENT_CROWDFUNDINGSHARE_GOOGLE_ONE_BUTTON" description="PLG_CONTENT_CROWDFUNDINGSHARE_GOOGLE_ONE_BUTTON_DESC" >
+                   <option value="0">JHIDE</option>
+                   <option value="1">JSHOW</option>
+                </field>
+                <field name="plusRenderer" type="list" default="0" label="PLG_CONTENT_CROWDFUNDINGSHARE_GOOGLE_ONE_RENDERER" description="PLG_CONTENT_CROWDFUNDINGSHARE_GOOGLE_ONE_RENDERER_DESC" >
+                   <option value="0">HTML5</option>
+                   <option value="1">PLG_CONTENT_CROWDFUNDINGSHARE_STANDARD</option>
+                </field>
+                <field name="plusType" type="list" default="medium" label="PLG_CONTENT_CROWDFUNDINGSHARE_GOOGLE_ONE_STYLE" description="PLG_CONTENT_CROWDFUNDINGSHARE_GOOGLE_ONE_STYLE_DESC" >
+                   <option value="small">PLG_CONTENT_CROWDFUNDINGSHARE_SMALL_15</option>
+                   <option value="standart">PLG_CONTENT_CROWDFUNDINGSHARE_STANDARD_24</option>
+                   <option value="medium">PLG_CONTENT_CROWDFUNDINGSHARE_MEDIUM_20</option>
+                   <option value="tall">PLG_CONTENT_CROWDFUNDINGSHARE_TALL_60</option>
+                </field>
+                
+                <field name="plusAnnotation" type="list" default="" label="PLG_CONTENT_CROWDFUNDINGSHARE_GOOGLE_ONE_ANNOTATION" description="PLG_CONTENT_CROWDFUNDINGSHARE_GOOGLE_ONE_ANNOTATION_DESC" >
+                   <option value="">PLG_CONTENT_CROWDFUNDINGSHARE_BUBBLE</option>
+                   <option value="inline">PLG_CONTENT_CROWDFUNDINGSHARE_INLINE</option>
+                   <option value="none">PLG_CONTENT_CROWDFUNDINGSHARE_NONE</option>
+                </field>
+                
+                <field name="plusLocale" type="list" default="en" label="PLG_CONTENT_CROWDFUNDINGSHARE_LANGUAGE" description="PLG_CONTENT_CROWDFUNDINGSHARE_LANGUAGE_DESC" >
+                    <option value="ar">PLG_CONTENT_CROWDFUNDINGSHARE_ARABIC</option>
+                    <option value="bn">PLG_CONTENT_CROWDFUNDINGSHARE_BENGALI</option>
+                    <option value="bg">PLG_CONTENT_CROWDFUNDINGSHARE_BULGARIAN</option>
+                    <option value="ca">PLG_CONTENT_CROWDFUNDINGSHARE_CATALAN</option>
+                    <option value="zh">PLG_CONTENT_CROWDFUNDINGSHARE_CHINESE_ZH</option>
+                    <option value="zh_CN">PLG_CONTENT_CROWDFUNDINGSHARE_CHINESE_ZH</option>
+                    <option value="zh_HK">PLG_CONTENT_CROWDFUNDINGSHARE_CHINESE_HK</option>
+                    <option value="zh_TW">PLG_CONTENT_CROWDFUNDINGSHARE_CHINESE_TW</option>
+                    <option value="hr">PLG_CONTENT_CROWDFUNDINGSHARE_CROATIAN</option>
+                    <option value="cs">PLG_CONTENT_CROWDFUNDINGSHARE_CZECH</option>
+                    <option value="da">PLG_CONTENT_CROWDFUNDINGSHARE_DANISH</option>
+                    <option value="nl">PLG_CONTENT_CROWDFUNDINGSHARE_DUTCH</option>
+                    <option value="en">PLG_CONTENT_CROWDFUNDINGSHARE_ENGLISH</option>
+                    <option value="en_IN">PLG_CONTENT_CROWDFUNDINGSHARE_ENGLISH_IN</option>
+                    <option value="en_IE">PLG_CONTENT_CROWDFUNDINGSHARE_ENGLISH_IR</option>
+                    <option value="en_SG">PLG_CONTENT_CROWDFUNDINGSHARE_ENGLISH_SG</option>
+                    <option value="en_ZA">PLG_CONTENT_CROWDFUNDINGSHARE_ENGLISH_SA</option>
+                    <option value="en_GB">PLG_CONTENT_CROWDFUNDINGSHARE_ENGLISH_GB</option>
+                    <option value="fil">PLG_CONTENT_CROWDFUNDINGSHARE_FILIPINO</option>
+                    <option value="fi">PLG_CONTENT_CROWDFUNDINGSHARE_FINNISH</option>
+                    <option value="fr">PLG_CONTENT_CROWDFUNDINGSHARE_FRENCH_FR</option>
+                    <option value="de">PLG_CONTENT_CROWDFUNDINGSHARE_GERMAN</option>
+                    <option value="de_CH">PLG_CONTENT_CROWDFUNDINGSHARE_GERMAN_CH</option>
+                    <option value="el">PLG_CONTENT_CROWDFUNDINGSHARE_GREEK</option>
+                    <option value="gu">PLG_CONTENT_CROWDFUNDINGSHARE_GUJARATI</option>
+                    <option value="iw">PLG_CONTENT_CROWDFUNDINGSHARE_HEBREW</option>
+                    <option value="hi">PLG_CONTENT_CROWDFUNDINGSHARE_HINDI</option>
+                    <option value="hu">PLG_CONTENT_CROWDFUNDINGSHARE_HUNGARIAN</option>
+                    <option value="in">PLG_CONTENT_CROWDFUNDINGSHARE_INDONESIAN</option>
+                    <option value="it">PLG_CONTENT_CROWDFUNDINGSHARE_ITALIAN</option>
+                    <option value="ja">PLG_CONTENT_CROWDFUNDINGSHARE_JAPANESE</option>
+                    <option value="kn">PLG_CONTENT_CROWDFUNDINGSHARE_KANNADA</option>
+                    <option value="ko">PLG_CONTENT_CROWDFUNDINGSHARE_KOREAN</option>
+                    <option value="lv">PLG_CONTENT_CROWDFUNDINGSHARE_LATVIAN</option>
+                    <option value="ln">PLG_CONTENT_CROWDFUNDINGSHARE_LINGALA</option>
+                    <option value="lt">PLG_CONTENT_CROWDFUNDINGSHARE_LITHUANIAN</option>
+                    <option value="ms">PLG_CONTENT_CROWDFUNDINGSHARE_MALAY</option>
+                    <option value="ml">PLG_CONTENT_CROWDFUNDINGSHARE_MALAYalam</option>
+                    <option value="mr">PLG_CONTENT_CROWDFUNDINGSHARE_MARATHI</option>
+                    <option value="no">PLG_CONTENT_CROWDFUNDINGSHARE_NORWEGIAN</option>
+                    <option value="or">PLG_CONTENT_CROWDFUNDINGSHARE_ORIYA</option>
+                    <option value="fa">PLG_CONTENT_CROWDFUNDINGSHARE_PERSIAN</option>
+                    <option value="pl">PLG_CONTENT_CROWDFUNDINGSHARE_POLISH</option>
+                    <option value="pt_BR">PLG_CONTENT_CROWDFUNDINGSHARE_PORTUGUESE_BR</option>
+                    <option value="pt_PT">PLG_CONTENT_CROWDFUNDINGSHARE_PORTUGUESE_PT</option>
+                    <option value="ro">PLG_CONTENT_CROWDFUNDINGSHARE_ROMANIAN</option>
+                    <option value="ru">PLG_CONTENT_CROWDFUNDINGSHARE_RUSSIAN</option>
+                    <option value="sr">PLG_CONTENT_CROWDFUNDINGSHARE_SERBIAN</option>
+                    <option value="sk">PLG_CONTENT_CROWDFUNDINGSHARE_SLOVAK</option>
+                    <option value="sl">PLG_CONTENT_CROWDFUNDINGSHARE_SLOVENIAN</option>
+                    <option value="es">PLG_CONTENT_CROWDFUNDINGSHARE_SPANISH</option>
+                    <option value="sv">PLG_CONTENT_CROWDFUNDINGSHARE_SWEDISH</option>
+                    <option value="gsw">PLG_CONTENT_CROWDFUNDINGSHARE_GERMAN_SW</option>
+                    <option value="ta">PLG_CONTENT_CROWDFUNDINGSHARE_TAMIL</option>
+                    <option value="te">PLG_CONTENT_CROWDFUNDINGSHARE_TELUGU</option>
+                    <option value="th">PLG_CONTENT_CROWDFUNDINGSHARE_THAI</option>
+                    <option value="tr">PLG_CONTENT_CROWDFUNDINGSHARE_TURKISH</option>
+                    <option value="uk">PLG_CONTENT_CROWDFUNDINGSHARE_UKRAINIAN</option>
+                    <option value="vi">PLG_CONTENT_CROWDFUNDINGSHARE_VIETNAMESE</option>
+                </field>
+                
+                <field name="spacer8" type="spacer" class="text" label="PLG_CONTENT_CROWDFUNDINGSHARE_PINTEREST_SETTINGS" />
+                <field name="pinterestButton" type="radio" default="0" label="PLG_CONTENT_CROWDFUNDINGSHARE_PINTEREST_BUTTON" description="PLG_CONTENT_CROWDFUNDINGSHARE_PINTEREST_BUTTON_DESC" >
+                   <option value="0">JHIDE</option>
+                   <option value="1">JSHOW</option>
+                </field>
+                <field name="pinterestType" type="list" default="horizontal" label="PLG_CONTENT_CROWDFUNDINGSHARE_PINTEREST_TYPE" description="PLG_CONTENT_CROWDFUNDINGSHARE_PINTEREST_TYPE_DESC" >
+                   <option value="none">PLG_CONTENT_CROWDFUNDINGSHARE_NONE</option>
+                   <option value="horizontal">PLG_CONTENT_CROWDFUNDINGSHARE_HORIZONTAL</option>
+                   <option value="vertical">PLG_CONTENT_CROWDFUNDINGSHARE_VERTICAL</option>
+                </field>
+                
+                <field name="spacer9" type="spacer" class="text" label="PLG_CONTENT_CROWDFUNDINGSHARE_BUFFER_SETTINGS" />
+                <field name="bufferButton" type="radio" default="0" label="PLG_CONTENT_CROWDFUNDINGSHARE_BUFFER_BUTTON" description="PLG_CONTENT_CROWDFUNDINGSHARE_BUFFER_BUTTON_DESC" >
+                   <option value="0">JHIDE</option>
+                   <option value="1">JSHOW</option>
+                </field>
+                <field name="bufferType" type="list" default="horizontal" label="PLG_CONTENT_CROWDFUNDINGSHARE_BUFFER_TYPE" description="PLG_CONTENT_CROWDFUNDINGSHARE_BUFFER_TYPE_DESC" >
+                   <option value="none">PLG_CONTENT_CROWDFUNDINGSHARE_NONE</option>
+                   <option value="horizontal">PLG_CONTENT_CROWDFUNDINGSHARE_HORIZONTAL</option>
+                   <option value="vertical">PLG_CONTENT_CROWDFUNDINGSHARE_VERTICAL</option>
+                </field>
+                <field name="bufferTwitterName" type="text" default="" size="80" label="PLG_CONTENT_CROWDFUNDINGSHARE_BUFFER_USERNAME" description="PLG_CONTENT_CROWDFUNDINGSHARE_BUFFER_USERNAME_DESC" />
+                
+                <field name="spacer10" type="spacer" class="text" label="PLG_CONTENT_CROWDFUNDINGSHARE_GOOGLE_SHARE_SETTINGS" />
+                <field name="gsButton" type="radio" default="0" label="PLG_CONTENT_CROWDFUNDINGSHARE_GOOGLE_SHARE_BUTTON" description="PLG_CONTENT_CROWDFUNDINGSHARE_GOOGLE_SHARE_BUTTON" >
+                   <option value="0">JHIDE</option>
+                   <option value="1">JSHOW</option>
+                </field>
+                <field name="gsRenderer" type="list" default="0" label="PLG_CONTENT_CROWDFUNDINGSHARE_GOOGLE_SHARE_RENDERER" description="PLG_CONTENT_CROWDFUNDINGSHARE_GOOGLE_SHARE_RENDERER_DESC" >
+                   <option value="0">HTML5</option>
+                   <option value="1">PLG_CONTENT_CROWDFUNDINGSHARE_STANDARD</option>
+                </field>
+                <field name="gsType" type="list" default="0" label="PLG_CONTENT_CROWDFUNDINGSHARE_GOOGLE_SHARE_STYLE" description="PLG_CONTENT_CROWDFUNDINGSHARE_GOOGLE_SHARE_STYLE_DESC" >
+                   <option value="15">PLG_CONTENT_CROWDFUNDINGSHARE_SMALL_15</option>
+                   <option value="0">PLG_CONTENT_CROWDFUNDINGSHARE_STANDARD</option>
+                   <option value="24">PLG_CONTENT_CROWDFUNDINGSHARE_LARGE_20</option>
+                </field>
+                
+                <field name="gsAnnotation" type="list" default="bubble" label="PLG_CONTENT_CROWDFUNDINGSHARE_GOOGLE_SHARE_ANNOTATION" description="PLG_CONTENT_CROWDFUNDINGSHARE_GOOGLE_SHARE_ANNOTATION_DESC" >
+                   <option value="bubble">PLG_CONTENT_CROWDFUNDINGSHARE_BUBBLE_HORIZONTAL</option>
+                   <option value="vertical-bubble">PLG_CONTENT_CROWDFUNDINGSHARE_BUBBLE_VERTICAL</option>
+                   <option value="inline">PLG_CONTENT_CROWDFUNDINGSHARE_INLINE</option>
+                   <option value="none">PLG_CONTENT_CROWDFUNDINGSHARE_NONE</option>
+                </field>
+                
+                <field name="gsLocale" type="list" default="en" label="PLG_CONTENT_CROWDFUNDINGSHARE_LANGUAGE" description="PLG_CONTENT_CROWDFUNDINGSHARE_LANGUAGE_DESC" >
+                    <option value="ar">PLG_CONTENT_CROWDFUNDINGSHARE_ARABIC</option>
+                    <option value="bn">PLG_CONTENT_CROWDFUNDINGSHARE_BENGALI</option>
+                    <option value="bg">PLG_CONTENT_CROWDFUNDINGSHARE_BULGARIAN</option>
+                    <option value="ca">PLG_CONTENT_CROWDFUNDINGSHARE_CATALAN</option>
+                    <option value="zh">PLG_CONTENT_CROWDFUNDINGSHARE_CHINESE</option>
+                    <option value="zh_CN">PLG_CONTENT_CROWDFUNDINGSHARE_CHINESE_ZH</option>
+                    <option value="zh_HK">PLG_CONTENT_CROWDFUNDINGSHARE_CHINESE_HK</option>
+                    <option value="zh_TW">PLG_CONTENT_CROWDFUNDINGSHARE_CHINESE_TW</option>
+                    <option value="hr">PLG_CONTENT_CROWDFUNDINGSHARE_CROATIAN</option>
+                    <option value="cs">PLG_CONTENT_CROWDFUNDINGSHARE_CZECH</option>
+                    <option value="da">PLG_CONTENT_CROWDFUNDINGSHARE_DANISH</option>
+                    <option value="nl">PLG_CONTENT_CROWDFUNDINGSHARE_DUTCH</option>
+                    <option value="en">PLG_CONTENT_CROWDFUNDINGSHARE_ENGLISH</option>
+                    <option value="en_IN">PLG_CONTENT_CROWDFUNDINGSHARE_ENGLISH_IN</option>
+                    <option value="en_IE">PLG_CONTENT_CROWDFUNDINGSHARE_ENGLISH_IR</option>
+                    <option value="en_SG">PLG_CONTENT_CROWDFUNDINGSHARE_ENGLISH_SG</option>
+                    <option value="en_ZA">PLG_CONTENT_CROWDFUNDINGSHARE_ENGLISH_SA</option>
+                    <option value="en_GB">PLG_CONTENT_CROWDFUNDINGSHARE_ENGLISH_GB</option>
+                    <option value="fil">PLG_CONTENT_CROWDFUNDINGSHARE_FILIPINO</option>
+                    <option value="fi">PLG_CONTENT_CROWDFUNDINGSHARE_FINNISH</option>
+                    <option value="fr">PLG_CONTENT_CROWDFUNDINGSHARE_FRENCH_FR</option>
+                    <option value="de">PLG_CONTENT_CROWDFUNDINGSHARE_GERMAN</option>
+                    <option value="de_CH">PLG_CONTENT_CROWDFUNDINGSHARE_GERMAN_CH</option>
+                    <option value="el">PLG_CONTENT_CROWDFUNDINGSHARE_GREEK</option>
+                    <option value="gu">PLG_CONTENT_CROWDFUNDINGSHARE_GUJARATI</option>
+                    <option value="iw">PLG_CONTENT_CROWDFUNDINGSHARE_HEBREW</option>
+                    <option value="hi">PLG_CONTENT_CROWDFUNDINGSHARE_HINDI</option>
+                    <option value="hu">PLG_CONTENT_CROWDFUNDINGSHARE_HUNGARIAN</option>
+                    <option value="in">PLG_CONTENT_CROWDFUNDINGSHARE_INDONESIAN</option>
+                    <option value="it">PLG_CONTENT_CROWDFUNDINGSHARE_ITALIAN</option>
+                    <option value="ja">PLG_CONTENT_CROWDFUNDINGSHARE_JAPANESE</option>
+                    <option value="kn">PLG_CONTENT_CROWDFUNDINGSHARE_KANNADA</option>
+                    <option value="ko">PLG_CONTENT_CROWDFUNDINGSHARE_KOREAN</option>
+                    <option value="lv">PLG_CONTENT_CROWDFUNDINGSHARE_LATVIAN</option>
+                    <option value="ln">PLG_CONTENT_CROWDFUNDINGSHARE_LINGALA</option>
+                    <option value="lt">PLG_CONTENT_CROWDFUNDINGSHARE_LITHUANIAN</option>
+                    <option value="ms">PLG_CONTENT_CROWDFUNDINGSHARE_MALAY</option>
+                    <option value="ml">PLG_CONTENT_CROWDFUNDINGSHARE_MALAYalam</option>
+                    <option value="mr">PLG_CONTENT_CROWDFUNDINGSHARE_MARATHI</option>
+                    <option value="no">PLG_CONTENT_CROWDFUNDINGSHARE_NORWEGIAN</option>
+                    <option value="or">PLG_CONTENT_CROWDFUNDINGSHARE_ORIYA</option>
+                    <option value="fa">PLG_CONTENT_CROWDFUNDINGSHARE_PERSIAN</option>
+                    <option value="pl">PLG_CONTENT_CROWDFUNDINGSHARE_POLISH</option>
+                    <option value="pt_BR">PLG_CONTENT_CROWDFUNDINGSHARE_PORTUGUESE_BR</option>
+                    <option value="pt_PT">PLG_CONTENT_CROWDFUNDINGSHARE_PORTUGUESE_PT</option>
+                    <option value="ro">PLG_CONTENT_CROWDFUNDINGSHARE_ROMANIAN</option>
+                    <option value="ru">PLG_CONTENT_CROWDFUNDINGSHARE_RUSSIAN</option>
+                    <option value="sr">PLG_CONTENT_CROWDFUNDINGSHARE_SERBIAN</option>
+                    <option value="sk">PLG_CONTENT_CROWDFUNDINGSHARE_SLOVAK</option>
+                    <option value="sl">PLG_CONTENT_CROWDFUNDINGSHARE_SLOVENIAN</option>
+                    <option value="es">PLG_CONTENT_CROWDFUNDINGSHARE_SPANISH</option>
+                    <option value="sv">PLG_CONTENT_CROWDFUNDINGSHARE_SWEDISH</option>
+                    <option value="gsw">PLG_CONTENT_CROWDFUNDINGSHARE_GERMAN_SW</option>
+                    <option value="ta">PLG_CONTENT_CROWDFUNDINGSHARE_TAMIL</option>
+                    <option value="te">PLG_CONTENT_CROWDFUNDINGSHARE_TELUGU</option>
+                    <option value="th">PLG_CONTENT_CROWDFUNDINGSHARE_THAI</option>
+                    <option value="tr">PLG_CONTENT_CROWDFUNDINGSHARE_TURKISH</option>
+                    <option value="uk">PLG_CONTENT_CROWDFUNDINGSHARE_UKRAINIAN</option>
+                    <option value="vi">PLG_CONTENT_CROWDFUNDINGSHARE_VIETNAMESE</option>
+                </field>
+                
+			</fieldset>
+	           
+           <fieldset name="embed" label="PLG_CONTENT_CROWDFUNDINGSHARE_EMBED_SETTINGS">
+                <field name="display_embed_link" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGSHARE_DISPLAY_EMBED_LINK" description="PLG_CONTENT_CROWDFUNDINGSHARE_DISPLAY_EMBED_LINK_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field name="display_embed_button" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGSHARE_DISPLAY_EMBED_BUTTON" description="PLG_CONTENT_CROWDFUNDINGSHARE_DISPLAY_EMBED_BUTTON_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field name="display_embed_email" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGSHARE_DISPLAY_EMBED_EMAIL" description="PLG_CONTENT_CROWDFUNDINGSHARE_DISPLAY_EMBED_EMAIL_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+            </fieldset>
+            
+	        <fieldset name="short_url_settings" label="PLG_CONTENT_CROWDFUNDINGSHARE_SHORTENER_SETTINGS">
+                <field name="shortener_service" type="list" default="" label="PLG_CONTENT_CROWDFUNDINGSHARE_SHORTENER_SERVICE" description="PLG_CONTENT_CROWDFUNDINGSHARE_SHORTENER_SERVICE_DESC" >
+                   <option value="">PLG_CONTENT_CROWDFUNDINGSHARE_NONE</option>
+                   <option value="google">goo.gl</option>
+                   <option value="bitly">bit.ly</option>
+                   <option value="bitlycom">bitly.com</option>
+                   <option value="jmp">j.mp</option>
+                   <option value="tinycc">tiny.cc</option>
+                </field>
+                <field name="shortener_login" type="text" default="" label="PLG_CONTENT_CROWDFUNDINGSHARE_LOGIN" description="PLG_CONTENT_CROWDFUNDINGSHARE_LOGIN_DESC"/>
+                <field name="shortener_api_key" type="text" default="" size="80" label="PLG_CONTENT_CROWDFUNDINGSHARE_API_KEY" description="PLG_CONTENT_CROWDFUNDINGSHARE_API_KEY_DESC"/>
+            </fieldset>
+            
+            <fieldset name="facebook_advanced_settings" label="PLG_CONTENT_CROWDFUNDINGSHARE_FACEBOOK_ADVANCED_SETTINGS">
+                <field name="facebookLikeAppId" type="text" default="" label="PLG_CONTENT_CROWDFUNDINGSHARE_FACEBOOK_APP_ID" description="PLG_CONTENT_CROWDFUNDINGSHARE_FACEBOOK_APP_ID_DESC" />
+                <field name="facebookLikeSend" type="list" default="0" label="PLG_CONTENT_CROWDFUNDINGSHARE_FACEBOOK_SEND_BUTTON" description="PLG_CONTENT_CROWDFUNDINGSHARE_FACEBOOK_SEND_BUTTON" >
+                   <option value="0">JNO</option>
+                   <option value="1">JYES</option>
+                </field>
+                <field name="facebookRootDiv" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGSHARE_FACEBOOK_ROOT" description="PLG_CONTENT_CROWDFUNDINGSHARE_FACEBOOK_ROOT_DESC" >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                 </field>
+                <field name="facebookLoadJsLib" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGSHARE_LOAD_JS_LIB" description="PLG_CONTENT_CROWDFUNDINGSHARE_LOAD_JS_LIB_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+            </fieldset>
+             
+            <fieldset name="additional_code" label="PLG_CONTENT_CROWDFUNDINGSHARE_ADDITIONAL_BUTTONS">
+                <field name="ebuttons1" type="textarea" default="" label="PLG_CONTENT_CROWDFUNDINGSHARE_CUSTOM_BUTTON_CODE" description="PLG_CONTENT_CROWDFUNDINGSHARE_CUSTOM_BUTTON_CODE_DESC" cols="50" rows="10" filter="raw" />
+                <field name="ebuttons2" type="textarea" default="" label="PLG_CONTENT_CROWDFUNDINGSHARE_CUSTOM_BUTTON_CODE" description="PLG_CONTENT_CROWDFUNDINGSHARE_CUSTOM_BUTTON_CODE_DESC" cols="50" rows="10" filter="raw" />
+                <field name="ebuttons3" type="textarea" default="" label="PLG_CONTENT_CROWDFUNDINGSHARE_CUSTOM_BUTTON_CODE" description="PLG_CONTENT_CROWDFUNDINGSHARE_CUSTOM_BUTTON_CODE_DESC" cols="50" rows="10" filter="raw" />
+                <field name="ebuttons4" type="textarea" default="" label="PLG_CONTENT_CROWDFUNDINGSHARE_CUSTOM_BUTTON_CODE" description="PLG_CONTENT_CROWDFUNDINGSHARE_CUSTOM_BUTTON_CODE_DESC" cols="50" rows="10" filter="raw" />
+                <field name="ebuttons5" type="textarea" default="" label="PLG_CONTENT_CROWDFUNDINGSHARE_CUSTOM_BUTTON_CODE" description="PLG_CONTENT_CROWDFUNDINGSHARE_CUSTOM_BUTTON_CODE_DESC" cols="50" rows="10" filter="raw" />
+            </fieldset>
+            
+            <fieldset name="advanced">
+                <field name="display_title_details_view" type="radio" default="0" label="PLG_CONTENT_CROWDFUNDINGSHARE_DISPLAY_TITLE_DETAILS_VIEW" description="PLG_CONTENT_CROWDFUNDINGSHARE_DISPLAY_TITLE_DETAILS_VIEW_DESC" >
+                   <option value="0">JNO</option>
+                   <option value="1">JYES</option>
+                </field>
+                
+                <field name="display_title_payment_view" type="radio" default="0" label="PLG_CONTENT_CROWDFUNDINGSHARE_DISPLAY_TITLE_PAYMENT_VIEW" description="PLG_CONTENT_CROWDFUNDINGSHARE_DISPLAY_TITLE_PAYMENT_VIEW_DESC" >
+                   <option value="0">JNO</option>
+                   <option value="1">JYES</option>
+                </field>
+                
+                <field name="spacer21" type="spacer" class="text" label="PLG_CONTENT_CROWDFUNDINGSHARE_TUMBLR_ADVANCED_SETTINGS" />
+                <field name="loadTumblrJsLib" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGSHARE_TUMBLR_LOAD_JS" description="PLG_CONTENT_CROWDFUNDINGSHARE_TUMBLR_LOAD_JS_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                
+                <field name="spacer22" type="spacer" class="text" label="PLG_CONTENT_CROWDFUNDINGSHARE_TWITTER_ADVANCED_SETTINGS" />
+                <field name="load_twitter_library" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGSHARE_TWITTER_LOAD_LIBRARY" description="PLG_CONTENT_CROWDFUNDINGSHARE_TWITTER_LOAD_LIBRARY_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                
+                <field name="spacer23" type="spacer" class="text" label="PLG_CONTENT_CROWDFUNDINGSHARE_LINKEDIN_ADVANCED_SETTINGS" />
+                <field name="load_linkedin_library" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGSHARE_LINKEDIN_LOAD_LIBRARY" description="PLG_CONTENT_CROWDFUNDINGSHARE_LINKEDIN_LOAD_LIBRARY_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                
+                <field name="spacer24" type="spacer" class="text" label="PLG_CONTENT_CROWDFUNDINGSHARE_GOOGLE_ADVANCED_SETTINGS" />
+                <field name="loadGoogleJsLib" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGSHARE_GOOGLE_LOAD_JS" description="PLG_CONTENT_CROWDFUNDINGSHARE_GOOGLE_LOAD_JS_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                
+                <field name="spacer25" type="spacer" class="text" label="PLG_CONTENT_CROWDFUNDINGSHARE_PINTEREST_ADVANCED_SETTINGS" />
+                <field name="loadPinterestJsLib" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGSHARE_PINTEREST_JS" description="PLG_CONTENT_CROWDFUNDINGSHARE_PINTEREST_LOAD_JS_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                
+                <field name="spacer26" type="spacer" class="text" label="PLG_CONTENT_CROWDFUNDINGSHARE_ADVANCED_SETTINGS" />
+                <field name="loadCss" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGSHARE_LOAD_STYLE_CSS" description="PLG_CONTENT_CROWDFUNDINGSHARE_LOAD_STYLE_CSS_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field name="dynamicLocale" type="radio" default="0" label="PLG_CONTENT_CROWDFUNDINGSHARE_AUTO_LANGUAGE" description="PLG_CONTENT_CROWDFUNDINGSHARE_AUTO_LANGUAGE_DESC">
+                 <option value="0">JNO</option>
+                 <option value="1">JYES</option>
+               </field>
+            </fieldset>
+            
+        </fields>
+	</config>
+</extension>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="funding" label="COM_CROWDFUNDING_FUNDING_DEFAULT_LABEL" addfieldpath="/administrator/components/com_crowdfunding/models/fields">
+
+        <field name="goal" type="Goal"
+            label="COM_CROWDFUNDING_FIELD_FUNDING_GOAL" 
+            description="COM_CROWDFUNDING_FIELD_FUNDING_GOAL_DESC"
+            size="40" 
+            filter="float"
+            required="true"
+         />
+         
+        <field name="funding_type" type="FundingType"
+            label="COM_CROWDFUNDING_FIELD_FUNDING_TYPE" 
+            required="true"
+            default="FIXED"
+            help_blocks="COM_CROWDFUNDING_FIELD_FUNDING_TYPE_HELP_FIXED, COM_CROWDFUNDING_FIELD_FUNDING_TYPE_HELP_FLEXIBLE"
+         >
+            <option value="FIXED">COM_CROWDFUNDING_FIELD_FUNDING_TYPE_FIXED</option>
+            <option value="FLEXIBLE">COM_CROWDFUNDING_FIELD_FUNDING_TYPE_FLEXIBLE</option>
+         </field>
+           
+           
+        <field type="FundingLabel" name="funding_duration_type"
+            label="COM_CROWDFUNDING_FIELD_FUNDING_DURATION" 
+            description="COM_CROWDFUNDING_FIELD_FUNDING_DURATION_DESC" 
+            required="true"
+         />
+         
+        <field name="funding_days" type="text"
+            label="COM_CROWDFUNDING_FIELD_FUNDING_DAYS" 
+            filter="trim"
+        />
+
+         <field name="funding_end" type="calendar"
+            label="COM_CROWDFUNDING_FIELD_FUNDING_END" 
+            filter="trim"
+            default="NOW"
+           />
+           
+         <field name="id" type="hidden" filter="int" />
+         
+    </fieldset>
+</form>

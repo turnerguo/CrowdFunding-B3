@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="2.5" type="plugin" group="content" method="upgrade">
+    <name>PLG_CONTENT_CROWDFUNDINGINFO</name>
+    <author>Todor Iliev</author>
+    <creationDate>January, 2013</creationDate>
+    <copyright>Copyright (C) 2010 Todor Iliev ( ITPrism.com ). All rights reserved.</copyright>
+    <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+    <authorEmail>todor@itprism.com</authorEmail>
+    <authorUrl>http://itprism.com</authorUrl>
+    <version>1.0</version>
+    <description>PLG_CONTENT_CROWDFUNDINGINFO_DESC</description>
+    
+    <languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.plg_content_crowdfundinginfo.ini</language>
+        <language tag="en-GB">en-GB/en-GB.plg_content_crowdfundinginfo.sys.ini</language>
+    </languages> 
+    
+    <files>
+        <filename plugin="crowdfundinginfo">crowdfundinginfo.php</filename>
+        <filename>index.html</filename>
+        <filename>style.css</filename>
+    </files>
+    
+    <help url="PLG_CONTENT_CROWDFUNDINGINFO_HELP_URL"/>
+    
+    <config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="display_short_desc" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_SHORT_DESC" description="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_SHORT_DESC_DESC" >
+                   <option value="0">JNO</option>
+                   <option value="1">JYES</option>
+                </field>
+                <field name="display_start_date" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_LANCHED" description="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_LANCHED_DESC" >
+                   <option value="0">JNO</option>
+                   <option value="1">JYES</option>
+                </field>
+                <field name="display_end_date" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_END" description="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_END_DESC" >
+                   <option value="0">JNO</option>
+                   <option value="1">JYES</option>
+                </field>
+                <field name="display_remaind_me" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_REMIND_ME" description="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_REMIND_ME_DESC" >
+                   <option value="0">JNO</option>
+                   <option value="1">JYES</option>
+                </field>
+                
+                <field name="display_follow" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_FOLLOW" description="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_FOLLOW_DESC" >
+                   <option value="0">JNO</option>
+                   <option value="1">JYES</option>
+                </field>
+                
+			</fieldset>
+	            
+            <fieldset name="advanced">
+                
+                <field name="load_css" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGINFO_LOAD_STYLE_CSS" description="PLG_CONTENT_CROWDFUNDINGINFO_LOAD_STYLE_CSS_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                
+            </fieldset>
+            
+        </fields>
+	</config>
+</extension>

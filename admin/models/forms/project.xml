@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset addfieldpath="/administrator/components/com_categories/models/fields">
+
+		<field name="title" type="text" class="inputbox" 
+			size="40"  
+			label="COM_CROWDFUNDING_TITLE" 
+			filter="trim" 
+			description="COM_CROWDFUNDING_TITLE_DESC" 
+			required="true" />
+
+        <field name="url" type="text" class="inputbox" 
+            size="60"  
+            label="COM_CROWDFUNDING_URL" 
+            filter="trim" 
+            description="COM_CROWDFUNDING_URL_DESC" />
+            
+        <field name="catid" type="categoryedit" 
+            label="JCATEGORY"
+            description="JFIELD_CATEGORY_DESC"
+            extension="com_crowdfunding" 
+            required="true" />
+        
+		<field name="published" type="list" 
+		    label="JSTATUS" 
+            description="JFIELD_PUBLISHED_DESC" 
+            class="inputbox" 
+            filter="intval" 
+            size="1" 
+            default="1"
+        >
+            <option value="1">JPUBLISHED</option>
+            <option value="0">JUNPUBLISHED</option>
+        </field>
+		
+		<field name="approved" type="list" 
+		    label="COM_CROWDFUNDING_APPROVED" 
+            description="COM_CROWDFUNDING_APPROVED_DESC" 
+            class="inputbox" 
+            filter="intval" 
+            size="1" 
+            default="0"
+        >
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        
+		<field name="id" type="text" default="0" label="JGLOBAL_FIELD_ID_LABEL" 
+            readonly="true" class="readonly"
+            description="JGLOBAL_FIELD_ID_DESC" />
+
+        <field name="short_desc" type="textarea" 
+            class="inputbox"
+            label="COM_CROWDFUNDING_SHORT_DESCRIPTION" 
+            description="COM_CROWDFUNDING_SHORT_DESCRIPTION_DESC" 
+            rows="10" 
+            />
+            
+	</fieldset>
+</form>

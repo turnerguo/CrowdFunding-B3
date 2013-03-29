@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="project" label="COM_CROWDFUNDING_PROJECT_DEFAULT_LABEL" addfieldpath="/administrator/components/com_crowdfunding/models/fields">
+
+        <field name="title" type="text" class="span12"
+            label="COM_CROWDFUNDING_FIELD_TITLE" 
+            size="40" 
+            filter="trim"
+            required="true"
+           />
+           
+        <field name="short_desc" type="textarea" class="span12"
+            label="COM_CROWDFUNDING_FIELD_DESCRIPTION" 
+            description="COM_CROWDFUNDING_FIELD_DESCRIPTION_DESC"  
+            filter="trim"
+            rows="5" 
+            required="true"
+        />
+
+        <field name="catid" type="category"
+            label="JCATEGORY"
+            extension="com_crowdfunding" 
+            filter="int"
+         />
+         
+         <field name="location_preview" type="text"
+            label="COM_CROWDFUNDING_FIELD_LOCATION" 
+            description="COM_CROWDFUNDING_FIELD_LOCATION_DESC"
+            size="40" 
+            filter="trim"
+           />
+           
+         <field
+            name="image"
+            type="file"
+            label="COM_CROWDFUNDING_FIELD_IMAGE"
+            description="COM_CROWDFUNDING_FIELD_IMAGE_DESC"
+            size="40"
+         />
+         
+         <field name="id" type="hidden" filter="int" />
+         <field name="location" type="hidden" filter="int" />
+         
+    </fieldset>
+</form>
