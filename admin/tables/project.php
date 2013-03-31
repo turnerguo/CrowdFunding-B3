@@ -33,7 +33,12 @@ class CrowdFundingTableProject extends JTable {
     }
     
     protected function calculatePercent() {
-        $value = ($this->funded/$this->goal) * 100;
+        
+        $value = 0;
+        if($this->goal > 0) {
+            $value = ($this->funded/$this->goal) * 100;
+        }
+        
 	    return round($value, 2);
 	}
 	

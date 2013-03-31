@@ -169,6 +169,10 @@ class pkg_crowdFundingInstallerScript {
             
             CrowdFundingInstallHelper::addRowHeading(JText::_("COM_CROWDFUNDING_INSTALLED_EXTENSIONS"));
             
+            // CrowdFunding Library
+            $result = array("type" => "success"  , "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
+            CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CROWDFUNDING_LIBRARY"), $result, JText::_("COM_CROWDFUNDING_LIBRARY"));
+            
             // Content - CrowdFunding - Navigation
             $result = array("type" => "success"  , "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
             CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CONTENT_CROWDFUNDING_NAVIGATION"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
