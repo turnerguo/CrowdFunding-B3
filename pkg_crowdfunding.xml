@@ -13,14 +13,13 @@
 	<packager>Todor Iliev</packager>
 	<packagerurl>http://itprism.com</packagerurl>
 	<description><![CDATA[
-	<p><a href="http://itprism.com/free-joomla-extensions/ecommerce-gamification/crowdfunding-collective-raising-capital" target="_blank">CrowdFunding</a> is a platform developed on Joomla, which provides functionality for creating and managing websites for collective funding.</p>
+	<p><a href="http://itprism.com/free-joomla-extensions/ecommerce-gamification/crowdfunding-collective-raising-capital" target="_blank">CrowdFunding</a> is a platform powered by Joomla, that provides functionality for creating and managing websites for collective funding.</p>
 	<p>Invest in the extension and help for its improvement. You can <a href="http://itprism.com/sponsorship" title="Sponsoring" target="_blank">sponsor the extension via SMS, PayPal or Bitcoin</a>.</p>
 	<p><a href="http://itprism.com/" target="_blank">Subscribe for the newsletter</a> to receive <strong>gifts</strong>, <strong>discount codes</strong>, information about <strong>updates</strong> and information about <strong>new ITPrism extensions</strong>.</p>
 	<p>Please, <a href="#" target="_blank">vote for the extension</a> on Joomla! Extensions Directory</p>
 	]]></description>
 	<files folder="packages">
 		<file type="component" 	id="com_crowdfunding" >com_crowdfunding.zip</file>
-		<file type="plugin" 	id="crowdfundinginfo"  group="content">plg_content_crowdfundinginfo.zip</file>
 		<file type="plugin" 	id="crowdfundingnav"   group="content">plg_content_crowdfundingnav.zip</file>
 		<file type="plugin" 	id="crowdfundingshare" group="content">plg_content_crowdfundingshare.zip</file>
 		<file type="plugin" 	id="paypal" group="crowdfundingpayment">plg_crowdfundingpayment_paypal.zip</file>

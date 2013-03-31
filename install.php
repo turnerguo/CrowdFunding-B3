@@ -65,7 +65,7 @@ class pkg_crowdFundingInstallerScript {
             }
             
             // Register Component helpers
-            JLoader::register("GamificationInstallHelper", COM_CROWDFUNDING_PATH_COMPONENT_ADMINISTRATOR.DIRECTORY_SEPARATOR."helpers".DIRECTORY_SEPARATOR."installer.php");
+            JLoader::register("CrowdFundingInstallHelper", COM_CROWDFUNDING_PATH_COMPONENT_ADMINISTRATOR.DIRECTORY_SEPARATOR."helpers".DIRECTORY_SEPARATOR."installer.php");
         
             jimport('joomla.filesystem.path');
             jimport('joomla.filesystem.folder');
@@ -81,14 +81,14 @@ class pkg_crowdFundingInstallerScript {
             
             // Create images folder
             if(!is_dir($this->imagesPath)){
-                GamificationInstallHelper::createImagesFolder($this->imagesPath);
+                CrowdFundingInstallHelper::createFolder($this->imagesPath);
             }
             
             // Start table with the information
-            GamificationInstallHelper::startTable();
+            CrowdFundingInstallHelper::startTable();
         
             // Requirements
-            GamificationInstallHelper::addRowHeading(JText::_("COM_CROWDFUNDING_MINIMUM_REQUIREMENTS"));
+            CrowdFundingInstallHelper::addRowHeading(JText::_("COM_CROWDFUNDING_MINIMUM_REQUIREMENTS"));
             
             // Display result about verification for existing folder 
             $title  = JText::_("COM_CROWDFUNDING_IMAGE_FOLDER");
@@ -98,7 +98,7 @@ class pkg_crowdFundingInstallerScript {
             } else {
                 $result = array("type" => "success"  , "text" => JText::_("JYES"));
             }
-            GamificationInstallHelper::addRow($title, $result, $info);
+            CrowdFundingInstallHelper::addRow($title, $result, $info);
             
             // Display result about verification for writeable folder 
             $title  = JText::_("COM_CROWDFUNDING_WRITABLE_FOLDER");
@@ -108,7 +108,7 @@ class pkg_crowdFundingInstallerScript {
             } else {
                 $result = array("type" => "success"  , "text" => JText::_("JYES"));
             }
-            GamificationInstallHelper::addRow($title, $result, $info);
+            CrowdFundingInstallHelper::addRow($title, $result, $info);
             
             // Display result about verification for GD library
             $title  = JText::_("COM_CROWDFUNDING_GD_LIBRARY");
@@ -118,7 +118,7 @@ class pkg_crowdFundingInstallerScript {
             } else {
                 $result = array("type" => "success"  , "text" => JText::_("JON"));
             }
-            GamificationInstallHelper::addRow($title, $result, $info);
+            CrowdFundingInstallHelper::addRow($title, $result, $info);
             
             // Display result about verification for cURL library
             $title  = JText::_("COM_CROWDFUNDING_CURL_LIBRARY");
@@ -129,7 +129,7 @@ class pkg_crowdFundingInstallerScript {
             } else {
                 $result = array("type" => "success"  , "text" => JText::_("JON"));
             }
-            GamificationInstallHelper::addRow($title, $result, $info);
+            CrowdFundingInstallHelper::addRow($title, $result, $info);
             
             // Display result about verification Magic Quotes
             $title  = JText::_("COM_CROWDFUNDING_MAGIC_QUOTES");
@@ -140,7 +140,7 @@ class pkg_crowdFundingInstallerScript {
             } else {
                 $result = array("type" => "success"  , "text" => JText::_("JOFF"));
             }
-            GamificationInstallHelper::addRow($title, $result, $info);
+            CrowdFundingInstallHelper::addRow($title, $result, $info);
             
             // Display result about verification FileInfo
             $title  = JText::_("COM_CROWDFUNDING_FILEINFO");
@@ -151,10 +151,38 @@ class pkg_crowdFundingInstallerScript {
             } else {
                 $result = array("type" => "success", "text" => JText::_("JON"));
             }
-            GamificationInstallHelper::addRow($title, $result, $info);
+            CrowdFundingInstallHelper::addRow($title, $result, $info);
+            
+            // Display result about verification of installed ITPrism Library
+            jimport("itprism.version");
+            $title  = JText::_("COM_CROWDFUNDING_ITPRISM_LIBRARY");
+            $info   = "";
+            if( !class_exists("ITPrismVersion") ) {
+                $info   = JText::_("COM_CROWDFUNDING_ITPRISM_LIBRARY_DOWNLOAD");
+                $result = array("type" => "important", "text" => JText::_("JNO"));
+            } else {
+                $result = array("type" => "success", "text" => JText::_("JYES"));
+            }
+            CrowdFundingInstallHelper::addRow($title, $result, $info);
+            
+            // Installed extensions
+            
+            CrowdFundingInstallHelper::addRowHeading(JText::_("COM_CROWDFUNDING_INSTALLED_EXTENSIONS"));
+            
+            // Content - CrowdFunding - Navigation
+            $result = array("type" => "success"  , "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
+            CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CONTENT_CROWDFUNDING_NAVIGATION"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
+            
+            // Content - CrowdFunding - Share
+            $result = array("type" => "success"  , "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
+            CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CONTENT_CROWDFUNDING_SHARE"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
+            
+            // CrowdFunding Payment - PayPal
+            $result = array("type" => "success"  , "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
+            CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CROWDFUNDINGPAYMENT_PAYPAL"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
             
             // End table
-            GamificationInstallHelper::endTable();
+            CrowdFundingInstallHelper::endTable();
             
         }
         

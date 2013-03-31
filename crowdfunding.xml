@@ -58,8 +58,8 @@
 			<folder>helpers</folder>
 			<folder>libraries</folder>
 			<folder>models</folder>
-			<folder>tables</folder>
 			<folder>sql</folder>
+			<folder>tables</folder>
 			<folder>views</folder>		
 			<filename>controller.php</filename>
 			<filename>index.html</filename>
