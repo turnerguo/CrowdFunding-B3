@@ -53,10 +53,12 @@ class CrowdFundingViewDiscover extends JView {
 		// Get a social platform for integration
 		$this->socialPlatform = $this->params->get("integration_social_platform");
 		
-        $this->prepareDocument();
-                
-        // Include HTML helper
+		$this->version        = new CrowdfundingVersion();
+		
+		// Include HTML helper
         JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
+        
+        $this->prepareDocument();
         
         parent::display($tpl);
     }

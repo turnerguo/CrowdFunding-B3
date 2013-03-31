@@ -2,12 +2,12 @@
 <extension version="2.5" type="plugin" group="crowdfundingpayment" method="upgrade">
     <name>PLG_CROWDFUNDINGPAYMENT_PAYPAL</name>
     <author>Todor Iliev</author>
-    <creationDate>January, 2012</creationDate>
     <copyright>Copyright (C) 2010 Todor Iliev ( ITPrism.com ). All rights reserved.</copyright>
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <authorEmail>todor@itprism.com</authorEmail>
     <authorUrl>http://itprism.com</authorUrl>
     <version>1.0</version>
+    <creationDate>31 March, 2013</creationDate>
     <description>PLG_CROWDFUNDINGPAYMENT_PAYPAL_DESC</description>
     
     <languages  folder="language">

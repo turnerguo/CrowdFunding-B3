@@ -24,7 +24,6 @@ jimport('joomla.plugin.plugin');
  */
 class plgContentCrowdFundingNav extends JPlugin {
     
-    
     public function onContentBeforeDisplay($context, &$article, &$params, $page = 0) {
         
         $app = JFactory::getApplication();
@@ -51,7 +50,7 @@ class plgContentCrowdFundingNav extends JPlugin {
         $this->loadLanguage();
         
         $itemId = $app->input->get->get("id");
-        $stats  = CrowdFundingHelper::getNavStats($itemId);
+        $stats  = $this->getNavStats($itemId);
         
         $screen = $app->input->get->get("screen", "home");
         
@@ -100,4 +99,43 @@ class plgContentCrowdFundingNav extends JPlugin {
         
     }
     
+    private function getNavStats($itemId) {
+        
+        $results = array();
+        
+        $db    = JFactory::getDbo();
+        
+        /// Updates
+        $query = $db->getQuery(true);
+        $query
+            ->select("COUNT(*) AS updates")
+            ->from($db->quoteName("#__crowdf_updates"))
+            ->where("project_id = ". (int)$itemId);
+        
+        $db->setQuery($query);
+        $results["updates"] = $db->loadResult();
+        
+        // Comments
+        $query = $db->getQuery(true);
+        $query
+            ->select("COUNT(*) AS comments")
+            ->from($db->quoteName("#__crowdf_comments"))
+            ->where("project_id = ". (int)$itemId)
+            ->where("published = 1");
+        
+        $db->setQuery($query);
+        $results["comments"] = $db->loadResult();
+        
+         // Funders
+        $query = $db->getQuery(true);
+        $query
+            ->select("COUNT(*) AS funders")
+            ->from($db->quoteName("#__crowdf_transactions"))
+            ->where("project_id  = ". (int)$itemId);
+        
+        $db->setQuery($query);
+        $results["funders"] = $db->loadResult();
+        
+        return $results;
+    }
 }

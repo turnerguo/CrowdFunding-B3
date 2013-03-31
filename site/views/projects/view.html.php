@@ -40,6 +40,8 @@ class CrowdFundingViewProjects extends JView {
             $currencyId        = $this->params->get("project_currency");
     		$this->currency    = CrowdFundingHelper::getCurrency($currencyId);
 		}
+
+		$this->version    = new CrowdfundingVersion();
 		
 		JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
 		

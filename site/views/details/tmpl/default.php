@@ -53,6 +53,10 @@ defined('_JEXEC') or die;?>
         	        echo $this->loadTemplate("comments");
         	        break;
         	        
+    	        case "funders":
+        	        echo $this->loadTemplate("funders");
+        	        break;
+        	        
         	    default:
         	        echo $this->loadTemplate("home");
         	        break;
@@ -68,3 +72,4 @@ defined('_JEXEC') or die;?>
 	</div>
 </div>
 <div class="clearfix">&nbsp;</div>
+<?php echo $this->version->backlink;?>

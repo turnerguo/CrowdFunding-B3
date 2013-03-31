@@ -68,6 +68,8 @@ class CrowdFundingViewProject extends JView {
                 break;
         }
         
+        $this->version    = new CrowdfundingVersion();
+        
         $this->prepareDebugMode();
         $this->prepareDocument();
         

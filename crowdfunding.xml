@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="2.5" method="upgrade">
 	<name>COM_CROWDFUNDING</name>
-	<creationDate>31 March, 2013</creationDate>
 	<author>Todor Iliev</author>
 	<authorEmail>todor@itprism.com</authorEmail>
 	<authorUrl>http://itprism.com</authorUrl>
 	<copyright>Copyright (C) 2010 Todor Iliev ( ITPrism.com )</copyright>
 	<license>http://www.gnu.org/copyleft/gpl.html</license>
 	<version>1.0</version>
+	<creationDate>31 March, 2013</creationDate>
 	<description>COM_CROWDFUNDING_DESCRIPTION</description>
 
 	<install>

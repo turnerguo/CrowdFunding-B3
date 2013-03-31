@@ -102,6 +102,8 @@ class CrowdFundingViewBacking extends JView {
 	        $this->disabledButton = 'disabled="disabled"';
 	    }
 	    
+	    $this->version        = new CrowdfundingVersion();
+	    
         $this->prepareDebugMode();
 		$this->prepareDocument();
 		

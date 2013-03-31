@@ -47,8 +47,8 @@ class CrowdFundingViewDetails extends JView {
             return;
         }
         
-        $this->rewards     = $this->get("Rewards");
-        $this->imageFolder = $this->params->get("images_directory", "images/projects");
+        $this->rewards        = $this->get("Rewards");
+        $this->imageFolder    = $this->params->get("images_directory", "images/projects");
         
         // Include HTML helper
         JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
@@ -77,6 +77,10 @@ class CrowdFundingViewDetails extends JView {
                 $this->prepareCommentsScreen();
                 break;
                 
+            case "funders":
+                $this->prepareFundersScreen();
+                break;
+                
             default: // Home
                 break;
         }
@@ -92,6 +96,8 @@ class CrowdFundingViewDetails extends JView {
 		
 		$results           = $dispatcher->trigger('onContentAfterDisplayMedia', array('com_crowdfunding.details', &$this->item, &$this->params, $offset));
 		$this->item->event->onContentAfterDisplayMedia = trim(implode("\n", $results));
+		
+		$this->version     = new CrowdfundingVersion();
 		
 		$this->prepareDocument();
 		
@@ -140,6 +146,15 @@ class CrowdFundingViewDetails extends JView {
         $this->document->addScript(JURI::root() . 'media/'.$this->option.'/js/helper.js');
         
         $this->document->addScript(JURI::root() . 'media/'.$this->option.'/js/site/comments.js');
+    }
+    
+    protected function prepareFundersScreen() {
+        
+        $model         = JModel::getInstance("Funders", "CrowdFundingModel");
+        $this->items   = $model->getItems();
+        
+        // Get a social platform for integration
+		$this->socialPlatform = $this->params->get("integration_social_platform");
     }
     
     /**

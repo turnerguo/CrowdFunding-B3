@@ -77,3 +77,4 @@ defined('_JEXEC') or die;?>
     </div>
     <div class="clearfix">&nbsp;</div>
 </div>
+<?php echo $this->version->backlink;?>

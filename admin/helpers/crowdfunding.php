@@ -17,7 +17,6 @@
  */
 class CrowdFundingHelper {
 	
-    static $stats      = null;
     static $currency   = null;
     static $currencies = null;
     static $extension  = "com_crowdfunding";
@@ -211,40 +210,5 @@ class CrowdFundingHelper {
         return $endingDate->format("Y-m-d");
     }
 
-    public static function getNavStats($itemId) {
-        
-        if(!is_null(self::$stats)) {
-            return self::$stats;
-        }
-        
-        $results = array();
-        
-        $db    = JFactory::getDbo();
-        
-        /// Updates
-        $query = $db->getQuery(true);
-        $query
-            ->select("COUNT(*) AS updates")
-            ->from($db->quoteName("#__crowdf_updates"))
-            ->where("project_id = ". (int)$itemId);
-        
-        $db->setQuery($query);
-        $results["updates"] = $db->loadResult();
-        
-        // Comments
-        $query = $db->getQuery(true);
-        $query
-            ->select("COUNT(*) AS comments")
-            ->from($db->quoteName("#__crowdf_comments"))
-            ->where("project_id = ". (int)$itemId)
-            ->where("published = 1");
-        
-        $db->setQuery($query);
-        $results["comments"] = $db->loadResult();
-        
-        self::$stats = $results;
-        
-        return self::$stats;
-    }
     
 }

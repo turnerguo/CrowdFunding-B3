@@ -53,5 +53,5 @@ defined('_JEXEC') or die;
         </button>
     </form>
 </div>
-
 <?php echo $this->loadTemplate("tmpl");?>
+<?php echo $this->version->backlink;?>

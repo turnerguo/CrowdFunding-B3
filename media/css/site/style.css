@@ -358,3 +358,8 @@ form.bs-docs-example {
 .cf-transactions th{
 	text-align: center;
 }
+
+.cf-funder-row {
+	padding: 10px;
+	border-bottom: thin dashed gray;
+}
