@@ -110,13 +110,16 @@ class CrowdFundingModelDiscover extends JModelList {
         $query->select(
             $this->getState(
                 'list.select',
-                'a.id, a.title, a.short_desc, a.image, a.user_id, ' .
+                'a.id, a.title, a.short_desc, a.image, a.user_id, a.catid, ' .
                 'a.goal, a.funded, a.funding_start, a.funding_end, a.funding_days, a.funding_type, ' .
-                'b.name AS user_name'
+                $query->concatenate(array("a.id", "a.alias"), "-") . ' AS slug, ' .
+                'b.name AS user_name, ' .
+                $query->concatenate(array("c.id", "c.alias"), "-") . " AS catslug"
             )
         );
         $query->from($db->quoteName('#__crowdf_projects').' AS a');
         $query->innerJoin($db->quoteName('#__users').' AS b ON a.user_id = b.id');
+        $query->innerJoin($db->quoteName('#__categories').' AS c ON a.catid = c.id');
 
         // Filter by state
         $query->where('a.published = 1');

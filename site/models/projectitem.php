@@ -129,6 +129,8 @@ class CrowdFundingModelProjectItem extends JModelItem {
                 }
             }
         }
+        
+        $table->alias = JApplication::stringURLSafe($table->title);
     }
     
     public function validate($item) {

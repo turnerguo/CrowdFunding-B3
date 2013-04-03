@@ -19,7 +19,7 @@ defined('_JEXEC') or die;?>
 	<div class="reward_title center"><?php echo JText::_("COM_CROWDFUNDING_PLEDGE_REWARDS");?></div>
 	<?php foreach($this->rewards as $reward) {?>
     	<div class="reward">
-    		<a href="<?php echo JText::_("index.php?option=com_crowdfunding&view=backing&id=".(int)$this->item->id."&rid=".(int)$reward->id);?>">
+    		<a href="<?php echo JText::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug, $reward->id));?>">
     			<span class="ramount">
     			<?php 
     			$amount = JHtml::_("CrowdFunding.amount", $reward->amount, $this->currency);

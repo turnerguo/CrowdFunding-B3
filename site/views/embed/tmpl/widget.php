@@ -27,7 +27,7 @@ defined('_JEXEC') or die;?>
         <div class="thumbnail">
           <img src="<?php echo $this->item->link_image;?>" alt="<?php echo $this->item->title;?>" width="200" height="200">
           <div class="caption">
-            <h3><a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=details&id=".(int)$this->item->id); ?>" target="_blank"><?php echo $this->item->title;?></a></h3>
+            <h3><a href="<?php echo JRoute::_( CrowdFundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug) ); ?>" target="_blank"><?php echo $this->item->title;?></a></h3>
             <span class="cf-founder">by 
                 <?php if(!empty($socialProfile)){ ?>
                 <a href="<?php echo $socialProfile;?>"  target="_blank"><?php echo $this->item->user_name; ?></a>

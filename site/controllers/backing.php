@@ -119,7 +119,8 @@ class CrowdFundingControllerBacking extends JController {
         $app->setUserState($projectContext.".step1", true);
         
         // Redirect to next page
-        $link = $this->prepareRedirectLink("payment", $itemId, $rewardId);
+        $link = $this->prepareRedirectLink("payment", $item, $rewardId);
+        
 		$this->setRedirect(JRoute::_($link, false));
     }
     
@@ -146,7 +147,7 @@ class CrowdFundingControllerBacking extends JController {
      * Prepare return link
      * @param integer $itemId
      */
-    protected function prepareRedirectLink($direction, $itemId = null, $rewardId = null) {
+    protected function prepareRedirectLink($direction, $item = null, $rewardId = null) {
         
         // Prepare redirection
         switch($direction) {
@@ -156,11 +157,11 @@ class CrowdFundingControllerBacking extends JController {
                 break;
                 
             case "backing":
-                $link = $this->defaultLink."&view=backing&id=".(int)$itemId;
+                $link = $this->defaultLink."&view=backing&id=".(int)$item->id;
                 break;
                 
             case "payment":
-                $link = $this->defaultLink."&view=backing&layout=payment&id=".(int)$itemId."&rid=".$rewardId;
+                $link = CrowdFundingHelperRoute::getBackingRoute($item->slug, $item->catslug, $rewardId)."&layout=payment";
                 break;
                 
             default: // List

@@ -35,14 +35,14 @@ switch($this->layout) {
 
     	<ul class="nav">
             <li <?php echo ($active["rewards"]) ? 'class="active"' : '';?>>
-            	<a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=backing&id=".(int)$this->item->id);?>">
+            	<a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug));?>">
             	(1) <?php echo JText::_("COM_CROWDFUNDING_STEP_PLEDGE_REWARDS");?>
             	</a>
             </li>
             
             <li <?php echo ($active["payment"]) ? 'class="active"' : '';?>>
             	<?php if(!empty($this->flagStep1)){?> 
-                <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=backing&layout=payment&id=".(int)$this->item->id);?>">
+                <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug)."&layout=payment");?>">
                 (2) <?php echo JText::_("COM_CROWDFUNDING_STEP_PAY");?>
                 </a>
                 <?php }else {?>
@@ -52,7 +52,7 @@ switch($this->layout) {
             
             <li <?php echo ($active["share"]) ? 'class="active"' : '';?>>
             	<?php if(!empty($this->flagStep2)){?> 
-                <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=backing&layout=share&id=".(int)$this->item->id);?>">
+                <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug)."&layout=share");?>">
                 (3) <?php echo JText::_("COM_CROWDFUNDING_STEP_SHARE");?>
                 </a>
                 <?php }else {?>

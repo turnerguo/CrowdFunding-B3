@@ -51,8 +51,8 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
         $this->loadLanguage();
         
         $notifyUrl = $this->getNotifyUrl();
-        $returnUrl = $this->getReturnUrl($item->id);
-        $cancelUrl = $this->getCancelUrl($item->id);
+        $returnUrl = $this->getReturnUrl($item->slug, $item->catslug);
+        $cancelUrl = $this->getCancelUrl($item->slug, $item->catslug);
         
         $html  =  "";
         $html .= '<h4>'.JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_TITLE").'</h4>';
@@ -380,24 +380,24 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
         
     }
     
-    private function getReturnUrl($itemId) {
+    private function getReturnUrl($slug, $catslug) {
         
         $returnPage = $this->params->get('paypal_return_url');
         if(!$returnPage) {
             $uri        = JFactory::getURI();
-            $returnPage = $uri->toString(array("scheme", "host")).JRoute::_("index.php?option=com_crowdfunding&view=backing&layout=share&id=".(int)$itemId, false);
+            $returnPage = $uri->toString(array("scheme", "host")).JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($slug, $catslug)."&layout=share", false);
         } 
         
         return $returnPage;
         
     }
     
-    private function getCancelUrl($itemId) {
+    private function getCancelUrl($slug, $catslug) {
         
         $cancelPage = $this->params->get('paypal_cancel_url');
         if(!$cancelPage) {
             $uri        = JFactory::getURI();
-            $cancelPage = $uri->toString(array("scheme", "host")).JRoute::_("index.php?option=com_crowdfunding&view=backing&layout=default&id=".(int)$itemId, false);
+            $cancelPage = $uri->toString(array("scheme", "host")).JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($slug, $catslug)."&layout=default", false);
         } 
         
         return $cancelPage;

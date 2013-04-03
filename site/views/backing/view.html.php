@@ -74,7 +74,7 @@ class CrowdFundingViewBacking extends JView {
 		
         // Set a link to project page
         $host  = JFactory::getURI()->toString(array("scheme", "host"));
-        $this->item->link        = $host.JRoute::_("index.php?option=com_crowdfunding&view=details&id=".(int)$this->item->id, false);
+        $this->item->link        = $host.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug), false);
         
         // Set a link to image
         $this->item->link_image  = $host."/".$this->imageFolder."/".$this->item->image;
@@ -228,6 +228,8 @@ class CrowdFundingViewBacking extends JView {
         
         $item->id           = $this->item->id;
         $item->title        = $this->item->title;
+        $item->slug         = $this->item->slug;
+        $item->catslug      = $this->item->catslug;
         $item->rewardId     = $this->rewardId;
         $item->amount       = $this->amount;
         $item->currencyCode = JArrayHelper::getValue($this->currency, "abbr");

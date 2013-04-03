@@ -83,13 +83,17 @@ class CrowdFundingModelEmbed extends JModelItem {
             
             $query
                 ->select(
-                	"a.id, a.title, a.short_desc, a.image, 
-                	a.funded, a.goal, a.pitch_video, a.pitch_image, 
-                	a.funding_start, a.funding_end, a.funding_days,  
-                	a.user_id, 
-                	b.name AS user_name")
+                	"a.id, a.title, a.short_desc, a.image,  " .
+                	"a.funded, a.goal, a.pitch_video, a.pitch_image,  " .
+                	"a.funding_start, a.funding_end, a.funding_days,  " . 
+                	"a.user_id, a.catid, " .
+                	$query->concatenate(array("a.id", "a.alias"), "-") . ' AS slug, ' .
+                	"b.name AS user_name, " .
+                	$query->concatenate(array("c.id", "c.alias"), "-") . ' AS catslug '
+            	)
                 ->from("#__crowdf_projects AS a")
                 ->innerJoin('#__users AS b ON a.user_id = b.id')
+                ->innerJoin('#__categories AS c ON a.catid = c.id')
                 ->where("a.id = " .(int)$id)
                 ->where("a.published = 1")
                 ->where("a.approved  = 1");

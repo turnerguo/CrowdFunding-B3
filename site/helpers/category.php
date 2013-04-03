@@ -11,12 +11,15 @@
  * other free or open source software licenses.
  */
 
-// no direct access
 defined('_JEXEC') or die;
-?>
-<tr>
-	<td colspan="14">
-	<?php echo $this->pagination->getListFooter(); ?>
-	</td>
-</tr>
-	  
+jimport('joomla.application.categories');
+
+class CrowdFundingCategories extends JCategories {
+    
+	public function __construct($options = array()) {
+		$options['table']     = '#__crowdf_projects';
+		$options['extension'] = 'com_crowdfunding';
+		parent::__construct($options);
+	}
+	
+}

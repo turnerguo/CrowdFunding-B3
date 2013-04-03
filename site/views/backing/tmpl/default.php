@@ -28,7 +28,7 @@ defined('_JEXEC') or die;?>
 	<div class="row-fluid">
 		<div class="span8">
 			
-			<form method="post" action="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=backing.step1")?>" class="bs-docs-example cfbf" id="form-pledge" autocomplete="off">
+			<form method="post" action="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug))."?task=backing.step1"?>" class="bs-docs-example cfbf" id="form-pledge" autocomplete="off">
 				<fieldset>
     				<legend><?php echo JText::_("COM_CROWDFUNDING_ENTER_YOUR_INVESTMENT_AMOUNT");?></legend>
     				<?php echo JHtml::_("crowdfunding.inputAmount", $this->rewardAmount, $this->currency, array("name"=>"amount", "id"=>"current-amount")); ?>

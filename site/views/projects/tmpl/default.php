@@ -62,7 +62,7 @@ defined('_JEXEC') or die;?>
     		<?php if(!$item->approved) {?>
     		<?php echo $this->escape($item->title);?>
     		<?php } else { ?>
-    		<a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=details&id=".$item->id);?>">
+    		<a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($item->slug, $item->catslug));?>">
     		<?php echo $this->escape($item->title);?>
     		</a>
     		<?php }?>
@@ -78,7 +78,7 @@ defined('_JEXEC') or die;?>
     		<?php echo JHtml::_("crowdfunding.approved", $item->approved); ?>
     		</td>
     		<td>
-    			<a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=project&id=".$item->id);?>" class="btn btn-primary btn-mini"><i class="icon-pencil icon-white"></i> <?php echo JText::_("COM_CROWDFUNDING_EDIT");?></a>
+    			<a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getFormRoute($item->id)) ;?>" class="btn btn-primary btn-mini"><i class="icon-pencil icon-white"></i> <?php echo JText::_("COM_CROWDFUNDING_EDIT");?></a>
     		</td>
     	</tr>
     	<?php }?>

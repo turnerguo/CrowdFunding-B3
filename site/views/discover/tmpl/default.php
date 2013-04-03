@@ -33,7 +33,7 @@ defined('_JEXEC') or die;?>
             <div class="thumbnail">
               <img src="<?php echo $this->imageFolder."/".$items[$i]->image;?>" alt="<?php echo $items[$i]->title;?>" width="200" height="200">
               <div class="caption">
-                <h3><a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=details&id=".(int)$items[$i]->id); ?>"><?php echo $items[$i]->title;?></a></h3>
+                <h3><a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($items[$i]->slug, $items[$i]->catslug)); ?>"><?php echo $items[$i]->title;?></a></h3>
                 <span class="cf-founder">by 
                     <?php if(!empty($socialProfile)){ ?>
                     <a href="<?php echo $socialProfile;?>"><?php echo $items[$i]->user_name; ?></a>

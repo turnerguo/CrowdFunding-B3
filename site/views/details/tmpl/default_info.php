@@ -53,7 +53,7 @@ $fundedAmount = JHtml::_("CrowdFunding.amount", $this->item->goal, $this->curren
 	</div>
 	<?php } else {?>
 	<div class="cfinfo-funding-action">
-		<a class="btn btn-large btn-block" href="<?php echo JText::_("index.php?option=com_crowdfunding&view=backing&id=".(int)$this->item->id);?>"><?php echo JText::_("COM_CROWDFUNDING_INVEST_NOW"); ?></a>
+		<a class="btn btn-large btn-block" href="<?php echo JText::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug));?>"><?php echo JText::_("COM_CROWDFUNDING_INVEST_NOW"); ?></a>
 	</div>
 	<?php }?>
     

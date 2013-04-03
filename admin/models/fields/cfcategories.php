@@ -24,14 +24,14 @@ JFormHelper::loadFieldClass('list');
  * @subpackage   CrowdFunding
  * @since       1.6
  */
-class JFormFieldCurrencies extends JFormFieldList {
+class JFormFieldCfCategories extends JFormFieldList {
     /**
      * The form field type.
      *
      * @var     string
      * @since   1.6
      */
-    protected $type = 'currencies';
+    protected $type = 'cfcategories';
     
     /**
      * Method to get the field options.
@@ -48,13 +48,15 @@ class JFormFieldCurrencies extends JFormFieldList {
         $query  = $db->getQuery(true);
         
         $query
-            ->select('a.id AS value, '. $query->concatenate( array("a.abbr", "a.title"), " - " ) . ' AS text')
-            ->from('#__crowdf_currencies AS a')
-            ->order("a.abbr ASC");
+            ->select('a.id AS value, a.title AS text')
+            ->from('#__categories AS a')
+            ->order("a.title ASC");
         
         // Get the options.
         $db->setQuery($query);
         $options = $db->loadObjectList();
+        
+        array_unshift($options, JHTML::_('select.option', '0', '- '.JText::_('COM_CROWDFUNDING_SELECT_CATEGORY').' -', 'value', 'text'));
         
         // Merge any additional options in the XML definition.
         $options = array_merge(parent::getOptions(), $options);

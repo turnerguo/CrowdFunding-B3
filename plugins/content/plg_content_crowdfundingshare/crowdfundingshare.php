@@ -175,12 +175,12 @@ class plgContentCrowdFundingShare extends JPlugin {
         // Get extra buttons
         $html .= $this->getExtraButtons($this->params, $url, $title);
         
-        $html .= $this->getEmbeded($article->id, $this->params, $url);
+        $html .= $this->getEmbeded($article->slug, $article->catslug, $this->params, $url);
     
         return $html;
     }
     
-    private function getEmbeded($projectId, $params, $url) {
+    private function getEmbeded($slug, $catslug, $params, $url) {
         
         $html = "";
         
@@ -194,11 +194,11 @@ class plgContentCrowdFundingShare extends JPlugin {
             $html  .= '<input type="text" name="share_url" value="'.$url.'" class="crowdf-embeded-input" />';
         }
         if($params->get("display_embed_button", 1)) {
-            $link   = JRoute::_("index.php?option=com_crowdfunding&view=embed&id=" .(int)$projectId, false);
+            $link   = JRoute::_(CrowdFundingHelperRoute::getEmbedRoute($slug, $catslug), false);
             $html  .= '<a href="'.$link.'" class="btn"><i class="icon-th-large"></i> '.JText::_("PLG_CONTENT_CROWDFUNDINGSHARE_EMBED").'</a>';
         }
         if($params->get("display_embed_email", 1)) {
-            $link   = JRoute::_("index.php?option=com_crowdfunding&view=embed&layout=email&id=" .(int)$projectId, false);
+            $link   = JRoute::_(CrowdFundingHelperRoute::getEmbedRoute($slug, $catslug)."&layout=email", false);
             $html  .= '<a class="btn" href="'.$link.'"><i class="icon-envelope"></i> '.JText::_("PLG_CONTENT_CROWDFUNDINGSHARE_EMAIL").'</a>';
         }
         $html  .= '</div>';

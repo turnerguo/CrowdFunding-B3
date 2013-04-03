@@ -59,13 +59,13 @@ class CrowdFundingViewEmbed extends JView {
 		
         // Set a link to project page
         $host  = JFactory::getURI()->toString(array("scheme", "host"));
-        $this->item->link        = $host.JRoute::_("index.php?option=com_crowdfunding&view=details&id=".(int)$this->item->id, false);
+        $this->item->link        = $host.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug), false);
         
         // Set a link to image
         $this->item->link_image  = $host."/".$this->imageFolder."/".$this->item->image;
         
         // Generate embed link
-        $this->embedLink = $host.JRoute::_("index.php?option=com_crowdfunding&view=embed&layout=widget&tmpl=component&id=".(int)$this->item->id, false);
+        $this->embedLink = $host.JRoute::_(CrowdFundingHelperRoute::getEmbedRoute($this->item->slug, $this->item->catslug)."&layout=widget&tmpl=component", false);
 		
 		$this->prepareDocument();
 		

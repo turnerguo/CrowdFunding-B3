@@ -61,7 +61,7 @@ class plgContentCrowdFundingNav extends JPlugin {
             if(strcmp($screen, "home") == 0) {
                 $class = 'class="active"';
             }
-            $html .= '<li '.$class.'><a href="'.JRoute::_("index.php?option=com_crowdfunding&view=details&id=".(int)$article->id).'">'.JText::_("PLG_CONTENT_CROWDFUNDINGNAV_HOME")."</a></li>";
+            $html .= '<li '.$class.'><a href="'.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($article->slug, $article->catslug)).'">'.JText::_("PLG_CONTENT_CROWDFUNDINGNAV_HOME")."</a></li>";
         }
         
         if($this->params->get("display_updates")) {
@@ -71,7 +71,7 @@ class plgContentCrowdFundingNav extends JPlugin {
             }
             
             $stat  = '<span class="label">'.JArrayHelper::getValue($stats, "updates", 0).'</span>';
-            $html .= '<li '.$class.'><a href="'.JRoute::_("index.php?option=com_crowdfunding&view=details&screen=updates&id=".(int)$article->id).'">'.JText::_("PLG_CONTENT_CROWDFUNDINGNAV_UPDATES") .' '. $stat .'</a></li>';
+            $html .= '<li '.$class.'><a href="'.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($article->slug, $article->catslug)."&screen=updates").'">'.JText::_("PLG_CONTENT_CROWDFUNDINGNAV_UPDATES") .' '. $stat .'</a></li>';
         }
         
         if($this->params->get("display_comments")) {
@@ -81,7 +81,7 @@ class plgContentCrowdFundingNav extends JPlugin {
             }
             
             $stat  = '<span class="label">'.JArrayHelper::getValue($stats, "comments", 0).'</span>';
-            $html .= '<li '.$class.'><a href="'.JRoute::_("index.php?option=com_crowdfunding&view=details&screen=comments&id=".(int)$article->id).'">'.JText::_("PLG_CONTENT_CROWDFUNDINGNAV_COMMENTS") .' '. $stat .'</a></li>';
+            $html .= '<li '.$class.'><a href="'.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($article->slug, $article->catslug)."&screen=comments").'">'.JText::_("PLG_CONTENT_CROWDFUNDINGNAV_COMMENTS") .' '. $stat .'</a></li>';
         }
         
         if($this->params->get("display_funders")) {
@@ -90,7 +90,7 @@ class plgContentCrowdFundingNav extends JPlugin {
                 $class = 'class="active"';
             }
             $stat  = '<span class="label">'.JArrayHelper::getValue($stats, "funders", 0).'</span>';
-            $html .= '<li '.$class.'><a href="'.JRoute::_("index.php?option=com_crowdfunding&view=details&screen=funders&id=".(int)$article->id).'">'.JText::_("PLG_CONTENT_CROWDFUNDINGNAV_FUNDERS") .' '. $stat .'</a></li>';
+            $html .= '<li '.$class.'><a href="'.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($article->slug, $article->catslug)."&screen=funders").'">'.JText::_("PLG_CONTENT_CROWDFUNDINGNAV_FUNDERS") .' '. $stat .'</a></li>';
         }
         
         $html .= '</ul>';
