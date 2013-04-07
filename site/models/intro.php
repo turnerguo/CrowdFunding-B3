@@ -61,7 +61,17 @@ class CrowdFundingModelIntro extends JModelItem {
      * @return	mixed	Object on success, false on failure.
      */
     public function getItem($id = null) {
-        return $this->item;
+        
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        
+        $query
+            ->select("a.title, a.introtext, a.fulltext")
+            ->from( $db->quoteName("#__content") . " AS a" )
+            ->where("a.id = ". (int)$id);
+            
+        $db->setQuery($query);
+        return $db->loadObject();
     }
 
 }

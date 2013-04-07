@@ -52,6 +52,8 @@ class CrowdFundingModelDiscover extends JModelList {
      */
     protected function populateState($ordering = 'ordering', $direction = 'ASC'){
         
+        parent::populateState("a.ordering", "ASC");
+        
         $app = JFactory::getApplication();
         /** @var $app JSite **/
         
@@ -60,15 +62,15 @@ class CrowdFundingModelDiscover extends JModelList {
         $this->setState('params', $params);
         
         // Set limit
+        $value      = $app->input->get("id", 0, "uint");
+        $this->setState($this->context.'.category_id', $value);
+        
+        // Set limit
         $value      = $params->get("projects_limit", $app->getCfg('list_limit', 20));
         $this->setState('list.limit', $value);
         
         $value      = $app->input->getInt('limitstart', 0);
         $this->setState('list.start', $value);
-        
-        $this->setState('list.ordering',  "ordering");
-        $this->setState('list.direction', "ASC");
-        
         
     }
     
@@ -121,6 +123,12 @@ class CrowdFundingModelDiscover extends JModelList {
         $query->innerJoin($db->quoteName('#__users').' AS b ON a.user_id = b.id');
         $query->innerJoin($db->quoteName('#__categories').' AS c ON a.catid = c.id');
 
+        // Filter by category ID
+        $categoryId = $this->getState($this->context.".category_id", 0);
+        if(!empty($categoryId)) {
+            $query->where('a.catid = '.(int)$categoryId);
+        }
+        
         // Filter by state
         $query->where('a.published = 1');
         $query->where('a.approved = 1');

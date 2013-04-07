@@ -13,7 +13,7 @@
 
 // no direct access
 defined('_JEXEC') or die;
-$code = '<iframe src="'.$this->embedLink.'" width="280px" height="440px" frameborder="0" scrolling="no"></iframe>';
+$code = '<iframe src="'.$this->embedLink.'" width="280px" height="560px" frameborder="0" scrolling="no"></iframe>';
 ?>
 <div class="row-fluid<?php echo $this->params->get("pageclass_sfx"); ?>">
 	
@@ -31,3 +31,4 @@ $code = '<iframe src="'.$this->embedLink.'" width="280px" height="440px" framebo
 	
 </div>
 <div class="clearfix">&nbsp;</div>
+<?php echo $this->version->backlink;?>

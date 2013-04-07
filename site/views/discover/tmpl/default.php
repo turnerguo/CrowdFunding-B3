@@ -31,7 +31,9 @@ defined('_JEXEC') or die;?>
     	 ?>
           <li class="span4">
             <div class="thumbnail">
-              <img src="<?php echo $this->imageFolder."/".$items[$i]->image;?>" alt="<?php echo $items[$i]->title;?>" width="200" height="200">
+              <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($items[$i]->slug, $items[$i]->catslug)); ?>">
+              	<img src="<?php echo $this->imageFolder."/".$items[$i]->image;?>" alt="<?php echo $items[$i]->title;?>" width="200" height="200">
+          	  </a>
               <div class="caption">
                 <h3><a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($items[$i]->slug, $items[$i]->catslug)); ?>"><?php echo $items[$i]->title;?></a></h3>
                 <span class="cf-founder">by 
@@ -77,4 +79,5 @@ defined('_JEXEC') or die;?>
     </div>
     <div class="clearfix">&nbsp;</div>
 </div>
+<div class="clearfix">&nbsp;</div>
 <?php echo $this->version->backlink;?>

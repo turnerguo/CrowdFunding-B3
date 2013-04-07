@@ -191,6 +191,17 @@ function CrowdFundingParseRoute($segments){
         return $vars;
     } 
     
+    // Category 
+	if($count == 1) { 
+	    
+	    $itemId         = (int)$segments[0];
+
+	    $vars['view']   = 'discover';
+		$vars['id']     = $itemId;
+		
+		return $vars;
+	}
+	
 	if($count == 3) { 
 	    
 	    $segment2  = $segments[$count - 1];

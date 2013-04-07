@@ -113,7 +113,10 @@ class CrowdFundingViewProject extends JView {
         $this->state       = $model->getState();
         $this->params      = $this->state->get("params");
         
-        $this->pathwayName = JText::_("COM_CROWDFUNDING_RAISE_CAPITAL_BREADCRUMB");
+        $articleId         = $this->params->get("project_intro_article", 0);
+        $this->article     = $model->getItem($articleId);
+        
+        $this->pathwayName = JText::_("COM_CROWDFUNDING_START_PROJECT_BREADCRUMB");
         
     }
     
@@ -258,18 +261,10 @@ class CrowdFundingViewProject extends JView {
         $this->document->setTitle($title);
         
         // Meta Description
-        if(empty($category->metadesc)) { // Uncategorised
-            $this->document->setDescription($this->params->get('menu-meta_description'));
-        } else {
-            $this->document->setDescription($category->metadesc);
-        }
+        $this->document->setDescription($this->params->get('menu-meta_description'));
         
         // Meta keywords
-        if(empty($category->metakey)) { // Uncategorised
-            $this->document->setDescription($this->params->get('menu-meta_keywords'));
-        } else {
-            $this->document->setMetadata('keywords', $category->metakey);
-        }
+        $this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
         
         // Add current layout into breadcrumbs 
         $pathway    = $app->getPathway();

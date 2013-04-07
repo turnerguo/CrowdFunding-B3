@@ -21,6 +21,7 @@
 	<files folder="packages">
 		<file type="component" 	id="com_crowdfunding" >com_crowdfunding.zip</file>
 		<file type="library"    id="lib_crowdfunding" >lib_crowdfunding.zip</file>
+		<file type="library"    id="lib_itprism" >lib_itprism.zip</file>
 		<file type="plugin" 	id="crowdfundingnav"   group="content">plg_content_crowdfundingnav.zip</file>
 		<file type="plugin" 	id="crowdfundingshare" group="content">plg_content_crowdfundingshare.zip</file>
 		<file type="plugin" 	id="paypal" group="crowdfundingpayment">plg_crowdfundingpayment_paypal.zip</file>

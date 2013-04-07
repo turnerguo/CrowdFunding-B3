@@ -174,11 +174,8 @@ class CrowdFundingViewDetails extends JView {
         // Prepare page heading
         $this->prepearePageTitle();
         
-        if ($this->params->get('menu-meta_description')) {
-            $this->document->setDescription($this->params->get('menu-meta_description'));
-        } else {
-            $this->document->setDescription($this->item->short_desc);
-        }
+        // Meta description
+        $this->document->setDescription($this->item->short_desc);
         
         if ($this->params->get('menu-meta_keywords')) {
             $this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));

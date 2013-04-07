@@ -14,4 +14,12 @@
 // no direct access
 defined('_JEXEC') or die;
 ?>
-<h2><?php echo JText::_("COM_CROWDFUNDING_DEFAULT_TITLE_HOW_TO_RISE");?></h2>
+<?php if(!empty($this->article)) {?>
+
+<?php if($this->params->get("project_intro_article_title", 0)){?>
+<h2><?php echo $this->article->title;?></h2>
+<?php }?>
+
+<?php echo $this->article->introtext;?>
+<?php echo $this->article->fulltext;?>
+<?php }?>
