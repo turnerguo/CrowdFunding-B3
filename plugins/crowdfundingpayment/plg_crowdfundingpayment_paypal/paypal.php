@@ -385,7 +385,7 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
         $returnPage = $this->params->get('paypal_return_url');
         if(!$returnPage) {
             $uri        = JFactory::getURI();
-            $returnPage = $uri->toString(array("scheme", "host")).JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($slug, $catslug)."&layout=share", false);
+            $returnPage = $uri->toString(array("scheme", "host")).JRoute::_(CrowdFundingHelperRoute::getBackingRoute($slug, $catslug)."&layout=share", false);
         } 
         
         return $returnPage;
@@ -397,7 +397,7 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
         $cancelPage = $this->params->get('paypal_cancel_url');
         if(!$cancelPage) {
             $uri        = JFactory::getURI();
-            $cancelPage = $uri->toString(array("scheme", "host")).JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($slug, $catslug)."&layout=default", false);
+            $cancelPage = $uri->toString(array("scheme", "host")).JRoute::_(CrowdFundingHelperRoute::getBackingRoute($slug, $catslug)."&layout=default", false);
         } 
         
         return $cancelPage;
