@@ -1,7 +1,7 @@
 <?php
 /**
-* @package      ITPrism Components
-* @subpackage   CrowdFunding
+* @package      CrowdFunding
+* @subpackage   Libraries
 * @author       Todor Iliev
 * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
 * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -16,13 +16,18 @@ defined('JPATH_PLATFORM') or die;
 JLoader::register("CrowdFundingTableReward", JPATH_ADMINISTRATOR .DIRECTORY_SEPARATOR."components".DIRECTORY_SEPARATOR."com_crowdfunding".DIRECTORY_SEPARATOR."tables".DIRECTORY_SEPARATOR."reward.php");
 
 /**
- * This class provieds functionality that can be used by developers 
- * who wants to develop extensions based on CrowdFunding
+ * This class provieds functionality that manage rewards.
  */
 class CrowdFundingReward extends CrowdFundingTableReward {
     
-    public function __construct( $db ) {
+    public function __construct($id = 0) {
+        
+        $db = JFactory::getDbo();
         parent::__construct( $db );
+        
+        if(!empty($id)) {
+            $this->load($id);
+        }
     }
 
     /**

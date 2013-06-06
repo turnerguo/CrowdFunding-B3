@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -39,7 +39,7 @@ abstract class CrowdFundingHelperRoute {
 	 * @param	int		$id		The id of the item.
 	 * @param	int		$catid	The id of the category.
 	 */
-	public static function getDetailsRoute($id, $catid) {
+	public static function getDetailsRoute($id, $catid, $screen = null) {
 	    
 	    /**
 	     * 
@@ -53,8 +53,8 @@ abstract class CrowdFundingHelperRoute {
 	     * The view "categories" won't contain category ID so it has to contain 0 for ID key. 
 	     */
 		$needles = array(
-//			'category'   => array((int) $catid),
-		    'discover' => array(0)
+			'discover' => array((int) $catid),
+// 		    'discover' => array(0)
 		);
 
 		//Create the link
@@ -70,6 +70,11 @@ abstract class CrowdFundingHelperRoute {
 			}
 		}
 
+		// Set a screen page
+		if(!empty($screen)) {
+		    $link .= '&screen='.$screen;
+		}
+		
 		// Looking for menu item (Itemid)
 		if ($item = self::_findItem($needles)) {
 			$link .= '&Itemid='.$item;
@@ -85,7 +90,7 @@ abstract class CrowdFundingHelperRoute {
 	 * @param	int		$catid	The id of the category.
 	 * @param	string	$return	The return page variable.
 	 */
-	public static function getBackingRoute($id, $catid, $rewardId = null) {
+	public static function getBackingRoute($id, $catid, $layout = "default", $rewardId = null) {
 	    
 		/**
 	     * 
@@ -99,8 +104,7 @@ abstract class CrowdFundingHelperRoute {
 	     * The view "categories" won't contain category ID so it has to contain 0 for ID key. 
 	     */
 		$needles = array(
-//			'category'   => array((int) $catid),
-		    'discover' => array(0)
+			'category'   => array((int) $catid)
 		);
 
 		//Create the link
@@ -111,12 +115,16 @@ abstract class CrowdFundingHelperRoute {
 
 			if($category) {
 				$needles['category']   = array_reverse($category->getPath());
-//				$needles['categories'] = $needles['category'];
+				$needles['categories'] = $needles['category'];
 				$link .= '&catid='.$catid;
 			}
 		}
+		
+		if (!is_null($layout)) {
+		    $link .= '&layout='.$layout;
+		}
 
-		if ($catid > 1) {
+		if (!is_null($rewardId) AND $rewardId > 1) {
 		    $link .= '&rid='.(int)$rewardId;
 		}
 		
@@ -201,8 +209,8 @@ abstract class CrowdFundingHelperRoute {
 	}
 
 	/**
-	 * 
 	 * Routing a link for category or categories view
+	 * 
 	 * @param integer $catid
 	 */
 	public static function getCategoryRoute($catid) {
@@ -359,11 +367,11 @@ abstract class CrowdFundingHelperRoute {
         $query  = $db->getQuery(true);
         
         $query
-            ->select("catid")
-            ->from("#__crowdf_projects")
-            ->where("id = " . $db->quote($id));
+            ->select("a.alias, a.catid")
+            ->from($query->quoteName("#__crowdf_projects") . " AS a")
+            ->where("a.id = " . (int)$id);
 
-        $db->setQuery($query, 0, 1);
+        $db->setQuery($query);
         $result = $db->loadObject();
         
         if(!$result) {

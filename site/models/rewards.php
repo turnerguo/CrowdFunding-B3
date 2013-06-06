@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -160,48 +160,6 @@ class CrowdFundingModelRewards extends JModel {
         
     }
     
-	/**
-	 * Prepare and sanitise the table prior to saving.
-	 *
-	 * @since	1.6
-	 */
-	protected function prepareTable(&$table, $data) {
-	    
-	    $userId = JFactory::getUser()->id;
-	    
-		if (empty($table->id) OR ($userId != $table->user_id)) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"), ITPrismErrors::CODE_ERROR);
-		}
-	    
-		$pitchVideo     = JArrayHelper::getValue($data, "pitch_video");
-        
-		$table->set("pitch_video",   $pitchVideo);
-		
-	    // Save image
-        $image = $this->saveImage();
-        
-        if(!empty($image)){
-            
-            // Delete old image if I upload a new one
-            if(!empty($table->pitch_image)){
-                jimport('joomla.filesystem.file');
-                
-                $params       = JComponentHelper::getParams($this->option);
-		        $imagesFolder = $params->get("images_directory", "images/projects");
-		    
-                // Remove an image from the filesystem
-                $pitchImage  = $imagesFolder .DIRECTORY_SEPARATOR. $table->pitch_image;
-                
-                if(is_file($pitchImage)) {
-                    JFile::delete($pitchImage);
-                }
-            }
-            $table->set("pitch_image", $image);
-            
-        }
-        
-	}
-	
     public function remove($pks, $userId) {
         
         $db    = JFactory::getDbo();

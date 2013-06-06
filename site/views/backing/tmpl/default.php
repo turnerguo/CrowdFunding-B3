@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -28,7 +28,7 @@ defined('_JEXEC') or die;?>
 	<div class="row-fluid">
 		<div class="span8">
 			
-			<form method="post" action="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug))."?task=backing.step1"?>" class="bs-docs-example cfbf" id="form-pledge" autocomplete="off">
+			<form method="post" action="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug)."&task=backing.step1");?>" class="bs-docs-example cfbf" id="form-pledge" autocomplete="off">
 				<fieldset>
     				<legend><?php echo JText::_("COM_CROWDFUNDING_ENTER_YOUR_INVESTMENT_AMOUNT");?></legend>
     				<?php echo JHtml::_("crowdfunding.inputAmount", $this->rewardAmount, $this->currency, array("name"=>"amount", "id"=>"current-amount")); ?>
@@ -67,7 +67,7 @@ defined('_JEXEC') or die;?>
             			<span class="ramount">
             			<input type="radio" name="reward" value="<?php echo $reward->amount;?>" data-id="<?php echo $reward->id;?>" class="reward-amount-radio" <?php echo ($this->rewardId != $reward->id) ? "" : 'checked="checked"'?>/>
             			<?php 
-            			$amount = JHtml::_("CrowdFunding.amount", $reward->amount, $this->currency);
+            			$amount = $this->currency->getAmountString($reward->amount); 
             			echo JText::sprintf("COM_CROWDFUNDING_INVEST_MORE", $amount ); ?>
             			</span>
             			<span class="rtitle"><?php echo $this->escape($reward->title); ?></span>

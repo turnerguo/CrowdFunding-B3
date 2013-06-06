@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -54,7 +54,8 @@ class CrowdFundingModelUpdates extends JModelList {
         $app       = JFactory::getApplication();
         /** @var $app JSite **/
 
-        $value = $app->input->get->get("id");
+        // Get project ID
+        $value = $app->input->get->get("id", 0, "uint");
         $this->setState($this->getName().'.id', $value);
         
         // Load the component parameters.
@@ -134,11 +135,13 @@ class CrowdFundingModelUpdates extends JModelList {
 	    $source = "update";
 	    
 	    $options = array(
-	    	'control' => 'jform', 
+	    	'control'   => 'jform', 
 	    	'load_data' => false
 	    );
 	    
-	    $data = array("project_id" => $this->state->get($this->getName().".id"));
+	    $data = array(
+            "project_id" => $this->getState($this->getName().".id")
+        );
 	    
         // Get the form.
 		JForm::addFormPath(JPATH_COMPONENT . '/models/forms');

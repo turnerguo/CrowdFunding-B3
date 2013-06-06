@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -14,7 +14,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport( 'joomla.application.component.controllerform' );
+jimport('joomla.application.component.controller');
 
 /**
  * CrowdFunding backing controller
@@ -23,8 +23,6 @@ jimport( 'joomla.application.component.controllerform' );
  * @subpackage  CrowdFunding
   */
 class CrowdFundingControllerBacking extends JController {
-    
-    protected $defaultLink = "index.php?option=com_crowdfunding";
     
 	/**
      * Method to get a model object, loading it if required.
@@ -49,9 +47,7 @@ class CrowdFundingControllerBacking extends JController {
         $userId = JFactory::getUser()->id;
         if(!$userId) {
             $this->setMessage(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), "notice");
-            
-            $link = $this->prepareRedirectLink("login_form");
-            $this->setRedirect(JRoute::_($link, false));
+            $this->setRedirect(JRoute::_("index.php?option=com_users&view=login", false));
             return;
         }
         
@@ -65,25 +61,34 @@ class CrowdFundingControllerBacking extends JController {
         $model               = $this->getModel();
         /** @var $model CrowdFundingModelBacking **/
         
-        // Get params
-        $params        = $app->getParams("com_crowdfunding");
+        // Get the item
+        $item   = $model->getItem($itemId);
         
-        // Check for maintenance (debug) state
-        if( $this->inDebugMode($params, $itemId, $rewardId) ) {
+        // Check for valid project
+        if(empty($item->id))  {
+            $this->setMessage(JText::_('COM_CROWDFUNDING_ERROR_INVALID_PROJECT'), "notice");
+            $this->setRedirect(JRoute::_("index.php?option=com_crowdfunding&view=discover", false));
             return;
         }
         
-        // Set the flag for step one.
+        // Get params
+        $params        = JComponentHelper::getParams("com_crowdfunding");
+        
+        // Check for maintenance (debug) state
+        if($this->isDebugMode($params, $item, $rewardId)) {
+            return;
+        }
+        
+        // Get context string
 		$modelContext        = $model->getContext();
 		$projectContext      = $modelContext.".project".$itemId;
 		
-		// Check terms and use
+		// Check for agreed conditions from the user
         if($params->get("backing_terms", 0)) {
-            
-            $terms           = $app->input->post->get("terms", 0);
+            $terms = $app->input->post->get("terms", 0);
             if(!$terms) {
                 $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_TERMS_NOT_ACCEPTED"), "notice");
-                $link = $this->prepareRedirectLink("backing", $itemId);
+                $link = CrowdFundingHelperRoute::getBackingRoute($item->slug, $item->catslug);
                 $app->redirect(JRoute::_($link, false));
                 return; 
             }
@@ -93,19 +98,9 @@ class CrowdFundingControllerBacking extends JController {
         $amount       = $app->input->post->get("amount", 0, "float");
         if(!$amount) {
             $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_INVALID_AMOUNT"), "notice");
-            $link = $this->prepareRedirectLink("backing", $itemId);
+            $link = CrowdFundingHelperRoute::getBackingRoute($item->slug, $item->catslug);
             $app->redirect(JRoute::_($link, false));
             return; 
-        }
-        
-        // Check for valid project
-        $item   = $model->getItem($itemId);
-        if( empty($item->id))  {
-            $this->setMessage(JText::_('COM_CROWDFUNDING_ERROR_INVALID_PROJECT'), "notice");
-            
-            $link = $this->prepareRedirectLink("discover");
-            $this->setRedirect(JRoute::_($link, false));
-            return;
         }
         
         // Initialize step one
@@ -119,12 +114,11 @@ class CrowdFundingControllerBacking extends JController {
         $app->setUserState($projectContext.".step1", true);
         
         // Redirect to next page
-        $link = $this->prepareRedirectLink("payment", $item, $rewardId);
-        
+        $link = CrowdFundingHelperRoute::getBackingRoute($item->slug, $item->catslug, "payment");
 		$this->setRedirect(JRoute::_($link, false));
     }
     
-    protected function inDebugMode($params, $itemId, $rewardId) {
+    protected function isDebugMode($params, $item, $rewardId) {
         
         $this->debugMode = $params->get("debug_payment_disabled", 0);
         if(!$this->debugMode) {
@@ -135,41 +129,16 @@ class CrowdFundingControllerBacking extends JController {
         if(!$msg) {
             $msg = JText::_("COM_CROWDFUNDING_DEBUG_MODE_DEFAULT_MSG");
         }
-        
-        $link = $this->prepareRedirectLink("backing", $itemId, $rewardId);
-	    $this->setRedirect(JRoute::_($link, false));
 		    
+        // Set message
+        JFactory::getApplication()->enqueueMessage($msg, "notice");
+        
+        // Redirect
+        $link = CrowdFundingHelperRoute::getBackingRoute($item->slug, $item->catslug);
+        $this->setRedirect(JRoute::_($link, false));
+
         return true;
     } 
 
-	/**
-     * 
-     * Prepare return link
-     * @param integer $itemId
-     */
-    protected function prepareRedirectLink($direction, $item = null, $rewardId = null) {
-        
-        // Prepare redirection
-        switch($direction) {
-            
-            case "login_form":
-                $link = "index.php?option=com_users&view=login";
-                break;
-                
-            case "backing":
-                $link = $this->defaultLink."&view=backing&id=".(int)$item->id;
-                break;
-                
-            case "payment":
-                $link = CrowdFundingHelperRoute::getBackingRoute($item->slug, $item->catslug, $rewardId)."&layout=payment";
-                break;
-                
-            default: // List
-                $link = $this->defaultLink."&view=discover";
-                break;
-        }
-        
-        return $link;
-    }
     
 }

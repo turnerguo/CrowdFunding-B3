@@ -52,7 +52,10 @@
         <field name="project_amount_maximum" type="text" default="5000" label="COM_CROWDFUNDING_MAXIMUM_AMOUNT" description="COM_CROWDFUNDING_MAXIMUM_AMOUNT_DESC" />
         <field name="project_currency" type="Currencies" default="" label="COM_CROWDFUNDING_CURRENCY" description="COM_CROWDFUNDING_SETTINGS_CURRENCY_DESC" />
         <field name="project_days_minimum" type="text" default="15" label="COM_CROWDFUNDING_MINIMUM_DAYS" description="COM_CROWDFUNDING_MINIMUM_DAYS_DESC" />
-        <field name="project_intro_article" type="text" default="" label="COM_CROWDFUNDING_INTRO_ARTICLE" description="COM_CROWDFUNDING_INTRO_ARTICLE_DESC" />
+    </fieldset>
+    
+    <fieldset name="project" addfieldpath="/administrator/components/com_content/models/fields">
+        <field name="project_intro_article" type="modal_article" default="" label="COM_CROWDFUNDING_INTRO_ARTICLE" description="COM_CROWDFUNDING_INTRO_ARTICLE_DESC" />
         <field name="project_intro_article_title" type="radio" default="0" label="COM_CROWDFUNDING_INTRO_ARTICLE_DISPLAY_TITLE" description="COM_CROWDFUNDING_INTRO_ARTICLE_DISPLAY_TITLE_DESC" >
             <option value="0">JNO</option>
             <option value="1">JYES</option>
@@ -71,6 +74,7 @@
         <field name="integration_social_platform" type="list" default="" label="COM_CROWDFUNDING_INTEGRATION_SOCIAL_PLATFORM" description="COM_CROWDFUNDING_INTEGRATION_SOCIAL_PLATFORM_DESC">
             <option value="">COM_CROWDFUNDING_NONE</option>
             <option value="com_socialcommunity">COM_CROWDFUNDING_SOCIAL_COMMUNITY</option>
+            <option value="gravatar">COM_CROWDFUNDING_GRAVATAR</option>
         </field>
     </fieldset>
     

@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -35,9 +35,11 @@ class CrowdFundingModelTransactions extends JModelList {
                 'id', 'a.id',
             	'date', 'a.txn_date',
             	'amount', 'a.txn_amount',
-            	'reward_id', 'a.reward_id',
-            	'title', 'b.title',
-            	'name', 'c.name',
+                'project', 'b.title',
+            	'reward', 'd.title',
+                'investor', 'e.name',
+                'receiver', 'f.name',
+                    
             );
         }
 
@@ -57,10 +59,6 @@ class CrowdFundingModelTransactions extends JModelList {
         $app       = JFactory::getApplication();
         /** @var $app JSite **/
 
-        /*$state = $this->getUserStateFromRequest($this->context.'.filter.state', 'filter_state', '', 'string');
-        $this->setState('filter.state', $state);
-        */
-        
         $value = JFactory::getUser()->id;
         $this->setState('filter.receiver_id', $value);
          
@@ -86,8 +84,6 @@ class CrowdFundingModelTransactions extends JModelList {
     protected function getStoreId($id = '') {
         
         // Compile the store id.
-//        $id .= ':' . $this->getState('filter.search');
-//        $id .= ':' . $this->getState('filter.state');
         $id .= ':' . $this->getState('filter.receiver_id');
 
         return parent::getStoreId($id);
@@ -113,25 +109,24 @@ class CrowdFundingModelTransactions extends JModelList {
                 'a.id, a.txn_amount, a.txn_date, a.txn_currency, a.txn_id, a.txn_status, ' .
                 'a.project_id, a.reward_id, a.investor_id, a.service_provider, '.
                 'b.title AS project, ' .
-                'c.title AS reward, ' .
-                'd.name AS investor, ' .
-                'e.name AS receiver'
+                $query->concatenate(array("b.id", "b.alias"), "-") . ' AS slug, ' .
+                $query->concatenate(array("c.id", "c.alias"), "-") . ' AS catslug, ' .
+                    
+                'd.title AS reward, ' .
+                'e.name AS investor, ' .
+                'f.name AS receiver'
+                
             )
         );
         $query->from($db->quoteName('#__crowdf_transactions').' AS a');
         $query->innerJoin($db->quoteName('#__crowdf_projects').' AS b ON a.project_id = b.id');
-        $query->leftJoin($db->quoteName('#__crowdf_rewards').' AS c ON a.reward_id = c.id');
-        $query->innerJoin($db->quoteName('#__users').' AS d ON a.investor_id = d.id');
-        $query->innerJoin($db->quoteName('#__users').' AS e ON a.receiver_id = e.id');
+        $query->innerJoin($db->quoteName('#__categories').' AS c ON b.catid = c.id');
+        
+        $query->leftJoin($db->quoteName('#__crowdf_rewards').' AS d ON a.reward_id = d.id');
+        $query->innerJoin($db->quoteName('#__users').' AS e ON a.investor_id = e.id');
+        $query->innerJoin($db->quoteName('#__users').' AS f ON a.receiver_id = f.id');
 
-        // Filter by state
-        /*$state = $this->getState('filter.state');
-        if (is_numeric($state)) {
-            $query->where('a.published = '.(int) $state);
-        } else if ($state === '') {
-            $query->where('(a.published IN (0, 1))');
-        }
-*/
+        // Filter by receiver
         $userId = $this->getState('filter.receiver_id');
         $query->where('a.investor_id='.(int)$userId, "OR");
         $query->where('a.receiver_id='.(int)$userId);

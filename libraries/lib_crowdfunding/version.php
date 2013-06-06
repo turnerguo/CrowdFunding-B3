@@ -1,7 +1,7 @@
 <?php
 /**
-* @package      ITPrism Components
-* @subpackage   CrowdFunding
+* @package      CrowdFunding
+* @subpackage   Libraries
 * @author       Todor Iliev
 * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
 * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -16,9 +16,9 @@ defined('JPATH_PLATFORM') or die;
 /**
  * Version information
  *
- * @package ITPrism Components
- * @subpackage   CrowdFunding
-  */
+ * @package      CrowdFunding
+ * @subpackage   Libraries
+ */
 class CrowdfundingVersion {
 	
     /**
@@ -40,7 +40,7 @@ class CrowdfundingVersion {
      * 
      * @var integer
      */
-    public $devLevel  = '0';
+    public $devLevel  = '1';
     
     /**
      * Release Type
@@ -61,7 +61,7 @@ class CrowdfundingVersion {
      * 
      * @var string
      */
-    public $releaseDate= '31-March-2013';
+    public $releaseDate= '16-June-2013';
     
     /**
      * License

@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -78,7 +78,7 @@ defined('_JEXEC') or die;?>
     		<?php echo JHtml::_("crowdfunding.approved", $item->approved); ?>
     		</td>
     		<td>
-    			<a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getFormRoute($item->id)) ;?>" class="btn btn-primary btn-mini"><i class="icon-pencil icon-white"></i> <?php echo JText::_("COM_CROWDFUNDING_EDIT");?></a>
+    			<a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getFormRoute($item->id)) ;?>" class="button"><i class="icon-pencil icon-white"></i> <?php echo JText::_("COM_CROWDFUNDING_EDIT");?></a>
     		</td>
     	</tr>
     	<?php }?>

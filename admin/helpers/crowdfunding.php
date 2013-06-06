@@ -213,5 +213,33 @@ class CrowdFundingHelper {
         return $endingDate->format("Y-m-d");
     }
 
+    /**
+     * Validate a date
+     * 
+     * @param string $string
+     * @return boolean
+     */
+    public static function isValidDate($string) {
+        
+        $string = JString::trim($string);
+        
+        try {
+            $date = new DateTime($string);
+        } catch (Exception $e) {
+            return false;
+        }
+        
+        $month = $date->format('m');
+        $day   = $date->format('d');
+        $year  = $date->format('Y');
+        
+        if(checkdate($month, $day, $year)) {
+            return true;
+        } else {
+            return false;
+        }
+        
+        
+    }
     
 }

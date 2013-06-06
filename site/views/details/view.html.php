@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -47,6 +47,7 @@ class CrowdFundingViewDetails extends JView {
             return;
         }
         
+        // Get rewards of the project
         $this->rewards        = $this->get("Rewards");
         $this->imageFolder    = $this->params->get("images_directory", "images/projects");
         
@@ -54,17 +55,18 @@ class CrowdFundingViewDetails extends JView {
         JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
         
         // Get currency
+        jimport("crowdfunding.currency");
         $currencyId           = $this->params->get("project_currency");
-		$this->currency       = CrowdFundingHelper::getCurrency($currencyId);
+		$this->currency       = CrowdFundingCurrency::getInstance($currencyId);
 		
-        // Set a link to project page
+        // Prepare the link that points to project page
         $host  = JFactory::getURI()->toString(array("scheme", "host"));
         $this->item->link        = $host.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug));
         
-        // Set a link to image
+        // Prepare the link that points to project image
         $this->item->link_image  = $host."/".$this->imageFolder."/".$this->item->image;
         
-        // Screens
+        // Get the current screen
         $this->screen = $app->input->get->get("screen", "home");
         
         switch($this->screen) {
@@ -106,7 +108,7 @@ class CrowdFundingViewDetails extends JView {
     
     protected function prepareUpdatesScreen() {
         
-        $model         = JModel::getInstance("Updates", "CrowdFundingModel");
+        $model         = JModel::getInstance("Updates", "CrowdFundingModel", $config = array('ignore_request' => false));
         $this->items   = $model->getItems();
         $this->form    = $model->loadForm();
         
@@ -128,7 +130,7 @@ class CrowdFundingViewDetails extends JView {
     
     protected function prepareCommentsScreen() {
         
-        $model         = JModel::getInstance("Comments", "CrowdFundingModel");
+        $model         = JModel::getInstance("Comments", "CrowdFundingModel", $config = array('ignore_request' => false));
         $this->items   = $model->getItems();
         $this->form    = $model->loadForm();
         
@@ -150,7 +152,7 @@ class CrowdFundingViewDetails extends JView {
     
     protected function prepareFundersScreen() {
         
-        $model         = JModel::getInstance("Funders", "CrowdFundingModel");
+        $model         = JModel::getInstance("Funders", "CrowdFundingModel", $config = array('ignore_request' => false));
         $this->items   = $model->getItems();
         
         // Get a social platform for integration
@@ -190,7 +192,7 @@ class CrowdFundingViewDetails extends JView {
         
         // Breadcrumb
         $pathway = $app->getPathWay();
-        $currentBreadcrumb = JHtmlString::truncate($this->item->title, 16);
+        $currentBreadcrumb = JHtmlString::truncate($this->item->title, 32);
         $pathway->addItem($currentBreadcrumb, '');
         
         // Add styles

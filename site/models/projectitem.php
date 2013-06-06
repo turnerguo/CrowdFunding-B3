@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -12,13 +12,13 @@
  */
 
 // no direct access
-defined('_JEXEC') or die();
+defined('_JEXEC') or die;
 
 jimport('joomla.application.component.modelitem');
 
 class CrowdFundingModelProjectItem extends JModelItem {
     
-    protected $item;
+    protected $item = array();
     
     /**
      * Returns a reference to the a Table object, always creating it.
@@ -47,7 +47,7 @@ class CrowdFundingModelProjectItem extends JModelItem {
         
         // Load the object state.
         $id = $app->input->getInt('id');
-        $this->setState($this->option . '.id', $id);
+        $this->setState('project.id', $id);
         
         // Load the parameters.
         $this->setState('params', $params);
@@ -63,7 +63,7 @@ class CrowdFundingModelProjectItem extends JModelItem {
     public function getItem($id = null) {
         
         if (empty($id)) {
-            $id = $this->getState($this->option.'.id');
+            $id = $this->getState('project.id');
         }
         $storedId = $this->getStoreId($id);
         
@@ -83,6 +83,13 @@ class CrowdFundingModelProjectItem extends JModelItem {
         return $this->item[$storedId];
     }
 
+    /**
+     * Publish or not an item. If state is going to be published,
+     * we have to calculate end date.
+     * 
+     * @param integer $itemId
+     * @param integer $state
+     */
     public function saveState($itemId, $state) {
         
         $row   = $this->getItem($itemId);
@@ -97,42 +104,46 @@ class CrowdFundingModelProjectItem extends JModelItem {
     
     protected function prepareTable(&$table) {
         
-        $date      = new JDate($table->funding_start);
-        $unixDate  = $date->toUnix(); 
+        $isValidDate = CrowdFundingHelper::isValidDate($table->funding_start);
         
-        // Adding a starting date if the user 
-        // publish a project for a first time.
-        if($unixDate < 0) {
+        // Calculate starting date if the user publish a project for first time.
+        if(!$isValidDate) {
             
-            $fundindEnd           = new JDate($table->funding_end);
             $fundindStart         = new JDate();
             $table->funding_start = $fundindStart->toSql();
             
-            // Validate the period if there is an ending date
-            if(0 < $fundindEnd->toUnix()) {
-                
-                // Get interval between starting and ending date
-                $startingDate  = new DateTime($table->funding_start);
-                $endingDate    = new DateTime($table->funding_end);
-                $interval      = $startingDate->diff($endingDate);
-                
-                $days          = $interval->format("%r%a");
-                
-                // Get parameters
-                $app           = JFactory::getApplication();
-                $params        = $app->getParams();
+        }
         
-                // Validate minimum dates
-                $minimumDays   = $params->get("project_days_minimum", 15);
-                if($days < $minimumDays) {
-                    throw new Exception(JText::sprintf("COM_CROWDFUNDING_ERROR_INVALID_ENDING_DATE", $minimumDays), ITPrismErrors::CODE_WARNING);
-                }
+        // Validate the period if there is an ending date
+        $isValidEndDate = CrowdFundingHelper::isValidDate($table->funding_end);
+        if($isValidEndDate) {
+        
+            // Get interval between starting and ending date
+            $startingDate  = new DateTime($table->funding_start);
+            $endingDate    = new DateTime($table->funding_end);
+            $interval      = $startingDate->diff($endingDate);
+        
+            $days          = $interval->format("%r%a");
+        
+            // Get parameters
+            $params        = JFactory::getApplication()->getParams();
+        
+            // Validate minimum dates
+            $minimumDays   = $params->get("project_days_minimum", 15);
+            if($days < $minimumDays) {
+                throw new Exception(JText::sprintf("COM_CROWDFUNDING_ERROR_INVALID_ENDING_DATE", $minimumDays), ITPrismErrors::CODE_WARNING);
             }
         }
         
         $table->alias = JApplication::stringURLSafe($table->title);
     }
     
+    /**
+     * It does some validations to be sure about what the project is valid.
+     * 
+     * @param  object $item
+     * @throws Exception
+     */
     public function validate($item) {
         
         if(!$item->goal) {
@@ -163,7 +174,11 @@ class CrowdFundingModelProjectItem extends JModelItem {
         }
     }
     
-    
+    /**
+     * This method counts the rewards of the project.
+     * @param  integer $itemId    Project id
+     * @return number
+     */
     protected function countRewards($itemId) {
         
         $db = JFactory::getDbo();

@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -137,7 +137,7 @@ class CrowdFundingViewProject extends JView {
         $this->imageFolder = $this->params->get("images_directory", "images/projects");
         $this->imageSmall  = $this->item->get("image_small");
         
-        $this->pathwayName = "COM_CROWDFUNDING_STEP_BASIC";
+        $this->pathwayName = JText::_("COM_CROWDFUNDING_STEP_BASIC");
         
     } 
     
@@ -156,30 +156,29 @@ class CrowdFundingViewProject extends JView {
         $this->form        = $model->getForm();
         $this->params      = $this->state->get("params");
             
+        // Get currency
+        jimport("crowdfunding.currency");
         $currencyId        = $this->params->get("project_currency");
-		$currency          = CrowdFundingHelper::getCurrency($currencyId);
-		
+        $currency          = CrowdFundingCurrency::getInstance($currencyId);
+        
+        // Set minimum values - days, amount,...
         $this->minAmount   = $this->params->get("project_amount_minimum", 500);
+        $this->minAmount   = $currency->getAmountString($this->minAmount);
+        
         $this->minDays     = $this->params->get("project_days_minimum", 30);
         
-        if(!empty($currency["symbol"])) { // Prepended
-		    $this->minAmount = $currency["symbol"].$this->minAmount;
-		} else { // Append
-		    $this->minAmount = $this->minAmount.$currency["abbr"];
-		}
+		// If the date is invalid then set checkedDate to empty string.
+        $this->checkedDays = (!$this->item->funding_days) ? "" : 'checked="checked"';
 		
-		$this->checkedDays  = (!$this->item->funding_days) ? "" : 'checked="checked"';
-
-		// If the date is invalida then set checkedDate to empty string.
-		try {
-            $date               = new JDate($this->item->funding_end);
-            $validDate          = $date->toUnix();
-            $this->checkedDate  = ($validDate < 0) ? "" : 'checked="checked"';
-		} catch (Exception $e) {
-		    $this->checkedDate  = "";
-		}
-
-        $this->pathwayName = "COM_CROWDFUNDING_STEP_FUNDING";
+        // Validate funding date
+        // Set the radio button to checked if there is a funding date
+        if(!CrowdFundingHelper::isValidDate($this->item->funding_end) ){
+            $this->checkedDate  = '';
+        } else {
+            $this->checkedDate  = 'checked="checked"';
+        }
+        
+        $this->pathwayName = JText::_("COM_CROWDFUNDING_STEP_FUNDING");
         
     } 
     
@@ -204,7 +203,7 @@ class CrowdFundingViewProject extends JView {
         $this->pWidth      = $this->params->get("pitch_image_width", 600);
         $this->pHeight     = $this->params->get("pitch_image_height", 400);
         
-        $this->pathwayName = "COM_CROWDFUNDING_STEP_STORY";
+        $this->pathwayName = JText::_("COM_CROWDFUNDING_STEP_STORY");
         
     } 
     
@@ -220,10 +219,11 @@ class CrowdFundingViewProject extends JView {
         $this->items       = $model->getItems($this->projectId);
         $this->item        = CrowdFundingHelper::getProject($this->projectId);
         
+        jimport("crowdfunding.currency");
         $currencyId        = $this->params->get("project_currency");
-		$this->currency    = CrowdFundingHelper::getCurrency($currencyId);
+		$this->currency    = CrowdFundingCurrency::getInstance($currencyId);
 		
-        $this->pathwayName = "COM_CROWDFUNDING_STEP_REWARDS";
+        $this->pathwayName = JText::_("COM_CROWDFUNDING_STEP_REWARDS");
         
     } 
     
@@ -268,7 +268,7 @@ class CrowdFundingViewProject extends JView {
         
         // Add current layout into breadcrumbs 
         $pathway    = $app->getPathway();
-        $pathway->addItem(JText::_($this->pathwayName));
+        $pathway->addItem($this->pathwayName);
         
         // Head styles
         $this->document->addStyleSheet(JURI::root() . 'media/'.$this->option.'/css/site/bootstrap.min.css');

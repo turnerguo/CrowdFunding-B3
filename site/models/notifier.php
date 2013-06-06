@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      ITPrism Components
+ * @package      CrowdFunding
  * @subpackage   ItpDonate
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.

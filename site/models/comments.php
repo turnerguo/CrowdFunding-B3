@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -53,7 +53,8 @@ class CrowdFundingModelComments extends JModelList {
         $app       = JFactory::getApplication();
         /** @var $app JSite **/
 
-        $value = $app->input->get->get("id");
+        // Get project ID
+        $value = $app->input->get->get("id", 0, "uint");
         $this->setState($this->getName().'.id', $value);
         
         // Load the component parameters.
@@ -79,7 +80,7 @@ class CrowdFundingModelComments extends JModelList {
         
         // Compile the store id.
         $id .= ':' . $this->getState($this->getName().'.id');
-
+        
         return parent::getStoreId($id);
     }
     

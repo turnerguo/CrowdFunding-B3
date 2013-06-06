@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -35,11 +35,11 @@ if($deliveryDate) {
     <div class="span10">
     	<label class="hasTip" for="reward_amount_<?php echo $this->formIndex;?>" title="<?php echo JText::_("COM_CROWDFUNDING_REWARDS_AMOUNT_DESC");?>"><?php echo JText::_("COM_CROWDFUNDING_AMOUNT"); ?><span class="star">&nbsp;*</span></label>
         <div class="input-prepend input-append">
-        	<?php if(!empty($this->currency["symbol"])){?>
-            <span class="add-on"><?php echo $this->currency["symbol"];?></span>
+        	<?php if(!empty($this->currency->symbol)){?>
+            <span class="add-on"><?php echo $this->currency->symbol;?></span>
             <?php }?>
-            <input name="rewards[<?php echo $this->formIndex;?>][amount]" id="reward_amount_<?php echo $this->formIndex;?>" type="text" value="<?php echo JArrayHelper::getValue($this->formItem,  "amount")?>" class="span12" />
-            <span class="add-on"><?php echo $this->currency["abbr"];?></span>
+            <input name="rewards[<?php echo $this->formIndex;?>][amount]" id="reward_amount_<?php echo $this->formIndex;?>" type="text" value="<?php echo JArrayHelper::getValue($this->formItem,  "amount")?>" />
+            <span class="add-on"><?php echo $this->currency->abbr;?></span>
         </div>
         
         <label class="hasTip" for="reward_title_<?php echo $this->formIndex;?>" title="<?php echo JText::_("COM_CROWDFUNDING_REWARDS_TITLE_DESC");?>"><?php echo JText::_("COM_CROWDFUNDING_TITLE"); ?><span class="star">&nbsp;*</span></label>

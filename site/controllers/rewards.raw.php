@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -17,11 +17,11 @@ defined('_JEXEC') or die;
 jimport( 'joomla.application.component.controller' );
 
 /**
- * CrowdFunding project controller
+ * CrowdFunding rewards controller
  *
- * @package     ITPrism Components
- * @subpackage  CrowdFunding
-  */
+ * @package     CrowdFunding
+ * @subpackage  Components
+ */
 class CrowdFundingControllerRewards extends JController {
     
 	/**
@@ -83,7 +83,7 @@ class CrowdFundingControllerRewards extends JController {
 
         try {
             $model->remove($pks, $userId);
-        } catch ( Exception $e ) {
+        } catch (Exception $e) {
             JLog::add($e->getMessage());
             throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }

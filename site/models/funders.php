@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -58,7 +58,7 @@ class CrowdFundingModelFunders extends JModelList {
         $params     =  $app->getParams();
         $this->setState('params', $params);
         
-        // Set limit
+        // Get project id
         $value      = $app->input->get->get("id", 0, "uint");
         $this->setState($this->context.'.project_id', $value);
         
@@ -80,6 +80,7 @@ class CrowdFundingModelFunders extends JModelList {
     protected function getStoreId($id = '') {
         
         // Compile the store id.
+        $id.= ':' . $this->getState($this->context.'.project_id');
         $id.= ':' . $this->getState('list.ordering');
         $id.= ':' . $this->getState('list.direction');
 
@@ -111,6 +112,7 @@ class CrowdFundingModelFunders extends JModelList {
         $query->from($db->quoteName('#__crowdf_transactions').' AS a');
         $query->innerJoin($db->quoteName('#__users').' AS b ON a.investor_id = b.id');
 
+        // Filter by project id
         $projectId = $this->getState($this->context.".project_id");
         $query->where("a.project_id =" .(int)$projectId);
         

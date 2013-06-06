@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -42,7 +42,7 @@ switch($this->layout) {
             
             <li <?php echo ($active["payment"]) ? 'class="active"' : '';?>>
             	<?php if(!empty($this->flagStep1)){?> 
-                <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug)."&layout=payment");?>">
+                <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug, "payment"));?>">
                 (2) <?php echo JText::_("COM_CROWDFUNDING_STEP_PAY");?>
                 </a>
                 <?php } else {?>
@@ -52,7 +52,7 @@ switch($this->layout) {
             
             <li <?php echo ($active["share"]) ? 'class="active"' : '';?>>
             	<?php if(!empty($this->flagStep2)){?> 
-                <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug)."&layout=share");?>">
+                <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug, "share"));?>">
                 (3) <?php echo JText::_("COM_CROWDFUNDING_STEP_SHARE");?>
                 </a>
                 <?php } else {?>

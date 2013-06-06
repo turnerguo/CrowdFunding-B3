@@ -35,7 +35,7 @@ class JFormFieldFundingType extends JFormFieldRadio {
 		$html = array();
 
 		// Initialize some field attributes.
-		$class      = $this->element['class'] ? ' class="radio ' . (string) $this->element['class'] . '"' : ' class="radio"';
+		$class      = ( !$this->element['class'] ) ? ' class="radio"' : ' class="radio ' . (string) $this->element['class'] . '"';
         $helpBlocks = ( !$this->element['help_blocks'] ) ? "" : $this->element['help_blocks'];
         if(!empty($helpBlocks)) {
             $helpBlocks = $this->prepareHelpBlocks($helpBlocks);
@@ -48,8 +48,7 @@ class JFormFieldFundingType extends JFormFieldRadio {
 		$options = $this->getOptions();
 
 		// Build the radio field output.
-		foreach ($options as $i => $option)
-		{
+		foreach ($options as $i => $option) {
 
 			// Initialize some option attributes.
 			$checked   = ((string) $option->value == (string) $this->value) ? ' checked="checked"' : '';

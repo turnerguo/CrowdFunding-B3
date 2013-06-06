@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -132,7 +132,7 @@ class CrowdFundingModelComment extends JModelForm {
 
 			// Check for a table object error.
 			if ($return === false && $table->getError()) {
-			    JLog::add($table->getError() . " [ CrowdFundingUpdate->getItem() ]");
+			    JLog::add($table->getError() . " [ CrowdFundingComment->getItem() ]");
 				throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_SYSTEM"), ITPrismErrors::CODE_ERROR);
 			}
 			
@@ -141,12 +141,6 @@ class CrowdFundingModelComment extends JModelForm {
 		// Convert to the JObject before adding other data.
 		$properties = $table->getProperties();
 		$this->item = JArrayHelper::toObject($properties, 'JObject');
-
-		if (property_exists($this->item, 'params')) {
-			$registry = new JRegistry;
-			$registry->loadString($this->item->params);
-			$this->item->params = $registry->toArray();
-		}
 		
 		return $this->item;
 	}

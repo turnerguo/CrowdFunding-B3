@@ -33,6 +33,12 @@ jQuery(document).ready(function() {
 					CrowdFundingHelper.displayMessageFailure(response.title, response.text);
 				}
 				
+				// Reset form data if the element has been loaded for editing.
+				var currentElementId = jQuery("#jform_id").val();
+				if(id == currentElementId) {
+					jQuery("#jform_comment").val("");
+					jQuery("#jform_id").val("");
+				}
 			}
 				
 		});
@@ -69,8 +75,6 @@ jQuery(document).ready(function() {
 	jQuery("#cf-comments-reset").bind("click", function(event) {
 		
 		event.preventDefault();
-		
-		var id = jQuery(this).data("id");
 		
 		jQuery("#jform_comment").val("");
 		jQuery("#jform_id").val("");

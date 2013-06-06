@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -21,8 +21,10 @@ defined('_JEXEC') or die;
         <div class="row-fluid">
             <div class="span2"><?php echo $this->form->getLabel('goal'); ?></div>
             <div class="span10">
-            <?php echo $this->form->getInput('goal'); ?>
-            <span class="help-block"><?php echo JText::sprintf("COM_CROWDFUNDING_MINIMUM_AMOUNT", $this->minAmount);?></span>
+                <?php echo $this->form->getInput('goal'); ?>
+                <span class="help-block">
+                <?php echo JText::sprintf("COM_CROWDFUNDING_MINIMUM_AMOUNT", $this->minAmount);?>
+                </span>
             </div>
         </div>
         
@@ -33,7 +35,9 @@ defined('_JEXEC') or die;
     
     	<div class="row-fluid">
             <div class="span2">
-            	<label title="<?php echo JText::_("COM_CROWDFUNDING_FIELD_FUNDING_DURATION_DESC");?>" class="hasTip required" for="jform_funding_type" id="jform_funding_type-lbl"><?php echo JText::_("COM_CROWDFUNDING_FIELD_FUNDING_DURATION");?><span class="star">&nbsp;*</span></label>
+            	<label title="<?php echo JText::_("COM_CROWDFUNDING_FIELD_FUNDING_DURATION")."::".JText::_("COM_CROWDFUNDING_FIELD_FUNDING_DURATION_DESC");?>" class="hasTip required" for="jform_funding_type" id="jform_funding_type-lbl">
+            	<?php echo JText::_("COM_CROWDFUNDING_FIELD_FUNDING_DURATION");?><span class="star">&nbsp;*</span>
+            	</label>
             </div>
             
             <div class="span10">
@@ -52,7 +56,6 @@ defined('_JEXEC') or die;
         
             </div>
         </div>
-        
         
         <?php echo $this->form->getInput('id'); ?>
         <input type="hidden" name="task" value="funding.save" />

@@ -1,7 +1,7 @@
 <?php
 /**
- * @package		 ITPrism Plugins
- * @subpackage	 CrowdFunding Payment 
+ * @package      CrowdFunding
+ * @subpackage   Plugins
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -17,15 +17,22 @@ defined('_JEXEC') or die;
 jimport('joomla.plugin.plugin');
 
 /**
- * CrowdFunding Payment Plugin
+ * CrowdFunding PayPal Payment Plugin
  *
- * @package		ITPrism Plugins
- * @subpackage	CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Plugins
  */
 class plgCrowdFundingPaymentPayPal extends JPlugin {
     
-    
-    public function onProjectPayment($context, $item) {
+    /**
+     * This method prepares a payment gateway - buttons, forms,...
+     * That gateway will be displayed on the summary page as a payment option.
+     *
+     * @param string 	$context	This string gives information about that where it has been executed the trigger.
+     * @param object 	$item	    A project data.
+     * @param JRegistry $params	    The parameters of the component
+     */
+    public function onProjectPayment($context, $item, $params) {
         
         $app = JFactory::getApplication();
         /** @var $app JSite **/
@@ -119,10 +126,11 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
     }
     
     /**
-     * 
-     * Enter description here ...
-     * @param array 	$post	This is _POST variable
-     * @param JRegistry $params	The parameters of the component
+     * This method processes transaction data that comes from PayPal instant notifier.
+     *  
+     * @param string 	$context	This string gives information about that where it has been executed the trigger.
+     * @param array 	$post	    This is $_POST variable
+     * @param JRegistry $params	    The parameters of the component
      */
     public function onPaymenNotify($context, $post, $params) {
         
@@ -175,11 +183,12 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
         if($paypalVerify->isVerified()) {
             
             // Get extension parameters
-            $currencyId  = $params->get("project_currency");
-            $currency    = CrowdFundingHelper::getCurrency($currencyId);
-
+            jimport("crowdfunding.currency");
+            $currencyId      = $params->get("project_currency");
+            $currency        = CrowdFundingCurrency::getInstance($currencyId);
+            
             // Validate transaction data
-            $validData = $this->validateData($post, $currency["abbr"]);
+            $validData = $this->validateData($post, $currency->abbr);
             if(is_null($validData)) {
                 return $result;
             }
@@ -188,10 +197,7 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
             jimport("crowdfunding.project");
             $projectId = JArrayHelper::getValue($validData, "project_id");
             
-            $db        = JFactory::getDbo();
-            $project   = new CrowdFundingProject($db);
-            $project->load($projectId);
-            
+            $project   = CrowdFundingProject::getInstance($projectId);
             if(!$project->id) {
                 $error  = JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_ERROR_INVALID_PROJECT");
                 $error .= "\n". JText::sprintf("PLG_CROWDFUNDINGPAYMENT_PAYPAL_TRANSACTION_DATA", var_export($validData, true));
@@ -293,10 +299,8 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
     
     protected function updateReward(&$data) {
         
-        $db     = JFactory::getDbo();
-        
         jimport("crowdfunding.reward");
-        $reward = new CrowdFundingReward($db);
+        $reward = new CrowdFundingReward();
         $keys   = array(
         	"id"         => $data["reward_id"], 
         	"project_id" => $data["project_id"]
@@ -315,7 +319,6 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
         
         // Check for valida amount between reward value and payed by user
         $txnAmount = JArrayHelper::getValue($data, "txn_amount");
-        
         if($txnAmount < $reward->amount) {
             $error  = JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_ERROR_INVALID_REWARD_AMOUNT");
             $error .= "\n". JText::sprintf("PLG_CROWDFUNDINGPAYMENT_PAYPAL_TRANSACTION_DATA", var_export($data, true));
@@ -325,6 +328,7 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
 			return null;
         }
         
+        // Verify the availability of rewards
         if($reward->isLimited() AND !$reward->getAvailable()) {
             $error  = JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_ERROR_REWARD_NOT_AVAILABLE");
             $error .= "\n". JText::sprintf("PLG_CROWDFUNDINGPAYMENT_PAYPAL_TRANSACTION_DATA", var_export($data, true));
@@ -345,17 +349,15 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
     }
     
     /**
-     * 
      * Save transaction
-     * @param array $data
+     * 
+     * @param array               $data
+     * @param CrowdFundingProject $project
      */
     public function save($data, $project) {
         
-        // Save data about donation
-        $db     = JFactory::getDbo();
-        
         jimport("crowdfunding.transaction");
-        $transaction = new CrowdFundingTransaction($db);
+        $transaction = new CrowdFundingTransaction();
         $transaction->bind($data);
         $transaction->store();
         
@@ -385,7 +387,7 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
         $returnPage = $this->params->get('paypal_return_url');
         if(!$returnPage) {
             $uri        = JFactory::getURI();
-            $returnPage = $uri->toString(array("scheme", "host")).JRoute::_(CrowdFundingHelperRoute::getBackingRoute($slug, $catslug)."&layout=share", false);
+            $returnPage = $uri->toString(array("scheme", "host")).JRoute::_(CrowdFundingHelperRoute::getBackingRoute($slug, $catslug, "share"), false);
         } 
         
         return $returnPage;
@@ -397,7 +399,7 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
         $cancelPage = $this->params->get('paypal_cancel_url');
         if(!$cancelPage) {
             $uri        = JFactory::getURI();
-            $cancelPage = $uri->toString(array("scheme", "host")).JRoute::_(CrowdFundingHelperRoute::getBackingRoute($slug, $catslug)."&layout=default", false);
+            $cancelPage = $uri->toString(array("scheme", "host")).JRoute::_(CrowdFundingHelperRoute::getBackingRoute($slug, $catslug, "default"), false);
         } 
         
         return $cancelPage;

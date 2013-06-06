@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -13,11 +13,11 @@
 
 // no direct access
 defined('_JEXEC') or die;
-$fundedAmount = JHtml::_("CrowdFunding.amount", $this->item->goal, $this->currency);
+$fundedAmount = $this->currency->getAmountString($this->item->goal);
 ?>
 <div class="cfinfo">
     <div class="cfinfo-raised">
-    	<?php echo JHtml::_("crowdfunding.amount", $this->item->funded, $this->currency); ?>
+    	<?php echo $this->currency->getAmountString($this->item->funded); ?>
     </div>
     <div class="cfinfo-raised-of">
         <?php echo JText::sprintf("COM_CROWDFUNDING_RAISED_OF", $fundedAmount);?>

@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -19,11 +19,11 @@ defined('_JEXEC') or die;
     <div class="span10">
     	<label for="reward_amount_d" id="reward_amount_label_d"><?php echo JText::_("COM_CROWDFUNDING_AMOUNT"); ?><span class="star">&nbsp;*</span></label>
         <div class="input-prepend input-append">
-        	<?php if(!empty($this->currency["symbol"])){?>
-            <span class="add-on"><?php echo $this->currency["symbol"];?></span>
+        	<?php if(!empty($this->currency->symbol)){?>
+            <span class="add-on"><?php echo $this->currency->symbol;?></span>
             <?php }?>
-            <input name="rewards[][amount]" id="reward_amount_d" type="text" value="" class="span12" />
-            <span class="add-on"><?php echo $this->currency["abbr"];?></span>
+            <input name="rewards[][amount]" id="reward_amount_d" type="text" value="" />
+            <span class="add-on"><?php echo $this->currency->abbr;?></span>
         </div>
         
         <label for="reward_title_d" id="reward_title_title_d"><?php echo JText::_("COM_CROWDFUNDING_TITLE"); ?><span class="star">&nbsp;*</span></label>

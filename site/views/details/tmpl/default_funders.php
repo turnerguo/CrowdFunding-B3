@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -15,7 +15,10 @@
 defined('_JEXEC') or die;?>
 <?php if(!empty($this->items)) {?>
 <?php foreach($this->items as $item ) {
-    $socialProfile  = JHtml::_("crowdfunding.socialProfile", $item->id, $this->socialPlatform);
+    
+    $user = JFactory::getUser($item->id);
+    $socialProfile  = JHtml::_("crowdfunding.socialProfile", $this->socialPlatform, $user);
+    
 ?>
     <div class="row-fluid">
     

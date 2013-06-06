@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -95,7 +95,7 @@ class CrowdFundingControllerNotifier extends JController {
             }
             
             // Event After Payment
-            JPluginHelper::importPlugin('crowdfunding');
+            JPluginHelper::importPlugin('virtualcurrencypayment');
             $dispatcher->trigger('onAfterPayment', array('com_crowdfunding.notify', &$transaction, $params, $project, $reward));
         		
             $model = $this->getModel();

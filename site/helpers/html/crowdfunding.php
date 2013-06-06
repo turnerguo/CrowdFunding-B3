@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -51,13 +51,13 @@ abstract class JHtmlCrowdFunding {
      * 
      * Display an input field for amount
      * @param float $value
-     * @param array $currency
+     * @param object $currency
      * @param array $options
      */
     public static function inputAmount($value, $currency, $options) {
         
         $class = "";
-        if(!empty($currency["symbol"])){
+        if(!empty($currency->symbol)){
             $class = "input-prepend ";
         }
         
@@ -65,8 +65,8 @@ abstract class JHtmlCrowdFunding {
         
         $html = '<div class="'.$class.'">';
         
-        if(!empty($currency["symbol"])){
-            $html .= '<span class="add-on">'. $currency["symbol"] .'</span>';
+        if(!empty($currency->symbol)){
+            $html .= '<span class="add-on">'. $currency->symbol .'</span>';
         }
             
         $name = JArrayHelper::getValue($options, "name");
@@ -86,8 +86,8 @@ abstract class JHtmlCrowdFunding {
         
         $html .= '<input type="text" name="'.$name.'" value="'.$value.'" '.$id.' '.$class.' />';
         
-        if(!empty($currency["abbr"])) {
-            $html .= '<span class="add-on">'.$currency["abbr"].'</span>';
+        if(!empty($currency->abbr)) {
+            $html .= '<span class="add-on">'.$currency->abbr.'</span>';
         }
             
         $html .= '</div>';
@@ -97,11 +97,12 @@ abstract class JHtmlCrowdFunding {
     }
     
     /**
-     * 
      * Add symbol or abbreviation to a currency
      * 
      * @param float $value
      * @param array $currency
+     * 
+     * @deprecated 1.1 Use CrowdFundingCurrency::getAmountString()
      */
     public static function amount($value, $currency) {
         
@@ -332,35 +333,51 @@ abstract class JHtmlCrowdFunding {
         return $html;
     }
     
-	/**
-     * Provide a link to social profile. 
-     * This method integreate users with profiles 
-     * of some Joomla! social extensions.
+    /**
+     * Generate a link to an user image of a social platform
      * 
-     * @param int 	$value
-     * @param string $extension
-     */
-    public static function socialProfile($value, $extension) {
-        
+     * @param string $socialPlatform	The name of the social platform.
+     * @param JUser $user		        This is a Joomla! user object.
+     * 
+     * @return string A routed link to profile
+     */ 
+    public static function socialProfile($socialPlatform, JUser $user) {
+    
         $link = "";
-        
-        switch($extension) {
-            
-            case "com_socialcommunity": // Social Community
-                
-                if(!defined("SOCIALCOMMUNITY_COMPONENT_SITE")) {
-                    define("SOCIALCOMMUNITY_COMPONENT_SITE", JPATH_SITE . DIRECTORY_SEPARATOR. "components" . DIRECTORY_SEPARATOR ."com_socialcommunity");
-                }
-
-                JLoader::register("SocialCommunityHelperRoute", SOCIALCOMMUNITY_COMPONENT_SITE . DIRECTORY_SEPARATOR . "helpers" . DIRECTORY_SEPARATOR . "route.php");
-                $link = JRoute::_(SocialCommunityHelperRoute::getProfileRoute($value));
-                
+    
+        switch($socialPlatform) {
+    
+            case "com_socialcommunity":
+    
+                jimport("itprism.integrate.profile.socialcommunity");
+                $profile = new ITPrismIntegrateProfileSocialCommunity($user);
+                $link    = $profile->getLink();
+    
                 break;
-                
-            default: 
+    
+            case "com_kunena":
+    
+                jimport("itprism.integrate.profile.kunena");
+                $profile = new ITPrismIntegrateProfileKunena($user);
+                $link    = $profile->getLink();
+    
+                break;
+    
+            case "gravatar":
+    
+                jimport("itprism.integrate.profile.gravatar");
+                $profile = new ITPrismIntegrateProfileGravatar($user);
+                $link    = $profile->getLink();
+    
+                break;
+    
+            default:
+                $link = "";
                 break;
         }
-        
+    
         return $link;
+    
     }
+    
 }

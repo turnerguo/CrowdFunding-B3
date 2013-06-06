@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -14,17 +14,15 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport( 'joomla.application.component.controllerform' );
+jimport('joomla.application.component.controllerform');
 
 /**
- * CrowdFunding updates controller
+ * CrowdFunding update controller
  *
- * @package     ITPrism Components
- * @subpackage  CrowdFunding
+ * @package     CrowdFunding
+ * @subpackage  Components
   */
 class CrowdFundingControllerUpdate extends JControllerForm {
-    
-    protected $defaultLink = "index.php?option=com_crowdfunding";
     
 	/**
      * Method to get a model object, loading it if required.
@@ -36,7 +34,7 @@ class CrowdFundingControllerUpdate extends JControllerForm {
      * @return	object	The model.
      * @since	1.5
      */
-    public function getModel($name = 'Comment', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true)) {
+    public function getModel($name = 'Update', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true)) {
         $model = parent::getModel($name, $prefix, $config);
         return $model;
     }
@@ -49,9 +47,7 @@ class CrowdFundingControllerUpdate extends JControllerForm {
         $userId = JFactory::getUser()->id;
         if(!$userId) {
             $this->setMessage(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), "notice");
-            
-            $link = $this->prepareRedirectLink("login_form");
-            $this->setRedirect(JRoute::_($link, false));
+            $this->setRedirect(JRoute::_("index.php?option=com_users&view=login", false));
             return;
         }
         
@@ -62,6 +58,18 @@ class CrowdFundingControllerUpdate extends JControllerForm {
 		$data    = $app->input->post->get('jform', array(), 'array');
         $itemId  = JArrayHelper::getValue($data, "project_id");
         
+        // Get project
+        jimport("crowdfunding.project");
+        $item   = CrowdFundingProject::getInstance($itemId);
+        
+        // Check for valid owner
+        if($item->user_id != $userId) {
+            $link = CrowdFundingHelperRoute::getDetailsRoute($item->getSlug(), $item->getCatSlug(), "updates");
+            $this->setMessage(JText::_('COM_CROWDFUNDING_ERROR_INVALID_PROJECT'), "warning");
+            $this->setRedirect(JRoute::_($link, false));
+            return;
+        }
+        
         $model   = $this->getModel();
         /** @var $model CrowdFundingModelUpdate **/
         
@@ -71,16 +79,18 @@ class CrowdFundingControllerUpdate extends JControllerForm {
         if(!$form){
             throw new Exception($model->getError(), 500);
         }
-            
+
         // Test if the data is valid.
         $validData = $model->validate($form, $data);
         
         // Check for validation errors.
         if($validData === false){
+            $errors = $form->getErrors();
+            $error  = array_shift($errors);
+            $msg    = $error->getMessage();
             
-            $this->setMessage($model->getError(), "notice");
-            
-            $link = $this->prepareRedirectLink("updates", $itemId);
+            $link = CrowdFundingHelperRoute::getDetailsRoute($item->getSlug(), $item->getCatSlug(), "updates");
+            $this->setMessage($msg, "notice");
             $this->setRedirect(JRoute::_($link, false));
             return;
         }
@@ -89,67 +99,17 @@ class CrowdFundingControllerUpdate extends JControllerForm {
             
             $model->save($validData);
             
-        } catch(Exception $e){
-            
+        } catch (Exception $e) {
             JLog::add($e->getMessage());
-            
-            // Problem with uploading, so set a message and redirect to pages
-            $code = $e->getCode();
-            switch($code) {
-                
-                case ITPrismErrors::CODE_WARNING:
-                    $this->setMessage($e->getMessage(), "notice");
-                    $link = $this->prepareRedirectLink("updates", $itemId);
-                    $this->setRedirect(JRoute::_($link, false));
-                    return;
-                break;
-                
-                case ITPrismErrors::CODE_HIDDEN_WARNING:
-                    
-                    $this->setMessage(JText::_("COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED"), "notice");
-                    $link = $this->prepareRedirectLink("updates", $itemId);
-                    $this->setRedirect(JRoute::_($link, false));
-                    return;
-                break;
-                
-                default:
-                    throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'), ITPrismErrors::CODE_ERROR);
-                break;
-            }
-            
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'), ITPrismErrors::CODE_ERROR);
         }
         
         // Redirect to next page
         $msg  = JText::_("COM_CROWDFUNDING_UPDATE_SUCCESSFULY_SAVED");
-        $link = $this->prepareRedirectLink("updates", $itemId);
+        $link = CrowdFundingHelperRoute::getDetailsRoute($item->getSlug(), $item->getCatSlug(), "updates");
+        
 		$this->setRedirect(JRoute::_($link, false), $msg);
 			
-    }
-    
-	/**
-     * 
-     * Prepare return link
-     * @param integer $itemId
-     */
-    protected function prepareRedirectLink($direction, $itemId = 0) {
-        
-        // Prepare redirection
-        switch($direction) {
-            
-            case "login_form":
-                $link = "index.php?option=com_users&view=login";
-                break;
-                
-            case "updates":
-                $link = $this->defaultLink."&view=details&screen=updates&id=".(int)$itemId;
-                break;
-                
-            default: // List
-                $link = $this->defaultLink."&view=descover";
-                break;
-        }
-        
-        return $link;
     }
     
 }

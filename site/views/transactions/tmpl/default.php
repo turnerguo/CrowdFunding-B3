@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -30,16 +30,16 @@ defined('_JEXEC') or die;?>
             			<?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_AMOUNT', 'a.txn_amount', $this->listDirn, $this->listOrder); ?>
             		</th>
             		<th>
-            			<?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_INVESTOR', 'a.txn_amount', $this->listDirn, $this->listOrder); ?>
+            			<?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_INVESTOR', 'e.name', $this->listDirn, $this->listOrder); ?>
             		</th>
             		<th>
-            			<?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_BENEFICIARY', 'a.txn_amount', $this->listDirn, $this->listOrder); ?>
+            			<?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_BENEFICIARY', 'f.name', $this->listDirn, $this->listOrder); ?>
             		</th>
             		<th>
             			<?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_DATE', 'a.txn_date', $this->listDirn, $this->listOrder); ?>
             		</th>
             		<th>
-            			<?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_REWARD', 'a.reward_id', $this->listDirn, $this->listOrder); ?>
+            			<?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_REWARD', 'd.title', $this->listDirn, $this->listOrder); ?>
             		</th>
             		<th>
             			<?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ID', 'a.id', $this->listDirn, $this->listOrder); ?>
@@ -50,11 +50,11 @@ defined('_JEXEC') or die;?>
             	<?php foreach($this->items as $item) {?>
             	<tr>
             		<td>
-            			<a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=details&id=".$item->project_id);?>">
+            			<a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($item->slug, $item->catslug));?>">
             			<?php echo JHtmlString::truncate(strip_tags($item->project), 64); ?>
             		    </a>
         		    </td>
-            		<td class="center"><?php echo JHtml::_("crowdfunding.amount", $item->txn_amount, $this->currency); ?></td>
+            		<td class="center"><?php echo $this->currency->getAmountString($item->txn_amount); ?></td>
             		<td class="center"><?php echo $item->investor; ?></td>
             		<td class="center"><?php echo $item->receiver; ?></td>
             		<td class="center"><?php echo JHtml::_('date', $item->txn_date, JText::_('DATE_FORMAT_LC3')); ?></td>

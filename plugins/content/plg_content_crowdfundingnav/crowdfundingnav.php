@@ -1,7 +1,7 @@
 <?php
 /**
- * @package		 ITPrism Plugins
- * @subpackage	 CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Plugins
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -19,8 +19,8 @@ jimport('joomla.plugin.plugin');
 /**
  * CrowdFunding Navigation Plugin
  *
- * @package		ITPrism Plugins
- * @subpackage	CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Plugins
  */
 class plgContentCrowdFundingNav extends JPlugin {
     
@@ -71,7 +71,7 @@ class plgContentCrowdFundingNav extends JPlugin {
             }
             
             $stat  = '<span class="label">'.JArrayHelper::getValue($stats, "updates", 0).'</span>';
-            $html .= '<li '.$class.'><a href="'.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($article->slug, $article->catslug)."&screen=updates").'">'.JText::_("PLG_CONTENT_CROWDFUNDINGNAV_UPDATES") .' '. $stat .'</a></li>';
+            $html .= '<li '.$class.'><a href="'.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($article->slug, $article->catslug, "updates")).'">'.JText::_("PLG_CONTENT_CROWDFUNDINGNAV_UPDATES") .' '. $stat .'</a></li>';
         }
         
         if($this->params->get("display_comments")) {
@@ -81,7 +81,7 @@ class plgContentCrowdFundingNav extends JPlugin {
             }
             
             $stat  = '<span class="label">'.JArrayHelper::getValue($stats, "comments", 0).'</span>';
-            $html .= '<li '.$class.'><a href="'.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($article->slug, $article->catslug)."&screen=comments").'">'.JText::_("PLG_CONTENT_CROWDFUNDINGNAV_COMMENTS") .' '. $stat .'</a></li>';
+            $html .= '<li '.$class.'><a href="'.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($article->slug, $article->catslug, "comments")).'">'.JText::_("PLG_CONTENT_CROWDFUNDINGNAV_COMMENTS") .' '. $stat .'</a></li>';
         }
         
         if($this->params->get("display_funders")) {
@@ -90,7 +90,7 @@ class plgContentCrowdFundingNav extends JPlugin {
                 $class = 'class="active"';
             }
             $stat  = '<span class="label">'.JArrayHelper::getValue($stats, "funders", 0).'</span>';
-            $html .= '<li '.$class.'><a href="'.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($article->slug, $article->catslug)."&screen=funders").'">'.JText::_("PLG_CONTENT_CROWDFUNDINGNAV_FUNDERS") .' '. $stat .'</a></li>';
+            $html .= '<li '.$class.'><a href="'.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($article->slug, $article->catslug, "funders")).'">'.JText::_("PLG_CONTENT_CROWDFUNDINGNAV_FUNDERS") .' '. $stat .'</a></li>';
         }
         
         $html .= '</ul>';
@@ -99,6 +99,14 @@ class plgContentCrowdFundingNav extends JPlugin {
         
     }
     
+    /**
+     * This method returns number of updates, comments and funders.
+     * 
+     * @param integer $itemId
+     * @return array
+     * 
+     * @todo do it with one query
+     */
     private function getNavStats($itemId) {
         
         $results = array();

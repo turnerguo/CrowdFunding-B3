@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -67,6 +67,8 @@ class CrowdFundingViewEmbed extends JView {
         // Generate embed link
         $this->embedLink = $host.JRoute::_(CrowdFundingHelperRoute::getEmbedRoute($this->item->slug, $this->item->catslug)."&layout=widget&tmpl=component", false);
 		
+        $this->version     = new CrowdfundingVersion();
+        
 		$this->prepareDocument();
 		
         parent::display($tpl);

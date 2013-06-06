@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -14,17 +14,15 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport( 'joomla.application.component.controller' );
+jimport('itprism.controller.default');
 
 /**
- * CrowdFunding project controller
+ * CrowdFunding rewards controller
  *
- * @package     ITPrism Components
- * @subpackage  CrowdFunding
-  */
-class CrowdFundingControllerRewards extends JController {
-    
-    protected $defaultLink = "index.php?option=com_crowdfunding";
+ * @package     CrowdFunding
+ * @subpackage  Components
+ */
+class CrowdFundingControllerRewards extends ITPrismControllerDefault {
     
 	/**
      * Method to get a model object, loading it if required.
@@ -38,7 +36,6 @@ class CrowdFundingControllerRewards extends JController {
      */
     public function getModel($name = 'Rewards', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true)) {
         $model = parent::getModel($name, $prefix, $config);
-        
         return $model;
     }
     
@@ -49,10 +46,10 @@ class CrowdFundingControllerRewards extends JController {
  
         $userId = JFactory::getUser()->id;
         if(!$userId) {
-            $this->setMessage(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), "notice");
-            
-            $link = $this->prepareRedirectLink("login_form");
-            $this->setRedirect(JRoute::_($link, false));
+            $redirectData = array(
+                "force_direction" => "login_form"
+            );
+            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), $redirectData);
             return;
         }
         
@@ -63,13 +60,21 @@ class CrowdFundingControllerRewards extends JController {
 		$data    = $app->input->post->get('rewards', array(), 'array');
         $itemId  = $app->input->post->get('id', 0, 'int');
         
+        $redirectData = array(
+            "view"   => "project",
+            "layout" => "rewards",
+            "id"     => $itemId
+        );
+        
         $model     = $this->getModel();
         /** @var $model CrowdFundingModelRewards **/
             
-        try{
+        try {
+            
             $validData  = $model->validate($data, $itemId);
             $model->save($validData, $itemId);
-        } catch(Exception $e){
+            
+        } catch (Exception $e) {
             
             JLog::add($e->getMessage());
             
@@ -78,9 +83,7 @@ class CrowdFundingControllerRewards extends JController {
             switch($code) {
                 
                 case ITPrismErrors::CODE_WARNING:
-                    $this->setMessage($e->getMessage(), "notice");
-                    $link = $this->prepareRedirectLink("rewards", $itemId);
-                    $this->setRedirect(JRoute::_($link, false));
+                    $this->displayWarning($e->getMessage(), $redirectData);
                     return;
                 break;
                 
@@ -91,42 +94,9 @@ class CrowdFundingControllerRewards extends JController {
             
         }
         
-        // Redirect to next page
-        $msg  = JText::_("COM_CROWDFUNDING_REWARDS_SUCCESSFULY_SAVED");
-        $link = $this->prepareRedirectLink("rewards", $itemId);
-		$this->setRedirect(JRoute::_($link, false), $msg);
+		// Redirect to next page
+		$this->displayMessage(JText::_("COM_CROWDFUNDING_REWARDS_SUCCESSFULY_SAVED"), $redirectData);
 			
     }
 
-	
-    
-	/**
-     * 
-     * Prepare return link
-     * @param integer $itemId
-     */
-    protected function prepareRedirectLink($direction, $itemId = 0) {
-        
-        // Prepare redirection
-        switch($direction) {
-            
-            case "login_form":
-                $link = "index.php?option=com_users&view=login";
-                break;
-                
-            case "rewards":
-                $link = $this->defaultLink."&view=project&layout=rewards";
-                if(!empty($itemId)) {
-                    $link .= "&id=" . (int)$itemId; 
-                }
-                break;
-                
-            default: // List
-                $link = $this->defaultLink."&view=descover";
-                break;
-        }
-        
-        return $link;
-    }
-    
 }

@@ -13,8 +13,8 @@
 
 defined('JPATH_PLATFORM') or die;
 
-class JFormFieldGoal extends JFormField
-{
+class JFormFieldGoal extends JFormField {
+    
 	/**
 	 * The form field type.
 	 *
@@ -36,19 +36,21 @@ class JFormFieldGoal extends JFormField
 		// Initialize some field attributes.
 		$size      = $this->element['size'] ? ' size="' . (int) $this->element['size'] . '"' : '';
 		$maxLength = $this->element['maxlength'] ? ' maxlength="' . (int) $this->element['maxlength'] . '"' : '';
-		$class     = $this->element['class'] ? ' class="span2 ' . (string) $this->element['class'] . '"' : 'span2';
 		$readonly  = ((string) $this->element['readonly'] == 'true') ? ' readonly="readonly"' : '';
 		$disabled  = ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
-
+		$class     = (!empty($this->element['class'])) ? ' class="'. (string) $this->element['class'] .'"' : "";
+		
 		// Initialize JavaScript field attributes.
 		$onchange    = $this->element['onchange'] ? ' onchange="' . (string) $this->element['onchange'] . '"' : '';
 
 		$params      = JComponentHelper::getParams("com_crowdfunding");
 		$currencyId  = $params->get("project_currency");
-		$currency    = CrowdFundingHelper::getCurrency($currencyId);
 		
-		if(!empty($currency["symbol"])) { // Prepended
-		    $html = '<div class="input-prepend input-append"><span class="add-on">'.$currency["symbol"].'</span>';
+		jimport("crowdfunding.currency");
+		$currency    = CrowdFundingCurrency::getInstance($currencyId);
+		
+		if(!empty($currency->symbol)) { // Prepended
+		    $html = '<div class="input-prepend input-append"><span class="add-on">'.$currency->symbol.'</span>';
 		} else { // Append
 		    $html = '<div class="input-append">';
 		}
@@ -56,7 +58,7 @@ class JFormFieldGoal extends JFormField
 		$html .= '<input type="text" name="' . $this->name . '" id="' . $this->id . '"' . ' value="'. htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '"' . $class . $size . $disabled . $readonly . $onchange . $maxLength . '/>';
 			
 		// Appended
-		$html .= '<span class="add-on">'.$currency["abbr"].'</span></div>';
+		$html .= '<span class="add-on">'.$currency->abbr.'</span></div>';
 		
 		return $html;
 	}

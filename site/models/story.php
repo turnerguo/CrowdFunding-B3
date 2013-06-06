@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -14,7 +14,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.modeladmin');
+jimport('joomla.application.component.modelform');
 
 class CrowdFundingModelStory extends CrowdFundingModelProject {
     
@@ -54,7 +54,7 @@ class CrowdFundingModelStory extends CrowdFundingModelProject {
 		$data	    = $app->getUserState($this->option.'.edit.story.data', array());
 		if(!$data) {
 		    
-		    $itemId = $this->getState('project.id');
+		    $itemId = $this->getState($this->getName().'.id');
 		    $userId = JFactory::getUser()->id;
 		    
 		    $data   = $this->getItem($itemId, $userId);
@@ -71,7 +71,7 @@ class CrowdFundingModelStory extends CrowdFundingModelProject {
      * @return	mixed		The record id on success, null on failure.
      * @since	1.6
      */
-    public function save($data, $params = null) {
+    public function save($data) {
         
         $id             = JArrayHelper::getValue($data, "id");
         $description    = JArrayHelper::getValue($data, "description");
@@ -103,18 +103,15 @@ class CrowdFundingModelStory extends CrowdFundingModelProject {
             throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"), ITPrismErrors::CODE_ERROR);
 		}
 	    
+		// Prepare the video
 		$pitchVideo     = JArrayHelper::getValue($data, "pitch_video");
-        
 		$table->set("pitch_video",   $pitchVideo);
 		
-	    // Save image
-        $image = $this->saveImage();
-        
-        if(!empty($image)){
+		// Prepare the image
+		if(!empty($data["pitch_image"])){
             
             // Delete old image if I upload a new one
             if(!empty($table->pitch_image)){
-                jimport('joomla.filesystem.file');
                 
                 $params       = JComponentHelper::getParams($this->option);
 		        $imagesFolder = $params->get("images_directory", "images/projects");
@@ -126,213 +123,100 @@ class CrowdFundingModelStory extends CrowdFundingModelProject {
                     JFile::delete($pitchImage);
                 }
             }
-            $table->set("pitch_image", $image);
+            
+            $table->set("pitch_image", $data["pitch_image"]);
             
         }
         
 	}
 	
-	
-	/**
-     * Save image
-     * 
-     */
-    protected function saveImage(){
-        
-        jimport('joomla.filesystem.folder');
-        jimport('joomla.filesystem.file');
-        jimport('joomla.filesystem.path');
-        
-        $app = JFactory::getApplication();
-        /** @var $app JSite **/
-        
-        $name          = "";
-        $uploadedFile  = $app->input->files->get('jform');
-        $uploadedFile  = JArrayHelper::getValue($uploadedFile, "pitch_image");
-        
-        // Joomla! media extension parameters
-        $this->mediaParams = JComponentHelper::getParams("com_media");
-            
-        // Check for errors
-        $this->checkUploadErrors($uploadedFile);
-        
-        // Save Image
-        if(!empty($uploadedFile['name'])){
-            
-            // Load the parameters.
-		    $params       = JComponentHelper::getParams($this->option);
-		    $imagesFolder = $params->get("images_directory", "images/projects");
-		
-            $options = array(
-            	"pitch_image_width"    => $params->get("pitch_image_width"), 
-            	"pitch_image_height"   => $params->get("pitch_image_height"),
-            );
-            
-            $name = $this->uploadImage($uploadedFile['tmp_name'],$uploadedFile['name'], $imagesFolder, $options);
-            
-        }
-
-        return $name;
-    
-    }
-    
-    protected function checkUploadErrors($uploadedFile){
-        
-        $app = JFactory::getApplication();
-        /** @var $app JSite **/
-        
-        $serverContentLength = (int)$app->input->server->get('CONTENT_LENGTH');
-        
-        // Verify file size
-        $mediaUploadMaxSize  = (int)$this->mediaParams->get("upload_maxsize", 0);
-        $mediaUploadMaxSize  = $mediaUploadMaxSize * 1024 * 1024;
-        
-        $uploadMaxFileSize   = (int)ini_get('upload_max_filesize');
-        $uploadMaxFileSize   = $uploadMaxFileSize * 1024 * 1024;
-        
-        $postMaxSize         = (int)(ini_get('post_max_size'));
-        $postMaxSize         = $postMaxSize * 1024 * 1024;
-        
-        $memoryLimit         = (int)(ini_get('memory_limit'));
-        $memoryLimit         = $memoryLimit * 1024 * 1024;
-        
-        if(
-            $serverContentLength >  $mediaUploadMaxSize OR
-			$serverContentLength >  $uploadMaxFileSize OR
-			$serverContentLength >  $postMaxSize OR
-			$serverContentLength >  $memoryLimit
-		)
-		 
-		{ // Log error
-		    $KB    = 1024 * 1024;
-		    
-		    $info = JText::sprintf("COM_CROWDFUNDING_ERROR_FILE_INFOMATION", 
-		        round($serverContentLength/$KB, 0), 
-		        round($mediaUploadMaxSize/$KB, 0), 
-		        round($uploadMaxFileSize/$KB, 0), 
-		        round($postMaxSize/$KB, 0), 
-		        round($memoryLimit/$KB, 0)
-	        );
-	        
-	        // Log error
-		    JLog::add($info);
-		    throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_WARNFILETOOLARGE"), ITPrismErrors::CODE_WARNING);
-		}
-		
-        if(!empty($uploadedFile['error'])){
-                
-            switch($uploadedFile['error']){
-                case UPLOAD_ERR_INI_SIZE:
-                    throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_UPLOAD_ERR_INI_SIZE'), ITPrismErrors::CODE_HIDDEN_WARNING);
-                case UPLOAD_ERR_FORM_SIZE:
-                    throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_UPLOAD_ERR_FORM_SIZE'), ITPrismErrors::CODE_HIDDEN_WARNING);
-                case UPLOAD_ERR_PARTIAL:
-                    throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_UPLOAD_ERR_PARTIAL'), ITPrismErrors::CODE_HIDDEN_WARNING);
-                case UPLOAD_ERR_NO_FILE:
-//                    throw new Exception( JText::_( 'COM_CROWDFUNDING_ERROR_UPLOAD_ERR_NO_FILE' ), ITPrismErrors::CODE_HIDDEN_WARNING);
-                    break;
-                case UPLOAD_ERR_NO_TMP_DIR:
-                    throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_UPLOAD_ERR_NO_TMP_DIR'), ITPrismErrors::CODE_HIDDEN_WARNING);
-                case UPLOAD_ERR_CANT_WRITE:
-                    throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_UPLOAD_ERR_CANT_WRITE'), ITPrismErrors::CODE_HIDDEN_WARNING);
-                case UPLOAD_ERR_EXTENSION:
-                    throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_UPLOAD_ERR_EXTENSION'), ITPrismErrors::CODE_HIDDEN_WARNING);
-                default:
-                    throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_UPLOAD_ERR_UNKNOWN'), ITPrismErrors::CODE_HIDDEN_WARNING);
-            }
-        
-        }
-            
-    }
     
     /**
-     * 
      * Upload an image
-     * @param string $uploadedFile Path and filename of the source
-     * @param string $uploadedName Filename of the uploaded file
-     * @param string $destFolder   Destination directory where the file will be saved
-     * @param string $suffix	   File name suffix
-     * @param string $options	   Options for resizing
      * 
+     * @param  array $image
+     * @return array
      */
-    protected function uploadImage($uploadedFile, $uploadedName, $destFolder, $options = array()) {
+    public function uploadImage($image) {
         
         $app = JFactory::getApplication();
         /** @var $app JSite **/
         
-        $tmpFolder = $app->getCfg("tmp_path");
+        $app = JFactory::getApplication();
+        /** @var $app JSite **/
         
-        jimport('joomla.image.image');
-        $imageProperties = JImage::getImageFileProperties($uploadedFile);
+        $uploadedFile  = JArrayHelper::getValue($image, 'tmp_name');
+        $uploadedName  = JArrayHelper::getValue($image, 'name');
+        
+        // Load parameters.
+        $params        = JComponentHelper::getParams($this->option);
+        $destFolder    = $params->get("images_directory", "images/projects");
+        
+        $tmpFolder       = $app->getCfg("tmp_path");
+        
+        // Joomla! media extension parameters
+        $mediaParams     = JComponentHelper::getParams("com_media");
+        
+        $upload          = new ITPrismFileUploadImage($image);
         
         // Get allowed mime types from media manager options
-        $mediaUploadMime = explode(",", $this->mediaParams->get("upload_mime"));
-        if(!is_array($mediaUploadMime)) {
-            $mediaUploadMime = array();
-        }
+        $mimeTypes = explode(",", $mediaParams->get("upload_mime"));
+        $upload->setMimeTypes($mimeTypes);
         
         // Get allowed image extensions from media manager options
-        $imageExtensions = explode(",", $this->mediaParams->get("image_extensions"));
-        if(!is_array($imageExtensions)) {
-            $imageExtensions = array();
+        $imageExtensions = explode(",", $mediaParams->get("image_extensions"));
+        $upload->setImageExtensions($imageExtensions);
+        
+        $uploadMaxSize   = $mediaParams->get("upload_maxsize");
+        $KB              = 1024 * 1024;
+        $upload->setMaxFileSize( round($uploadMaxSize * $KB, 0) );
+        
+        // Validate the file
+        $upload->validate();
+        
+        // Generate temporary file name
+        $seed  = substr(md5(uniqid(time() * rand(), true)), 0, 10);
+        $ext   = JFile::makeSafe(JFile::getExt($image['name']));
+        
+        $generatedName = JString::substr(JApplication::getHash($seed), 0, 32);
+        $tmpDestFile   = $tmpFolder.DIRECTORY_SEPARATOR.$generatedName.".".$ext;
+        
+        // Upload temporary file
+        $upload->upload($tmpDestFile);
+        
+        if(!is_file($tmpDestFile)){
+            throw new Exception('COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED');
         }
-        
-        // Check mime type of the file
-        if(false === array_search($imageProperties->mime, $mediaUploadMime)){
-            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_IMAGE_TYPE'), ITPrismErrors::CODE_WARNING );
-        }
-        
-        // Check file extension
-        $ext     = JFile::getExt($uploadedName);
-        $ext     = JFile::makeSafe($ext);
-        
-        if(false === array_search($ext, $imageExtensions)){
-            throw new Exception(JText::sprintf('COM_CROWDFUNDING_ERROR_IMAGE_EXTENSIONS', $ext), ITPrismErrors::CODE_WARNING);
-        }
-        
-        // Generate the name
-        $generatedName = substr(JApplication::getHash(time()), 0, 50);
-        $imageName     = $generatedName . "_pimage.png";
-        
-        $newFile       = $tmpFolder . DIRECTORY_SEPARATOR. $imageName;
-        
-        if(!JFile::upload($uploadedFile, $newFile)){
-            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED'), ITPrismErrors::CODE_WARNING);
-        }
-        
-        if(!is_file($newFile)){
-            throw new Exception('COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED', ITPrismErrors::CODE_WARNING);
-        }
-        
-        // Generate thumbnails
-            
+
         // Resize image
         $image = new JImage();
-        $image->loadFile($newFile);
+        $image->loadFile($tmpDestFile);
         if (!$image->isLoaded()) {
-            throw new Exception(JText::sprintf('COM_CROWDFUNDING_ERROR_FILE_NOT_FOUND', $newFile), ITPrismErrors::CODE_HIDDEN_WARNING);
+            throw new Exception(JText::sprintf('COM_CROWDFUNDING_ERROR_FILE_NOT_FOUND', $tmpDestFile), ITPrismErrors::CODE_HIDDEN_WARNING);
         }
         
-        $imageFile   = $destFolder . DIRECTORY_SEPARATOR. $imageName;
+        $imageName     = $generatedName . "_pimage.png";
+        $imageFile     = $destFolder.DIRECTORY_SEPARATOR.$imageName;
         
-        // Create commoin image
-        $width       = JArrayHelper::getValue($options, "pitch_image_width",  600);
-        $height      = JArrayHelper::getValue($options, "pitch_image_height", 400);
+        // Create main image
+        $width         = $params->get("pitch_image_width", 600);
+        $height        = $params->get("pitch_image_height", 400);
         $image->resize($width, $height, false);
         $image->toFile($imageFile, IMAGETYPE_PNG);
         
-        // Remove the temporary 
-        if(is_file($newFile)){
-            JFile::delete($newFile);
+        // Remove the temporary
+        if(is_file($tmpDestFile)){
+            JFile::delete($tmpDestFile);
         }
         
-        return $imageName;
+        return $imageName; 
     }
     
 	/**
      * Delete image only
      *
      * @param integer Item id
+     * @param integer User id
      */
     public function removeImage($id, $userId){
         

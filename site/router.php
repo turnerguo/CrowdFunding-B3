@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -12,6 +12,8 @@
  */
 
 defined('_JEXEC') or die;
+
+jimport('joomla.application.categories');
 
 // Load router
 if(!class_exists("CrowdFundingHelperRoute")) {
@@ -70,18 +72,6 @@ function CrowdFundingBuildRoute(&$query){
 	    
     	switch($view) {
     	    
-    	    case "category":
-    	        if ($mId != intval($query['id']) || $mView != $view) {
-    	            $catId = $query['id'];
-    	            
-    	            CrowdFundingHelperRoute::prepareCategoriesSegments($catId, $segments, $mId);
-    			    unset($query['id']);
-		            unset($query['catid']);
-    	        }
-    	        
-    	        break;
-    	        
-    	        
     	    case "backing":
     	        
     	        $catId      = $query['catid'];
@@ -95,14 +85,14 @@ function CrowdFundingBuildRoute(&$query){
     	        
     	        $segments[] = "backing";
     	        
-    	        if(isset($query["rid"])) {
+    	        /* if(isset($query["rid"])) {
     	            
     	            if( !empty($query["rid"]) ) {
                         $segments[] = $query["rid"];
     	            }
     	            
     	            unset($query["rid"]);
-    	        }
+    	        } */
     	        
     	        break;
     	        
@@ -191,24 +181,53 @@ function CrowdFundingParseRoute($segments){
         return $vars;
     } 
     
-    // Category 
+    
+    // COUNT == 1
+    
+    // Category ( Discover )
 	if($count == 1) { 
 	    
-	    $itemId         = (int)$segments[0];
+	    // we check to see if an alias is given.  If not, we assume it is a project,
+	    // because categories have always alias.
+	    if (false == strpos($segments[0], ':')) {
+	        $vars['view'] = 'details';
+	        $vars['id']   = (int)$segments[0];
+	        return $vars;
+	    }
+	    
+	    list($id, $alias) = explode(':', $segments[0], 2);
+	    
+	    // first we check if it is a category
+	    $category = JCategories::getInstance('CrowdFunding')->get($id);
 
-	    $vars['view']   = 'discover';
-		$vars['id']     = $itemId;
-		
-		return $vars;
+	    if ($category AND ( strcmp($category->alias, $alias) == 0) ) {
+	        $vars['view'] = 'discover';
+	        $vars['id']   = $id;
+	        return $vars;
+	    } else {
+	        $project = CrowdFundingHelperRoute::getProject($id);
+			if ($project) {
+				if ($project->alias == $alias) {
+					$vars['view']  = 'details';
+					$vars['catid'] = (int)$project->catid;
+					$vars['id']    = (int)$id;
+
+					return $vars;
+				}
+			}
+		}
+	    
 	}
 	
-	if($count == 3) { 
+	// COUNT >= 2
+	
+	if($count >= 2) { 
 	    
-	    $segment2  = $segments[$count - 1];
+	    $view  = $segments[$count - 1];
 	    
-	    switch($segment2) {
+	    switch($view) {
 	        
-	        case "backing": // Backing without reward
+	        case "backing":
 	            
 	            $itemId         = (int)$segments[$count - 2];
 	            
@@ -228,14 +247,16 @@ function CrowdFundingParseRoute($segments){
         		
 	            break;
 	            
-	        default: // Screens of details - "updates", "comments", "funders"
-	            
+            case "updates": // Screens of details - "updates", "comments", "funders"
+	        case "comments":
+            case "funders":    
+                
 	            $itemId         = (int)$segments[$count - 2];
-	            $catId          = (int)$segments[$count - 3];
+// 	            $catId          = (int)$segments[$count - 3];
 	            
         	    $vars['view']   = 'details';
         		$vars['id']     = (int)$itemId;
-        		$vars['catid']  = (int)$catId;
+//         		$vars['catid']  = (int)$catId;
         		
         		// Get screen
         		$screen    = $segments[$count - 1];
@@ -246,38 +267,28 @@ function CrowdFundingParseRoute($segments){
         	    
 	            break;
 	            
+	        default:
+	            
+        	    // if there was more than one segment, then we can determine where the URL points to
+            	// because the first segment will have the target category id prepended to it.  If the
+            	// last segment has a number prepended, it is details, otherwise, it is a category.
+            	$catId = (int)$segments[$count - 2];
+            	$id    = (int)$segments[$count - 1];
+            
+            	if ($id > 0 AND $catId > 0) {
+            		$vars['view']   = 'details';
+            		$vars['catid']  = $catId;
+            		$vars['id']     = $id;
+            	} else {
+            		$vars['view']   = 'category';
+            		$vars['id']     = $id;
+            	}
+            	
+            	break;
+    	
 	    }
 	    
-		return $vars;
 	}
 	
-	// Backing with rewards
-	if($count == 4) { 
-	    
-	    $itemId         = (int)$segments[$count - 3];
-	    $rewardId       = (int)$segments[$count - 1];
-
-	    $vars['view']   = 'backing';
-		$vars['id']     = (int)$itemId;
-		$vars['rid']    = (int)$rewardId;
-		
-		return $vars;
-	}
-	
-    // if there was more than one segment, then we can determine where the URL points to
-	// because the first segment will have the target category id prepended to it.  If the
-	// last segment has a number prepended, it is details, otherwise, it is a category.
-	$catId     = (int)$segments[0];
-	$itemId    = (int)$segments[$count - 1];
-
-	if ($itemId > 0) {
-		$vars['view']   = 'details';
-		$vars['catid']  = $catId;
-		$vars['id']     = $itemId;
-	} else {
-		$vars['view']   = 'category';
-		$vars['id']     = $catId;
-	}
-
     return $vars;
 }

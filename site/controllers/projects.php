@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -14,17 +14,15 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport( 'joomla.application.component.controllerform' );
+jimport('itprism.controller.default');
 
 /**
  * CrowdFunding project controller
  *
- * @package     ITPrism Components
- * @subpackage  CrowdFunding
-  */
-class CrowdFundingControllerProjects extends JController {
-    
-    protected $defaultLink = "index.php?option=com_crowdfunding";
+ * @package     CrowdFunding
+ * @subpackage  Components
+ */
+class CrowdFundingControllerProjects extends ITPrismControllerDefault {
     
 	/**
      * Method to get a model object, loading it if required.
@@ -49,10 +47,10 @@ class CrowdFundingControllerProjects extends JController {
 		
         $userId = JFactory::getUser()->id;
         if(!$userId) {
-            $this->setMessage(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), "notice");
-            
-            $link = $this->prepareRedirectLink("login_form");
-            $this->setRedirect(JRoute::_($link, false));
+            $redirectData = array(
+                "force_direction" => "login_form"
+            );
+            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), $redirectData);
             return;
         }
         
@@ -64,33 +62,31 @@ class CrowdFundingControllerProjects extends JController {
 		$state     = $app->input->get->get('state', 0, 'int');
         $state     = (!$state) ? 0 : 1;
         
+        $redirectData = array(
+            "view" => "projects"
+        );
+        
         $model   = $this->getModel();
-        /** @var $model CrowdFundingModelProject **/
+        /** @var $model CrowdFundingModelProjectItem **/
         
         $item   = $model->getItem($itemId);
         if($item->user_id != $userId) {
-            $this->setMessage(JText::_('COM_CROWDFUNDING_ERROR_INVALID_PROJECT'), "notice");
-            
-            $link = $this->prepareRedirectLink("projects");
-            $this->setRedirect(JRoute::_($link, false));
+            $this->displayWarning(JText::_('COM_CROWDFUNDING_ERROR_INVALID_PROJECT'), $redirectData);
             return;
         }
             
         if($item->approved) {
-            $this->setMessage(JText::_('COM_CROWDFUNDING_ERROR_APPROVED_UNPUBLISH'), "notice");
-            
-            $link = $this->prepareRedirectLink("projects");
-            $this->setRedirect(JRoute::_($link, false));
+            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_APPROVED_UNPUBLISH'), $redirectData);
             return;
         }
             
-        try{
+        try {
             
             $model->validate($item);
             
             $model->saveState($itemId, $state);
             
-        } catch(Exception $e){
+        } catch(Exception $e) {
             
             JLog::add($e->getMessage());
             
@@ -98,9 +94,7 @@ class CrowdFundingControllerProjects extends JController {
             switch($code) {
                 
                 case ITPrismErrors::CODE_WARNING:
-                    $this->setMessage($e->getMessage(), "notice");
-                    $link = $this->prepareRedirectLink("projects");
-                    $this->setRedirect(JRoute::_($link, false));
+                    $this->displayWarning($e->getMessage(), $redirectData);
                     return;
                 break;
                 
@@ -111,36 +105,12 @@ class CrowdFundingControllerProjects extends JController {
             
         }
         
-        // Redirect to next page
-        $msg  = JText::_("COM_CROWDFUNDING_PROJECT_PUBLISHED_SUCCESSFULY");
-        $link = $this->prepareRedirectLink("projects");
-		$this->setRedirect(JRoute::_($link, false), $msg);
-    }
-
-	/**
-     * 
-     * Prepare return link
-     * @param integer $itemId
-     */
-    protected function prepareRedirectLink($direction, $itemId = 0) {
-        
-        // Prepare redirection
-        switch($direction) {
-            
-            case "login_form":
-                $link = "index.php?option=com_users&view=login";
-                break;
-                
-            case "projects":
-                $link = $this->defaultLink."&view=projects";
-                break;
-                
-            default: // List
-                $link = $this->defaultLink."&view=descover";
-                break;
-        }
-        
-        return $link;
+		// Redirect to next page
+		if(!$state) {
+		    $this->displayMessage(JText::_("COM_CROWDFUNDING_PROJECT_UNPUBLISHED_SUCCESSFULY"), $redirectData);
+		} else {
+		    $this->displayMessage(JText::_("COM_CROWDFUNDING_PROJECT_PUBLISHED_SUCCESSFULY"), $redirectData);
+		}
     }
     
 }

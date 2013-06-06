@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -32,13 +32,13 @@ defined('_JEXEC') or die;?>
 			<h3><?php echo JText::_("COM_CROWDFUNDING_INVESTMENT_SUMMARY");?></h3>
 			<div class="bs-docs-example">
 				<p><?php 
-				$amount = JHtml::_("crowdfunding.amount", $this->amount, $this->currency);
+				$amount = $this->currency->getAmountString($this->amount);
 				echo JText::sprintf("COM_CROWDFUNDING_INVESTMENT_AMOUNT", $amount); ?></p>
 				<p><?php echo JText::sprintf("COM_CROWDFUNDING_FUNDING_TYPE", $this->item->funding_type);?></p>
 				<p class="sticky"><?php
-				$goal    = JHtml::_("crowdfunding.amount", $this->item->goal, $this->currency); 
 				$endDate = JHtml::_('date', $this->item->funding_end, JText::_('DATE_FORMAT_LC3'));
             	if($this->item->funding_type == "FIXED") {
+                    $goal    = $this->currency->getAmountString($this->item->goal);
             	    echo JText::sprintf("COM_CROWDFUNDING_FUNDING_TYPE_INFO_FIXED", $goal, $endDate);
             	} else {
             	    echo JText::sprintf("COM_CROWDFUNDING_FUNDING_TYPE_INFO_FLEXIBLE", $endDate);

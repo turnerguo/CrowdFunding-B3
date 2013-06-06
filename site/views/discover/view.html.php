@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -41,14 +41,18 @@ class CrowdFundingViewDiscover extends JView {
         $this->pagination     = $this->get('Pagination');
         $this->params         = $params = $this->state->get("params");
 
+        $this->imageWidth     = $this->params->get("image_width", 200);
+        $this->imageHeight    = $this->params->get("image_height", 200);
+        
         $this->items          = $model->prepareItems($this->items); 
         
         // Get the folder with images
         $this->imageFolder    = $params->get("images_directory", "images/projects");
         
         // Get currency
+        jimport("crowdfunding.currency");
         $currencyId           = $this->params->get("project_currency");
-		$this->currency       = CrowdFundingHelper::getCurrency($currencyId);
+        $this->currency       = CrowdFundingCurrency::getInstance($currencyId);
 		
 		// Get a social platform for integration
 		$this->socialPlatform = $this->params->get("integration_social_platform");

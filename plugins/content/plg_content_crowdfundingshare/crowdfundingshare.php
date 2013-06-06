@@ -1,7 +1,7 @@
 <?php
 /**
- * @package		 ITPrism Plugins
- * @subpackage	 CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Plugins
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -17,10 +17,10 @@ defined('_JEXEC') or die;
 jimport('joomla.plugin.plugin');
 
 /**
- * CrowdFunding Navigation Plugin
+ * CrowdFunding Share Plugin
  *
- * @package		ITPrism Plugins
- * @subpackage	CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Plugins
  */
 class plgContentCrowdFundingShare extends JPlugin {
     
@@ -215,14 +215,15 @@ class plgContentCrowdFundingShare extends JPlugin {
      */
     private function getShortUrl($link){
         
-        JLoader::register("ItpSharePluginShortUrl", dirname(__FILE__).DIRECTORY_SEPARATOR."shorturl.php");
+        jimport("itprism.utilities.shorturl");
+        
         $options = array(
             "login"     => $this->params->get("shortener_login"),
             "api_key"   => $this->params->get("shortener_api_key"),
             "service"   => $this->params->get("shortener_service"),
         );
         
-        $shortUrl 	= new CrowdFundingSharePluginShortUrl($link, $options);
+        $shortUrl 	= new ITPrismShortUrl($link, $options);
         $shortLink  = $shortUrl->getUrl();
         
         // Log the error and set the long link as a value of short one.

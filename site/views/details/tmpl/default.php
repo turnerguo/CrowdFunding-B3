@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -18,7 +18,6 @@ defined('_JEXEC') or die;?>
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
     <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php endif; ?>
-	
 	
 	<?php if($this->item->event->beforeDisplayContent) {?>
 	<div class="row-fluid">
@@ -67,7 +66,9 @@ defined('_JEXEC') or die;?>
     	<div class="span4">
     		<?php echo $this->loadTemplate("info");?>
     		<div class="clearfix">&nbsp;</div>
+    		<?php if(!empty($this->rewards)){?>
     		<?php echo $this->loadTemplate("rewards");?>
+    		<?php }?>
     	</div>
 	</div>
 </div>

@@ -381,3 +381,7 @@ form.bs-docs-example {
     margin-right: auto;
     max-width: 100%;
 }
+
+.cf-projects-list .button:hover{
+	color: white; 
+}

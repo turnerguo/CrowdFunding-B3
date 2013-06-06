@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -14,7 +14,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.modeladmin');
+jimport('joomla.application.component.modelform');
 
 class CrowdFundingModelFunding extends CrowdFundingModelProject {
     
@@ -70,7 +70,7 @@ class CrowdFundingModelFunding extends CrowdFundingModelProject {
      * @return	mixed		The record id on success, null on failure.
      * @since	1.6
      */
-    public function save($data, $params = null) {
+    public function save($data) {
         
         $id             = JArrayHelper::getValue($data, "id");
         $goal           = JArrayHelper::getValue($data, "goal");
@@ -108,37 +108,41 @@ class CrowdFundingModelFunding extends CrowdFundingModelProject {
 		if (empty($table->id) OR ($userId != $table->user_id)) {
             throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"), ITPrismErrors::CODE_ERROR);
 		}
-	    
+		
+		$fundingEndDate = "0000-00-00";
+		
 		switch($durationType) {
 		    
 		    case "date":
 		        
-		        jimport('joomla.utilities.date');
 		        $table->set("funding_days", 0);
 		        
-		        $date = new JDate($table->get("funding_end"));
-                $table->set("funding_end", $date->toSql());
-                
+		        if(CrowdFundingHelper::isValidDate($table->funding_end)) {
+		            jimport('joomla.utilities.date');
+		            $date = new JDate($table->get("funding_end"));
+		            $fundingEndDate = $date->toSql();
+		        } 
+		        
+                $table->set("funding_end", $fundingEndDate);
 		        break;
 	        
 		    case "days":
-		        $table->set("funding_end", "0000-00-00");
+		        $table->set("funding_end", $fundingEndDate);
 		        break;
 		        
 		    default:
 		        $table->set("funding_days", 0);
-		        $table->set("funding_end", "0000-00-00");
+		        $table->set("funding_end",  $fundingEndDate);
 		        break;
 		}
 		
 	}
 	
 	/**
-	 * 
-	 * Valudate data
-	 * @param unknown_type $data
+	 * Valudate funding data
+	 * @param array $data
 	 */
-	public function validate2($data) {
+	public function validateFundingData($data) {
 	    
 	    $params        = JComponentHelper::getParams($this->option);
 	    
@@ -152,12 +156,10 @@ class CrowdFundingModelFunding extends CrowdFundingModelProject {
             throw new Exception( JText::_('COM_CROWDFUNDING_ERROR_INVALID_GOAL'), ITPrismErrors::CODE_WARNING );
         }
         
-//        var_dump($data);exit;
-        
 	    // Verify funding type
 	    if(strcmp("days", $fundingType) == 0) {
 	        
-	        $days          = JArrayHelper::getValue($data, "funding_days", 0, "integer");
+	        $days = JArrayHelper::getValue($data, "funding_days", 0, "integer");
 	        if($days < $minimumDays) {
 	            throw new Exception( JText::_('COM_CROWDFUNDING_ERROR_INVALID_DAYS'), ITPrismErrors::CODE_WARNING );
 	        }
@@ -165,12 +167,10 @@ class CrowdFundingModelFunding extends CrowdFundingModelProject {
 	    } else {
 	        
             $fundingDate    = JArrayHelper::getValue($data, "funding_end");
-            $date           = new JDate($fundingDate);
-            $unixTime       = $date->toUnix();
-            
-            if($unixTime < 0) {
+            if(!CrowdFundingHelper::isValidDate($fundingDate)) {
                 throw new Exception( JText::_('COM_CROWDFUNDING_ERROR_INVALID_DATE'), ITPrismErrors::CODE_WARNING );
             }
+           
 	    }
 	    
 	}

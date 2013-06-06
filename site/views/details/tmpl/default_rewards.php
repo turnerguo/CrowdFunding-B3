@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -19,10 +19,10 @@ defined('_JEXEC') or die;?>
 	<div class="reward_title center"><?php echo JText::_("COM_CROWDFUNDING_PLEDGE_REWARDS");?></div>
 	<?php foreach($this->rewards as $reward) {?>
     	<div class="reward">
-    		<a href="<?php echo JText::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug, $reward->id));?>">
+    		<a href="<?php echo JText::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug, "default", $reward->id));?>">
     			<span class="ramount">
     			<?php 
-    			$amount = JHtml::_("CrowdFunding.amount", $reward->amount, $this->currency);
+    			$amount = $this->currency->getAmountString($reward->amount); 
     			echo JText::sprintf("COM_CROWDFUNDING_INVEST_MORE", $amount ); ?>
     			</span>
     			<span class="rtitle"><?php echo $this->escape($reward->title); ?></span>

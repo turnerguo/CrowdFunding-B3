@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -23,16 +23,19 @@ defined('_JEXEC') or die;?>
     	<ul class="thumbnails">
     	<?php for($i = 1, $max = 3; $i < 4; $i++) { ?>
     	<?php if(isset($items[$i])) {
-    	    $raised   = JHtml::_("crowdfunding.amount", $items[$i]->funded, $this->currency);
+    	    $raised   = $this->currency->getAmountString($items[$i]->funded); 
     		
     		// Prepare the value that I am going to display
     		$fundedPercents = JHtml::_("crowdfunding.funded", $items[$i]->funded_percents);
-    		$socialProfile  = JHtml::_("crowdfunding.socialProfile", $items[$i]->user_id, $this->socialPlatform);
+    		
+    		$user = JFactory::getUser($items[$i]->user_id);
+    		$socialProfile  = JHtml::_("crowdfunding.socialProfile", $this->socialPlatform, $user);
+    		
     	 ?>
           <li class="span4">
             <div class="thumbnail">
               <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($items[$i]->slug, $items[$i]->catslug)); ?>">
-              	<img src="<?php echo $this->imageFolder."/".$items[$i]->image;?>" alt="<?php echo $items[$i]->title;?>" width="200" height="200">
+              	<img src="<?php echo $this->imageFolder."/".$items[$i]->image;?>" alt="<?php echo $items[$i]->title;?>" width="<?php echo $this->imageWidth;?>" height="<?php echo $this->imageHeight;?>">
           	  </a>
               <div class="caption">
                 <h3><a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($items[$i]->slug, $items[$i]->catslug)); ?>"><?php echo $items[$i]->title;?></a></h3>
@@ -44,7 +47,7 @@ defined('_JEXEC') or die;?>
                     <?php }?>
                 </span>
                 <p><?php echo $items[$i]->short_desc;?></p>
-                    <?php echo JHtml::_("CrowdFunding.progressbar", $fundedPercents, $items[$i]->days_left, $items[$i]->funding_type);?>
+                    <?php echo JHtml::_("crowdfunding.progressbar", $fundedPercents, $items[$i]->days_left, $items[$i]->funding_type);?>
                 <div class="row-fluid">
                 	<div class="span4">
                 	<div><strong><?php echo $items[$i]->funded_percents;?>%</strong></div>

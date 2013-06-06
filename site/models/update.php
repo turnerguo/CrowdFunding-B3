@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -141,12 +141,6 @@ class CrowdFundingModelUpdate extends JModelForm {
 		// Convert to the JObject before adding other data.
 		$properties = $table->getProperties();
 		$this->item = JArrayHelper::toObject($properties, 'JObject');
-
-		if (property_exists($this->item, 'params')) {
-			$registry = new JRegistry;
-			$registry->loadString($this->item->params);
-			$this->item->params = $registry->toArray();
-		}
 		
 		return $this->item;
 	}
@@ -179,6 +173,7 @@ class CrowdFundingModelUpdate extends JModelForm {
         $row->set("title",             $title);
         $row->set("description",       $desc);
         
+        // It it is a new record, set the data that won't be able to be edited.
         if(!$row->user_id) {
             $row->set("record_date",   null);
             $row->set("project_id",    $projectId);

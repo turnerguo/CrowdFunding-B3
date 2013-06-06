@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -42,7 +42,7 @@ defined('_JEXEC') or die;
         <?php echo JHtml::_('form.token'); ?>
         <div class="clearfix"></div>
         
-        <input type="hidden" name="items_number" id="items_number" value="<?php echo count($this->items);?>" />
+        <input type="hidden" name="items_number" id="items_number" value="<?php echo (0 == count($this->items)) ? 1 : count($this->items);?>" />
         <?php if(!$this->debugMode) {?>
         <button class="btn btn-large btn-block" type="button" id="cf_add_new_reward"><?php echo JText::_("COM_CROWDFUNDING_REWARDS_ADD_REWARD");?></button>
         <?php }?>

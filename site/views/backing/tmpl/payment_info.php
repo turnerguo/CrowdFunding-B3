@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -16,12 +16,14 @@ defined('_JEXEC') or die;?>
 
 <ul class="thumbnails">
   <?php if(isset($this->item)) {
-    $raised   = JHtml::_("CrowdFunding.amount", $this->item->funded, $this->currency);
+      
+    $raised         = $this->currency->getAmountString($this->item->funded); 
 	
 	// Prepare the value that I am going to display
 	$fundedPercents = JHtml::_("crowdfunding.funded", $this->item->funded_percents);
-	$socialProfile  = JHtml::_("crowdfunding.socialProfile", $this->item->user_id, $this->socialPlatform);
 	
+	$user = JFactory::getUser($this->item->user_id);
+	$socialProfile  = JHtml::_("crowdfunding.socialProfile", $this->socialPlatform, $user);
  ?>
   <li class="span12">
     <div class="thumbnail">

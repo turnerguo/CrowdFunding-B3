@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -55,10 +55,10 @@ class CrowdFundingModelBacking extends JModel {
         $params  = $app->getParams();
         
         // Project ID
-        $itemId   = $app->input->getInt('id');
-        $this->setState($this->context . '.id', $itemId);
+        $itemId   = $app->input->getUint('id');
+        $this->setState($this->context.'.id', $itemId);
         
-        $projectContext = $this->context."project".$itemId;
+        $projectContext = $this->context.".project".$itemId;
         
         // Reward ID
         $value   = $app->getUserStateFromRequest($projectContext.".rid", 'rid');
@@ -88,7 +88,7 @@ class CrowdFundingModelBacking extends JModel {
             $id = $this->getState($this->context.'.id');
         }
         
-        if (!isset($this->item)) {
+        if (is_null($this->item)) {
             
             $db     = $this->getDbo();
             $query  = $db->getQuery(true);
@@ -143,9 +143,9 @@ class CrowdFundingModelBacking extends JModel {
             $query = $db->getQuery(true);
             
             $query
-                ->select("id, title, description, amount")
-                ->from("#__crowdf_rewards")
-                ->where("project_id = " .(int)$id);
+                ->select("a.id, a.title, a.description, a.amount")
+                ->from($db->quoteName("#__crowdf_rewards") ." AS a")
+                ->where("a.project_id = " .(int)$id);
 
             $db->setQuery($query);
             $results = $db->loadObjectList();
@@ -166,6 +166,7 @@ class CrowdFundingModelBacking extends JModel {
             $rewardId = $this->getState($this->context.'.rid');
         }
         
+        // Get project id
         $projectId = $this->getState($this->context . '.id');
         
         $row = null;

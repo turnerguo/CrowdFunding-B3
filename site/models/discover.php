@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -88,8 +88,7 @@ class CrowdFundingModelDiscover extends JModelList {
     protected function getStoreId($id = '') {
         
         // Compile the store id.
-        $id.= ':' . $this->getState('list.ordering');
-        $id.= ':' . $this->getState('list.direction');
+        $id.= ':' . $this->getState($this->context.'.category_id');
 
         return parent::getStoreId($id);
     }

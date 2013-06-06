@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -66,8 +66,9 @@ class CrowdFundingViewBacking extends JView {
         JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
         
         // Get currency
+		jimport("crowdfunding.currency");
         $currencyId              = $this->params->get("project_currency");
-		$this->currency          = CrowdFundingHelper::getCurrency($currencyId);
+        $this->currency          = CrowdFundingCurrency::getInstance($currencyId);
 		
 		// Get a social platform for integration
 		$this->socialPlatform    = $this->params->get("integration_social_platform");
@@ -232,9 +233,9 @@ class CrowdFundingViewBacking extends JView {
         $item->catslug      = $this->item->catslug;
         $item->rewardId     = $this->rewardId;
         $item->amount       = $this->amount;
-        $item->currencyCode = JArrayHelper::getValue($this->currency, "abbr");
+        $item->currencyCode = $this->currency->abbr;
         
-        $results            = $dispatcher->trigger('onProjectPayment', array('com_crowdfunding.payment', $item));
+        $results            = $dispatcher->trigger('onProjectPayment', array('com_crowdfunding.payment', $item, $this->params));
 		$this->item->event->onProjectPayment = trim(implode("\n", $results));
 		
     }
