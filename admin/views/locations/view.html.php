@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -22,6 +22,14 @@ class CrowdFundingViewLocations extends JView {
     protected $pagination;
     protected $state;
     
+    protected $documentTitle;
+    protected $option;
+    
+    public function __construct($config) {
+        parent::__construct($config);
+        $this->option = JFactory::getApplication()->input->get("option");
+    }
+    
     public function display($tpl = null){
         
         $this->state      = $this->get('State');
@@ -29,13 +37,9 @@ class CrowdFundingViewLocations extends JView {
         $this->pagination = $this->get('Pagination');
         
         // Prepare filters
-        $listOrder        = $this->escape($this->state->get('list.ordering'));
-        $listDirn         = $this->escape($this->state->get('list.direction'));
-        $saveOrder        = (strcmp($listOrder, 'a.name') != 0 ) ? false : true;
-        
-        $this->listOrder  = $listOrder;
-        $this->listDirn   = $listDirn;
-        $this->saveOrder  = $saveOrder;
+        $this->listOrder  = $this->escape($this->state->get('list.ordering'));
+        $this->listDirn   = $this->escape($this->state->get('list.direction'));
+        $this->saveOrder  = (strcmp($this->listOrder, 'a.name') != 0 ) ? false : true;
         
         // Add submenu
         CrowdFundingHelper::addSubmenu($this->getName());
@@ -87,7 +91,15 @@ class CrowdFundingViewLocations extends JView {
 	 * @return void
 	 */
 	protected function setDocument() {
+	    
 		$this->document->setTitle(JText::_('COM_CROWDFUNDING_LOCATIONS_MANAGER'));
+		
+		// Add scripts
+		JHtml::_('behavior.tooltip');
+		JHtml::_('behavior.formvalidation');
+		
+		$this->document->addScript(JURI::root() . 'media/'.$this->option.'/js/admin/'.JString::strtolower($this->getName()).'.js');
+		
 	}
 
 }

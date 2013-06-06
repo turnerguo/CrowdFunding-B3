@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -14,18 +14,15 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport( 'joomla.application.component.controllerform' );
+jimport('itprism.controller.form.backend');
 
 /**
- * CrowdFunding currency controller
+ * CrowdFunding import controller
  *
- * @package     ITPrism Components
- * @subpackage  CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
   */
-class CrowdFundingControllerImport extends JControllerForm {
-    
-    // Check the table in so it can be edited.... we are done with it anyway
-    private    $defaultLink = 'index.php?option=com_crowdfunding';
+class CrowdFundingControllerImport extends ITPrismControllerFormBackend {
     
     /**
      * Proxy for getModel.
@@ -43,11 +40,14 @@ class CrowdFundingControllerImport extends JControllerForm {
         $app = JFactory::getApplication();
         /** @var $app JAdministrator **/
         
-        $link    = "";
         $task    = $this->getTask();
         $data    = $app->input->post->get('jform', array(), 'array');
         $file    = $app->input->files->get('jform', array(), 'array');
         $data    = array_merge($data, $file);
+        
+        $redirectData = array(
+            "view"  => "currencies",
+        );
         
         $model   = $this->getModel();
         /** @var $model CrowdFundingModelImport **/
@@ -64,71 +64,54 @@ class CrowdFundingControllerImport extends JControllerForm {
         
         // Check for errors.
         if($validData === false){
-            
-            $this->defaultLink .= "&view=import&type=".$task;
-            
-            $this->setMessage($model->getError(), "notice");
-            $this->setRedirect(JRoute::_($this->defaultLink, false));
+            $this->displayNotice($form->getErrors(), $redirectData);
             return;
         }
             
-        jimport('joomla.filesystem.folder');
-        jimport('joomla.filesystem.file');
-        jimport('joomla.filesystem.path');
-        jimport('joomla.filesystem.archive');
+        $file     = JArrayHelper::getValue($data, "data");
+        if(empty($file)) {
+            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED'), $redirectData);
+            return;
+        }
         
-        try{
+        try {
             
-            $file     = JArrayHelper::getValue($data, "data");
-            $filePath = $model->uploadFile($file);
+            jimport('joomla.filesystem.folder');
+            jimport('joomla.filesystem.file');
+            jimport('joomla.filesystem.path');
+            jimport('joomla.filesystem.archive');
+            jimport('itprism.file.upload');
             
-            $fileName = JFile::getName($filePath);
+            $destination  = JPath::clean( $app->getCfg("tmp_path") ) . DIRECTORY_SEPARATOR. JFile::makeSafe($file['name']);
+            
+            $upload = new ITPrismFileUpload($file);
+            $upload->validate();
+            $upload->upload($destination);
+            
+            $fileName = JFile::getName($destination);
             
             // Extract file if it is archive
             $ext      = JString::strtolower( JFile::getExt($fileName) );
             if(strcmp($ext, "zip") == 0) {
-                
-                $destFolder  = JPath::clean( $app->getCfg("tmp_path") ).DIRECTORY_SEPARATOR."currencies";
-                $filePath    = $model->extractFile($filePath, $destFolder);
-
-            } 
             
+                $destFolder  = JPath::clean( $app->getCfg("tmp_path") ).DIRECTORY_SEPARATOR."currencies";
+                if(is_dir($destFolder)) {
+                    JFolder::delete($destFolder);
+                }
+            
+                $filePath    = $model->extractFile($destination, $destFolder);
+            
+            }
+           
             $resetId  = JArrayHelper::getValue($data, "reset_id", false, "bool");
             $model->importCurrencies($filePath, $resetId);
             
-        } catch ( Exception $e ) {
-            
+        } catch (Exception $e) {
             JLog::add($e->getMessage());
-            
-            $code = $e->getCode();
-            switch($code) {
-                
-                case ITPrismErrors::CODE_WARNING:
-                    
-                    $this->setMessage($e->getMessage(), "notice");
-                    $link = $this->defaultLink."&view=import&type=".$task;
-                    $this->setRedirect(JRoute::_($link, false));
-                    return;
-                    
-                break;
-                
-                case ITPrismErrors::CODE_HIDDEN_WARNING:
-                    
-                    $this->setMessage(JText::_("COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED"), "notice");
-                    $this->setRedirect(JRoute::_($this->defaultLink."&view=".$task, false));
-                    return;
-                    
-                break;
-                
-                default:
-                    throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'), ITPrismErrors::CODE_ERROR);
-                break;
-            }
-            
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'), ITPrismErrors::CODE_ERROR);
         }
         
-        $link = $this->defaultLink."&view=".$task;
-        $this->setRedirect(JRoute::_($link, false), JText::_('COM_CROWDFUNDING_CURRENCIES_IMPORTED'));
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_CURRENCIES_IMPORTED'), $redirectData);
         
     }
     
@@ -139,12 +122,14 @@ class CrowdFundingControllerImport extends JControllerForm {
         $app = JFactory::getApplication();
         /** @var $app JAdministrator **/
         
-        $msg     = "";
-        $link    = "";
         $task    = $this->getTask();
         $data    = $app->input->post->get('jform', array(), 'array');
         $file    = $app->input->files->get('jform', array(), 'array');
         $data    = array_merge($data, $file);
+        
+        $redirectData = array(
+            "view"  => "locations",
+        );
         
         $model   = $this->getModel();
         /** @var $model CrowdFundingModelImport **/
@@ -161,76 +146,55 @@ class CrowdFundingControllerImport extends JControllerForm {
         
         // Check for errors.
         if($validData === false){
-            
-            $this->defaultLink .= "&view=import&type=".$task;
-            
-            $this->setMessage($model->getError(), "notice");
-            $this->setRedirect(JRoute::_($this->defaultLink, false));
+            $this->displayNotice($form->getErrors(), $redirectData);
             return;
         }
             
-        jimport('joomla.filesystem.folder');
-        jimport('joomla.filesystem.file');
-        jimport('joomla.filesystem.path');
-        jimport('joomla.filesystem.archive');
+        $file     = JArrayHelper::getValue($data, "data");
+        if(empty($file)) {
+            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED'), $redirectData);
+            return;
+        }
         
-        try{
+        try {
+             
+            jimport('joomla.filesystem.folder');
+            jimport('joomla.filesystem.file');
+            jimport('joomla.filesystem.path');
+            jimport('joomla.filesystem.archive');
+            jimport('itprism.file.upload');
             
-            $file     = JArrayHelper::getValue($data, "data");
+            $destination  = JPath::clean( $app->getCfg("tmp_path") ) . DIRECTORY_SEPARATOR. JFile::makeSafe($file['name']);
             
-            $filePath = $model->uploadFile($file);
-            $fileName = JFile::getName($filePath);
+            $upload = new ITPrismFileUpload($file);
+            $upload->validate();
+            $upload->upload($destination);
+            
+            $fileName = JFile::getName($destination);
             
             // Extract file if it is archive
             $ext      = JString::strtolower( JFile::getExt($fileName) );
             if(strcmp($ext, "zip") == 0) {
-                
+            
                 $destFolder  = JPath::clean( $app->getCfg("tmp_path") ).DIRECTORY_SEPARATOR."locations";
                 if(is_dir($destFolder)) {
                     JFolder::delete($destFolder);
                 }
                 
-                $filePath    = $model->extractFile($filePath, $destFolder);
-
-            } 
+                $filePath    = $model->extractFile($destination, $destFolder);
+            
+            }
             
             $resetId  = JArrayHelper::getValue($data, "reset_id", false, "bool");
             $model->importLocations($filePath, $resetId);
             
-        } catch ( Exception $e ) {
             
+        } catch (Exception $e) {
             JLog::add($e->getMessage());
-            
-            $code = $e->getCode();
-            switch($code) {
-                
-                case ITPrismErrors::CODE_WARNING:
-                    
-                    $this->setMessage($e->getMessage(), "notice");
-                    $link = $this->defaultLink."&view=import&type=".$task;
-                    $this->setRedirect(JRoute::_($link, false));
-                    return;
-                    
-                break;
-                
-                case ITPrismErrors::CODE_HIDDEN_WARNING:
-                    
-                    $this->setMessage(JText::_("COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED"), "notice");
-                    $this->setRedirect(JRoute::_($this->defaultLink."&view=".$task, false));
-                    return;
-                    
-                break;
-                
-                default:
-                    throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'), ITPrismErrors::CODE_ERROR);
-                break;
-            }
-            
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'), ITPrismErrors::CODE_ERROR);
         }
         
-        $msg  = JText::_('COM_CROWDFUNDING_LOCATIONS_IMPORTED');
-        $link = $this->defaultLink."&view=".$task;
-        $this->setRedirect(JRoute::_($link, false), $msg);
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_LOCATIONS_IMPORTED'), $redirectData);
         
     }
     

@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -29,13 +29,9 @@ class CrowdFundingViewUpdates extends JView {
         $this->pagination = $this->get('Pagination');
         
         // Prepare filters
-        $listOrder        = $this->escape($this->state->get('list.ordering'));
-        $listDirn         = $this->escape($this->state->get('list.direction'));
-        $saveOrder        = (strcmp($listOrder, 'a.ordering') != 0 ) ? false : true;
-        
-        $this->listOrder  = $listOrder;
-        $this->listDirn   = $listDirn;
-        $this->saveOrder  = $saveOrder;
+        $this->listOrder  = $this->escape($this->state->get('list.ordering'));
+        $this->listDirn   = $this->escape($this->state->get('list.direction'));
+        $this->saveOrder  = (strcmp($this->listOrder, 'a.ordering') != 0 ) ? false : true;
         
         // Add submenu
         CrowdFundingHelper::addSubmenu($this->getName());

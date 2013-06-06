@@ -16,7 +16,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.modeladmin');
 
-class CrowdFundingModelComment extends JModelAdmin {
+class CrowdFundingModelTransaction extends JModelAdmin {
     
     /**
      * @var     string  The prefix to use with controller messages.
@@ -33,7 +33,7 @@ class CrowdFundingModelComment extends JModelAdmin {
      * @return  JTable  A database object
      * @since   1.6
      */
-    public function getTable($type = 'Comment', $prefix = 'CrowdFundingTable', $config = array()){
+    public function getTable($type = 'Transaction', $prefix = 'CrowdFundingTable', $config = array()){
         return JTable::getInstance($type, $prefix, $config);
     }
     
@@ -48,7 +48,7 @@ class CrowdFundingModelComment extends JModelAdmin {
     public function getForm($data = array(), $loadData = true){
         
         // Get the form.
-        $form = $this->loadForm($this->option.'.comment', 'comment', array('control' => 'jform', 'load_data' => $loadData));
+        $form = $this->loadForm($this->option.'.transaction', 'transaction', array('control' => 'jform', 'load_data' => $loadData));
         if(empty($form)){
             return false;
         }
@@ -64,7 +64,7 @@ class CrowdFundingModelComment extends JModelAdmin {
      */
     protected function loadFormData(){
         // Check the session for previously entered form data.
-        $data = JFactory::getApplication()->getUserState($this->option.'.edit.comment.data', array());
+        $data = JFactory::getApplication()->getUserState($this->option.'.edit.transaction.data', array());
         if(empty($data)){
             $data = $this->getItem();
         }
@@ -78,16 +78,24 @@ class CrowdFundingModelComment extends JModelAdmin {
      */
     public function save($data){
         
-        $id        = JArrayHelper::getValue($data, "id");
-        $comment   = JArrayHelper::getValue($data, "comment");
-        $published = JArrayHelper::getValue($data, "published");
+        $id               = JArrayHelper::getValue($data, "id");
+        $txnAmount        = JArrayHelper::getValue($data, "txn_amount");
+        $txnCurrency      = JArrayHelper::getValue($data, "txn_currency");
+        $txnStatus        = JArrayHelper::getValue($data, "txn_status");
+        $txnId            = JArrayHelper::getValue($data, "txn_id");
+        $serviceProvider  = JArrayHelper::getValue($data, "service_provider");
+        $investorId       = JArrayHelper::getValue($data, "investor_id");
         
         // Load a record from the database
         $row = $this->getTable();
         $row->load($id);
         
-        $row->set("comment",   $comment);
-        $row->set("published", $published);
+        $row->set("txn_amount",        $txnAmount);
+        $row->set("txn_currency",      $txnCurrency);
+        $row->set("txn_status",        $txnStatus);
+        $row->set("txn_id",            $txnId);
+        $row->set("service_provider",  $serviceProvider);
+        $row->set("investor_id",       $investorId);
         
         $row->store();
         

@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -21,10 +21,10 @@ defined('_JEXEC') or die;
 	<tr class="row<?php echo $i % 2; ?>">
         <td ><?php echo JHtml::_('grid.id', $i, $item->id); ?></td>
 		<td><a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=project&layout=edit&id=".$item->id);?>" ><?php echo $item->title; ?></a></td>
-		<td class="center"><?php echo $item->category;?></td>
-		<td class="center"><?php echo JHtml::_('date', $item->created, JText::_('d-m-Y'));?></td>
-		<td class="center"><?php echo JHtml::_("crowdfunding.amount", $item->goal, $this->currency);?></td>
-		<td class="center"><?php echo JHtml::_("crowdfunding.amount", $item->funded, $this->currency);?></td>
+		<td><?php echo $item->category;?></td>
+		<td class="center"><?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC3'));?></td>
+		<td class="center"><?php echo $this->currency->getAmountString($item->goal); ?></td>
+		<td class="center"><?php echo $this->currency->getAmountString($item->funded);?></td>
 		<td class="center"><?php echo $item->funded_percents;?>%</td>
 		<td class="center"><?php echo (!(int)$item->funding_start) ? "" : JHtml::_('date', $item->funding_start, JText::_('DATE_FORMAT_LC3'));?></td>
 		<td class="center"><?php echo (!(int)$item->funding_end)   ? "" : JHtml::_('date', $item->funding_end, JText::_('DATE_FORMAT_LC3')); ?></td>

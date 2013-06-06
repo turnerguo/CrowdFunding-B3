@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -40,7 +40,7 @@ class CrowdFundingModelProjects extends JModelList {
                 'published', 'a.published',
                 'approved', 'a.approved',
             	'created', 'a.created',
-                'catid', 'a.catid',
+                'category', 'b.title',
             );
         }
 
@@ -61,12 +61,17 @@ class CrowdFundingModelProjects extends JModelList {
         $params = JComponentHelper::getParams($this->option);
         $this->setState('params', $params);
         
-        // Load the filter state.
+        // Load filter search.
         $value = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
         $this->setState('filter.search', $value);
 
+        // Load filter state.
         $value = $this->getUserStateFromRequest($this->context.'.filter.state', 'filter_state', '', 'string');
         $this->setState('filter.state', $value);
+        
+        // Load filter category.
+        $value = $this->getUserStateFromRequest($this->context.'.filter.category_id', 'filter_category_id', 0, 'int');
+        $this->setState('filter.category_id', $value);
 
         // List state information.
         parent::populateState('a.created', 'asc');
@@ -88,6 +93,7 @@ class CrowdFundingModelProjects extends JModelList {
         // Compile the store id.
         $id.= ':' . $this->getState('filter.search');
         $id.= ':' . $this->getState('filter.state');
+        $id.= ':' . $this->getState('filter.category_id');
 
         return parent::getStoreId($id);
     }
@@ -119,6 +125,12 @@ class CrowdFundingModelProjects extends JModelList {
         $query->from($db->quoteName('#__crowdf_projects').' AS a');
         $query->innerJoin($db->quoteName('#__categories').' AS b ON a.catid = b.id');
 
+        // Filter by category
+        $categoryId = $this->getState('filter.category_id');
+        if (!empty($categoryId)) {
+            $query->where('b.id = '.(int) $categoryId);
+        }
+        
         // Filter by state
         $state = $this->getState('filter.state');
         if (is_numeric($state)) {
@@ -138,7 +150,7 @@ class CrowdFundingModelProjects extends JModelList {
                 $query->where('a.title LIKE '.$quoted);
             }
         }
-
+        
         // Add the list ordering clause.
         $orderString = $this->getOrderString();
         $query->order($db->escape($orderString));

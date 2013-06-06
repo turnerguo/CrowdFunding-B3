@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -19,8 +19,8 @@ jimport('itprism.controller.admin');
 /**
  * CrowdFunding projects controller
  *
- * @package     ITPrism Components
- * @subpackage  CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
   */
 class CrowdFundingControllerProjects extends ITPrismControllerAdmin {
     
@@ -58,15 +58,14 @@ class CrowdFundingControllerProjects extends ITPrismControllerAdmin {
 		$task  = $this->getTask();
 		$value = JArrayHelper::getValue($data, $task, 0, 'int');
 
+		$redirectData = array(
+	        "view" => "projects"
+        );
+		
 		// Make sure the item ids are integers
 		JArrayHelper::toInteger($cid);
-			
 		if (empty($cid)) {
-		    
-		    $link = $this->prepareRedirectLink();
-            
-            $this->setMessage(JText::_($this->text_prefix . '_NO_ITEM_SELECTED'), "notice");
-            $this->setRedirect(JRoute::_($link, false));
+		    $this->displayNotice(JText::_($this->text_prefix . '_NO_ITEM_SELECTED'), $redirectData);
             return;
 			
 		}
@@ -86,30 +85,8 @@ class CrowdFundingControllerProjects extends ITPrismControllerAdmin {
 		    $msg = $this->text_prefix . '_N_ITEMS_DISAPPROVED';
 		}
 		
-		$this->setMessage(JText::plural($msg, count($cid)));
+		$this->displayMessage(JText::plural($msg, count($cid)), $redirectData);
 		
-		$link = $this->prepareRedirectLink();
-		$this->setRedirect(JRoute::_($link, false));
 	}
-	
-	
-	/**
-     * Prepare redirect link. 
-     */
-    protected function prepareRedirectLink() {
-        
-        $task = $this->getTask();
-        $link = $this->defaultLink;
-        
-        // Prepare redirection
-        switch($task) {
-                
-            default:
-                $link .= "&view=".$this->view_list;
-                break;
-        }
-        
-        return $link;
-    }
     
 }

@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -19,7 +19,8 @@ defined('_JEXEC') or die;
 	?>
 	<tr class="row<?php echo $i % 2; ?>">
         <td><?php echo JHtml::_('grid.id', $i, $item->id); ?></td>
-		<td><a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=transactions&filter_search=bid:".$item->receiver_id);?>"><?php echo $item->beneficiary; ?></a></td>
+		<td><a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=transaction&layout=edit&id=".$item->id);?>"><?php echo $item->beneficiary; ?></a></td>
+		<td><?php echo $item->sender; ?></td>
 		<td>
 			<a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=transactions&filter_search=pid:".$item->project_id);?>">
 		    <?php echo JHtmlString::truncate(strip_tags($item->project), 53); ?>

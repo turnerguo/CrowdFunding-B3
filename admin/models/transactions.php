@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -109,13 +109,16 @@ class CrowdFundingModelTransactions extends JModelList {
                 'a.project_id, a.reward_id, a.receiver_id, a.service_provider, '.
                 'b.name AS beneficiary, '.
                 'c.title AS project, ' .
-                'd.title AS reward'
+                'd.title AS reward, '.
+                'e.name AS sender '
             )
         );
         $query->from($db->quoteName('#__crowdf_transactions').' AS a');
         $query->innerJoin($db->quoteName('#__users').' AS b ON a.receiver_id = b.id');
         $query->innerJoin($db->quoteName('#__crowdf_projects').' AS c ON a.project_id = c.id');
         $query->leftJoin($db->quoteName('#__crowdf_rewards').' AS d ON a.reward_id = d.id');
+        
+        $query->innerJoin($db->quoteName('#__users').' AS e ON a.investor_id = e.id');
 
         // Filter by search in title
         $search = $this->getState('filter.search');

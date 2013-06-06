@@ -16,7 +16,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
-class CrowdFundingViewLocation extends JView {
+class CrowdFundingViewTransaction extends JView {
     
     protected $state;
     protected $item;
@@ -35,9 +35,9 @@ class CrowdFundingViewLocation extends JView {
      */
     public function display($tpl = null){
         
-        $this->state= $this->get('State');
-        $this->item = $this->get('Item');
-        $this->form = $this->get('Form');
+        $this->state = $this->get('State');
+        $this->item  = $this->get('Item');
+        $this->form  = $this->get('Form');
         
         // Prepare actions, behaviors, scritps and document
         $this->addToolbar();
@@ -54,44 +54,33 @@ class CrowdFundingViewLocation extends JView {
     protected function addToolbar(){
         
         JFactory::getApplication()->input->set('hidemainmenu', true);
-        $isNew = ($this->item->id == 0);
         
-        $this->documentTitle = $isNew ? JText::_('COM_CROWDFUNDING_ADD_LOCATION')
-		                              : JText::_('COM_CROWDFUNDING_EDIT_LOCATION');
+        $this->documentTitle = JText::_('COM_CROWDFUNDING_EDIT_TRANSACTION');
+        
+	    JToolBarHelper::title($this->documentTitle, 'itp-edit-transaction');
 		                             
-        if(!$isNew) {
-            JToolBarHelper::title($this->documentTitle, 'itp-edit-location');
-        } else {
-            JToolBarHelper::title($this->documentTitle, 'itp-add-location');
-        }
-		                             
-        JToolBarHelper::apply('location.apply');
-        JToolBarHelper::save2new('location.save2new');
-        JToolBarHelper::save('location.save');
+        JToolBarHelper::apply('transaction.apply');
+        JToolBarHelper::save('transaction.save');
     
-        if(!$isNew){
-            JToolBarHelper::cancel('location.cancel', 'JTOOLBAR_CANCEL');
-        }else{
-            JToolBarHelper::cancel('location.cancel', 'JTOOLBAR_CLOSE');
-        }
+        JToolBarHelper::cancel('transaction.cancel', 'JTOOLBAR_CANCEL');
         
     }
     
 	/**
 	 * Method to set up the document properties
+	 *
 	 * @return void
 	 */
 	protected function setDocument() {
 	    
 		$this->document->setTitle($this->documentTitle);
-		
-		// Add behaviors
-        JHtml::_('behavior.tooltip');
-        JHtml::_('behavior.formvalidation');
         
 		// Add scripts
+		JHtml::_('behavior.tooltip');
+		JHtml::_('behavior.formvalidation');
+		
 		$this->document->addScript(JURI::root() . 'media/'.$this->option.'/js/admin/'.JString::strtolower($this->getName()).'.js');
+        
 	}
-	
 
 }

@@ -17,23 +17,30 @@ defined('_JEXEC') or die;
 <form action="<?php echo JRoute::_('index.php?option=com_crowdfunding'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate" >
     <div class="width-40 fltlft">
         <fieldset class="adminform">
-            <legend><?php echo JText::_("COM_CROWDFUNDING_COMMENT_MANAGER_LEGEND"); ?></legend>
-            
-            <div class="clr"></div>
-            <?php echo $this->form->getLabel('comment'); ?>
-            <div class="clr"></div>
-            <?php echo $this->form->getInput('comment'); ?>
-            <div class="clr"></div>
+            <legend><?php echo JText::_("COM_CROWDFUNDING_TRANSACTION_MANAGER_LEGEND"); ?></legend>
             
             <ul class="adminformlist">
-            	<li><?php echo $this->form->getLabel('published'); ?>
-                <?php echo $this->form->getInput('published'); ?></li>
+                <li><?php echo $this->form->getLabel('investor_id'); ?>
+                <?php echo $this->form->getInput('investor_id'); ?></li>
+    
+                <li><?php echo $this->form->getLabel('txn_amount'); ?>
+                <?php echo $this->form->getInput('txn_amount'); ?></li>
+                
+                <li><?php echo $this->form->getLabel('txn_currency'); ?>
+                <?php echo $this->form->getInput('txn_currency'); ?></li>
+                
+                <li><?php echo $this->form->getLabel('service_provider'); ?>
+                <?php echo $this->form->getInput('service_provider'); ?></li>
+                
+                <li><?php echo $this->form->getLabel('txn_status'); ?>
+                <?php echo $this->form->getInput('txn_status'); ?></li>
+                
+                <li><?php echo $this->form->getLabel('txn_id'); ?>
+                <?php echo $this->form->getInput('txn_id'); ?></li>
                 
                 <li><?php echo $this->form->getLabel('id'); ?>
                 <?php echo $this->form->getInput('id'); ?></li>
                 
-                <li><?php echo $this->form->getLabel('project_id'); ?>
-                <?php echo $this->form->getInput('project_id'); ?></li>
             </ul>
             
         </fieldset>

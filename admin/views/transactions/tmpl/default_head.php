@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -19,7 +19,10 @@ defined('_JEXEC') or die;
         <input type="checkbox" name="checkall-toggle" value="" onclick="checkAll(this)" />
     </th>
 	<th class="title" >
-	     <?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_NAME', 'b.name', $this->listDirn, $this->listOrder); ?>
+	     <?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_BENEFICIARY', 'b.name', $this->listDirn, $this->listOrder); ?>
+	</th>
+	<th width="10%" >
+	     <?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_SENDER', 'e.sender', $this->listDirn, $this->listOrder); ?>
 	</th>
 	<th width="10%">
 	     <?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_PROJECT', 'c.title', $this->listDirn, $this->listOrder); ?>

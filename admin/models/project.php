@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -82,7 +82,13 @@ class CrowdFundingModelProject extends JModelAdmin {
         
         $id           = JArrayHelper::getValue($data, "id");
         $title        = JArrayHelper::getValue($data, "title");
-        $shortDescr   = JArrayHelper::getValue($data, "shor_desc");
+        $alias        = JArrayHelper::getValue($data, "alias");
+        $goal         = JArrayHelper::getValue($data, "goal");
+        $funded       = JArrayHelper::getValue($data, "funded");
+        $fundingType  = JArrayHelper::getValue($data, "funding_type");
+        $pitchVideo   = JArrayHelper::getValue($data, "pitch_video");
+        $shortDesc    = JArrayHelper::getValue($data, "short_desc");
+        $description  = JArrayHelper::getValue($data, "description");
         $catId        = JArrayHelper::getValue($data, "catid");
         $published    = JArrayHelper::getValue($data, "published");
         $approved     = JArrayHelper::getValue($data, "approved");
@@ -91,11 +97,17 @@ class CrowdFundingModelProject extends JModelAdmin {
         $row = $this->getTable();
         $row->load($id);
         
-        $row->set("title",      $title);
-        $row->set("catid",      $catId);
-        $row->set("short_desc", $shortDescr);
-        $row->set("published",  $published);
-        $row->set("approved",   $approved);
+        $row->set("title",          $title);
+        $row->set("alias",          $alias);
+        $row->set("goal",           $goal);
+        $row->set("funded",         $funded);
+        $row->set("funding_type",   $fundingType);
+        $row->set("pitch_video",    $pitchVideo);
+        $row->set("catid",          $catId);
+        $row->set("published",      $published);
+        $row->set("approved",       $approved);
+        $row->set("short_desc",     $shortDesc);
+        $row->set("description",    $description);
         
         $row->store();
         

@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -37,13 +37,9 @@ class CrowdFundingViewTransactions extends JView {
         $this->pagination = $this->get('Pagination');
 
         // Prepare filters
-        $listOrder        = $this->escape($this->state->get('list.ordering'));
-        $listDirn         = $this->escape($this->state->get('list.direction'));
-        $saveOrder        = (strcmp($listOrder, 'a.ordering') != 0 ) ? false : true;
-        
-        $this->listOrder  = $listOrder;
-        $this->listDirn   = $listDirn;
-        $this->saveOrder  = $saveOrder;
+        $this->listOrder  = $this->escape($this->state->get('list.ordering'));
+        $this->listDirn   = $this->escape($this->state->get('list.direction'));
+        $this->saveOrder  = (strcmp($this->listOrder, 'a.ordering') != 0 ) ? false : true;
         
         if(!empty($this->items)) {
             $this->currencies   = CrowdFundingHelper::getCurrencies("abbr");
@@ -73,9 +69,6 @@ class CrowdFundingViewTransactions extends JView {
         // Set toolbar items for the page
         JToolBarHelper::title(JText::_('COM_CROWDFUNDING_TRANSACTIONS_MANAGER'), 'itp-transactions');
         JToolBarHelper::editList('transaction.edit');
-        JToolBarHelper::divider();
-        JToolBarHelper::publishList("transactions.publish");
-        JToolBarHelper::unpublishList("transactions.unpublish");
         JToolBarHelper::divider();
         JToolBarHelper::deleteList(JText::_("COM_CROWDFUNDING_DELETE_ITEMS_QUESTION"), "transactions.delete");
         JToolBarHelper::divider();

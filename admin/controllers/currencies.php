@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -19,8 +19,8 @@ jimport('itprism.controller.admin');
 /**
  * CrowdFunding currencies controller
  *
- * @package     ITPrism Components
- * @subpackage  CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
   */
 class CrowdFundingControllerCurrencies extends ITPrismControllerAdmin {
     

@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -19,9 +19,9 @@ jimport( 'joomla.application.component.controller' );
 /**
  * CrowdFunding export controller
  *
- * @package     ITPrism Components
- * @subpackage  CrowdFunding
-  */
+ * @package      CrowdFunding
+ * @subpackage   Components
+ */
 class CrowdFundingControllerExport extends JController {
     
     /**
@@ -41,7 +41,7 @@ class CrowdFundingControllerExport extends JController {
         $type  = $app->input->get->getCmd("type");
         $model = $this->getModel();
         
-        try{
+        try {
             
             switch($type) {
                 case "locations":
@@ -60,7 +60,7 @@ class CrowdFundingControllerExport extends JController {
                     break;
             }
             
-        } catch ( Exception $e ) {
+        } catch (Exception $e) {
             JLog::add($e->getMessage());
             throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }

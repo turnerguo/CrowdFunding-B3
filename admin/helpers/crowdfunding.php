@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -152,7 +152,6 @@ class CrowdFundingHelper {
         return $db->loadObject();
         
     }
-    
 	
 	public static function calculatePercent($funded, $goal) {
 	    $value = ($funded/$goal) * 100;
@@ -199,8 +198,8 @@ class CrowdFundingHelper {
     } 
     
     /**
-	 * 
 	 * Calculate end date
+	 * 
 	 * @param int    $fundingDays
 	 * @param string $fundingStart
 	 */
@@ -238,7 +237,6 @@ class CrowdFundingHelper {
         } else {
             return false;
         }
-        
         
     }
     

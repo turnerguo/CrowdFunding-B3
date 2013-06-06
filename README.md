@@ -17,4 +17,5 @@ v1.1
 * Improved integration. Now it is integrated with Gravatar too.
 * Improved routers.
 * Improved plugins.
+* Improved backend - transactions, projects,...
 * Fixed some issues.

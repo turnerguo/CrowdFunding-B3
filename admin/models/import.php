@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @package      CrowdFunding
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -199,7 +199,6 @@ class CrowdFundingModelImport extends JModelForm {
                 $db->query();
             }
             
-//            var_dump($items[1]);exit;
             
         }
         
@@ -254,101 +253,8 @@ class CrowdFundingModelImport extends JModelForm {
                 $db->query();
             }
             
-//            var_dump($items[1]);exit;
-            
         }
         
-    }
-    
-    public function uploadFile($file){
-        
-        $app = JFactory::getApplication();
-        /** @var $app JAdministrator **/
-        
-        // Check for errors
-        $this->checkUploadErrors($file);
-        
-        // Save Image
-        if(!empty($file['name'])){
-            
-            $dest   = JPath::clean( $app->getCfg("tmp_path") ) . DIRECTORY_SEPARATOR. JFile::makeSafe($file['name']);
-            
-            // Remove old file if exists
-            if(is_file($dest)) {
-                JFile::delete($dest);
-            }
-                
-            if(!JFile::upload($file["tmp_name"], $dest)){
-                throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED'), ITPrismErrors::CODE_WARNING);
-            }
-            
-        }
-
-        return $dest;
-    
-    }
-    
-    protected function checkUploadErrors($uploadedFile){
-        
-        $app = JFactory::getApplication();
-        /** @var $app JSite **/
-        
-        $serverContentLength = (int)$app->input->server->get('CONTENT_LENGTH');
-        
-        // Verify file size
-        $uploadMaxFileSize   = (int)ini_get('upload_max_filesize');
-        $uploadMaxFileSize   = $uploadMaxFileSize * 1024 * 1024;
-        
-        $postMaxSize         = (int)(ini_get('post_max_size'));
-        $postMaxSize         = $postMaxSize * 1024 * 1024;
-        
-        $memoryLimit         = (int)(ini_get('memory_limit'));
-        $memoryLimit         = $memoryLimit * 1024 * 1024;
-        
-        if(
-			$serverContentLength >  $uploadMaxFileSize OR
-			$serverContentLength >  $postMaxSize OR
-			$serverContentLength >  $memoryLimit
-		)
-		{ // Log error
-		    $KB    = 1024 * 1024;
-		    
-		    $info = JText::sprintf("COM_CROWDFUNDING_ERROR_FILE_INFOMATION", 
-		        round($serverContentLength/$KB, 0), 
-		        round($uploadMaxFileSize/$KB, 0), 
-		        round($postMaxSize/$KB, 0), 
-		        round($memoryLimit/$KB, 0)
-	        );
-	        
-	        // Log error
-		    JLog::add($info);
-		    throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_WARNFILETOOLARGE"), ITPrismErrors::CODE_WARNING);
-		}
-		
-        if(!empty($uploadedFile['error'])){
-                
-            switch($uploadedFile['error']){
-                case UPLOAD_ERR_INI_SIZE:
-                    throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_UPLOAD_ERR_INI_SIZE'), ITPrismErrors::CODE_HIDDEN_WARNING);
-                case UPLOAD_ERR_FORM_SIZE:
-                    throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_UPLOAD_ERR_FORM_SIZE'), ITPrismErrors::CODE_HIDDEN_WARNING);
-                case UPLOAD_ERR_PARTIAL:
-                    throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_UPLOAD_ERR_PARTIAL'), ITPrismErrors::CODE_HIDDEN_WARNING);
-                case UPLOAD_ERR_NO_FILE:
-//                    throw new Exception( JText::_( 'COM_CROWDFUNDING_ERROR_UPLOAD_ERR_NO_FILE' ), ITPrismErrors::CODE_HIDDEN_WARNING);
-                    break;
-                case UPLOAD_ERR_NO_TMP_DIR:
-                    throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_UPLOAD_ERR_NO_TMP_DIR'), ITPrismErrors::CODE_HIDDEN_WARNING);
-                case UPLOAD_ERR_CANT_WRITE:
-                    throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_UPLOAD_ERR_CANT_WRITE'), ITPrismErrors::CODE_HIDDEN_WARNING);
-                case UPLOAD_ERR_EXTENSION:
-                    throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_UPLOAD_ERR_EXTENSION'), ITPrismErrors::CODE_HIDDEN_WARNING);
-                default:
-                    throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_UPLOAD_ERR_UNKNOWN'), ITPrismErrors::CODE_HIDDEN_WARNING);
-            }
-        
-        }
-            
     }
     
 }
