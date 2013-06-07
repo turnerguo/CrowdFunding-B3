@@ -54,7 +54,7 @@ abstract class CrowdFundingHelperRoute {
 	     */
 		$needles = array(
 			'discover' => array((int) $catid),
-// 		    'discover' => array(0)
+		    'discover' => array(0)
 		);
 
 		//Create the link

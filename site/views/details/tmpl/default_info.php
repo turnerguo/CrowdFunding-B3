@@ -48,8 +48,8 @@ $fundedAmount = $this->currency->getAmountString($this->item->goal);
     
 	<?php if(!$this->item->days_left) {?>
 	<div class="well">
-		<div class="cf-fund-result-state center"><?php echo JHtml::_("crowdfunding.resultState", $this->item->funded_percents, $this->item->funding_type);?></div>
-		<div class="cf-frss center"><?php echo JHtml::_("crowdfunding.resultStateText", $this->item->funded_percents, $this->item->funding_type);?></div>
+		<div class="cf-fund-result-state pull-center"><?php echo JHtml::_("crowdfunding.resultState", $this->item->funded_percents, $this->item->funding_type);?></div>
+		<div class="cf-frss pull-center"><?php echo JHtml::_("crowdfunding.resultStateText", $this->item->funded_percents, $this->item->funding_type);?></div>
 	</div>
 	<?php } else {?>
 	<div class="cfinfo-funding-action">

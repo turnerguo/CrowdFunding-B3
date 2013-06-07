@@ -380,4 +380,57 @@ abstract class JHtmlCrowdFunding {
     
     }
     
+    /**
+     * 
+     * Generate a link to an user image of a social platform
+     * @param string $socialPlatform	The name of the social platform
+     * @param JUser  $user		        Joomla! user object
+     * @param string $default		    A link to default picture
+     * 
+     * @todo Add option for setting image size
+     */    
+    public static function socialAvatar($socialPlatform, JUser $user, $default = null) {
+        
+        $link = "";
+
+        switch($socialPlatform) {
+
+            case "com_socialcommunity":
+                
+                jimport("itprism.integrate.profile.socialcommunity");
+                $profile = new ITPrismIntegrateProfileSocialCommunity($user);
+                $link    = $profile->getAvatar();
+                break;
+                
+            case "com_kunena":
+                
+                jimport("itprism.integrate.profile.kunena");
+                $profile = new ITPrismIntegrateProfileKunena($user);
+                $link    = $profile->getAvatar();
+                
+                break;
+                
+            case "gravatar":
+                
+                jimport("itprism.integrate.profile.gravatar");
+                $profile = new ITPrismIntegrateProfileGravatar($user);
+                $profile->setSize(50);
+                $link    = $profile->getAvatar();
+                
+                break;
+            
+            default:
+                $link = "";
+                break;
+        }
+        
+        // Set the linke to default picture
+        if(!$link AND !empty($default)) {
+            $link = $default;
+        }
+        
+		return $link;
+		
+    }
+    
 }

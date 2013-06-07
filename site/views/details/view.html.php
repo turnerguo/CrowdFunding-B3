@@ -99,6 +99,9 @@ class CrowdFundingViewDetails extends JView {
 		$results           = $dispatcher->trigger('onContentAfterDisplayMedia', array('com_crowdfunding.details', &$this->item, &$this->params, $offset));
 		$this->item->event->onContentAfterDisplayMedia = trim(implode("\n", $results));
 		
+		$results           = $dispatcher->trigger('onContentAfterDisplay', array('com_crowdfunding.details', &$this->item, &$this->params, $offset));
+		$this->item->event->onContentAfterDisplay = trim(implode("\n", $results));
+		
 		$this->version     = new CrowdfundingVersion();
 		
 		$this->prepareDocument();
@@ -114,6 +117,11 @@ class CrowdFundingViewDetails extends JView {
         
         $this->userId  = JFactory::getUser()->id;
         $this->isOwner = ($this->userId != $this->item->user_id) ? false : true;
+        
+        // Get a social platform for integration
+        $this->socialPlatform = $this->params->get("integration_social_platform");
+        $this->avatars        = $this->params->get("integration_avatars");
+        
         
         // Styles
         $this->document->addStyleSheet(JURI::root() . 'media/'.$this->option.'/css/jquery.pnotify.default.css');
@@ -137,6 +145,10 @@ class CrowdFundingViewDetails extends JView {
         $this->userId  = JFactory::getUser()->id;
         $this->isOwner = ($this->userId != $this->item->user_id) ? false : true;
         
+        // Get a social platform for integration
+        $this->socialPlatform = $this->params->get("integration_social_platform");
+        $this->avatars        = $this->params->get("integration_avatars");
+        
         // Styles
         $this->document->addStyleSheet(JURI::root() . 'media/'.$this->option.'/css/jquery.pnotify.default.css');
 
@@ -157,6 +169,7 @@ class CrowdFundingViewDetails extends JView {
         
         // Get a social platform for integration
 		$this->socialPlatform = $this->params->get("integration_social_platform");
+		$this->avatars        = $this->params->get("integration_avatars");
     }
     
     /**

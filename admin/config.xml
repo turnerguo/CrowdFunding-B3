@@ -76,6 +76,11 @@
             <option value="com_socialcommunity">COM_CROWDFUNDING_SOCIAL_COMMUNITY</option>
             <option value="gravatar">COM_CROWDFUNDING_GRAVATAR</option>
         </field>
+        <field name="integration_avatars" type="list" default="" label="COM_CROWDFUNDING_INTEGRATION_AVATAR" description="COM_CROWDFUNDING_INTEGRATION_AVATAR_DESC">
+            <option value="">COM_CROWDFUNDING_NONE</option>
+            <option value="com_socialcommunity">COM_CROWDFUNDING_SOCIAL_COMMUNITY</option>
+            <option value="gravatar">COM_CROWDFUNDING_GRAVATAR</option>
+        </field>
     </fieldset>
     
     <fieldset name="comments" label="COM_CROWDFUNDING_COMMENTS" description="COM_CROWDFUNDING_COMMENTS_PARAMS">

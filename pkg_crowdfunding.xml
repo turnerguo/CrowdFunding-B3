@@ -23,7 +23,9 @@
 		<file type="library"    id="lib_crowdfunding" >lib_crowdfunding.zip</file>
 		<file type="plugin" 	id="crowdfundingnav"   group="content">plg_content_crowdfundingnav.zip</file>
 		<file type="plugin" 	id="crowdfundingshare" group="content">plg_content_crowdfundingshare.zip</file>
+		<file type="plugin" 	id="crowdfundinginfo" group="content">plg_content_crowdfundinginfo.zip</file>
 		<file type="plugin" 	id="paypal" group="crowdfundingpayment">plg_crowdfundingpayment_paypal.zip</file>
+		<file type="plugin" 	id="crowdfunding" group="search">plg_search_crowdfunding.zip</file>
 	</files>
 
 	<scriptfile>install.php</scriptfile>

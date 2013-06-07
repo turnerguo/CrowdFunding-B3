@@ -54,18 +54,18 @@ defined('_JEXEC') or die;?>
             			<?php echo JHtmlString::truncate(strip_tags($item->project), 64); ?>
             		    </a>
         		    </td>
-            		<td class="center"><?php echo $this->currency->getAmountString($item->txn_amount); ?></td>
-            		<td class="center"><?php echo $item->investor; ?></td>
-            		<td class="center"><?php echo $item->receiver; ?></td>
-            		<td class="center"><?php echo JHtml::_('date', $item->txn_date, JText::_('DATE_FORMAT_LC3')); ?></td>
-            		<td class="center">
+            		<td class="pull-center"><?php echo $this->currency->getAmountString($item->txn_amount); ?></td>
+            		<td class="pull-center"><?php echo $item->investor; ?></td>
+            		<td class="pull-center"><?php echo $item->receiver; ?></td>
+            		<td class="pull-center"><?php echo JHtml::_('date', $item->txn_date, JText::_('DATE_FORMAT_LC3')); ?></td>
+            		<td class="pull-center">
             		    <?php if(!$item->reward_id) { ?>
                 		<img src="media/com_crowdfunding/images/noreward_16.png" alt="<?php echo JText::_('COM_CROWDFUNDING_REWARD_NOT_SELECTED'); ?>" width="16" height="16"/>
                 		<?php } else {?>
                 		<img src="media/com_crowdfunding/images/reward_16.png" alt="<?php echo JText::_('COM_CROWDFUNDING_REWARD_SELECTED'); ?>" title="<?php echo JText::sprintf('COM_CROWDFUNDING_REWARD_TOOLTIP', $item->reward); ?>" width="16" height="16" class="hasTip" />
                 		<?php }?>
             		</td>
-            		<td class="center">
+            		<td class="pull-center">
             			<?php echo $item->id; ?>
             		</td>
             	</tr>

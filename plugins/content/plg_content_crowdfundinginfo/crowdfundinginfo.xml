@@ -26,37 +26,31 @@
     <config>
 		<fields name="params">
 			<fieldset name="basic">
-				<field name="display_short_desc" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_SHORT_DESC" description="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_SHORT_DESC_DESC" >
-                   <option value="0">JNO</option>
-                   <option value="1">JYES</option>
-                </field>
-                <field name="display_start_date" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_LANCHED" description="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_LANCHED_DESC" >
-                   <option value="0">JNO</option>
-                   <option value="1">JYES</option>
-                </field>
-                <field name="display_end_date" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_END" description="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_END_DESC" >
-                   <option value="0">JNO</option>
-                   <option value="1">JYES</option>
-                </field>
-                <field name="display_remaind_me" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_REMIND_ME" description="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_REMIND_ME_DESC" >
+                <field name="display_dates" type="radio" default="0" label="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_PERIOD" description="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_PERIOD_DESC" >
                    <option value="0">JNO</option>
                    <option value="1">JYES</option>
                 </field>
                 
-                <field name="display_follow" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_FOLLOW" description="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_FOLLOW_DESC" >
+                <field name="display_location" type="radio" default="0" label="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_LOCATION" description="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_LOCATION_DESC" >
                    <option value="0">JNO</option>
                    <option value="1">JYES</option>
                 </field>
-                
+                <field name="display_map" type="radio" default="0" label="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_MAP" description="PLG_CONTENT_CROWDFUNDINGINFO_DISPLAY_MAP_DESC" >
+                   <option value="0">JNO</option>
+                   <option value="1">JYES</option>
+                </field>
 			</fieldset>
 	            
             <fieldset name="advanced">
+            
+                <field name="google_maps_key" type="text" default="" size="60" label="PLG_CONTENT_CROWDFUNDINGINFO_GOOGLE_MAP_KEY" description="PLG_CONTENT_CROWDFUNDINGINFO_GOOGLE_MAP_KEY_DESC" />
+                <field name="google_maps_width" type="text" default="300" label="PLG_CONTENT_CROWDFUNDINGINFO_GOOGLE_MAP_WIDTH" description="PLG_CONTENT_CROWDFUNDINGINFO_GOOGLE_MAP_WIDTH_DESC" />
+                <field name="google_maps_height" type="text" default="300" label="PLG_CONTENT_CROWDFUNDINGINFO_GOOGLE_MAP_HEIGHT" description="PLG_CONTENT_CROWDFUNDINGINFO_GOOGLE_MAP_HEIGHT_DESC" />
                 
                 <field name="load_css" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGINFO_LOAD_STYLE_CSS" description="PLG_CONTENT_CROWDFUNDINGINFO_LOAD_STYLE_CSS_DESC">
                     <option value="0">JNO</option>
                     <option value="1">JYES</option>
                 </field>
-                
             </fieldset>
             
         </fields>

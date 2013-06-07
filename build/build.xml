@@ -57,6 +57,8 @@
 		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundingshare/language" />
 		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundinginfo" />
 		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundinginfo/language" />
+		<mkdir dir="${cfg.pkgDir}/plugins/search/plg_search_crowdfunding" />
+        <mkdir dir="${cfg.pkgDir}/plugins/search/plg_search_crowdfunding/language" />
 		
 		<mkdir dir="${cfg.pkgDir}/plugins/crowdfundingpayment/plg_crowdfundingpayment_paypal" />
 		<mkdir dir="${cfg.pkgDir}/plugins/crowdfundingpayment/plg_crowdfundingpayment_paypal/language" />
@@ -128,6 +130,7 @@
     <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingnav/language" />
     <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingnav/language/en-GB/" />
 	
+	<!-- CONTENT/CROWDFUNDINGSHARE -->
 	
 	<!-- copy plugins files of content/crowdfundingshare -->
     <copy todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingshare">
@@ -142,7 +145,21 @@
     <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingshare/language" />
     <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingshare/language/en-GB/" />
 
-
+	<!-- CONTENT/CROWDFUNDINGINFO -->
+	    
+    <!-- copy plugins files of content/crowdfundinginfo -->
+    <copy todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundinginfo">
+        <fileset dir="${cfg.pluginsSourceDir}/content/crowdfundinginfo">
+            <include name="**/*" />
+        </fileset>
+    </copy>
+    
+    <!-- copy plugin language files of content/crowdfundingshare -->
+    <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_content_crowdfundinginfo.ini" todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundinginfo/language/en-GB" />
+    <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_content_crowdfundinginfo.sys.ini" todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundinginfo/language/en-GB" />
+    <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundinginfo/language" />
+    <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundinginfo/language/en-GB/" />
+	
 	<!-- CROWDFUNDINGPAYMENT/PAYPAL -->
 	
 	<!-- copy plugins files of crowdfundingpayment/paypal -->
@@ -157,6 +174,23 @@
     <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_crowdfundingpayment_paypal.sys.ini" todir="${cfg.pluginsDestDir}/crowdfundingpayment/plg_crowdfundingpayment_paypal/language/en-GB" />
     <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/crowdfundingpayment/plg_crowdfundingpayment_paypal/language" />
     <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/crowdfundingpayment/plg_crowdfundingpayment_paypal/language/en-GB/" />
+	
+	
+	<!-- SEARCH/CROWDFUNDING -->
+	
+	<!-- copy plugins files of search/crowdfunding -->
+    <copy todir="${cfg.pluginsDestDir}/search/plg_search_crowdfunding">
+        <fileset dir="${cfg.pluginsSourceDir}/search/crowdfunding">
+            <include name="**/*" />
+        </fileset>
+    </copy>
+    
+    <!-- copy plugin language files of search/crowdfunding -->
+    <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_search_crowdfunding.ini" todir="${cfg.pluginsDestDir}/search/plg_search_crowdfunding/language/en-GB" />
+    <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_search_crowdfunding.sys.ini" todir="${cfg.pluginsDestDir}/search/plg_search_crowdfunding/language/en-GB" />
+    <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/search/plg_search_crowdfunding/language" />
+    <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/search/plg_search_crowdfunding/language/en-GB/" />
+	
 
 	<!-- END COPY PLUGINS -->
 	
@@ -172,7 +206,9 @@
 		<!-- build plugins -->
 		<zip destfile="${cfg.pkgDir}/packages/plg_content_crowdfundingnav.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingnav" />
 		<zip destfile="${cfg.pkgDir}/packages/plg_content_crowdfundingshare.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingshare" />
+		<zip destfile="${cfg.pkgDir}/packages/plg_content_crowdfundinginfo.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_crowdfundinginfo" />
 		<zip destfile="${cfg.pkgDir}/packages/plg_crowdfundingpayment_paypal.zip" basedir="${cfg.pluginsDestDir}/crowdfundingpayment/plg_crowdfundingpayment_paypal" />
+		<zip destfile="${cfg.pkgDir}/packages/plg_search_crowdfunding.zip" basedir="${cfg.pluginsDestDir}/search/plg_search_crowdfunding" />
 		
 		<!-- build package -->
 		<zip destfile="${cfg.pkgDir}/${cfg.pkgName}_${cfg.version}-${cfg.joomlaVersion}.zip" basedir="${cfg.pkgDir}" 

@@ -67,14 +67,14 @@ defined('_JEXEC') or die;?>
     		</a>
     		<?php }?>
     		</td>
-    		<td class="center"><?php echo $goal; ?></td>
-    		<td class="center"><span class="hasTip cursor-help" title="<?php echo JText::sprintf("COM_CROWDFUNDING_PERCENTS_FUNDED", $fundedPercent);?>"><?php echo $funded; ?></span></td>
-    		<td class="center"><?php echo $startingDate; ?></td>
-    		<td class="center"><?php echo $duration; ?></td>
-    		<td class="center">
+    		<td class="pull-center"><?php echo $goal; ?></td>
+    		<td class="pull-center"><span class="hasTip cursor-help" title="<?php echo JText::sprintf("COM_CROWDFUNDING_PERCENTS_FUNDED", $fundedPercent);?>"><?php echo $funded; ?></span></td>
+    		<td class="pull-center"><?php echo $startingDate; ?></td>
+    		<td class="pull-center"><?php echo $duration; ?></td>
+    		<td class="pull-center">
     		<?php echo JHtml::_("crowdfunding.state", $item->published, JRoute::_("index.php?option=com_crowdfunding&task=projects.savestate&id=".$item->id."&state=".$state."&".JSession::getFormToken()."=1"))?>
     		</td>
-    		<td class="center">
+    		<td class="pull-center">
     		<?php echo JHtml::_("crowdfunding.approved", $item->approved); ?>
     		</td>
     		<td>

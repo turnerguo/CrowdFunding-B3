@@ -71,5 +71,10 @@ defined('_JEXEC') or die;?>
     		<?php }?>
     	</div>
 	</div>
+	
+	<?php 
+	if(!empty($this->item->event->onContentAfterDisplay)) {
+	    echo $this->item->event->onContentAfterDisplay; 
+	}?>
 </div>
 <div class="clearfix">&nbsp;</div>

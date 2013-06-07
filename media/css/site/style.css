@@ -57,7 +57,7 @@ span.help-block {
 }
 
 
-.center {
+.pull-center {
 	margin: 0 auto !important;
 	text-align: center !important;
 }
@@ -335,10 +335,8 @@ form.bs-docs-example {
 }
 
 .cf-info-bar {
-	width: 100%;
 	background-color: #ffffe8;
 	border: thin solid #d1d1d1;
-	overflow: hidden;
 	padding: 5px;
 }
 
