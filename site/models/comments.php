@@ -127,7 +127,7 @@ class CrowdFundingModelComments extends JModelList {
         return $orderCol.' '.$orderDirn;
     }
     
-    public function loadForm() {
+    public function getForm() {
         
         $name   = $this->option.".comment";
 	    $source = "comment";

@@ -129,7 +129,7 @@ class CrowdFundingModelUpdates extends JModelList {
         return $orderCol.' '.$orderDirn;
     }
     
-    public function loadForm() {
+    public function getForm() {
         
         $name   = $this->option.".update";
 	    $source = "update";

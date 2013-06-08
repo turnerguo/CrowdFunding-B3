@@ -48,7 +48,7 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
         $userId = JFactory::getUser()->id;
         if(!$userId) {
             $redirectData = array(
-                "force_direction" => "login_form"
+                "force_direction" => "index.php?option=com_users&view=login"
             );
             $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), $redirectData);
             return;
@@ -89,7 +89,7 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
             
             // Get image
             $image   = $app->input->files->get('jform', array(), 'array');
-            $image   = JArrayHelper::getValue($image, "pitch_image");
+            $image   = JArrayHelper::getValue($image, "image");
             
             // Upload image
             if(!empty($image['name'])) {
@@ -147,6 +147,9 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
      */
     public function removeImage() {
         
+        // Check for request forgeries.
+        JSession::checkToken("get") or jexit(JText::_('JINVALID_TOKEN'));
+        
         $app = JFactory::getApplication();
         /** @var $app JSite **/
         
@@ -155,7 +158,7 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
         // Check for registered user
         if(!$userId) {
             $redirectData = array(
-                "force_direction" => "login_form"
+                "force_direction" => "index.php?option=com_users&view=login"
             );
             $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), $redirectData);
             return;

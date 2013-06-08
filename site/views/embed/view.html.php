@@ -31,6 +31,9 @@ class CrowdFundingViewEmbed extends JView {
     
     public function display($tpl = null) {
         
+        $app = JFactory::getApplication();
+        /** @var $app JSite **/
+        
         // Get model state.
         $this->state       = $this->get('State');
         $this->item        = $this->get("Item");
@@ -39,9 +42,6 @@ class CrowdFundingViewEmbed extends JView {
         $this->imageFolder = $this->params->get("images_directory", "images/projects");
         
         if (!$this->item) {
-            $app = JFactory::getApplication();
-            /** @var $app JSite **/
-            
             $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"), "notice");
             $app->redirect(JRoute::_('index.php?option=com_crowdfunding&view=discover', false));
             return;
@@ -51,27 +51,97 @@ class CrowdFundingViewEmbed extends JView {
         JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
         
         // Get currency
+        jimport("crowdfunding.currency");
         $currencyId           = $this->params->get("project_currency");
-		$this->currency       = CrowdFundingHelper::getCurrency($currencyId);
+		$this->currency       = CrowdFundingCurrency::getInstance($currencyId);
 		
 		// Get a social platform for integration
 		$this->socialPlatform = $this->params->get("integration_social_platform");
 		
         // Set a link to project page
-        $host  = JFactory::getURI()->toString(array("scheme", "host"));
+        $uri   = JFactory::getURI();
+        $host  = $uri->toString(array("scheme", "host"));
         $this->item->link        = $host.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug), false);
         
         // Set a link to image
         $this->item->link_image  = $host."/".$this->imageFolder."/".$this->item->image;
         
-        // Generate embed link
-        $this->embedLink = $host.JRoute::_(CrowdFundingHelperRoute::getEmbedRoute($this->item->slug, $this->item->catslug)."&layout=widget&tmpl=component", false);
-		
+        $layout = $this->getLayout();
+        switch($layout) {
+            
+            case "email":
+                
+                if(!$this->params->get("security_display_friend_form", 0)) {
+                    $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_CANT_SEND_MAIL"), "notice");
+                    $app->redirect(JRoute::_($this->item->link, false));
+                    return;
+                }
+                
+                $this->prepareEmailForm($this->item);
+                
+                break;
+                 
+            default:  // Embed HTML code
+                $this->embedCode = $this->prepareEmbedCode($this->item, $host);
+                break;
+            
+        }
+        
         $this->version     = new CrowdfundingVersion();
         
 		$this->prepareDocument();
 		
         parent::display($tpl);
+    }
+    
+    /**
+     * Generate HTML code for embeding.
+     * 
+     * @param object $item
+     * @param string $host
+     * @return string
+     */
+    protected function prepareEmbedCode($item, $host) {
+        
+        // Generate embed link
+        $this->embedLink   = $host.JRoute::_(CrowdFundingHelperRoute::getEmbedRoute($this->item->slug, $this->item->catslug)."&layout=widget&tmpl=component", false);
+        
+        $code = '<iframe src="'.$this->embedLink.'" width="280px" height="560px" frameborder="0" scrolling="no"></iframe>';
+        
+        return $code;
+    }
+    
+    /**
+     * Display a form that will be used for sending mail to friend
+     * 
+     * @param object $item
+     */
+    protected function prepareEmailForm($item) {
+        
+        $model         = JModel::getInstance("FriendMail", "CrowdFundingModel", $config = array('ignore_request' => false));
+        
+        // Prepare default content of the form
+        $formData = array(
+            "id"       =>  $item->id,
+            "subject"  =>  JText::sprintf("COM_CROWDFUNDING_SEND_FRIEND_DEFAULT_SUBJECT", $item->title),
+            "message"  =>  JText::sprintf("COM_CROWDFUNDING_SEND_FRIEND_DEFAULT_MESSAGE", $item->link)
+        );
+        
+        // Set user data
+        $user   = JFactory::getUser();
+        if(!empty($user->id)) {
+            $formData["sender_name"] = $user->name;
+            $formData["sender"]      = $user->email;
+        }
+        
+        $this->form    = $model->getForm($formData);
+        
+        // Scripts
+        JHtml::_('behavior.tooltip');
+        JHtml::_('behavior.formvalidation');
+        
+//         $this->document->addScript(JURI::root() . 'media/'.$this->option.'/js/site/comments.js');
+        
     }
     
     /**

@@ -13,6 +13,7 @@
 	<creationDate>16 June, 2013</creationDate>
 	<description>CrowdFunding Library</description>
 	<files folder="files">
+	    <file>currency.php</file>
 		<file>index.html</file>
 		<file>init.php</file>
 		<file>project.php</file>

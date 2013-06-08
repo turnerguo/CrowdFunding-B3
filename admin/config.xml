@@ -99,6 +99,26 @@
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
+        
+        <field name="security_display_friend_form" type="radio" default="0" label="COM_CROWDFUNDING_SECURITY_DISPLAY_FRIEND_FORM" description="COM_CROWDFUNDING_SECURITY_DISPLAY_FRIEND_FORM_DESC">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        
+        <field
+            name="captcha"
+            type="plugins"
+            folder="captcha"
+            default=""
+            label="COM_CROWDFUNDING_CAPTCHA_LABEL"
+            description="COM_CROWDFUNDING_CAPTCHA_DESC"
+            filter="cmd" >
+            <option
+                value="">JOPTION_USE_DEFAULT</option>
+            <option
+                value="0">JOPTION_DO_NOT_USE</option>
+        </field>
+        
      </fieldset>
      
     <fieldset name="debug" label="COM_CROWDFUNDING_DEBUG" description="COM_CROWDFUNDING_DEBUG_PARAMS">

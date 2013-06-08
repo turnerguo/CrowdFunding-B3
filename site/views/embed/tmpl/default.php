@@ -13,15 +13,14 @@
 
 // no direct access
 defined('_JEXEC') or die;
-$code = '<iframe src="'.$this->embedLink.'" width="280px" height="560px" frameborder="0" scrolling="no"></iframe>';
 ?>
 <div class="row-fluid<?php echo $this->params->get("pageclass_sfx"); ?>">
 	
-	<h2><?php echo JText::_("COM_CROWDFUNDING_WIDGET"); ?></h2>
-	<p><?php echo JText::_("COM_CROWDFUNDING_WIDGET_HELP"); ?></p>
 	<div class="row-fluid">
     	<div class="span8">
-        	<textarea class="embed-code"><?php echo $this->escape($code);?></textarea>
+    	    <h2><?php echo JText::_("COM_CROWDFUNDING_WIDGET"); ?></h2>
+	        <p><?php echo JText::_("COM_CROWDFUNDING_WIDGET_HELP"); ?></p>
+        	<textarea class="embed-code"><?php echo $this->escape($this->embedCode);?></textarea>
     	</div>
     	
     	<div class="span4">

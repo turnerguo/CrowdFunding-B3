@@ -17,12 +17,12 @@ defined('_JEXEC') or die;
 jimport('itprism.controller.form.frontend');
 
 /**
- * CrowdFunding funding controller
+ * CrowdFunding friend mail controller
  *
- * @package      CrowdFunding
- * @subpackage   Components
- */
-class CrowdFundingControllerFunding extends ITPrismControllerFormFrontend {
+ * @package     CrowdFunding
+ * @subpackage  Components
+  */
+class CrowdFundingControllerFriendMail extends ITPrismControllerFormFrontend {
     
 	/**
      * Method to get a model object, loading it if required.
@@ -34,43 +34,45 @@ class CrowdFundingControllerFunding extends ITPrismControllerFormFrontend {
      * @return	object	The model.
      * @since	1.5
      */
-    public function getModel($name = 'Funding', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true)) {
-        
-        JLoader::register("CrowdFundingModelProject", JPATH_COMPONENT.DIRECTORY_SEPARATOR."models".DIRECTORY_SEPARATOR."project.php");
+    public function getModel($name = 'FriendMail', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true)) {
         $model = parent::getModel($name, $prefix, $config);
-        
         return $model;
     }
     
-    public function save() {
+    public function send() {
         
         // Check for request forgeries.
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
  
-		$userId = JFactory::getUser()->id;
-        if(!$userId) {
-            $redirectData = array(
-                "force_direction" => "index.php?option=com_users&view=login"
-            );
-            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), $redirectData);
+		$redirectData = array(
+	        "view" => "discover"
+		);
+		
+		$params = JComponentHelper::getParams("com_crowdfunding");
+        if(!$params->get("security_display_friend_form", 0)) {
+            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_CANT_SEND_MAIL'), $redirectData);
             return;
         }
         
         $app = JFactory::getApplication();
-        /** @var $app JAdministrator **/
+        /** @var $app JSite **/
         
 		// Get the data from the form POST
 		$data    = $app->input->post->get('jform', array(), 'array');
-        $itemId  = JArrayHelper::getValue($data, "id");
+        $itemId  = JArrayHelper::getValue($data, "id", 0, "uint"); 
         
+        // Get project
+        jimport("crowdfunding.project");
+        $item = CrowdFundingProject::getInstance($itemId);
+        
+        // Prepare redirect link
+        $link = CrowdFundingHelperRoute::getEmbedRoute($item->getSlug(), $item->getCatSlug(), "email");
         $redirectData = array(
-            "view"   => "project",
-            "layout" => "funding",
-            "id"     => $itemId
+            "force_direction" => $link
         );
         
         $model   = $this->getModel();
-        /** @var $model CrowdFundingModelFunding **/
+        /** @var $model CrowdFundingModelEmbed **/
         
         $form    = $model->getForm($data, false);
         /** @var $form JForm **/
@@ -78,7 +80,7 @@ class CrowdFundingControllerFunding extends ITPrismControllerFormFrontend {
         if(!$form){
             throw new Exception($model->getError(), 500);
         }
-            
+        
         // Test if the data is valid.
         $validData = $model->validate($form, $data);
         
@@ -87,39 +89,20 @@ class CrowdFundingControllerFunding extends ITPrismControllerFormFrontend {
             $this->displayNotice($form->getErrors(), $redirectData);
             return;
         }
-       
+        
         try {
             
-            // Validate data
-            $model->validateFundingData($validData);
+            $model->send($validData);
             
-            // Save data
-            $itemId    = $model->save($validData);
-            
-            $redirectData["id"] = $itemId;
-            
-        } catch (Exception $e){
+        } catch (Exception $e) {
             
             JLog::add($e->getMessage());
-            
-            // Problem with uploading, so set a message and redirect to pages
-            $code = $e->getCode();
-            switch($code) {
-                
-                case ITPrismErrors::CODE_WARNING:
-                    $this->displayWarning($e->getMessage(), $redirectData);
-                    return;
-                break;
-                
-                default:
-                    throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'), ITPrismErrors::CODE_ERROR);
-                break;
-            }
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'), ITPrismErrors::CODE_ERROR);
             
         }
         
-		// Redirect to next page
-		$this->displayMessage(JText::_("COM_CROWDFUNDING_FUNDING_SUCCESSFULY_SAVED"), $redirectData);
+        // Redirect to next page
+		$this->displayMessage(JText::_("COM_CROWDFUNDING_FRIEND_MAIL_SUCCESSFULY_SEND"), $redirectData);
 			
     }
     

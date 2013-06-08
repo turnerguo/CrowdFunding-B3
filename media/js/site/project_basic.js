@@ -1,5 +1,16 @@
 jQuery(document).ready(function() {
 	
+	// Style file input
+	jQuery('.fileupload').fileupload();
+	
+	jQuery('#jform_short_desc').attr("maxlength", 255);
+	
+	// Initialize symbol length indicator
+	jQuery('#jform_short_desc').maxlength({
+		alwaysShow: true,
+		placement: 'bottom-right'
+	});
+	
 	jQuery.locationNames 	= new Array();
 	jQuery.responseData 	= new Array();
 	

@@ -47,7 +47,7 @@ class CrowdFundingControllerRewards extends ITPrismControllerDefault {
         $userId = JFactory::getUser()->id;
         if(!$userId) {
             $redirectData = array(
-                "force_direction" => "login_form"
+                "force_direction" => "index.php?option=com_users&view=login"
             );
             $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), $redirectData);
             return;

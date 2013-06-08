@@ -239,11 +239,11 @@ function CrowdFundingParseRoute($segments){
             case "embed": // Backing without reward
 	            
 	            $itemId         = (int)$segments[$count - 2];
-	            $catId          = (int)$segments[$count - 3];
+// 	            $catId          = (int)$segments[$count - 3];
 	            
         	    $vars['view']   = 'embed';
         		$vars['id']     = (int)$itemId;
-        		$vars['catid']  = (int)$catId;
+//         		$vars['catid']  = (int)$catId;
         		
 	            break;
 	            

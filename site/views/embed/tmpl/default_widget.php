@@ -15,11 +15,12 @@
 defined('_JEXEC') or die;?>
 <ul class="thumbnails">
   <?php if(isset($this->item)) {
-    $raised   = JHtml::_("CrowdFunding.amount", $this->item->funded, $this->currency);
+    $raised   = $this->currency->getAmountString($this->item->funded);
 	
 	// Prepare the value that I am going to display
+	$user = JFactory::getUser($this->item->user_id);
 	$fundedPercents = JHtml::_("crowdfunding.funded", $this->item->funded_percents);
-	$socialProfile  = JHtml::_("crowdfunding.socialProfile", $this->item->user_id, $this->socialPlatform);
+	$socialProfile  = JHtml::_("crowdfunding.socialProfile", $this->socialPlatform, $user);
 	
  ?>
   <li class="span12">

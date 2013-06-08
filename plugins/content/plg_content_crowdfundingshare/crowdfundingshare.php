@@ -198,7 +198,7 @@ class plgContentCrowdFundingShare extends JPlugin {
             $html  .= '<a href="'.$link.'" class="btn"><i class="icon-th-large"></i> '.JText::_("PLG_CONTENT_CROWDFUNDINGSHARE_EMBED").'</a>';
         }
         if($params->get("display_embed_email", 1)) {
-            $link   = JRoute::_(CrowdFundingHelperRoute::getEmbedRoute($slug, $catslug)."&layout=email", false);
+            $link   = JRoute::_(CrowdFundingHelperRoute::getEmbedRoute($slug, $catslug, "email"), false);
             $html  .= '<a class="btn" href="'.$link.'"><i class="icon-envelope"></i> '.JText::_("PLG_CONTENT_CROWDFUNDINGSHARE_EMAIL").'</a>';
         }
         $html  .= '</div>';

@@ -313,22 +313,9 @@ abstract class JHtmlCrowdFunding {
      */
     public static function video($value) {
         
-        $uri  = new JURI($value);
-        $host = $uri->getHost();
-        
-        $html = "";
-        
-        // Youtube
-        if(false !== strpos($host, "youtu")) {
-            
-            $id = "";
-            if( preg_match('#(?<=(?:v|i)=)[a-zA-Z0-9-]+(?=&)|(?<=(?:v|i)\/)[^&\n]+|(?<=embed\/)[^"&\n]+|(?<=(?:v|i)=)[^&\n]+|(?<=youtu.be\/)[^&\n]+#', $value, $matches) ) {
-                $id = $matches[0];
-            }
-                
-            $html = '<iframe width="560" height="315" src="http://www.youtube.com/embed/'.$id.'" frameborder="0" allowfullscreen></iframe>';
-            
-        }
+        jimport("itprism.video.embed");
+        $videoEmbed = new ITPrismVideoEmbed($value);
+        $html = $videoEmbed->getHtmlCode();
         
         return $html;
     }

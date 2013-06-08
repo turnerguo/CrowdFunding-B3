@@ -145,4 +145,24 @@ class CrowdFundingModelDetails extends JModelItem {
         
         return $results;
     }
+    
+    /**
+     * Increase number of hits.
+     * 
+     * @param integer $id
+     */
+    public function hit($id) {
+        
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+        
+        $query
+            ->update($db->quoteName("#__crowdf_projects"))
+            ->set($db->quoteName("hits") ." = hits + 1")
+            ->where($db->quoteName("id") ."=". (int)$id);
+        
+        $db->setQuery($query);
+        $db->query();
+        
+    }
 }

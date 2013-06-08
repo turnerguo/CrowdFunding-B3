@@ -293,10 +293,26 @@ class CrowdFundingViewProject extends JView {
             case "funding":
 		        $this->document->addScript(JURI::root() . 'media/'.$this->option.'/js/site/project_funding.js');
                 break;
+
+            case "story":
                 
+                $this->document->addStyleSheet(JURI::root() . 'media/'.$this->option.'/css/bootstrap-fileupload.min.css');
+                
+                $this->document->addScript('media/'.$this->option.'/js/bootstrap.min.js');
+                $this->document->addScript('media/'.$this->option.'/js/bootstrap-fileupload.min.js');
+                
+                $this->document->addScript('media/'.$this->option.'/js/site/project_story.js');
+                
+                break;
+                    
             default: // Basic
-                $this->document->addScript(JURI::root() . 'media/'.$this->option.'/js/bootstrap.min.js');
-		        $this->document->addScript(JURI::root() . 'media/'.$this->option.'/js/site/project_basic.js');
+                
+                $this->document->addStyleSheet(JURI::root() . 'media/'.$this->option.'/css/bootstrap-fileupload.min.css');
+                
+                $this->document->addScript('media/'.$this->option.'/js/bootstrap.min.js');
+                $this->document->addScript('media/'.$this->option.'/js/bootstrap-fileupload.min.js');
+                $this->document->addScript('media/'.$this->option.'/js/bootstrap-maxlength.min.js');
+		        $this->document->addScript('media/'.$this->option.'/js/site/project_basic.js');
                 break;
         }
 		

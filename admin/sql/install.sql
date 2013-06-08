@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_projects` (
   `funding_days` smallint(5) unsigned NOT NULL DEFAULT '0',
   `pitch_video` varchar(255) NOT NULL DEFAULT '',
   `pitch_image` varchar(255) NOT NULL DEFAULT '',
+  `hits` smallint(5) unsigned NOT NULL DEFAULT '0',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `published` tinyint(1) NOT NULL DEFAULT '0',
   `approved` tinyint(1) unsigned NOT NULL DEFAULT '0',
@@ -98,4 +99,3 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_updates` (
   `user_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
-

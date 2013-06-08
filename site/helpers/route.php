@@ -53,23 +53,22 @@ abstract class CrowdFundingHelperRoute {
 	     * The view "categories" won't contain category ID so it has to contain 0 for ID key. 
 	     */
 		$needles = array(
-			'discover' => array((int) $catid),
-		    'discover' => array(0)
+	        'details' => array((int)$id),
 		);
-
+		
 		//Create the link
 		$link = 'index.php?option=com_crowdfunding&view=details&id='. $id;
 		if ($catid > 1) {
-			$categories = JCategories::getInstance('crowdfunding');
-			$category   = $categories->get($catid);
-
-			if($category) {
-				$needles['category']   = array_reverse($category->getPath());
-//				$needles['categories'] = $needles['category'];
-				$link .= '&catid='.$catid;
-			}
+		    $categories = JCategories::getInstance('crowdfunding');
+		    $category   = $categories->get($catid);
+		
+		    if($category) {
+		        $needles['discover']   = array_reverse($category->getPath());
+		        $needles['discover'][] = 0;
+		        $link .= '&catid='.$catid;
+		    }
 		}
-
+		
 		// Set a screen page
 		if(!empty($screen)) {
 		    $link .= '&screen='.$screen;
@@ -104,20 +103,20 @@ abstract class CrowdFundingHelperRoute {
 	     * The view "categories" won't contain category ID so it has to contain 0 for ID key. 
 	     */
 		$needles = array(
-			'category'   => array((int) $catid)
+			'backing'   => array((int)$id)
 		);
 
 		//Create the link
 		$link = 'index.php?option=com_crowdfunding&view=backing&id='. $id;
 		if ($catid > 1) {
-			$categories = JCategories::getInstance('crowdfunding');
-			$category   = $categories->get($catid);
-
-			if($category) {
-				$needles['category']   = array_reverse($category->getPath());
-				$needles['categories'] = $needles['category'];
-				$link .= '&catid='.$catid;
-			}
+		    $categories = JCategories::getInstance('crowdfunding');
+		    $category   = $categories->get($catid);
+		
+		    if($category) {
+		        $needles['discover']   = array_reverse($category->getPath());
+		        $needles['discover'][] = 0;
+		        $link .= '&catid='.$catid;
+		    }
 		}
 		
 		if (!is_null($layout)) {
@@ -141,10 +140,11 @@ abstract class CrowdFundingHelperRoute {
 	/**
 	 * @param	int		$id		The id of the item.
 	 * @param	int		$catid	The id of the category.
+	 * @param	int		$catid	The id of the category.
 	 * 
 	 * $return	Return URL string
 	 */
-	public static function getEmbedRoute($id, $catid) {
+	public static function getEmbedRoute($id, $catid, $layout = null) {
 	    
 		/**
 	     * 
@@ -158,23 +158,26 @@ abstract class CrowdFundingHelperRoute {
 	     * The view "categories" won't contain category ID so it has to contain 0 for ID key. 
 	     */
 		$needles = array(
-//			'category'   => array((int) $catid),
-		    'discover' => array(0)
+		    'embed' => array((int)$id)
 		);
 
 		//Create the link
 		$link = 'index.php?option=com_crowdfunding&view=embed&id='. $id;
 		if ($catid > 1) {
-			$categories = JCategories::getInstance('crowdfunding');
-			$category   = $categories->get($catid);
-
-			if($category) {
-				$needles['category']   = array_reverse($category->getPath());
-//				$needles['categories'] = $needles['category'];
-				$link .= '&catid='.$catid;
-			}
+		    $categories = JCategories::getInstance('crowdfunding');
+		    $category   = $categories->get($catid);
+		
+		    if($category) {
+		        $needles['discover']   = array_reverse($category->getPath());
+		        $needles['discover'][] = 0;
+		        $link .= '&catid='.$catid;
+		    }
 		}
-
+		
+		if(!empty($layout)) {
+		    $link .= "&layout=".$layout;
+		}
+		
 		// Looking for menu item (Itemid)
 		if ($item = self::_findItem($needles)) {
 			$link .= '&Itemid='.$item;
@@ -208,58 +211,6 @@ abstract class CrowdFundingHelperRoute {
 		return $link;
 	}
 
-	/**
-	 * Routing a link for category or categories view
-	 * 
-	 * @param integer $catid
-	 */
-	public static function getCategoryRoute($catid) {
-	    
-		if ($catid instanceof JCategoryNode) {
-			$id       = $catid->id;
-			$category = $catid;
-		} else {
-			$id = (int) $catid;
-			$category = JCategories::getInstance('CrowdFunding')->get($id);
-		}
-
-		if ($id < 1) {
-			$link = '';
-		} else {
-			$needles = array(
-				'category' => array($id)
-			);
-
-			// Get menu item ( Itemid )
-			if ($item = self::_findItem($needles)) {
-				$link = 'index.php?Itemid='.$item;
-			
-			} else { // Continue to search and deep inside
-			    
-				//Create the link
-				$link = 'index.php?option=com_crowdfunding&view=category&id='.$id;
-
-				if ($category) {
-					$catids  = array_reverse($category->getPath());
-					
-					$needles = array(
-						'category'   => $catids,
-						'categories' => $catids
-					);
-					
-					// Looking for menu item (Itemid)
-					if ($item = self::_findItem($needles)) {
-						$link .= '&Itemid='.$item;
-					} elseif ($item = self::_findItem()) { // Get the menu item (Itemid) from the active (current) item.
-						$link .= '&Itemid='.$item;
-					}
-				}
-			}
-		}
-
-		return $link;
-	}
-	
 	protected static function _findItem($needles = null) {
 		$app		= JFactory::getApplication();
 		$menus		= $app->getMenu('site');

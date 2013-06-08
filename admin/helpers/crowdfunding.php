@@ -80,6 +80,12 @@ class CrowdFundingHelper {
 			$vName == 'comments'
 		);
 		
+		JSubMenuHelper::addEntry(
+    		JText::_('COM_CROWDFUNDING_PLUGINS'),
+    		'index.php?option=com_plugins&view=plugins&filter_search='.rawurlencode("crowdfunding"),
+    		$vName == 'plugins'
+        );
+		
 	}
 	
     public static function getProjectTitle($projectId) {

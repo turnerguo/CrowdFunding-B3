@@ -25,14 +25,28 @@ defined('_JEXEC') or die;
             <span class="help-block"><?php echo JText::_("COM_CROWDFUNDING_FIELD_FUNDING_VIDEO_HELP_BLOCK");?></span>
             
             <?php echo $this->form->getLabel('pitch_image'); ?>
-            <?php echo $this->form->getInput('pitch_image'); ?>
+            <div class="fileupload fileupload-new" data-provides="fileupload">
+                <div class="input-append">
+                    <div class="uneditable-input span3">
+                        <i class="icon-file fileupload-exists"></i> 
+                        <span class="fileupload-preview"></span>
+                    </div>
+                    <span class="btn btn-file">
+                        <span class="fileupload-new"><?php echo JText::_("COM_CROWDFUNDING_SELECT_FILE");?></span>
+                        <span class="fileupload-exists"><?php echo JText::_("COM_CROWDFUNDING_CHANGE");?></span>
+                        <?php echo $this->form->getInput('pitch_image'); ?>
+                    </span>
+                    <a href="#" class="btn fileupload-exists" data-dismiss="fileupload"><?php echo JText::_("COM_CROWDFUNDING_REMOVE");?></a>
+                </div>
+            </div>
+            
             <span class="help-block">(PNG, JPG, or GIF - <?php echo $this->pWidth; ?> x <?php echo $this->pHeight; ?> pixels) </span>
             
             <?php if(!empty($this->pitchImage)) {?>
             <img src="<?php echo $this->imageFolder."/".$this->pitchImage;?>" class="img-polaroid" />
             <?php if(!$this->debugMode) {?>
             <div class="clearfix">&nbsp;</div>
-        	<a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=story.removeImage&id=".$this->item->id);?>" class="btn btn-mini"><i class="icon-trash"></i> <?php echo JText::_("COM_CROWDFUNDING_REMOVE_IMAGE");?></a>
+        	<a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=story.removeImage&id=".$this->item->id."&".JSession::getFormToken()."=1");?>" class="btn btn-mini"><i class="icon-trash"></i> <?php echo JText::_("COM_CROWDFUNDING_REMOVE_IMAGE");?></a>
         	<?php }?>
             <?php }?>
             

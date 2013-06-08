@@ -28,19 +28,6 @@ class CrowdFundingModelEmbed extends JModelItem {
 	protected $context = 'com_crowdfunding.embed';
     
     /**
-     * Returns a reference to the a Table object, always creating it.
-     *
-     * @param   type    The table type to instantiate
-     * @param   string  A prefix for the table class name. Optional.
-     * @param   array   Configuration array for model. Optional.
-     * @return  JTable  A database object
-     * @since   1.6
-     */
-    public function getTable($type = 'Project', $prefix = 'CrowdFundingTable', $config = array()) {
-        return JTable::getInstance($type, $prefix, $config);
-    }
-    
-    /**
      * Method to auto-populate the model state.
      *
      * Note. Calling getState in this method will result in recursion.
@@ -84,9 +71,8 @@ class CrowdFundingModelEmbed extends JModelItem {
             $query
                 ->select(
                 	"a.id, a.title, a.short_desc, a.image,  " .
-                	"a.funded, a.goal, a.pitch_video, a.pitch_image,  " .
+                	"a.funded, a.goal, a.user_id, " .
                 	"a.funding_start, a.funding_end, a.funding_days,  " . 
-                	"a.user_id, a.catid, " .
                 	$query->concatenate(array("a.id", "a.alias"), "-") . ' AS slug, ' .
                 	"b.name AS user_name, " .
                 	$query->concatenate(array("c.id", "c.alias"), "-") . ' AS catslug '
@@ -111,35 +97,5 @@ class CrowdFundingModelEmbed extends JModelItem {
         
         return $this->item[$storedId];
     }
-
-    /**
-     * 
-     * Load all rewards of a project
-     * @param integer $id project ID
-     */
-    public function getRewards($id = null) {
-        
-        if (empty($id)) {
-            $id = $this->getState($this->context.'.id');
-        }
-        
-        $results = array();
-        
-        if (!empty($id)) {
-            
-            $db = $this->getDbo();
-            $query = $db->getQuery(true);
-            
-            $query
-                ->select("id, title, description, amount")
-                ->from("#__crowdf_rewards")
-                ->where("project_id = " .(int)$id);
-
-            $db->setQuery($query);
-            $results = $db->loadObjectList();
-            
-        }
-        
-        return $results;
-    }
+    
 }

@@ -102,6 +102,10 @@ class CrowdFundingViewDetails extends JView {
 		$results           = $dispatcher->trigger('onContentAfterDisplay', array('com_crowdfunding.details', &$this->item, &$this->params, $offset));
 		$this->item->event->onContentAfterDisplay = trim(implode("\n", $results));
 		
+		// Count hits
+		$model = $this->getModel();
+		$model->hit($this->item->id);
+		
 		$this->version     = new CrowdfundingVersion();
 		
 		$this->prepareDocument();
@@ -113,7 +117,7 @@ class CrowdFundingViewDetails extends JView {
         
         $model         = JModel::getInstance("Updates", "CrowdFundingModel", $config = array('ignore_request' => false));
         $this->items   = $model->getItems();
-        $this->form    = $model->loadForm();
+        $this->form    = $model->getForm();
         
         $this->userId  = JFactory::getUser()->id;
         $this->isOwner = ($this->userId != $this->item->user_id) ? false : true;
@@ -140,7 +144,7 @@ class CrowdFundingViewDetails extends JView {
         
         $model         = JModel::getInstance("Comments", "CrowdFundingModel", $config = array('ignore_request' => false));
         $this->items   = $model->getItems();
-        $this->form    = $model->loadForm();
+        $this->form    = $model->getForm();
         
         $this->userId  = JFactory::getUser()->id;
         $this->isOwner = ($this->userId != $this->item->user_id) ? false : true;
