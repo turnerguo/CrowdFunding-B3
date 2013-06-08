@@ -32,7 +32,6 @@
 	        <field name="paypal_cancel_url" type="text" size="80" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_CANCEL_URL" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_CANCEL_URL_DESC" />
 	        <field name="paypal_notify_url" type="text" default="index.php?option=com_crowdfunding&amp;task=notifier.notify&amp;format=raw" size="80" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_NOTIFY_URL" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_NOTIFY_URL_DESC" />
 	        <field name="paypal_image_url" type="text" default="" size="80" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_IMAGE_URL" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_IMAGE_URL_DESC" />
-	        <field name="paypal_cpp_headerback_color" type="text" default="" size="80" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_HEADERBACK_COLOR" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_HEADERBACK_COLOR_DESC" />
 	        <field name="spacer" type="spacer" hr="true" />
 	        <field name="paypal_sandbox" type="radio" default="1" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SANDBOX" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SANDBOX_DESC">
 	            <option value="0">JNO</option>

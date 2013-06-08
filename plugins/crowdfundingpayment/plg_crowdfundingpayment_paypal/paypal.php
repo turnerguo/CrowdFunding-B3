@@ -104,10 +104,6 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
             $html .= '<input type="hidden" name="image_url" value="'.$this->params->get('paypal_image_url').'" />';
         }
         
-        if($this->params->get('paypal_cpp_headerback_color')) {
-            $html .= '<input type="hidden" name="cpp_headerback_color" value='.$this->params->get('paypal_cpp_headerback_color').'" />';
-        }
-        
         $html .= '<input type="hidden" name="cancel_return" value="'.$cancelUrl.'" />';
         
         $html .= '<input type="hidden" name="return" value="'.$returnUrl.'" />';

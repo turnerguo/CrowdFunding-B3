@@ -181,6 +181,14 @@ class pkg_crowdFundingInstallerScript {
             $result = array("type" => "success"  , "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
             CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CONTENT_CROWDFUNDING_SHARE"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
             
+            // Content - CrowdFunding - Info
+            $result = array("type" => "success"  , "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
+            CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CONTENT_CROWDFUNDING_INFO"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
+            
+            // Search - CrowdFunding
+            $result = array("type" => "success"  , "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
+            CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_SEARCH_CROWDFUNDING"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
+            
             // CrowdFunding Payment - PayPal
             $result = array("type" => "success"  , "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
             CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CROWDFUNDINGPAYMENT_PAYPAL"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
