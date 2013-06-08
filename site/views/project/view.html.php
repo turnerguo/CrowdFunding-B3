@@ -271,7 +271,7 @@ class CrowdFundingViewProject extends JView {
         $pathway->addItem($this->pathwayName);
         
         // Head styles
-        $this->document->addStyleSheet(JURI::root() . 'media/'.$this->option.'/css/site/bootstrap.min.css');
+        $this->document->addStyleSheet('media/'.$this->option.'/css/site/bootstrap.min.css');
         $this->document->addStyleSheet('media/'.$this->option.'/css/site/style.css');
         
         // Add scripts
@@ -283,20 +283,20 @@ class CrowdFundingViewProject extends JView {
             
             case "rewards":
                 
-                $this->document->addStyleSheet(JURI::root() . 'media/'.$this->option.'/css/jquery.pnotify.default.css');
+                $this->document->addStyleSheet('media/'.$this->option.'/css/jquery.pnotify.default.css');
                 
-		        $this->document->addScript(JURI::root() . 'media/'.$this->option.'/js/jquery.pnotify.min.js');
-		        $this->document->addScript(JURI::root() . 'media/'.$this->option.'/js/helper.js');
-		        $this->document->addScript(JURI::root() . 'media/'.$this->option.'/js/site/project_rewards.js');
+		        $this->document->addScript('media/'.$this->option.'/js/jquery.pnotify.min.js');
+		        $this->document->addScript('media/'.$this->option.'/js/helper.js');
+		        $this->document->addScript('media/'.$this->option.'/js/site/project_rewards.js');
                 break;
                 
             case "funding":
-		        $this->document->addScript(JURI::root() . 'media/'.$this->option.'/js/site/project_funding.js');
+		        $this->document->addScript('media/'.$this->option.'/js/site/project_funding.js');
                 break;
 
             case "story":
                 
-                $this->document->addStyleSheet(JURI::root() . 'media/'.$this->option.'/css/bootstrap-fileupload.min.css');
+                $this->document->addStyleSheet('media/'.$this->option.'/css/bootstrap-fileupload.min.css');
                 
                 $this->document->addScript('media/'.$this->option.'/js/bootstrap.min.js');
                 $this->document->addScript('media/'.$this->option.'/js/bootstrap-fileupload.min.js');
@@ -307,7 +307,7 @@ class CrowdFundingViewProject extends JView {
                     
             default: // Basic
                 
-                $this->document->addStyleSheet(JURI::root() . 'media/'.$this->option.'/css/bootstrap-fileupload.min.css');
+                $this->document->addStyleSheet('media/'.$this->option.'/css/bootstrap-fileupload.min.css');
                 
                 $this->document->addScript('media/'.$this->option.'/js/bootstrap.min.js');
                 $this->document->addScript('media/'.$this->option.'/js/bootstrap-fileupload.min.js');
