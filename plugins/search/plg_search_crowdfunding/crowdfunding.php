@@ -54,14 +54,6 @@ class plgSearchCrowdFunding extends JPlugin {
 	public function onContentSearch($text, $phrase='', $ordering='', $areas=null) {
 	    
 		$app	= JFactory::getApplication();
-		
-		if (is_array($areas)) {
-			if (!array_intersect($areas, array_keys($this->onContentSearchAreas()))) {
-				return array();
-			}
-		} else {
-		    return array();
-		}
 
 		$limit	        = $this->params->def('search_limit',	20);
 		
