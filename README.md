@@ -1,15 +1,19 @@
 CrowdFunding for Joomla! 
 ==========================
-( Version 1.1 )
---------------------------
+( Version 1.1.1 )
+- - -
 
 CrowdFunding is a platform that provides functionality for creating collective funding websites, powered by Joomla!
 
 Changelog
----------
+-----------
 
-v1.1
--------
+###v1.1.1
+
+* Fixed an issue [[#11]](https://github.com/ITPrism/CrowdFunding/pull/11 "small change to use title for project alias")
+* Added option to search plugin that enables or disables searching in area.
+
+###v1.1
 
 * Fixed issue with routing of multilevel categories
 * Added option for selection category when adding a menu item.

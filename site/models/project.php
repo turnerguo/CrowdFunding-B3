@@ -168,7 +168,6 @@ class CrowdFundingModelProject extends JModelForm {
         
         $id          = JArrayHelper::getValue($data, "id");
         $title       = JArrayHelper::getValue($data, "title");
-        $alias       = JApplication::stringURLSafe($title);
         $shortDesc   = JArrayHelper::getValue($data, "short_desc");
         $catId       = JArrayHelper::getValue($data, "catid");
         $location    = JArrayHelper::getValue($data, "location");
@@ -178,7 +177,6 @@ class CrowdFundingModelProject extends JModelForm {
         $row->load($id);
         
         $row->set("title",             $title);
-        $row->set("alias",             $alias);
         $row->set("short_desc",        $shortDesc);
         $row->set("catid",             $catId);
         $row->set("location",          $location);
@@ -263,6 +261,12 @@ class CrowdFundingModelProject extends JModelForm {
             $table->set("image_square",  $data["image_square"]);
         }
         
+        
+        // If an alias does not exist, I will generate the new one using the title.
+        if(!$table->alias) {
+            $table->alias = $table->title;
+        }
+        $table->alias = JApplication::stringURLSafe($table->alias);
 	}
 	
 
