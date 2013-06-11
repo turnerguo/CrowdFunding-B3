@@ -88,8 +88,6 @@ class CrowdFundingViewProjects extends JView {
 	    
 		$this->document->setTitle(JText::_('COM_CROWDFUNDING_PROJECTS_MANAGER'));
 		
-		// Header styles
-		$this->document->addStyleSheet('../media/'.$this->option.'/css/admin/style.css');
 	}
     
 }

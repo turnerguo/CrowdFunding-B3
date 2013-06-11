@@ -34,14 +34,14 @@ defined('_JEXEC') or die;
             $disabled = $this->saveOrder ?  '' : 'disabled="disabled"';
             if($this->saveOrder) {
             if ($this->listDirn == 'asc') {
-                $showOrderUpIcon = (isset($this->items[$i-1]) AND (!empty($this->items[$i-1]->ordering)) AND ( $item->ordering >= $this->items[$i-1]->ordering )) ;
-                $showOrderDownIcon = (isset($this->items[$i+1]) AND ($item->ordering <= $this->items[$i+1]->ordering));
+                $showOrderUpIcon =   (isset($this->items[$i-1]) AND ($item->catid == @$this->items[$i-1]->catid)) ;
+                $showOrderDownIcon = (isset($this->items[$i+1]) AND ($item->catid == @$this->items[$i+1]->catid));
             ?>
                 <span><?php echo $this->pagination->orderUpIcon($i, $showOrderUpIcon, 'projects.orderup', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
                 <span><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, $showOrderDownIcon, 'projects.orderdown', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
             <?php } elseif ($this->listDirn == 'desc') {
-                $showOrderUpIcon = (isset($this->items[$i-1]) AND ($item->ordering <= $this->items[$i-1]->ordering));
-                $showOrderDownIcon = (isset($this->items[$i+1]) AND (!empty($this->items[$i+1]->ordering)) AND ($item->ordering >= $this->items[$i+1]->ordering)); 
+                $showOrderUpIcon   = (isset($this->items[$i-1]) AND ($item->catid == @$this->items[$i-1]->catid));
+                $showOrderDownIcon = (isset($this->items[$i+1]) AND ($item->catid == @$this->items[$i+1]->catid)); 
             ?>
                 <span><?php echo $this->pagination->orderUpIcon($i, $showOrderUpIcon, 'projects.orderdown', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
                 <span><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, $showOrderDownIcon, 'projects.orderup', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>

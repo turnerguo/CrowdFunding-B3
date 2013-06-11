@@ -48,7 +48,7 @@ defined('_JEXEC') or die;
 	<th width="10%">
         <?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ORDERING', 'a.ordering', $this->listDirn, $this->listOrder); ?>
         <?php if ($this->saveOrder) {?>
-        <?php echo JHtml::_('grid.order',  $this->items, 'filesave.png', 'campaigns.saveorder'); ?>
+        <?php echo JHtml::_('grid.order',  $this->items, 'filesave.png', 'projects.saveorder'); ?>
         <?php }?>
     </th>
     <th width="5%"><?php echo JHtml::_('grid.sort',  'JSTATUS', 'a.published', $this->listDirn, $this->listOrder); ?></th>

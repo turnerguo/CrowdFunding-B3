@@ -231,19 +231,33 @@ function CrowdFundingParseRoute($segments){
 	            
 	            $itemId         = (int)$segments[$count - 2];
 	            
+	            // Get catid from menu item
+	            if(!empty($item->query["id"])) {
+	                $catId    = (int)$item->query["id"];
+	            } else {
+	                $catId    = (int)$segments[$count - 3];
+	            }
+	            
         	    $vars['view']   = 'backing';
         		$vars['id']     = (int)$itemId;
+        		$vars['catid']  = (int)$catId;
         		
 	            break;
 	            
             case "embed": // Backing without reward
 	            
 	            $itemId         = (int)$segments[$count - 2];
-// 	            $catId          = (int)$segments[$count - 3];
+                
+                // Get catid from menu item
+                if(!empty($item->query["id"])) {
+                    $catId    = (int)$item->query["id"];
+                } else {
+                    $catId    = (int)$segments[$count - 3];
+                }
 	            
         	    $vars['view']   = 'embed';
         		$vars['id']     = (int)$itemId;
-//         		$vars['catid']  = (int)$catId;
+        		$vars['catid']  = (int)$catId;
         		
 	            break;
 	            
@@ -252,11 +266,17 @@ function CrowdFundingParseRoute($segments){
             case "funders":    
                 
 	            $itemId         = (int)$segments[$count - 2];
-// 	            $catId          = (int)$segments[$count - 3];
+	            
+	            // Get catid from menu item
+	            if(!empty($item->query["id"])) {
+	                $catId    = (int)$item->query["id"];
+	            } else {
+	                $catId    = (int)$segments[$count - 3];
+	            }
 	            
         	    $vars['view']   = 'details';
         		$vars['id']     = (int)$itemId;
-//         		$vars['catid']  = (int)$catId;
+        		$vars['catid']  = (int)$catId;
         		
         		// Get screen
         		$screen    = $segments[$count - 1];

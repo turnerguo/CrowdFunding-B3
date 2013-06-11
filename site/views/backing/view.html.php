@@ -280,11 +280,11 @@ class CrowdFundingViewBacking extends JView {
         $pathway->addItem($currentBreadcrumb, '');
         
         // Add styles
-        $this->document->addStyleSheet( 'media/'.$this->option.'/css/site/bootstrap.min.css');
-        $this->document->addStyleSheet( 'media/'.$this->option.'/css/site/style.css');
+        $this->document->addStyleSheet('media/'.$this->option.'/css/site/bootstrap.min.css');
+        $this->document->addStyleSheet('media/'.$this->option.'/css/site/style.css');
         
         // Add scripts
-        $this->document->addScript(JURI::root() . 'media/'.$this->option.'/js/site/backing.js');
+        $this->document->addScript('media/'.$this->option.'/js/site/backing.js');
     }
     
     private function prepearePageHeading() {

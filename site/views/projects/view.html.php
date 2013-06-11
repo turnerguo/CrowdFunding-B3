@@ -81,11 +81,11 @@ class CrowdFundingViewProjects extends JView {
 		}
 		
         // Head styles
-        $this->document->addStyleSheet(JURI::root() . 'media/'.$this->option.'/css/site/bootstrap.min.css');
+        $this->document->addStyleSheet('media/'.$this->option.'/css/site/bootstrap.min.css');
         $this->document->addStyleSheet('media/'.$this->option.'/css/site/style.css');
         
         JHtml::_('behavior.tooltip');
-        $this->document->addScript(JURI::root() . 'media/'.$this->option.'/js/bootstrap.min.js');
+        $this->document->addScript('media/'.$this->option.'/js/bootstrap.min.js');
     }
     
     private function prepearePageHeading() {

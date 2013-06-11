@@ -140,8 +140,6 @@ class CrowdFundingViewEmbed extends JView {
         JHtml::_('behavior.tooltip');
         JHtml::_('behavior.formvalidation');
         
-//         $this->document->addScript(JURI::root() . 'media/'.$this->option.'/js/site/comments.js');
-        
     }
     
     /**

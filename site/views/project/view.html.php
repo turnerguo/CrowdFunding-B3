@@ -283,8 +283,10 @@ class CrowdFundingViewProject extends JView {
             
             case "rewards":
                 
+                // Styles
                 $this->document->addStyleSheet('media/'.$this->option.'/css/jquery.pnotify.default.css');
                 
+                // Scripts
 		        $this->document->addScript('media/'.$this->option.'/js/jquery.pnotify.min.js');
 		        $this->document->addScript('media/'.$this->option.'/js/helper.js');
 		        $this->document->addScript('media/'.$this->option.'/js/site/project_rewards.js');
@@ -296,19 +298,22 @@ class CrowdFundingViewProject extends JView {
 
             case "story":
                 
+                // Styles
                 $this->document->addStyleSheet('media/'.$this->option.'/css/bootstrap-fileupload.min.css');
                 
+                // Scripts
                 $this->document->addScript('media/'.$this->option.'/js/bootstrap.min.js');
                 $this->document->addScript('media/'.$this->option.'/js/bootstrap-fileupload.min.js');
-                
                 $this->document->addScript('media/'.$this->option.'/js/site/project_story.js');
                 
                 break;
                     
             default: // Basic
                 
+                // Styles
                 $this->document->addStyleSheet('media/'.$this->option.'/css/bootstrap-fileupload.min.css');
                 
+                // Scripts
                 $this->document->addScript('media/'.$this->option.'/js/bootstrap.min.js');
                 $this->document->addScript('media/'.$this->option.'/js/bootstrap-fileupload.min.js');
                 $this->document->addScript('media/'.$this->option.'/js/bootstrap-maxlength.min.js');

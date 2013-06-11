@@ -68,6 +68,18 @@
             <option value="1">COM_CROWDFUNDING_MENU_BROWSER_TITLE</option>
             <option value="2">COM_CROWDFUNDING_MENU_PAGE_HEADING</option>
         </field>
+        <field name="seo_project_title" type="radio" default="1" label="COM_CROWDFUNDING_SEO_DISPLAY_PROJECT_TITLE" description="COM_CROWDFUNDING_SEO_DISPLAY_PROJECT_TITLE_DESC" class="btn-group">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        <field name="seo_project_title_header" type="list" default="h1" label="COM_CROWDFUNDING_SEO_PROJECT_TITLE_HEADING" description="COM_CROWDFUNDING_SEO_PROJECT_TITLE_HEADING_DESC">
+            <option value="h1">H1</option>
+            <option value="h2">H2</option>
+            <option value="h3">H3</option>
+            <option value="h4">H4</option>
+            <option value="h5">H5</option>
+            <option value="h6">H6</option>
+        </field>
     </fieldset>
     
     <fieldset name="integration" label="COM_CROWDFUNDING_INTEGRATION" description="COM_CROWDFUNDING_INTEGRATION_PARAMS">
@@ -122,11 +134,11 @@
      </fieldset>
      
     <fieldset name="debug" label="COM_CROWDFUNDING_DEBUG" description="COM_CROWDFUNDING_DEBUG_PARAMS">
-        <field name="debug_project_adding_disabled" type="radio" default="1" label="COM_CROWDFUNDING_DEBUG_PROJECT_ADDING_DISABLED" description="COM_CROWDFUNDING_DEBUG_PROJECT_ADDING_DISABLED_DESC">
+        <field name="debug_project_adding_disabled" type="radio" default="0" label="COM_CROWDFUNDING_DEBUG_PROJECT_ADDING_DISABLED" description="COM_CROWDFUNDING_DEBUG_PROJECT_ADDING_DISABLED_DESC">
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
-        <field name="debug_payment_disabled" type="radio" default="1" label="COM_CROWDFUNDING_DEBUG_PAYMENT_DISABLED" description="COM_CROWDFUNDING_DEBUG_PAYMENT_DISABLED_DESC">
+        <field name="debug_payment_disabled" type="radio" default="0" label="COM_CROWDFUNDING_DEBUG_PAYMENT_DISABLED" description="COM_CROWDFUNDING_DEBUG_PAYMENT_DISABLED_DESC">
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>

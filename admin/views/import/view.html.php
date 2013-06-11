@@ -89,13 +89,13 @@ class CrowdFundingViewImport extends JView {
 	 * @return void
 	 */
 	protected function setDocument() {
+	    
 		$this->document->setTitle(JText::_('COM_CROWDFUNDING_IMPORT_MANAGER'));
 		
-		// Add behaviors
+		// Scripts
         JHtml::_('behavior.tooltip');
         JHtml::_('behavior.formvalidation');
         
-		// Add scripts
 		$this->document->addScript('../media/'.$this->option.'/js/admin/'.JString::strtolower($this->getName()).'.js');
 	}
 	

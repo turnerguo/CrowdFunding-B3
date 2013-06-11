@@ -47,7 +47,7 @@ class CrowdFundingControllerComment extends JController {
         
         // Get the input
 		$app     = JFactory::getApplication();
-		$itemId  = $app->input->get->get('id', 0, 'int');
+		$itemId  = $app->input->get('id', 0, 'int');
         $userId  = JFactory::getUser()->id;
     
 		// Get the model

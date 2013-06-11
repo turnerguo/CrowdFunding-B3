@@ -85,7 +85,7 @@ class CrowdFundingControllerBacking extends JController {
 		
 		// Check for agreed conditions from the user
         if($params->get("backing_terms", 0)) {
-            $terms = $app->input->post->get("terms", 0);
+            $terms = $app->input->post->get("terms", 0, "int");
             if(!$terms) {
                 $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_TERMS_NOT_ACCEPTED"), "notice");
                 $link = CrowdFundingHelperRoute::getBackingRoute($item->slug, $item->catslug);
@@ -107,7 +107,6 @@ class CrowdFundingControllerBacking extends JController {
         $app->setUserState($projectContext.".step1", false);
         
         // Set project amount to the session
-        $amount       = $app->input->post->get("amount");
         $app->setUserState($projectContext.".amount", $amount);
         
         // Set the flag of step 1 to true

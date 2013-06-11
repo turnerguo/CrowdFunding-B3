@@ -22,7 +22,6 @@ class CrowdFundingViewLocations extends JView {
     protected $pagination;
     protected $state;
     
-    protected $documentTitle;
     protected $option;
     
     public function __construct($config) {
