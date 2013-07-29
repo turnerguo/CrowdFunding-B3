@@ -32,9 +32,6 @@ class CrowdFundingViewDiscover extends JView {
     
     public function display($tpl = null) {
         
-        $model                = $this->getModel();
-        /** @var @model CrowdFundingModelDiscover **/
-        
         // Initialise variables
         $this->state          = $this->get("State");
         $this->items          = $this->get('Items');
@@ -44,6 +41,10 @@ class CrowdFundingViewDiscover extends JView {
         $this->imageWidth     = $this->params->get("image_width", 200);
         $this->imageHeight    = $this->params->get("image_height", 200);
         
+        $model                = $this->getModel();
+        /** @var @model CrowdFundingModelDiscover **/
+        
+        $this->numberInRow    = $this->params->get("discover_items_row", 3);
         $this->items          = $model->prepareItems($this->items); 
         
         // Get the folder with images
@@ -57,14 +58,28 @@ class CrowdFundingViewDiscover extends JView {
 		// Get a social platform for integration
 		$this->socialPlatform = $this->params->get("integration_social_platform");
 		
-		$this->version        = new CrowdfundingVersion();
-		
 		// Include HTML helper
         JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
         
+        $this->version        = new CrowdfundingVersion();
+        
+        $this->prepareFilters();
         $this->prepareDocument();
         
         parent::display($tpl);
+    }
+    
+    protected function prepareFilters() {
+    
+        $this->filterPaginationLimit = $this->params->get("discover_filter_pagination_limit", 0);
+    
+        $this->displayFilters = false;
+    
+        // Enable filters
+        if($this->filterPaginationLimit) {
+            $this->displayFilters = true;
+        }
+    
     }
     
     /**
@@ -90,10 +105,12 @@ class CrowdFundingViewDiscover extends JView {
         if($this->params->get('menu-meta_keywords')){
             $this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
         }
-        
-        // Head styles
-        $this->document->addStyleSheet( 'media/'.$this->option.'/css/site/bootstrap.min.css');
+
+        // Styles
         $this->document->addStyleSheet( 'media/'.$this->option.'/css/site/style.css');
+        
+        // Scripts
+        JHtml::_("crowdfunding.bootstrap");
         
     }
     

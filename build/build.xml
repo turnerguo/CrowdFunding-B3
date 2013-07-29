@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="crowdfunding" default="build" basedir=".">
-	<description>User Ideas Ant Build File</description>
+	<description>CrowdFunding Lite Ant Build File</description>
 
 	<!-- load variables from config file -->
 	<property name="cfg.configFile" location="antconfig.txt" />
@@ -57,11 +57,29 @@
 		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundingshare/language" />
 		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundinginfo" />
 		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundinginfo/language" />
+		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundingmanager" />
+		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundingmanager/language" />
+		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundingadminmail" />
+		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundingadminmail/language" />
+		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundingusermail" />
+		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundingusermail/language" />
+	    
 		<mkdir dir="${cfg.pkgDir}/plugins/search/plg_search_crowdfunding" />
         <mkdir dir="${cfg.pkgDir}/plugins/search/plg_search_crowdfunding/language" />
+	    
+	    <mkdir dir="${cfg.pkgDir}/plugins/system/plg_system_crowdfundingmodules" />
+        <mkdir dir="${cfg.pkgDir}/plugins/system/plg_system_crowdfundingmodules/language" />
 		
 		<mkdir dir="${cfg.pkgDir}/plugins/crowdfundingpayment/plg_crowdfundingpayment_paypal" />
 		<mkdir dir="${cfg.pkgDir}/plugins/crowdfundingpayment/plg_crowdfundingpayment_paypal/language" />
+	    
+	    <!-- modules -->
+		<mkdir dir="${cfg.pkgDir}/modules/mod_crowdfundingdetails" />
+		<mkdir dir="${cfg.pkgDir}/modules/mod_crowdfundingdetails/language" />
+		<mkdir dir="${cfg.pkgDir}/modules/mod_crowdfundingrewards" />
+		<mkdir dir="${cfg.pkgDir}/modules/mod_crowdfundingrewards/language" />
+		<mkdir dir="${cfg.pkgDir}/modules/mod_crowdfundinginfo" />
+		<mkdir dir="${cfg.pkgDir}/modules/mod_crowdfundinginfo/language" />
 		
 	</target>
 
@@ -75,6 +93,9 @@
 		</fileset>
 	</copy>
 
+	<!-- copy install helper of the componet -->
+    <copy file="${cfg.adminSourceDir}/${cfg.comName}/helpers/install.php" todir="${cfg.adminDestDir}/helpers/" />
+	
 	<!-- copy site files of the componet -->
 	<copy todir="${cfg.siteDestDir}">
 		<fileset dir="${cfg.siteSourceDir}/${cfg.comName}">
@@ -154,12 +175,74 @@
         </fileset>
     </copy>
     
-    <!-- copy plugin language files of content/crowdfundingshare -->
+    <!-- copy plugin language files of content/crowdfundinginfo -->
     <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_content_crowdfundinginfo.ini" todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundinginfo/language/en-GB" />
     <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_content_crowdfundinginfo.sys.ini" todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundinginfo/language/en-GB" />
     <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundinginfo/language" />
     <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundinginfo/language/en-GB/" />
-	
+    
+    <!-- CONTENT/CROWDFUNDINGMANAGER -->
+            
+    <!-- copy plugins files of content/crowdfundingmanager -->
+    <copy todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingmanager">
+        <fileset dir="${cfg.pluginsSourceDir}/content/crowdfundingmanager">
+            <include name="**/*" />
+        </fileset>
+    </copy>
+    
+    <!-- copy plugin language files of content/crowdfundingmanager -->
+    <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_content_crowdfundingmanager.ini" todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingmanager/language/en-GB" />
+    <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_content_crowdfundingmanager.sys.ini" todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingmanager/language/en-GB" />
+    <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingmanager/language" />
+    <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingmanager/language/en-GB/" />
+    
+    <!-- CONTENT/CROWDFUNDINGADMINMAIL -->
+                    
+    <!-- copy plugins files of content/crowdfundingadminmail -->
+    <copy todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingadminmail">
+        <fileset dir="${cfg.pluginsSourceDir}/content/crowdfundingadminmail">
+            <include name="**/*" />
+        </fileset>
+    </copy>
+    
+    <!-- copy plugin language files of content/crowdfundingadminmail -->
+    <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_content_crowdfundingadminmail.ini" todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingadminmail/language/en-GB" />
+    <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_content_crowdfundingadminmail.sys.ini" todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingadminmail/language/en-GB" />
+    <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingadminmail/language" />
+    <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingadminmail/language/en-GB/" />
+    
+    
+    <!-- CONTENT/CROWDFUNDINGUSERMAIL -->
+                
+    <!-- copy plugins files of content/crowdfundingusermail -->
+    <copy todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingusermail">
+        <fileset dir="${cfg.pluginsSourceDir}/content/crowdfundingusermail">
+            <include name="**/*" />
+        </fileset>
+    </copy>
+    
+    <!-- copy plugin language files of content/crowdfundingusermail -->
+    <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_content_crowdfundingusermail.ini" todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingusermail/language/en-GB" />
+    <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_content_crowdfundingusermail.sys.ini" todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingusermail/language/en-GB" />
+    <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingusermail/language" />
+    <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingusermail/language/en-GB/" />
+
+    
+    <!-- SYSTEM/CROWDFUNDINGMODULES -->
+            
+    <!-- copy plugins files of system/crowdfundingmodules -->
+    <copy todir="${cfg.pluginsDestDir}/system/plg_system_crowdfundingmodules">
+        <fileset dir="${cfg.pluginsSourceDir}/system/crowdfundingmodules">
+            <include name="**/*" />
+        </fileset>
+    </copy>
+    
+    <!-- copy plugin language files of system/crowdfundingmodules -->
+    <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_system_crowdfundingmodules.ini" todir="${cfg.pluginsDestDir}/system/plg_system_crowdfundingmodules/language/en-GB" />
+    <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_system_crowdfundingmodules.sys.ini" todir="${cfg.pluginsDestDir}/system/plg_system_crowdfundingmodules/language/en-GB" />
+    <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/system/plg_system_crowdfundingmodules/language" />
+    <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/system/plg_system_crowdfundingmodules/language/en-GB/" />
+
 	<!-- CROWDFUNDINGPAYMENT/PAYPAL -->
 	
 	<!-- copy plugins files of crowdfundingpayment/paypal -->
@@ -191,9 +274,53 @@
     <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/search/plg_search_crowdfunding/language" />
     <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/search/plg_search_crowdfunding/language/en-GB/" />
 	
-
 	<!-- END COPY PLUGINS -->
 	
+    <!-- START COPY MODULES -->
+    
+    <!-- copy module files of MOD_CROWDFUNDINGDETAILS -->
+    <copy todir="${cfg.modulesDestDir}/mod_crowdfundingdetails">
+        <fileset dir="${cfg.modulesSourceDir}/mod_crowdfundingdetails">
+            <include name="**/*" />
+        </fileset>
+    </copy>
+
+    <!-- copy module language files of MOD_CROWDFUNDINGDETAILS -->
+    <copy file="${cfg.siteLanguageSourceDir}/en-GB.mod_crowdfundingdetails.ini" todir="${cfg.modulesDestDir}/mod_crowdfundingdetails/language/en-GB" />
+    <copy file="${cfg.siteLanguageSourceDir}/en-GB.mod_crowdfundingdetails.sys.ini" todir="${cfg.modulesDestDir}/mod_crowdfundingdetails/language/en-GB" />
+    <copy file="${cfg.siteLanguageSourceDir}/index.html" todir="${cfg.modulesDestDir}/mod_crowdfundingdetails/language" />
+    <copy file="${cfg.siteLanguageSourceDir}/index.html" todir="${cfg.modulesDestDir}/mod_crowdfundingdetails/language/en-GB/" />
+    
+    
+    <!-- copy module files of MOD_CROWDFUNDINGREWARDS -->
+    <copy todir="${cfg.modulesDestDir}/mod_crowdfundingrewards">
+        <fileset dir="${cfg.modulesSourceDir}/mod_crowdfundingrewards">
+            <include name="**/*" />
+        </fileset>
+    </copy>
+
+    <!-- copy module language files of MOD_CROWDFUNDINGREWARDS -->
+    <copy file="${cfg.siteLanguageSourceDir}/en-GB.mod_crowdfundingrewards.ini" todir="${cfg.modulesDestDir}/mod_crowdfundingrewards/language/en-GB" />
+    <copy file="${cfg.siteLanguageSourceDir}/en-GB.mod_crowdfundingrewards.sys.ini" todir="${cfg.modulesDestDir}/mod_crowdfundingrewards/language/en-GB" />
+    <copy file="${cfg.siteLanguageSourceDir}/index.html" todir="${cfg.modulesDestDir}/mod_crowdfundingrewards/language" />
+    <copy file="${cfg.siteLanguageSourceDir}/index.html" todir="${cfg.modulesDestDir}/mod_crowdfundingrewards/language/en-GB/" />
+    
+    
+    <!-- copy module files of MOD_CROWDFUNDINGINFO -->
+    <copy todir="${cfg.modulesDestDir}/mod_crowdfundinginfo">
+        <fileset dir="${cfg.modulesSourceDir}/mod_crowdfundinginfo">
+            <include name="**/*" />
+        </fileset>
+    </copy>
+
+    <!-- copy module language files of MOD_CROWDFUNDINGINFO -->
+    <copy file="${cfg.siteLanguageSourceDir}/en-GB.mod_crowdfundinginfo.ini" todir="${cfg.modulesDestDir}/mod_crowdfundinginfo/language/en-GB" />
+    <copy file="${cfg.siteLanguageSourceDir}/en-GB.mod_crowdfundinginfo.sys.ini" todir="${cfg.modulesDestDir}/mod_crowdfundinginfo/language/en-GB" />
+    <copy file="${cfg.siteLanguageSourceDir}/index.html" todir="${cfg.modulesDestDir}/mod_crowdfundinginfo/language" />
+    <copy file="${cfg.siteLanguageSourceDir}/index.html" todir="${cfg.modulesDestDir}/mod_crowdfundinginfo/language/en-GB/" />
+    
+    <!-- END COPY MODULES -->
+    
 	<target name="build_component" depends="init" description="packages the finaly component file">
 		
 		<!-- build component -->
@@ -207,9 +334,21 @@
 		<zip destfile="${cfg.pkgDir}/packages/plg_content_crowdfundingnav.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingnav" />
 		<zip destfile="${cfg.pkgDir}/packages/plg_content_crowdfundingshare.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingshare" />
 		<zip destfile="${cfg.pkgDir}/packages/plg_content_crowdfundinginfo.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_crowdfundinginfo" />
-		<zip destfile="${cfg.pkgDir}/packages/plg_crowdfundingpayment_paypal.zip" basedir="${cfg.pluginsDestDir}/crowdfundingpayment/plg_crowdfundingpayment_paypal" />
-		<zip destfile="${cfg.pkgDir}/packages/plg_search_crowdfunding.zip" basedir="${cfg.pluginsDestDir}/search/plg_search_crowdfunding" />
+		<zip destfile="${cfg.pkgDir}/packages/plg_content_crowdfundingmanager.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingmanager" />
+		<zip destfile="${cfg.pkgDir}/packages/plg_content_crowdfundingadminmail.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingadminmail" />
+		<zip destfile="${cfg.pkgDir}/packages/plg_content_crowdfundingusermail.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingusermail" />
 		
+		<zip destfile="${cfg.pkgDir}/packages/plg_search_crowdfunding.zip" basedir="${cfg.pluginsDestDir}/search/plg_search_crowdfunding" />
+	    
+		<zip destfile="${cfg.pkgDir}/packages/plg_system_crowdfundingmodules.zip" basedir="${cfg.pluginsDestDir}/system/plg_system_crowdfundingmodules" />
+	    
+	    <zip destfile="${cfg.pkgDir}/packages/plg_crowdfundingpayment_paypal.zip" basedir="${cfg.pluginsDestDir}/crowdfundingpayment/plg_crowdfundingpayment_paypal" />
+		
+	    <!-- build modules -->
+	    <zip destfile="${cfg.pkgDir}/packages/mod_crowdfundingdetails.zip" basedir="${cfg.modulesDestDir}/mod_crowdfundingdetails" />
+	    <zip destfile="${cfg.pkgDir}/packages/mod_crowdfundingrewards.zip" basedir="${cfg.modulesDestDir}/mod_crowdfundingrewards" />
+	    <zip destfile="${cfg.pkgDir}/packages/mod_crowdfundinginfo.zip"    basedir="${cfg.modulesDestDir}/mod_crowdfundinginfo" />
+	    
 		<!-- build package -->
 		<zip destfile="${cfg.pkgDir}/${cfg.pkgName}_${cfg.version}-${cfg.joomlaVersion}.zip" basedir="${cfg.pkgDir}" 
 			includes="packages/**,${cfg.pkgName}.xml,install.php,README.md" />

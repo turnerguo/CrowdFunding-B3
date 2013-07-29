@@ -83,14 +83,13 @@ class CrowdFundingViewComment extends JView {
 	 */
 	protected function setDocument() {
 	    
-	    // Add behaviors
+	    $this->document->setTitle($this->documentTitle);
+	    
+	    // Scripts
+	    JHtml::_('behavior.formvalidation');
         JHtml::_('behavior.tooltip');
-        JHtml::_('behavior.formvalidation');
-        
-		$this->document->setTitle($this->documentTitle);
-        
-		// Add scripts
-		$this->document->addScript(JURI::root() . 'media/'.$this->option.'/js/admin/'.strtolower($this->getName()).'.js');
+		
+		$this->document->addScript('../media/'.$this->option.'/js/admin/'.strtolower($this->getName()).'.js');
         
 	}
 

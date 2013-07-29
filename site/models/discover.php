@@ -66,7 +66,10 @@ class CrowdFundingModelDiscover extends JModelList {
         $this->setState($this->context.'.category_id', $value);
         
         // Set limit
-        $value      = $params->get("projects_limit", $app->getCfg('list_limit', 20));
+        $value      = $app->input->getInt("limit");
+        if(!$value) {
+            $value      = $params->get("discover_items_limit", $app->getCfg('list_limit', 20));
+        }
         $this->setState('list.limit', $value);
         
         $value      = $app->input->getInt('limitstart', 0);
@@ -143,13 +146,13 @@ class CrowdFundingModelDiscover extends JModelList {
         
         $params     = $this->getState("params");
         $order      = $params->get("discover_order", "start_date");
-        $direction  = $params->get("discover_dirn", "desc");
+        $orderDirn  = $params->get("discover_dirn",  "desc");
         
         $allowedDirns = array("asc", "desc");
-        if(!in_array($direction, $allowedDirns)) {
-            $direction = "ASC";
+        if(!in_array($orderDirn, $allowedDirns)) {
+            $orderDirn = "ASC";
         } else {
-            $direction = JString::strtoupper( $direction );
+            $orderDirn = JString::strtoupper($orderDirn);
         }
         
         switch($order) {
@@ -165,41 +168,38 @@ class CrowdFundingModelDiscover extends JModelList {
             default: // Start date
                 $orderCol  = "a.funding_start";
                 break;
+                
         }
         
-        $orderDirn  = $direction;
+        $orderString = $orderCol.' '.$orderDirn;
         
-        return $orderCol.' '.$orderDirn;
+        return $orderString;
     }
     
     public function prepareItems($items) {
-        
+    
         $result = array();
-        $i      = 0;
-        $x      = 1;
-        
+    
         if(!empty($items)) {
-            foreach($items as $item) {
-                
-                $result[$i][$x] = $item;
-                
-                // Calculate funded
-                $result[$i][$x]->funded_percents = CrowdFundingHelper::calculatePercent($item->funded, $item->goal);
-                
-                // Calcualte days left
-                $result[$i][$x]->days_left       = CrowdFundingHelper::calcualteDaysLeft($item->funding_days, $item->funding_start, $item->funding_end);
-                
-                // Increase indexes
-                if($x == 3) {
-                    $x = 0;
-                    $i++;
+            foreach($items as $key => $item) {
+    
+                $result[$key] = $item;
+    
+                // Calculate funding end date
+                if(!empty($item->funding_days)) {
+                    $result[$key]->funding_end = CrowdFundingHelper::calcualteEndDate($item->funding_days, $item->funding_start);
                 }
-                $x++;
+    
+                // Calculate funded
+                $result[$key]->funded_percents = CrowdFundingHelper::calculatePercent($item->funded, $item->goal);
+    
+                // Calcualte days left
+                $result[$key]->days_left       = CrowdFundingHelper::calcualteDaysLeft($item->funding_days, $item->funding_start, $item->funding_end);
+                
             }
         }
-        
+    
         return $result;
     }
-    
     
 }

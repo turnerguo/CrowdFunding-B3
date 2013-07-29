@@ -66,7 +66,6 @@ class CrowdFundingViewUpdate extends JView {
 		}
 		                             
         JToolBarHelper::apply('update.apply');
-        JToolBarHelper::save2new('update.save2new');
         JToolBarHelper::save('update.save');
     
         if(!$isNew){
@@ -87,8 +86,8 @@ class CrowdFundingViewUpdate extends JView {
 		$this->document->setTitle($this->documentTitle);
         
 		// Scripts
-		JHtml::_('behavior.tooltip');
 		JHtml::_('behavior.formvalidation');
+		JHtml::_('behavior.tooltip');
 		
 		$this->document->addScript('../media/'.$this->option.'/js/admin/'.JString::strtolower($this->getName()).'.js');
         

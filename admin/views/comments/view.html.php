@@ -69,6 +69,9 @@ class CrowdFundingViewComments extends JView {
 	 */
 	protected function setDocument() {
 		$this->document->setTitle(JText::_('COM_CROWDFUNDING_COMMENTS_MANAGER'));
+		
+		// Scripts
+		JHtml::_('behavior.tooltip');
 	}
     
 }

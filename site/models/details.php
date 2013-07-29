@@ -86,29 +86,30 @@ class CrowdFundingModelDetails extends JModelItem {
                 	"a.id, a.title, a.short_desc, a.description, a.image, a.location, " .
                 	"a.funded, a.goal, a.pitch_video, a.pitch_image, " .
                 	"a.funding_start, a.funding_end, a.funding_days, a.funding_type,  " .
-                	"a.catid, a.user_id, " .
+                	"a.catid, a.user_id, a.published, a.approved, a.hits, " .
                 	$query->concatenate(array("a.id", "a.alias"), "-") . ' AS slug, ' .
                 	$query->concatenate(array("b.id", "a.alias"), "-") . ' AS catslug' 
                 )
                 ->from($db->quoteName("#__crowdf_projects") . " AS a")
                 ->innerJoin($db->quoteName("#__categories") . " AS b ON a.catid = b.id")
-                ->where("a.id = " .(int)$id)
-                ->where("a.published = 1")
-                ->where("a.approved  = 1");
+                ->where("a.id = " .(int)$id);
 
             $db->setQuery($query, 0, 1);
             $result = $db->loadObject();
             
             // Attempt to load the row.
             if (!empty($result)) {
+                
+                // Calculate end date
+                if(!empty($result->funding_days)) {
+                    $result->funding_end = CrowdFundingHelper::calcualteEndDate($result->funding_days, $result->funding_start);
+                }
+                
                 $result->funded_percents = CrowdFundingHelper::calculatePercent($result->funded, $result->goal);
                 $result->days_left       = CrowdFundingHelper::calcualteDaysLeft($result->funding_days, $result->funding_start, $result->funding_end);
                 
-                // Calculate end date 
-                if(!empty($result->funding_days)) {
-                    $result->funding_end     = CrowdFundingHelper::calcualteEndDate($result->funding_days, $result->funding_start);
-                }
                 $this->item[$storedId]   = $result;
+                
             } 
         }
         
@@ -119,6 +120,8 @@ class CrowdFundingModelDetails extends JModelItem {
      * 
      * Load all rewards of a project
      * @param integer $id project ID
+     * 
+     * @deprecated v1.2
      */
     public function getRewards($id = null) {
         
@@ -145,6 +148,32 @@ class CrowdFundingModelDetails extends JModelItem {
         
         return $results;
     }
+    
+    /**
+     * Check for valid owner.
+     * If the project is not published and not approved,
+     * only the owner will be able to view the project.
+     *
+     * @param object $item
+     * @param integer $userId
+     * @return boolean
+     */
+    public function isRestricted($item, $userId) {
+    
+        if(empty($item->id) OR empty($item->user_id)) {
+            return true;
+        }
+    
+        // Check for the owner of the project.
+        // If it is not published and not approved, only the owner will be able to view the project.
+        if((!$item->published OR !$item->approved) AND ($item->user_id != $userId)) {
+            return true;
+        }
+    
+        return false;
+    
+    }
+    
     
     /**
      * Increase number of hits.

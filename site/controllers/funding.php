@@ -90,8 +90,11 @@ class CrowdFundingControllerFunding extends ITPrismControllerFormFrontend {
        
         try {
             
+            // Get component parameters
+            $params = JComponentHelper::getParams($this->option);
+            
             // Validate data
-            $model->validateFundingData($validData);
+            $model->validateFundingData($validData, $params);
             
             // Save data
             $itemId    = $model->save($validData);
@@ -99,8 +102,6 @@ class CrowdFundingControllerFunding extends ITPrismControllerFormFrontend {
             $redirectData["id"] = $itemId;
             
         } catch (Exception $e){
-            
-            JLog::add($e->getMessage());
             
             // Problem with uploading, so set a message and redirect to pages
             $code = $e->getCode();
@@ -112,13 +113,20 @@ class CrowdFundingControllerFunding extends ITPrismControllerFormFrontend {
                 break;
                 
                 default:
+                    JLog::add($e->getMessage());
                     throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'), ITPrismErrors::CODE_ERROR);
                 break;
             }
             
         }
         
-		// Redirect to next page
+        // Redirect to next page
+        $redirectData = array(
+            "view"   => "project",
+            "layout" => "story",
+            "id"     => $itemId
+        );
+        
 		$this->displayMessage(JText::_("COM_CROWDFUNDING_FUNDING_SUCCESSFULY_SAVED"), $redirectData);
 			
     }

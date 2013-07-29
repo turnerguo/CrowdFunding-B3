@@ -38,7 +38,10 @@ class CrowdFundingViewDetails extends JView {
         $this->item        = $this->get("Item");
         $this->params      = $this->state->get("params");
         
-        if (!$this->item) {
+        $model             = $this->getModel();
+        $userId            = JFactory::getUser()->id;
+        
+        if (!$this->item OR $model->isRestricted($this->item, $userId)) {
             $app = JFactory::getApplication();
             /** @var $app JSite **/
             
@@ -48,19 +51,14 @@ class CrowdFundingViewDetails extends JView {
         }
         
         // Get rewards of the project
-        $this->rewards        = $this->get("Rewards");
         $this->imageFolder    = $this->params->get("images_directory", "images/projects");
         
         // Include HTML helper
         JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
+        JHtml::addIncludePath(ITPRISM_PATH_LIBRARY.'/ui/helpers');
         
-        // Get currency
-        jimport("crowdfunding.currency");
-        $currencyId           = $this->params->get("project_currency");
-		$this->currency       = CrowdFundingCurrency::getInstance($currencyId);
-		
         // Prepare the link that points to project page
-        $host  = JFactory::getURI()->toString(array("scheme", "host"));
+        $host  = JUri::getInstance()->toString(array("scheme", "host"));
         $this->item->link        = $host.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug));
         
         // Prepare the link that points to project image
@@ -68,6 +66,10 @@ class CrowdFundingViewDetails extends JView {
         
         // Get the current screen
         $this->screen = $app->input->getCmd("screen", "home");
+        
+        $this->version        = new CrowdfundingVersion();
+        
+        $this->prepareDocument();
         
         switch($this->screen) {
             
@@ -103,12 +105,7 @@ class CrowdFundingViewDetails extends JView {
 		$this->item->event->onContentAfterDisplay = trim(implode("\n", $results));
 		
 		// Count hits
-		$model = $this->getModel();
 		$model->hit($this->item->id);
-		
-		$this->version     = new CrowdfundingVersion();
-		
-		$this->prepareDocument();
 		
         parent::display($tpl);
     }
@@ -126,17 +123,12 @@ class CrowdFundingViewDetails extends JView {
         $this->socialPlatform = $this->params->get("integration_social_platform");
         $this->avatars        = $this->params->get("integration_avatars");
         
-        
-        // Styles
-        $this->document->addStyleSheet('media/'.$this->option.'/css/jquery.pnotify.default.css');
-
         // Scripts
         JHtml::_('behavior.keepalive');
         JHtml::_('behavior.formvalidation');
+        JHtml::_('itprism.ui.pnotify');
         
-        $this->document->addScript('media/'.$this->option.'/js/jquery.pnotify.min.js');
         $this->document->addScript('media/'.$this->option.'/js/helper.js');
-        
         $this->document->addScript('media/'.$this->option.'/js/site/updates.js');
     }
     
@@ -153,16 +145,12 @@ class CrowdFundingViewDetails extends JView {
         $this->socialPlatform = $this->params->get("integration_social_platform");
         $this->avatars        = $this->params->get("integration_avatars");
         
-        // Styles
-        $this->document->addStyleSheet('media/'.$this->option.'/css/jquery.pnotify.default.css');
-
         // Scripts
         JHtml::_('behavior.keepalive');
         JHtml::_('behavior.formvalidation');
+        JHtml::_('itprism.ui.pnotify');
         
-        $this->document->addScript('media/'.$this->option.'/js/jquery.pnotify.min.js');
         $this->document->addScript('media/'.$this->option.'/js/helper.js');
-        
         $this->document->addScript('media/'.$this->option.'/js/site/comments.js');
     }
     
@@ -213,12 +201,12 @@ class CrowdFundingViewDetails extends JView {
         $pathway->addItem($currentBreadcrumb, '');
         
         // Add styles
-        $this->document->addStyleSheet('media/'.$this->option.'/css/site/bootstrap.min.css');
         $this->document->addStyleSheet('media/'.$this->option.'/css/site/style.css');
         
         // Add scripts
         JHtml::_('behavior.framework');
-        
+        JHtml::_("crowdfunding.bootstrap");
+        JHtml::_('itprism.ui.pnotify');
     }
     
     private function prepearePageHeading() {

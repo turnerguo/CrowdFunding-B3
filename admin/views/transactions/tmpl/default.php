@@ -17,7 +17,7 @@ defined('_JEXEC') or die;
 <form action="<?php echo JRoute::_('index.php?option=com_crowdfunding&view=transactions'); ?>" method="post" name="adminForm" id="adminForm">
     <fieldset id="filter-bar">
         <div class="filter-search fltlft">
-            <label class="filter-search-lbl hasTip" for="filter_search" title="<?php echo JText::_('COM_CROWDFUNDING_SEARCH_IN_TRANSACTION_DESC'); ?>" ><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
+            <label class="filter-search-lbl hasTip" for="filter_search" title="<?php echo JText::_('COM_CROWDFUNDING_SEARCH_IN_TRANSACTION_TOOLTIP'); ?>" ><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
             <input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
             <button type="submit"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
             <button type="button" onclick="document.id('filter_search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>

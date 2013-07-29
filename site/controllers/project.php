@@ -60,6 +60,7 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
 		// Get the data from the form POST
 		$data    = $app->input->post->get('jform', array(), 'array');
         $itemId  = JArrayHelper::getValue($data, "id");
+        $terms   = JArrayHelper::getValue($data, "terms", false, "bool");
         
         $redirectData = array(
             "view" => "project",
@@ -83,6 +84,30 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
         if($validData === false){
             $this->displayNotice($form->getErrors(), $redirectData);
             return;
+        }
+        
+        if(!empty($itemId)) { // Validate owner if the item is not new.
+        
+            $userId = JFactory::getUser()->id;
+        
+            if(!$model->isOwner($itemId, $userId)){
+                $redirectData = array("view" => "discover");
+                $this->displayWarning(JText::_('COM_CROWDFUNDING_INVALID_ITEM'), $redirectData);
+                return;
+            }
+        
+            $this->isNew = false;
+        
+        } else { // Verify terms of use during the process of creating a project.
+        
+            $params = JComponentHelper::getParams($this->option);
+        
+            if($params->get("project_terms", 0) AND !$terms) {
+                $redirectData = array("view" => "project");
+                $this->displayWarning(JText::_("COM_CROWDFUNDING_ERROR_TERMS_NOT_ACCEPTED"), $redirectData);
+                return;
+            }
+        
         }
         
         try {
@@ -113,8 +138,6 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
             
         } catch (Exception $e) {
             
-            JLog::add($e->getMessage());
-            
             // Problem with uploading, so set a message and redirect to pages
             $code = $e->getCode();
             switch($code) {
@@ -130,6 +153,7 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
                 break;
                 
                 default:
+                    JLog::add($e->getMessage());
                     throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'), ITPrismErrors::CODE_ERROR);
                 break;
                 
@@ -138,6 +162,12 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
         }
         
         // Redirect to next page
+        $redirectData = array(
+            "view"   => "project",
+            "layout" => "funding",
+            "id"     => $itemId
+        );
+
         $this->displayMessage(JText::_("COM_CROWDFUNDING_PROJECT_SUCCESSFULY_SAVED"), $redirectData);
 			
     }

@@ -105,57 +105,18 @@ class CrowdFundingTableProject extends JTable {
         $this->bind($row);
         
         // Calculate funded percents
-        $this->fundedPercents = $this->calculatePercent();
+        $this->fundedPercents  = (!$this->goal) ? 0 : CrowdFundingHelper::calculatePercent($this->funded, $this->goal);
                 
+        // Calculate end date
+        if(!empty($this->funding_days)) {
+            $this->funding_end = (!CrowdFundingHelper::isValidDate($this->funding_start)) ? "0000-00-00" : CrowdFundingHelper::calcualteEndDate($this->funding_days, $this->funding_start);
+        }
+        
         // Calcualte days left
-        $this->daysLeft       = $this->calcualteDaysLeft();
+        $this->daysLeft        = CrowdFundingHelper::calcualteDaysLeft($this->funding_days, $this->funding_start, $this->funding_end);
         
         return true;
     }
-    
-    protected function calculatePercent() {
-        
-        $value = 0;
-        if($this->goal > 0) {
-            $value = ($this->funded/$this->goal) * 100;
-        }
-        
-	    return round($value, 2);
-	}
-	
-	protected function calcualteDaysLeft() {
-        
-        // Calcualte days left
-        $today         = new DateTime("today");
-        
-        // Calcualte ending date
-        if(!empty($this->funding_days)) {
-            
-            $fundindStart = new JDate($this->funding_start);
-            
-            // Validate starting date. 
-            // If there is not starting date, set number of day.
-            if(0 > $fundindStart->toUnix()) {
-                return (int)$this->funding_days;
-            }
-            
-            $endingDate  = new DateTime($this->funding_start);
-            $endingDate->modify("+".(int)$this->funding_days." days");
-            
-        } else {
-            $endingDate  = new DateTime($this->funding_end);
-        }
-        
-        $interval        = $today->diff($endingDate);
-        $daysLeft        = $interval->format("%r%a");
-        
-        // If number is less than zero,
-        // initialize it with 0 
-        if($daysLeft < 0 ) {
-            $daysLeft = 0;
-        }
-        return $daysLeft;
-    } 
     
 	/**
      * @return the $fundedPercents

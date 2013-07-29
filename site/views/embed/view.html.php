@@ -182,11 +182,11 @@ class CrowdFundingViewEmbed extends JView {
         $pathway->addItem($currentBreadcrumb, '');
         
         // Add styles
-        $this->document->addStyleSheet( 'media/'.$this->option.'/css/site/bootstrap.min.css');
         $this->document->addStyleSheet( 'media/'.$this->option.'/css/site/style.css');
         
         // Add scripts
         JHtml::_('behavior.framework');
+        JHtml::_("crowdfunding.bootstrap");
     }
     
     private function prepearePageHeading() {

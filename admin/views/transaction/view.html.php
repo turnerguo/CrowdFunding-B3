@@ -76,8 +76,8 @@ class CrowdFundingViewTransaction extends JView {
 		$this->document->setTitle($this->documentTitle);
         
 		// Add scripts
-		JHtml::_('behavior.tooltip');
 		JHtml::_('behavior.formvalidation');
+		JHtml::_('behavior.tooltip');
 		
 		$this->document->addScript('../media/'.$this->option.'/js/admin/'.JString::strtolower($this->getName()).'.js');
         

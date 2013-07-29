@@ -25,7 +25,9 @@ class CrowdFundingProject extends CrowdFundingTableProject {
     
     protected static $instances = array();
     
-    public    $funded = 0;
+    public    $funded  = 0;
+    
+    protected $rewards = null;
     
     public function __construct($id) {
         
@@ -54,7 +56,16 @@ class CrowdFundingProject extends CrowdFundingTableProject {
      */
     public function addFunds($amount) {
         $this->funded         = $this->funded + $amount;
-        $this->fundedPercents = $this->calculatePercent();
+        $this->fundedPercents = CrowdFundingHelper::calculatePercent($this->funded, $this->goal);
     }
     
+    public function getRewards() {
+        
+        if(is_null($this->rewards)) {
+            jimport("crowdfunding.rewards");
+            $this->rewards = CrowdFundingRewards::getInstance($this->id);
+        }
+        
+        return $this->rewards;
+    }
 }

@@ -109,8 +109,32 @@ class CrowdFundingControllerBacking extends JController {
         // Set project amount to the session
         $app->setUserState($projectContext.".amount", $amount);
         
+        // Set the new reward state
+        $app->setUserState($projectContext.".rid", $rewardId);
+        
         // Set the flag of step 1 to true
         $app->setUserState($projectContext.".step1", true);
+        
+        // Store intention
+        $intentionKeys = array(
+                "user_id"    => $userId,
+                "project_id" => $item->id
+        );
+        
+        jimport("crowdfunding.intention");
+        $intention       = new CrowdFundingIntention($intentionKeys);
+        
+        $date   = new JDate();
+        
+        $custom = array(
+                "project_id" =>  $item->id,
+                "reward_id"  =>  $rewardId,
+                "user_id"    =>  $userId,
+                "record_date" => $date->toSql()
+        );
+        
+        $intention->bind($custom);
+        $intention->store();
         
         // Redirect to next page
         $link = CrowdFundingHelperRoute::getBackingRoute($item->slug, $item->catslug, "payment");

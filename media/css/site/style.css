@@ -57,9 +57,9 @@ span.help-block {
 }
 
 
-.pull-center {
-	margin: 0 auto !important;
-	text-align: center !important;
+.cf-center {
+    margin: 0 auto !important;
+    text-align: center !important;
 }
 
 .cf-projects-list th {
@@ -383,4 +383,19 @@ form.bs-docs-example {
 .cf-projects-list .button:hover{
 	color: white; 
 }
+.cf-manager {
+	border: thin solid #D1D1D1;
+   margin-top: 10px;
+}
 
+.cf-manager h4, .cf-manager h5 {
+	padding-left: 10px;
+}
+.cf-pm-toolbar {
+    background: -moz-linear-gradient(center top , #FFFFFF 0%, #EDEDED 100%) repeat scroll 0 0 transparent;
+    border-top: 1px solid #D3D3D3;
+    border-bottom: 1px solid #D3D3D3;
+    color: #0C192E;
+    padding: 10px;
+    text-shadow: 0 1px 0 #FFFFFF;
+}

@@ -116,8 +116,6 @@ class CrowdFundingControllerStory extends ITPrismControllerFormFrontend {
             
         } catch (Exception $e) {
             
-            JLog::add($e->getMessage());
-            
             // Problem with uploading, so set a message and redirect to pages
             $code = $e->getCode();
             switch($code) {
@@ -133,13 +131,34 @@ class CrowdFundingControllerStory extends ITPrismControllerFormFrontend {
                 break;
                 
                 default:
+                    JLog::add($e->getMessage());
                     throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'), ITPrismErrors::CODE_ERROR);
                 break;
             }
             
         }
         
+        // Validate pitch image and video URL
+        $item    = $model->getItem($itemId, $userId);
+        if(!$item->pitch_image AND !$item->pitch_video) {
+        
+            // Redirect to next page
+            $redirectData = array(
+                    "view"   => "project",
+                    "layout" => "story",
+                    "id"     => $itemId
+            );
+        
+            $this->displayNotice(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PITCH_IMAGE_OR_VIDEO"), $redirectData);
+            return;
+        }
+        
 		// Redirect to next page
+        $redirectData = array(
+            "view"   => "project",
+            "layout" => "rewards",
+            "id"     => $itemId
+        );
 		$this->displayMessage(JText::_("COM_CROWDFUNDING_STORY_SUCCESSFULY_SAVED"), $redirectData);
     }
     

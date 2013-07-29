@@ -70,11 +70,8 @@ class CrowdFundingViewBacking extends JView {
         $currencyId              = $this->params->get("project_currency");
         $this->currency          = CrowdFundingCurrency::getInstance($currencyId);
 		
-		// Get a social platform for integration
-		$this->socialPlatform    = $this->params->get("integration_social_platform");
-		
         // Set a link to project page
-        $host  = JFactory::getURI()->toString(array("scheme", "host"));
+        $host  = JUri::getInstance()->toString(array("scheme", "host"));
         $this->item->link        = $host.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug), false);
         
         // Set a link to image
@@ -279,11 +276,11 @@ class CrowdFundingViewBacking extends JView {
         $currentBreadcrumb = JHtmlString::truncate($this->item->title, 16);
         $pathway->addItem($currentBreadcrumb, '');
         
-        // Add styles
-        $this->document->addStyleSheet('media/'.$this->option.'/css/site/bootstrap.min.css');
+        // Styles
         $this->document->addStyleSheet('media/'.$this->option.'/css/site/style.css');
         
-        // Add scripts
+        // Scripts
+        JHtml::_("crowdfunding.bootstrap");
         $this->document->addScript('media/'.$this->option.'/js/site/backing.js');
     }
     

@@ -95,21 +95,9 @@ class CrowdFundingControllerNotifier extends JController {
             }
             
             // Event After Payment
-            JPluginHelper::importPlugin('virtualcurrencypayment');
+            JPluginHelper::importPlugin('crowdfundingpayment');
             $dispatcher->trigger('onAfterPayment', array('com_crowdfunding.notify', &$transaction, $params, $project, $reward));
         		
-            $model = $this->getModel();
-            
-            // Send email to administrator
-            if($params->get("security_send_mail_admin")) {
-                $model->sendMailToAdministrator($transaction, $project, $reward);
-            }
-                
-            // Send email to user
-            if($params->get("security_send_mail_user")) {
-                $model->sendMailToUser($transaction, $project, $reward);
-            }
-            
         } catch (Exception $e) {
             JLog::add($e->getMessage());
             return;

@@ -176,4 +176,21 @@ class CrowdFundingModelRewards extends JModel {
         $db->query();
         
     }
+    
+    public function changeState($txnId, $state, $userId) {
+    
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+    
+        $query
+        ->update("#__crowdf_transactions")
+        ->set("reward_state = ".(int)$state)
+        ->where("id = ".(int)$txnId)
+        ->where("receiver_id = " .(int)$userId);
+    
+        $db->setQuery($query);
+        $db->query();
+    
+    }
+    
 }

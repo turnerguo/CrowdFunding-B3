@@ -14,12 +14,7 @@
             label="COM_CROWDFUNDING_FIELD_FUNDING_TYPE" 
             description="COM_CROWDFUNDING_FIELD_FUNDING_TYPE_DESC" 
             required="true"
-            default="FIXED"
-            help_blocks="COM_CROWDFUNDING_FIELD_FUNDING_TYPE_HELP_FIXED, COM_CROWDFUNDING_FIELD_FUNDING_TYPE_HELP_FLEXIBLE"
-         >
-            <option value="FIXED">COM_CROWDFUNDING_FIELD_FUNDING_TYPE_FIXED</option>
-            <option value="FLEXIBLE">COM_CROWDFUNDING_FIELD_FUNDING_TYPE_FLEXIBLE</option>
-         </field>
+        />
            
         <field type="FundingLabel" name="funding_duration_type"
             label="COM_CROWDFUNDING_FIELD_FUNDING_DURATION" 

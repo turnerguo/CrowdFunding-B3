@@ -39,11 +39,7 @@ defined('_JEXEC') or die;
 		<td class="center"><?php echo $item->txn_id; ?>
 		<td class="center"><?php echo $item->txn_status; ?></td>
 		<td class="center">
-		<?php if(!$item->reward_id) { ?>
-		<img src="../media/com_crowdfunding/images/noreward_16.png" alt="<?php echo JText::_('COM_CROWDFUNDING_REWARD_NOT_SELECTED'); ?>" width="16" height="16"/>
-		<?php } else {?>
-		<img src="../media/com_crowdfunding/images/reward_16.png" alt="<?php echo JText::_('COM_CROWDFUNDING_REWARD_SELECTED'); ?>" title="<?php echo JText::sprintf('COM_CROWDFUNDING_REWARD_TOOLTIP', $item->reward); ?>" width="16" height="16" class="hasTip" />
-		<?php }?>
+		<?php echo JHtml::_('crowdfundingbackend.reward', $item->reward_id, $item->reward, $item->project_id, $item->reward_state ); ?>
 		</td>
         <td class="center"><?php echo $item->id;?></td>
 	</tr>

@@ -54,8 +54,6 @@ class plgContentCrowdFundingInfo extends JPlugin {
         }
         
         $user = JFactory::getUser($item->user_id);
-//         jimport("crowdfunding.project");
-//         $project = CrowdFundingProject::getInstance($item->id);
         
         $locationString = "";
         if($this->params->get("display_location", 0) OR $this->params->get("display_map", 0) OR $this->params->get("display_map", 0)) {
@@ -118,8 +116,6 @@ class plgContentCrowdFundingInfo extends JPlugin {
                 '.$dates.'
             </div>
         ';
-        
-        $html .= '</div>';
         
         return $html;
         

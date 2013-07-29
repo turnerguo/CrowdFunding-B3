@@ -1,11 +1,11 @@
 <?php
 /**
  * @package      CrowdFunding
- * @subpackage   ItpDonate
+ * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * ItpDonate is free software. This version may have been modified pursuant
+ * CrowdFunding is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
@@ -23,8 +23,12 @@ class CrowdFundingModelNotifier extends JModel {
      * @param array  $data		Transaction data
      * @param object $project	This is an obeject of the project
      * @param mixed  $reward	This is an obeject of the reward
+     *
+     * @deprecated 1.2
      */
     public function sendMailToAdministrator($data, $project, $reward = null) {
+        
+        JLog::add("DEPRECATED (CrowdFundingModelNotifier::sendMailToAdministrator): Uset onAfterPayment to send mails.");
         
         $app = JFactory::getApplication();
         /** @var $app JSite **/
@@ -47,8 +51,12 @@ class CrowdFundingModelNotifier extends JModel {
      * 
      * @param float  $amount
      * @param string $currency
+     * 
+     * @deprecated 1.2
      */
     public function sendMailToUser($data, $project, $reward = null) {
+        
+        JLog::add("DEPRECATED (CrowdFundingModelNotifier::sendMailToUser): Uset onAfterPayment to send mails.");
         
         $app = JFactory::getApplication();
         /** @var $app JSite **/

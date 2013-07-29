@@ -34,10 +34,15 @@ defined('_JEXEC') or die;?>
 	<?php }?>
 	
 	<div class="row-fluid">
-		<div class="span8">
+		<div class="span12">
         	<div class="cf-details-block">
         	<?php if(!$this->item->pitch_video) {
-                echo JHtml::_("image", $this->imageFolder."/".$this->item->pitch_image, $this->escape($this->item->title), array("class"=>"img-polaroid"));   
+        	    if(!$this->item->pitch_image) {
+        	        echo JHtml::_("image", "media/com_crowdfunding/images/no_image_large.png", $this->escape($this->item->title), array("class"=>"img-polaroid"));
+        	    } else {
+        	        echo JHtml::_("image", $this->imageFolder."/".$this->item->pitch_image, $this->escape($this->item->title), array("class"=>"img-polaroid"));
+        	    }
+        	    
         	} else {
         	    echo JHtml::_("crowdfunding.video", $this->item->pitch_video);
         	}?>
@@ -67,14 +72,6 @@ defined('_JEXEC') or die;?>
         	        break;
         	}?>
         	</div>
-    	</div>
-    	
-    	<div class="span4">
-    		<?php echo $this->loadTemplate("info");?>
-    		<div class="clearfix">&nbsp;</div>
-    		<?php if(!empty($this->rewards)){?>
-    		<?php echo $this->loadTemplate("rewards");?>
-    		<?php }?>
     	</div>
 	</div>
 	

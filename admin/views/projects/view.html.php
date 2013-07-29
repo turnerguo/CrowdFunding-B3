@@ -44,6 +44,28 @@ class CrowdFundingViewProjects extends JView {
         $currencyId       = $this->state->params->get("project_currency");
         $this->currency   = CrowdFundingCurrency::getInstance($currencyId);
         
+        $model = $this->getModel();
+        
+        // Get rewards number
+        $projectsIds = array();
+        foreach($this->items as $item) {
+            $projectsIds[] = $item->id;
+        }
+        $this->rewards    = $model->getRewardsNumber($projectsIds);
+        
+        
+        // Prepare options
+        $this->approvedOptions = array(
+            JHtml::_("select.option", 1, JText::_("COM_CROWDFUNDING_APPROVED")),
+            JHtml::_("select.option", 0, JText::_("COM_CROWDFUNDING_DISAPPROVED")),
+        );
+        
+        $this->featuredOptions = array(
+            JHtml::_("select.option", 1, JText::_("COM_CROWDFUNDING_FEATURED")),
+            JHtml::_("select.option", 0, JText::_("COM_CROWDFUNDING_NOT_FEATURED")),
+        );
+        
+        
         // Add submenu
         CrowdFundingHelper::addSubmenu($this->getName());
         
@@ -66,11 +88,11 @@ class CrowdFundingViewProjects extends JView {
         
         // Set toolbar items for the page
         JToolBarHelper::title(JText::_('COM_CROWDFUNDING_PROJECTS_MANAGER'), 'itp-projects');
-        JToolBarHelper::custom('projects.approve', "itp-approve", "", JText::_("COM_CROWDFUNDING_APPROVE"), false);
-        JToolBarHelper::custom('projects.disapprove', "itp-disapprove", "", JText::_("COM_CROWDFUNDING_DISAPPROVE"), false);
-        JToolBarHelper::divider();
         JToolBarHelper::publishList("projects.publish");
         JToolBarHelper::unpublishList("projects.unpublish");
+        JToolBarHelper::divider();
+        JToolBarHelper::custom('projects.approve', "itp-approve", "", JText::_("COM_CROWDFUNDING_APPROVE"), false);
+        JToolBarHelper::custom('projects.disapprove', "itp-disapprove", "", JText::_("COM_CROWDFUNDING_DISAPPROVE"), false);
         
         JToolBarHelper::divider();
         JToolBarHelper::trash("projects.trash");
@@ -87,6 +109,10 @@ class CrowdFundingViewProjects extends JView {
 	protected function setDocument() {
 	    
 		$this->document->setTitle(JText::_('COM_CROWDFUNDING_PROJECTS_MANAGER'));
+		
+		// Scripts
+		JHtml::_('behavior.multiselect');
+		JHtml::_('behavior.tooltip');
 		
 	}
     

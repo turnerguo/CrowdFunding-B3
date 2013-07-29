@@ -13,7 +13,6 @@
 
 // no direct access
 defined('_JEXEC') or die;?>
-
 <div class="cfdetails<?php echo $this->params->get("pageclass_sfx"); ?>">
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
     <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
@@ -26,7 +25,7 @@ defined('_JEXEC') or die;?>
 	</div>
 	
 	<div class="row-fluid">
-		<div class="span8">
+		<div class="span12">
 			<h2><?php echo JText::_("COM_CROWDFUNDING_INVESTMENT_SUMMARY");?></h2>
 			<div class="bs-docs-example">
 				<p><?php 
@@ -58,11 +57,6 @@ defined('_JEXEC') or die;?>
 			<div class="bs-docs-example">
 				<?php echo $this->item->event->onProjectPayment;?>
 			</div>
-    	</div>
-    	
-    	<div class="span4">
-    		<?php echo $this->loadTemplate("info");?>
-    		<div class="clearfix">&nbsp;</div>
     	</div>
 	</div>
 </div>

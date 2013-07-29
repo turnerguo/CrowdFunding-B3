@@ -65,7 +65,7 @@ class pkg_crowdFundingInstallerScript {
             }
             
             // Register Component helpers
-            JLoader::register("CrowdFundingInstallHelper", COM_CROWDFUNDING_PATH_COMPONENT_ADMINISTRATOR.DIRECTORY_SEPARATOR."helpers".DIRECTORY_SEPARATOR."installer.php");
+            JLoader::register("CrowdFundingInstallHelper", COM_CROWDFUNDING_PATH_COMPONENT_ADMINISTRATOR.DIRECTORY_SEPARATOR."helpers".DIRECTORY_SEPARATOR."install.php");
         
             jimport('joomla.filesystem.path');
             jimport('joomla.filesystem.folder');
@@ -173,6 +173,8 @@ class pkg_crowdFundingInstallerScript {
             $result = array("type" => "success"  , "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
             CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CROWDFUNDING_LIBRARY"), $result, JText::_("COM_CROWDFUNDING_LIBRARY"));
             
+            // Plugins
+            
             // Content - CrowdFunding - Navigation
             $result = array("type" => "success"  , "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
             CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CONTENT_CROWDFUNDING_NAVIGATION"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
@@ -185,13 +187,43 @@ class pkg_crowdFundingInstallerScript {
             $result = array("type" => "success"  , "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
             CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CONTENT_CROWDFUNDING_INFO"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
             
+            // Content - CrowdFunding - Manager
+            $result = array("type" => "success"  , "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
+            CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CONTENT_CROWDFUNDING_MANAGER"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
+            
+            // Content - CrowdFunding - Admin Mail
+            $result = array("type" => "success"  , "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
+            CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CONTENT_CROWDFUNDING_ADMIN_MAIL"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
+            
+            // Content - CrowdFunding - User Mail
+            $result = array("type" => "success"  , "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
+            CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CONTENT_CROWDFUNDING_USER_MAIL"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
+            
             // Search - CrowdFunding
             $result = array("type" => "success"  , "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
             CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_SEARCH_CROWDFUNDING"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
             
+            // System - CrowdFunding - Modules
+            $result = array("type" => "success"  , "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
+            CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_SYSTEM_CROWDFUNDINGMODULES"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
+            
             // CrowdFunding Payment - PayPal
             $result = array("type" => "success"  , "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
             CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CROWDFUNDINGPAYMENT_PAYPAL"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
+            
+            // Modules
+            
+            // CrowdFunding Info
+            $result = array("type" => "success"  , "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
+            CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CROWDFUNDING_MODULE_INFO"), $result, JText::_("COM_CROWDFUNDING_MODULE"));
+            
+            // CrowdFunding Details
+            $result = array("type" => "success"  , "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
+            CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CROWDFUNDING_MODULE_DETAILS"), $result, JText::_("COM_CROWDFUNDING_MODULE"));
+            
+            // CrowdFunding Rewards
+            $result = array("type" => "success"  , "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
+            CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CROWDFUNDING_MODULE_REWARDS"), $result, JText::_("COM_CROWDFUNDING_MODULE"));
             
             // End table
             CrowdFundingInstallHelper::endTable();

@@ -168,8 +168,6 @@ function CrowdFundingParseRoute($segments){
     $menu       = $app->getMenu();
     $item       = $menu->getActive();
     
-    $db         = JFactory::getDBO();
-    
     // Count route segments
     $count      = count($segments);
     

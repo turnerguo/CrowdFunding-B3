@@ -34,7 +34,8 @@ class CrowdFundingModelComments extends JModelList {
             $config['filter_fields'] = array(
                 'id', 'a.id',
                 'published', 'a.published',
-                'record_date', 'a.record_date'
+                'record_date', 'a.record_date',
+                'project', 'b.title'
             );
         }
 
@@ -123,6 +124,8 @@ class CrowdFundingModelComments extends JModelList {
         if (!empty($search)) {
             if (stripos($search, 'id:') === 0) {
                 $query->where('a.id = '.(int) substr($search, 3));
+            } else if (stripos($search, 'pid:') === 0) {
+                $query->where('a.project_id = '.(int) substr($search, 4));
             } else {
                 $escaped = $db->escape($search, true);
                 $quoted  = $db->quote("%" . $escaped . "%", false);

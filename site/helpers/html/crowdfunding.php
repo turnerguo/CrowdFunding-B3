@@ -17,11 +17,16 @@ defined('_JEXEC') or die;
 /**
  * CrowdFunding Html Helper
  *
- * @package		ITPrism Components
- * @subpackage	CrowdFunding
+ * @package		CrowdFunding
+ * @subpackage	Components
  * @since		1.6
  */
 abstract class JHtmlCrowdFunding {
+    
+    /**
+     * @var   array   array containing information for loaded files
+     */
+    protected static $loaded = array();
     
     /**
      * 
@@ -233,9 +238,21 @@ abstract class JHtmlCrowdFunding {
      * @param integer $value
      * @param string  $url		An url to the task
      */
-    public static function state($value, $url) {
+    public static function state($value, $url, $tip = false) {
         
-        $html = '<a href="'.$url.'"><i class="{ICON}"></i></a>';
+        $title = "";
+        if(!empty($tip)) {
+            
+            $tipMessage = ($value != 1) ? JText::_("COM_CROWDFUNDING_UNPUBLISHED")."::".JText::_("COM_CROWDFUNDING_PUBLISH_THIS_ITEM") : JText::_("COM_CROWDFUNDING_PUBLISHED")."::".JText::_("COM_CROWDFUNDING_UNPUBLISH_THIS_ITEM");
+            
+            $class = ' class="btn btn-small hasTip"';
+            $title = ' title="'.htmlspecialchars($tipMessage, ENT_QUOTES, "UTF-8").'"';
+            
+        } else {
+            $class = ' class="btn btn-small"';
+        }
+        
+        $html = '<a href="'.$url.'"'.$class.$title.' ><i class="{ICON}"></i></a>';
         
         switch($value) {
             
@@ -250,33 +267,6 @@ abstract class JHtmlCrowdFunding {
         
         return $html;
     }
-    
-
-	public static function approvedBackend($i, $value, $prefix, $checkbox = 'cb') {
-	    
-	    if(!$value) { // Disapproved
-		    $task   = $prefix."approve";
-		    $title  = "COM_CROWDFUNDING_APPROVE_ITEM";
-		    $text   = "COM_CROWDFUNDING_DISAPPROVED";
-		    $class  = "disapprove";
-	    } else {
-	        $task   = $prefix."disapprove";
-	        $title  = "COM_CROWDFUNDING_DISAPPROVE_ITEM";
-	        $text   = "COM_CROWDFUNDING_APPROVED";
-	        $class  = "approve";
-	    }
-		
-		$html[] = '<a class="jgrid hasTip"';
-		$html[] = ' href="javascript:void(0);" onclick="return listItemTask(\'' . $checkbox . $i . '\',\'' . $task . '\')"';
-		$html[] = ' title="' . addslashes(htmlspecialchars(JText::_($title), ENT_COMPAT, 'UTF-8')) . '">';
-		$html[] = '<span class="state ' . $class . '">';
-		$html[] = '<span class="text">' . JText::_($text) . '</span>';
-		$html[] = '</span>';
-		$html[] = '</a>';
-		
-		return implode($html);
-	}
-	
     
     /**
      * 
@@ -419,5 +409,87 @@ abstract class JHtmlCrowdFunding {
 		return $link;
 		
     }
+    
+    public static function reward($rewardId, $reward, $txnId, $sent = 0, $canEdit = false) {
+    
+        $state = (!$sent) ? 1 : 0;
+    
+        $html = array();
+    
+        if(!$rewardId) {
+            $icon  = "media/com_crowdfunding/images/noreward_16.png";
+            $title = 'title="' . JText::_('COM_CROWDFUNDING_REWARD_NOT_SELECTED') . '::"';
+        } else {
+    
+            if(!$sent) {
+    
+                $icon  = "media/com_crowdfunding/images/reward_16.png";
+    
+                // Prepare tooltip text
+                if($canEdit) {
+                    $tooltipText = JText::sprintf('COM_CROWDFUNDING_SENT_REWARD_TOOLTIP', htmlspecialchars($reward, ENT_QUOTES, "UTF-8"), "::");
+                } else {
+                    $tooltipText = htmlspecialchars($reward, ENT_QUOTES, "UTF-8")."::".JText::_('COM_CROWDFUNDING_REWARD_NOT_SENT');
+                }
+                $title = 'title="' . $tooltipText . '"';
+    
+            } else {
+    
+                $icon  = "media/com_crowdfunding/images/reward_sent_16.png";
+    
+                // Prepare tooltip text
+                if($canEdit) {
+                    $tooltipText = JText::sprintf('COM_CROWDFUNDING_NOT_SENT_REWARD_TOOLTIP', htmlspecialchars($reward, ENT_QUOTES, "UTF-8"), "::");
+                } else {
+                    $tooltipText = htmlspecialchars($reward, ENT_QUOTES, "UTF-8")."::".JText::_('COM_CROWDFUNDING_REWARD_HAS_BEEN_SENT');
+                }
+    
+                $title = 'title="' . $tooltipText . '"';
+    
+            }
+    
+        }
+    
+        // Prepare link
+        if(!$rewardId OR !$canEdit) {
+            $link = "javascript: void(0);";
+        } else {
+            $link = JRoute::_("index.php?option=com_crowdfunding&task=rewards.changeState&txn_id=".(int)$txnId."&state=".(int)$state."&".JSession::getFormToken()."=1");
+        }
+    
+        $html[] = '<a href="'.$link.'" class="hasTip" '.$title.'>';
+        $html[] = '<img src="'.$icon.'" width="16" height="16" />';
+        $html[] = '</a>';
+    
+        return implode(" ", $html);
+    }
+    
+    /**
+     * Include Twitter Bootstrap
+     */
+    public static function bootstrap() {
+    
+        // Check for disabled including.
+        $componentParams = JComponentHelper::getParams("com_crowdfunding");
+        
+        if(!$componentParams->get("bootstrap_include", 1)) {
+            return;
+        }
+        
+        // Only load once
+        if (!empty(self::$loaded[__METHOD__])) {
+            return;
+        }
+    
+        $document = JFactory::getDocument();
+        
+        $document->addStylesheet(JURI::root().'media/com_crowdfunding/css/site/bootstrap.min.css');
+        $document->addScript(JURI::root().'media/com_crowdfunding/js/bootstrap.min.js');
+        
+        self::$loaded[__METHOD__] = true;
+    
+        return;
+    
+    }   
     
 }

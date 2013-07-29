@@ -80,12 +80,12 @@ class CrowdFundingViewProjects extends JView {
 			$this->document->setMetadata('robots', $this->params->get('robots'));
 		}
 		
-        // Head styles
-        $this->document->addStyleSheet('media/'.$this->option.'/css/site/bootstrap.min.css');
+        // Styles
         $this->document->addStyleSheet('media/'.$this->option.'/css/site/style.css');
         
+        // Scripts
         JHtml::_('behavior.tooltip');
-        $this->document->addScript('media/'.$this->option.'/js/bootstrap.min.js');
+        JHtml::_("crowdfunding.bootstrap");
     }
     
     private function prepearePageHeading() {

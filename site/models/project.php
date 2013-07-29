@@ -176,6 +176,12 @@ class CrowdFundingModelProject extends JModelForm {
         $row = $this->getTable();
         $row->load($id);
         
+        // If there is an id, the item is not new
+        $isNew     = true;
+        if(!empty($row->id)) {
+            $isNew = false;
+        }
+        
         $row->set("title",             $title);
         $row->set("short_desc",        $shortDesc);
         $row->set("catid",             $catId);
@@ -184,6 +190,22 @@ class CrowdFundingModelProject extends JModelForm {
         $this->prepareTable($row, $data);
         
         $row->store();
+        
+        // Trigger the event
+        
+        
+        $context = $this->option.'.'.$this->name;
+        
+        // Include the content plugins for the change of state event.
+        $dispatcher = JDispatcher::getInstance();
+        JPluginHelper::importPlugin('content');
+         
+        // Trigger the onContentAfterSave event.
+        $results    = $dispatcher->trigger("onContentAfterSave", array($context, &$row, $isNew));
+        
+        if (in_array(false, $results, true)) {
+            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_DURING_PROJECT_CREATING_PROCESS"), ITPrismErrors::CODE_WARNING);
+        }
         
         return $row->id;
         
@@ -488,4 +510,21 @@ class CrowdFundingModelProject extends JModelForm {
 		
     }
     
+    public function isOwner($itemId, $userId) {
+    
+        $db     = JFactory::getDbo();
+        $query  = $db->getQuery(true);
+    
+        $query
+        ->select("COUNT(*)")
+        ->from($db->quoteName("#__crowdf_projects") . " AS a")
+        ->where("a.id = " . (int)$itemId)
+        ->where("a.user_id = " . (int)$userId);
+    
+        $db->setQuery($query, 0, 1);
+        $result = $db->loadResult();
+    
+        return (bool)$result;
+    
+    }
 }

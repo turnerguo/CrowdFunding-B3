@@ -38,7 +38,8 @@ class CrowdFundingModelTransactions extends JModelList {
             	'amount', 'a.txn_amount',
                 'service_provider', 'a.service_provider',
             	'name', 'b.name',
-                'title', 'c.title'
+                'title', 'c.title',
+                'sender', 'e.name'
             );
         }
 
@@ -106,7 +107,7 @@ class CrowdFundingModelTransactions extends JModelList {
             $this->getState(
                 'list.select',
                 'a.id, a.txn_amount, a.txn_date, a.txn_currency, a.txn_id, a.txn_status, ' .
-                'a.project_id, a.reward_id, a.receiver_id, a.service_provider, '.
+                'a.project_id, a.reward_id, a.receiver_id, a.service_provider, a.reward_state, '.
                 'b.name AS beneficiary, '.
                 'c.title AS project, ' .
                 'd.title AS reward, '.

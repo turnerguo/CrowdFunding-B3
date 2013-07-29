@@ -39,9 +39,14 @@ class CrowdFundingViewProject extends JView {
         $app = JFactory::getApplication();
         /** @var $app JSite **/
         
-        if(!JFactory::getUser()->id) {
+        $this->userId = JFactory::getUser()->id;
+        if(!$this->userId) {
             $this->setLayout("intro");
         }
+        
+        // HTML Helpers
+        JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
+        JHtml::addIncludePath(ITPRISM_PATH_LIBRARY.'/ui/helpers');
         
         $this->layout = $this->getLayout();
         
@@ -129,8 +134,13 @@ class CrowdFundingViewProject extends JView {
         
         // Get item
         $itemId            = $this->state->get('project.id');
-	    $userId            = JFactory::getUser()->id;
-        $this->item        = $model->getItem($itemId, $userId);
+        $this->item        = $model->getItem($itemId, $this->userId);
+        
+        // Set a flag that describes the item as new.
+        $this->isNew       = false;
+        if(!$this->item->id) {
+            $this->isNew = true;
+        }
         
         $this->form        = $model->getForm();
             
@@ -147,40 +157,68 @@ class CrowdFundingViewProject extends JView {
         
         // Initialise variables
         $this->state       = $model->getState();
+        $this->params      = $this->state->get("params");
         
         // Get item
         $itemId            = $this->state->get('funding.id');
-	    $userId            = JFactory::getUser()->id;
-        $this->item        = $model->getItem($itemId, $userId);
+        $this->item        = $model->getItem($itemId, $this->userId);
         
         $this->form        = $model->getForm();
-        $this->params      = $this->state->get("params");
             
         // Get currency
         jimport("crowdfunding.currency");
         $currencyId        = $this->params->get("project_currency");
-        $currency          = CrowdFundingCurrency::getInstance($currencyId);
+        $this->currency    = CrowdFundingCurrency::getInstance($currencyId);
         
         // Set minimum values - days, amount,...
-        $this->minAmount   = $this->params->get("project_amount_minimum", 500);
-        $this->minAmount   = $currency->getAmountString($this->minAmount);
+        $this->minAmount   = $this->params->get("project_amount_minimum", 100);
+        $this->maxAmount   = $this->params->get("project_amount_maximum");
         
         $this->minDays     = $this->params->get("project_days_minimum", 30);
+        $this->maxDays     = $this->params->get("project_days_maximum");
         
-		// If the date is invalid then set checkedDate to empty string.
-        $this->checkedDays = (!$this->item->funding_days) ? "" : 'checked="checked"';
-		
-        // Validate funding date
-        // Set the radio button to checked if there is a funding date
-        if(!CrowdFundingHelper::isValidDate($this->item->funding_end) ){
-            $this->checkedDate  = '';
-        } else {
-            $this->checkedDate  = 'checked="checked"';
-        }
+        // Prepare funding duration type
+        $this->prepareFundingDurationType();
         
         $this->pathwayName = JText::_("COM_CROWDFUNDING_STEP_FUNDING");
         
     } 
+    
+    private function prepareFundingDurationType() {
+    
+        $this->fundingDuration     = $this->params->get("project_funding_duration");
+    
+        switch($this->fundingDuration) {
+    
+            case "days":
+                $this->checkedDays = 'checked="checked"';
+                break;
+    
+            case "date":
+                $this->checkedDate = 'checked="checked"';
+                break;
+    
+            default:
+    
+                $this->checkedDays = 0;
+                $this->checkedDate = "";
+    
+                if(!empty($this->item->funding_days)) {
+                    $this->checkedDays = 'checked="checked"';
+                    $this->checkedDate = '';
+                } else if (CrowdFundingHelper::isValidDate($this->item->funding_end)) {
+                    $this->checkedDays = '';
+                    $this->checkedDate = 'checked="checked"';
+                }
+    
+                // If missing both, select days
+                if(!$this->checkedDays AND !$this->checkedDate) {
+                    $this->checkedDays = 'checked="checked"';
+                }
+                break;
+    
+        }
+    }
     
     protected function prepareStory() {
         
@@ -191,8 +229,7 @@ class CrowdFundingViewProject extends JView {
         
         // Get item
         $itemId            = $this->state->get('story.id');
-	    $userId            = JFactory::getUser()->id;
-        $this->item        = $model->getItem($itemId, $userId);
+        $this->item        = $model->getItem($itemId, $this->userId);
         
         $this->form        = $model->getForm();
         $this->params      = $this->state->get("params");
@@ -217,7 +254,13 @@ class CrowdFundingViewProject extends JView {
         $this->params      = $this->state->get("params");
         
         $this->items       = $model->getItems($this->projectId);
-        $this->item        = CrowdFundingHelper::getProject($this->projectId);
+        
+        // Get project and validate it
+        jimport("crowdfunding.project");
+        $this->item        = CrowdFundingProject::getInstance($this->projectId);
+        if(!$this->item->id OR ($this->item->user_id != $this->userId)) {
+            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"), ITPrismErrors::CODE_ERROR);
+        }
         
         jimport("crowdfunding.currency");
         $currencyId        = $this->params->get("project_currency");
@@ -270,26 +313,25 @@ class CrowdFundingViewProject extends JView {
         $pathway    = $app->getPathway();
         $pathway->addItem($this->pathwayName);
         
-        // Head styles
-        $this->document->addStyleSheet('media/'.$this->option.'/css/site/bootstrap.min.css');
+        // Styles
         $this->document->addStyleSheet('media/'.$this->option.'/css/site/style.css');
         
-        // Add scripts
+        // Scripts
         JHtml::_('behavior.keepalive');
         JHtml::_('behavior.tooltip');
         JHtml::_('behavior.formvalidation');
+        
+        JHtml::_("crowdfunding.bootstrap");
         
         switch($this->layout) {
             
             case "rewards":
                 
-                // Styles
-                $this->document->addStyleSheet('media/'.$this->option.'/css/jquery.pnotify.default.css');
-                
                 // Scripts
-		        $this->document->addScript('media/'.$this->option.'/js/jquery.pnotify.min.js');
+		        JHtml::_('itprism.ui.pnotify');
 		        $this->document->addScript('media/'.$this->option.'/js/helper.js');
 		        $this->document->addScript('media/'.$this->option.'/js/site/project_rewards.js');
+		        
                 break;
                 
             case "funding":
@@ -298,25 +340,17 @@ class CrowdFundingViewProject extends JView {
 
             case "story":
                 
-                // Styles
-                $this->document->addStyleSheet('media/'.$this->option.'/css/bootstrap-fileupload.min.css');
-                
                 // Scripts
-                $this->document->addScript('media/'.$this->option.'/js/bootstrap.min.js');
-                $this->document->addScript('media/'.$this->option.'/js/bootstrap-fileupload.min.js');
+                JHtml::_('itprism.ui.bootstrap_fileupload');
                 $this->document->addScript('media/'.$this->option.'/js/site/project_story.js');
                 
                 break;
                     
             default: // Basic
                 
-                // Styles
-                $this->document->addStyleSheet('media/'.$this->option.'/css/bootstrap-fileupload.min.css');
-                
                 // Scripts
-                $this->document->addScript('media/'.$this->option.'/js/bootstrap.min.js');
-                $this->document->addScript('media/'.$this->option.'/js/bootstrap-fileupload.min.js');
-                $this->document->addScript('media/'.$this->option.'/js/bootstrap-maxlength.min.js');
+                JHtml::_('itprism.ui.bootstrap_fileupload');
+                JHtml::_('itprism.ui.bootstrap_maxlength');
 		        $this->document->addScript('media/'.$this->option.'/js/site/project_basic.js');
                 break;
         }

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.1" type="plugin" group="content" method="upgrade">
+    <name>PLG_CONTENT_CROWDFUNDINGADMINMAIL</name>
+    <author>Todor Iliev</author>
+    <copyright>Copyright (C) 2010 Todor Iliev ( ITPrism.com ). All rights reserved.</copyright>
+    <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+    <authorEmail>todor@itprism.com</authorEmail>
+    <authorUrl>http://itprism.com</authorUrl>
+    <version>1.2</version>
+    <creationDate>21 July, 2013</creationDate>
+    <description>PLG_CONTENT_CROWDFUNDINGADMINMAIL_DESC</description>
+    
+    <languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.plg_content_crowdfundingadminmail.ini</language>
+        <language tag="en-GB">en-GB/en-GB.plg_content_crowdfundingadminmail.sys.ini</language>
+    </languages> 
+    
+    <files>
+        <filename plugin="crowdfundingadminmail">crowdfundingadminmail.php</filename>
+        <filename>index.html</filename>
+    </files>
+    
+    <help url="PLG_CONTENT_CROWDFUNDINGADMINMAIL_HELP_URL"/>
+    
+    <config>
+		<fields name="params">
+			<fieldset name="basic">
+                <field name="send_when_create" type="radio" default="0" label="PLG_CONTENT_CROWDFUNDINGADMINMAIL_SEND_WHEN_CREATE" description="PLG_CONTENT_CROWDFUNDINGADMINMAIL_SEND_WHEN_CREATE_DESC" class="btn-group">
+                   <option value="0">JNO</option>
+                   <option value="1">JYES</option>
+                </field>
+                <field name="send_when_published" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGADMINMAIL_SEND_WHEN_PUBLISHED" description="PLG_CONTENT_CROWDFUNDINGADMINMAIL_SEND_WHEN_PUBLISHED_DESC" class="btn-group">
+                   <option value="0">JNO</option>
+                   <option value="1">JYES</option>
+                </field>
+			</fieldset>
+	            
+        </fields>
+	</config>
+</extension>

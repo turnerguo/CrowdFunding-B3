@@ -69,6 +69,14 @@ class CrowdFundingModelProjects extends JModelList {
         $value = $this->getUserStateFromRequest($this->context.'.filter.state', 'filter_state', '', 'string');
         $this->setState('filter.state', $value);
         
+        // Load filter approved state.
+        $value = $this->getUserStateFromRequest($this->context.'.filter.approved', 'filter_approved', '', 'string');
+        $this->setState('filter.approved', $value);
+        
+        // Load filter featured state.
+        $value = $this->getUserStateFromRequest($this->context.'.filter.featured', 'filter_featured', '', 'string');
+        $this->setState('filter.featured', $value);
+        
         // Load filter category.
         $value = $this->getUserStateFromRequest($this->context.'.filter.category_id', 'filter_category_id', 0, 'int');
         $this->setState('filter.category_id', $value);
@@ -93,6 +101,8 @@ class CrowdFundingModelProjects extends JModelList {
         // Compile the store id.
         $id.= ':' . $this->getState('filter.search');
         $id.= ':' . $this->getState('filter.state');
+        $id.= ':' . $this->getState('filter.approved');
+        $id.= ':' . $this->getState('filter.featured');
         $id.= ':' . $this->getState('filter.category_id');
 
         return parent::getStoreId($id);
@@ -118,7 +128,7 @@ class CrowdFundingModelProjects extends JModelList {
                 'list.select',
                 'a.id, a.title, a.goal, a.funded, a.funding_start, a.funding_end, '. 
                 'a.funding_days, a.ordering, a.created, a.catid, ROUND( (a.funded/a.goal) * 100, 1 ) AS funded_percents, '.
-                'a.published, a.approved, '.
+                'a.featured, a.published, a.approved, '.
                 'b.title AS category'
             )
         );
@@ -139,6 +149,22 @@ class CrowdFundingModelProjects extends JModelList {
             $query->where('(a.published IN (0, 1))');
         }
 
+        // Filter by approved state
+        $state = $this->getState('filter.approved');
+        if (is_numeric($state)) {
+            $query->where('a.approved = '.(int) $state);
+        } else if ($state === '') {
+            $query->where('(a.approved IN (0, 1))');
+        }
+        
+        // Filter by approved state
+        $state = $this->getState('filter.featured');
+        if (is_numeric($state)) {
+            $query->where('a.featured = '.(int) $state);
+        } else if ($state === '') {
+            $query->where('(a.featured IN (0, 1))');
+        }
+        
         // Filter by search in title
         $search = $this->getState('filter.search');
         if (!empty($search)) {
@@ -159,14 +185,47 @@ class CrowdFundingModelProjects extends JModelList {
     }
     
     protected function getOrderString() {
-        
+    
         $orderCol   = $this->getState('list.ordering', 'a.created');
         $orderDirn  = $this->getState('list.direction', 'asc');
         if ($orderCol == 'a.ordering') {
             $orderCol = 'a.catid '.$orderDirn.', a.ordering';
         }
-        
+    
         return $orderCol.' '.$orderDirn;
     }
     
+    /**
+     * Count and return rewards number.
+     *
+     * @param array $projectsIds
+     * @return array
+     */
+    public function getRewardsNumber(array $projectsIds) {
+    
+        if(!$projectsIds) {
+            return array();
+        }
+    
+        $db     = $this->getDbo();
+        /** @var $db JDatabaseMySQLi **/
+    
+        // Create a new query object.
+        $query  = $db->getQuery(true);
+    
+        $query
+            ->select("a.project_id, COUNT(*) as number")
+            ->from($db->quoteName("#__crowdf_rewards") . " AS a")
+            ->where("a.project_id IN (".implode(",", $projectsIds) .")")
+            ->group("a.project_id");
+        
+        $db->setQuery($query);
+    
+        $results = $db->loadObjectList("project_id");
+    
+        if(!$results) {
+            $results=  array();
+        }
+        return $results;
+    }
 }

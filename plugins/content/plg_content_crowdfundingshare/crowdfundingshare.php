@@ -223,13 +223,27 @@ class plgContentCrowdFundingShare extends JPlugin {
             "service"   => $this->params->get("shortener_service"),
         );
         
-        $shortUrl 	= new ITPrismShortUrl($link, $options);
-        $shortLink  = $shortUrl->getUrl();
+        $shortLink  = "";
         
-        // Log the error and set the long link as a value of short one.
-        if(!$shortLink) {
-            JLog::add($shortUrl->getError(), JLog::ERROR);
-            $shortLink = $link;
+        try {
+        
+            $shortUrl  = new ITPrismShortUrl($link, $options);
+            $shortLink = $shortUrl->getUrl();
+        
+            // Get original link
+            if(!$shortLink) {
+                $shortLink = $link;
+            }
+        
+        } catch(Exception $e) {
+        
+            JLog::add($e->getMessage());
+        
+            // Get original link
+            if(!$shortLink) {
+                $shortLink = $link;
+            }
+        
         }
         
         return $shortLink;
@@ -438,6 +452,11 @@ class plgContentCrowdFundingShare extends JPlugin {
             if($params->get("facebookLikeAppId")){
                 $html .= "&amp;appId=" . $params->get("facebookLikeAppId");
             }
+            
+            if($params->get("facebookKidDirectedSite")){
+                $html .= '&amp;kid_directed_site=true';
+            }
+            
             $html .= '" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:' . $params->get("facebookLikeWidth", "450") . 'px; height:' . $height . 'px;" allowTransparency="true"></iframe>';
             
         return $html;
@@ -481,6 +500,11 @@ class plgContentCrowdFundingShare extends JPlugin {
         if($params->get("facebookLikeFont")){
             $html .= 'font="' . $params->get("facebookLikeFont") . '"';
         }
+        
+        if($params->get("facebookKidDirectedSite")){
+            $html .= ' kid_directed_site="true"';
+        }
+        
         $html .= '></fb:like>
         ';
         
@@ -525,6 +549,10 @@ class plgContentCrowdFundingShare extends JPlugin {
                 
         if($params->get("facebookLikeFont")){
             $html .= ' data-font="' . $params->get("facebookLikeFont") . '" ';
+        }
+        
+        if($params->get("facebookKidDirectedSite")){
+            $html .= ' data-kid-directed-site="true"';
         }
         
         $html .= '></div>';
@@ -708,19 +736,42 @@ class plgContentCrowdFundingShare extends JPlugin {
         $html = "";
         if($params->get("pinterestButton")) {
             
-            $media = "";
-            if(!empty($image)) {
-                $media = "&amp;media=" . rawurlencode($image);
-            }
+            $bubblePosition = $params->get("pinterestType", "beside");
             
-            $html .= '<div class="crowdf-share-pinterest">';
-            $html .= '<a href="http://pinterest.com/pin/create/button/?url=' . rawurlencode($url) . $media. '&amp;description=' . rawurlencode($title) . '" class="pin-it-button" count-layout="'.$params->get("pinterestType", "horizontal").'"><img border="0" src="//assets.pinterest.com/images/PinExt.png" title="'.JText::_("PLG_CONTENT_CROWDFUNDINGSHARE_PIN_IT").'" /></a>';
-            $html .= '</div>';
+            $divClass = (strcmp("above", $bubblePosition) == 0) ? "crowdf-share-pinterest-above" : "crowdf-share-pinterest";
             
+            $html .= '<div class="'.$divClass.'">';
+            
+            if(strcmp("one", $this->params->get('pinterestImages', "one")) == 0) {
+            
+                $media = "";
+                if(!empty($image)) {
+                    $media = "&amp;media=" . rawurlencode($image);
+                }
+            
+                $html .= '<a href="//pinterest.com/pin/create/button/?url=' . rawurlencode($url) . $media. '&amp;description=' . rawurlencode($title) . '" data-pin-do="buttonPin" data-pin-config="'.$params->get("pinterestType", "beside").'"><img src="//assets.pinterest.com/images/pidgets/pin_it_button.png" /></a>';
+                
+            } else {
+                $html .= '<a href="//pinterest.com/pin/create/button/" data-pin-do="buttonBookmark" ><img src="//assets.pinterest.com/images/pidgets/pin_it_button.png" /></a>';
+            }   
+
             // Load the JS library
             if($params->get("loadPinterestJsLib")) {
-                $html .= '<script src="//assets.pinterest.com/js/pinit.js"></script>';
+                $html .= '
+<script type="text/javascript">
+    (function(d){
+      var f = d.getElementsByTagName("SCRIPT")[0], p = d.createElement("SCRIPT");
+      p.type = "text/javascript";
+      p.async = true;
+      p.src = "//assets.pinterest.com/js/pinit.js";
+      f.parentNode.insertBefore(p, f);
+    }(document));
+</script>
+';
             }
+            
+            $html .= '</div>';
+            
         }
         
         return $html;

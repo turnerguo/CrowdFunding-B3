@@ -22,13 +22,13 @@ defined('_JEXEC') or die;?>
     <thead>
     	<tr>
     		<th><?php echo JText::_("COM_CROWDFUNDING_TITLE");?></th>
-    		<th><?php echo JText::_("COM_CROWDFUNDING_GOAL");?></th>
-    		<th><?php echo JText::_("COM_CROWDFUNDING_FUNDED");?></th>
-    		<th><?php echo JText::_("COM_CROWDFUNDING_STARTING_DATE");?></th>
-    		<th><?php echo JText::_("COM_CROWDFUNDING_DURATION");?></th>
+    		<th class="nowrap hidden-phone"><?php echo JText::_("COM_CROWDFUNDING_GOAL");?></th>
+    		<th class="nowrap"><?php echo JText::_("COM_CROWDFUNDING_FUNDED");?></th>
+    		<th class="nowrap hidden-phone"><?php echo JText::_("COM_CROWDFUNDING_STARTING_DATE");?></th>
+    		<th class="nowrap hidden-phone"><?php echo JText::_("COM_CROWDFUNDING_DURATION");?></th>
     		<th><?php echo JText::_("COM_CROWDFUNDING_PUBLISHED");?></th>
-    		<th><?php echo JText::_("COM_CROWDFUNDING_APPROVED");?></th>
-    		<th>&nbsp;</th>
+    		<th class="nowrap hidden-phone"><?php echo JText::_("COM_CROWDFUNDING_APPROVED");?></th>
+    		<th class="nowrap hidden-phone">&nbsp;</th>
     	</tr>
     </thead>
     <tfoot></tfoot>
@@ -44,8 +44,12 @@ defined('_JEXEC') or die;?>
     	    if(!empty($item->funding_days)) {
     	        $duration = JText::sprintf("COM_CROWDFUNDING_DURATION_DAYS", (int)$item->funding_days);
     	    } else {
-    	        $duration = JHtml::_('date', $item->funding_end, JText::_('DATE_FORMAT_LC3'));
-    	        $duration = JText::sprintf("COM_CROWDFUNDING_DURATION_END_DATE", $duration);
+    	        if(!CrowdFundingHelper::isValidDate($item->funding_end)){
+                    $duration = "--";
+                } else {
+                    $duration = JHtml::_('date', $item->funding_end, JText::_('DATE_FORMAT_LC3'));
+                    $duration = JText::sprintf("COM_CROWDFUNDING_DURATION_END_DATE", $duration);
+                }
     	    }
     	    
     	    // Starting Date
@@ -59,26 +63,25 @@ defined('_JEXEC') or die;?>
     	?>
     	<tr>
     		<td>
-    		<?php if(!$item->approved) {?>
-    		<?php echo $this->escape($item->title);?>
-    		<?php } else { ?>
-    		<a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($item->slug, $item->catslug));?>">
-    		<?php echo $this->escape($item->title);?>
-    		</a>
-    		<?php }?>
+    		    <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($item->slug, $item->catslug));?>">
+    		    <?php echo $this->escape($item->title);?>
+		        </a>
     		</td>
-    		<td class="pull-center"><?php echo $goal; ?></td>
-    		<td class="pull-center"><span class="hasTip cursor-help" title="<?php echo JText::sprintf("COM_CROWDFUNDING_PERCENTS_FUNDED", $fundedPercent);?>"><?php echo $funded; ?></span></td>
-    		<td class="pull-center"><?php echo $startingDate; ?></td>
-    		<td class="pull-center"><?php echo $duration; ?></td>
-    		<td class="pull-center">
-    		<?php echo JHtml::_("crowdfunding.state", $item->published, JRoute::_("index.php?option=com_crowdfunding&task=projects.savestate&id=".$item->id."&state=".$state."&".JSession::getFormToken()."=1"))?>
+    		<td class="cf-center hidden-phone"><?php echo $goal; ?></td>
+    		<td class="cf-center"><span class="hasTip cursor-help" title="<?php echo JText::sprintf("COM_CROWDFUNDING_PERCENTS_FUNDED", $fundedPercent);?>"><?php echo $funded; ?></span></td>
+    		<td class="cf-center hidden-phone"><?php echo $startingDate; ?></td>
+    		<td class="cf-center hidden-phone"><?php echo $duration; ?></td>
+    		<td class="cf-center">
+    		<?php echo JHtml::_("crowdfunding.state", $item->published, JRoute::_("index.php?option=com_crowdfunding&task=projects.savestate&id=".$item->id."&state=".$state."&".JSession::getFormToken()."=1"), true)?>
     		</td>
-    		<td class="pull-center">
+    		<td class="cf-center hidden-phone">
     		<?php echo JHtml::_("crowdfunding.approved", $item->approved); ?>
     		</td>
-    		<td>
-    			<a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getFormRoute($item->id)) ;?>" class="button"><i class="icon-pencil icon-white"></i> <?php echo JText::_("COM_CROWDFUNDING_EDIT");?></a>
+    		<td class="hidden-phone">
+    			<a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getFormRoute($item->id)) ;?>" class="button">
+        			<i class="icon-edit icon-white"></i> 
+        			<?php echo JText::_("COM_CROWDFUNDING_EDIT");?>
+    			</a>
     		</td>
     	</tr>
     	<?php }?>
@@ -86,4 +89,5 @@ defined('_JEXEC') or die;?>
     
     </table>
 </div>
+<div class="clearfix">&nbsp;</div>
 <?php echo $this->version->backlink;?>

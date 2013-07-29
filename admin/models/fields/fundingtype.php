@@ -31,60 +31,65 @@ class JFormFieldFundingType extends JFormFieldRadio {
 	 */
 	protected function getInput() {
 	    
+	    // Get component parameters
+	    $componentParams    = JComponentHelper::getParams("com_crowdfunding");
+	    $allowedFundingType = $componentParams->get("project_funding_type");
+	    
 		// Initialize variables.
 		$html = array();
 
 		// Initialize some field attributes.
 		$class      = ( !$this->element['class'] ) ? ' class="radio"' : ' class="radio ' . (string) $this->element['class'] . '"';
-        $helpBlocks = ( !$this->element['help_blocks'] ) ? "" : $this->element['help_blocks'];
-        if(!empty($helpBlocks)) {
-            $helpBlocks = $this->prepareHelpBlocks($helpBlocks);
-        }
         
 		// Start the radio field output.
 		$html[] = '<fieldset id="' . $this->id . '"' . $class . '>';
 
-		// Get the field options.
-		$options = $this->getOptions();
-
 		// Build the radio field output.
-		foreach ($options as $i => $option) {
-
-			// Initialize some option attributes.
-			$checked   = ((string) $option->value == (string) $this->value) ? ' checked="checked"' : '';
-			$class     = !empty($option->class) ? ' class="' . $option->class . '"' : '';
-			$disabled  = !empty($option->disable) ? ' disabled="disabled"' : '';
-
-			// Initialize some JavaScript option attributes.
-			$onclick = !empty($option->onclick) ? ' onclick="' . $option->onclick . '"' : '';
-
-			$html[] = '<input type="radio" id="' . $this->id . $i . '" name="' . $this->name . '"' . ' value="'
-				. htmlspecialchars($option->value, ENT_COMPAT, 'UTF-8') . '"' . $checked . $class . $onclick . $disabled . '/>';
-
-			$html[] = '<label for="' . $this->id . $i . '"' . $class . '>'
-				. JText::alt($option->text, preg_replace('/[^a-zA-Z0-9_\-]/', '_', $this->fieldname)) . '</label>';
-				
-			if(isset($helpBlocks[$i])) {
-			    $html[] = $helpBlocks[$i];
-			}
-		}
+	    switch($allowedFundingType) {
+	        
+	        case "FIXED":
+	            $this->prepareFixed($html);
+	            break;
+	            
+	        case "FLEXIBLE":
+	            $this->prepareFlexible($html);
+	            break;
+	            
+	        default:
+	            
+	            $this->prepareFixed($html);
+	            $this->prepareFlexible($html);
+	            
+	            break;
+	    }
 
 		// End the radio field output.
 		$html[] = '</fieldset>';
 
 		return implode($html);
 	}
-
-	private function prepareHelpBlocks($helpBlocks) {
+	
+	
+	private function prepareFixed(&$html) {
 	    
-	    $helpBlocks = explode(",", $helpBlocks);
-	    $blocks     = array();
-        foreach($helpBlocks as $value) {
-            $blocks[] = JText::_(JString::trim($value));
-        }
-        
-        return $blocks;
-            
+	    // Initialize some option attributes.
+	    $checked   = ($this->value == "FIXED") ? ' checked="checked"' : '';
+	     
+	    $html[] = '<input type="radio" id="' . $this->id .'_fixed" name="' . $this->name . '"' . ' value="FIXED"' . $checked . '/>';
+	    $html[] = '<label for="' . $this->id .'_fixed">'. JText::_("COM_CROWDFUNDING_FIELD_FUNDING_TYPE_FIXED") . '</label>';
+	    $html[] = JText::_(JString::trim("COM_CROWDFUNDING_FIELD_FUNDING_TYPE_HELP_FIXED"));
+	    
+	}
+	
+	private function prepareFlexible(&$html) {
+	     
+	    // Initialize some option attributes.
+	    $checked   = ($this->value == "FLEXIBLE") ? ' checked="checked"' : '';
+	
+	    $html[] = '<input type="radio" id="' . $this->id .'_fixed" name="' . $this->name . '"' . ' value="FLEXIBLE"' . $checked . '/>';
+	    $html[] = '<label for="' . $this->id .'_fixed">'. JText::_("COM_CROWDFUNDING_FIELD_FUNDING_TYPE_FLEXIBLE") . '</label>';
+	    $html[] = JText::_(JString::trim("COM_CROWDFUNDING_FIELD_FUNDING_TYPE_HELP_FLEXIBLE"));
+	     
 	}
 	
 }

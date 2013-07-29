@@ -14,10 +14,10 @@
 // no direct access
 defined('_JEXEC') or die;
 ?>
-<div class="row-fluid<?php echo $this->params->get("pageclass_sfx"); ?>">
+<div class="embed-email<?php echo $this->params->get("pageclass_sfx"); ?>">
 	
 	<div class="row-fluid">
-    	<div class="span8">
+    	<div class="span11">
     	    <h2><?php echo JText::_("COM_CROWDFUNDING_SEND_TO_FRIEND"); ?></h2>
             <p><?php echo JText::_("COM_CROWDFUNDING_SEND_TO_FRIEND_HELP"); ?></p>
             <form method="post" action="<?php echo JRoute::_(CrowdFundingHelperRoute::getEmbedRoute($this->item->slug, $this->item->catslug)."&task=friendmail.send");?>" class="bs-docs-example cfbf" id="form-send-to-friend" autocomplete="off">
@@ -48,9 +48,6 @@ defined('_JEXEC') or die;
         	
     	</div>
     	
-    	<div class="span4">
-    		<?php echo $this->loadTemplate("widget");?>
-    	</div>
 	</div>
 	
 </div>

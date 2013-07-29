@@ -141,34 +141,67 @@ class CrowdFundingModelFunding extends CrowdFundingModelProject {
 	/**
 	 * Valudate funding data
 	 * @param array $data
+	 * @param JRegistry $params
 	 */
-	public function validateFundingData($data) {
-	    
-	    $params        = JComponentHelper::getParams($this->option);
+	public function validateFundingData($data, $params) {
 	    
 	    $goal          = JArrayHelper::getValue($data, "goal", 0, "float");
-        $minimumAmount = $params->get("project_amount_minimum", 500);
-        $minimumDays   = (int)$params->get("project_days_minimum", 15);
+        $minAmount     = $params->get("project_amount_minimum", 100);
+        $maxAmount     = $params->get("project_amount_maximum");
+        
+        $minDays       = (int)$params->get("project_days_minimum", 15);
+        $maxDays       = (int)$params->get("project_days_maximum");
+        
         $fundingType   = JArrayHelper::getValue($data, "funding_duration_type");
          
-        // Verify goal
-        if($goal < $minimumAmount) {
+        // Verify minimum amount
+        if($goal < $minAmount) {
             throw new Exception( JText::_('COM_CROWDFUNDING_ERROR_INVALID_GOAL'), ITPrismErrors::CODE_WARNING );
         }
         
-	    // Verify funding type
+        // Verify maximum amount
+        if(!empty($maxAmount) AND ($goal > $maxAmount)) {
+            throw new Exception( JText::_('COM_CROWDFUNDING_ERROR_INVALID_GOAL'), ITPrismErrors::CODE_WARNING );
+        }
+        
+	    // Validate funding type "days"
 	    if(strcmp("days", $fundingType) == 0) {
 	        
 	        $days = JArrayHelper::getValue($data, "funding_days", 0, "integer");
-	        if($days < $minimumDays) {
+	        if($days < $minDays) {
 	            throw new Exception( JText::_('COM_CROWDFUNDING_ERROR_INVALID_DAYS'), ITPrismErrors::CODE_WARNING );
 	        }
 	        
-	    } else {
+	        if(!empty($maxDays) AND ($days > $maxDays)) {
+	            throw new Exception( JText::_('COM_CROWDFUNDING_ERROR_INVALID_DAYS'), ITPrismErrors::CODE_WARNING );
+	        }
 	        
-            $fundingDate    = JArrayHelper::getValue($data, "funding_end");
+	    } else { // Validate funding type "date"
+	        
+	        $fundingDate    = JArrayHelper::getValue($data, "funding_end");
+	    
             if(!CrowdFundingHelper::isValidDate($fundingDate)) {
                 throw new Exception( JText::_('COM_CROWDFUNDING_ERROR_INVALID_DATE'), ITPrismErrors::CODE_WARNING );
+            }
+            
+            // Get item and check it for published
+            $itemId = JArrayHelper::getValue($data, "id");
+            $userId = JFactory::getUser()->id;
+            $item   = $this->getItem($itemId, $userId);
+
+            // Validate date if user want to edit date, while the project is published.
+            if($item->published) {
+                
+                if(!CrowdFundingHelper::isValidPeriod($item->funding_start, $fundingDate, $minDays, $maxDays)) {
+                    
+                    if(!empty($maxDays)) {
+                        throw new Exception(JText::sprintf("COM_CROWDFUNDING_ERROR_INVALID_ENDING_DATE_MIN_MAX_DAYS", $minDays, $maxDays), ITPrismErrors::CODE_WARNING);
+                    } else {
+                        throw new Exception(JText::sprintf("COM_CROWDFUNDING_ERROR_INVALID_ENDING_DATE_MIN_DAYS", $minDays), ITPrismErrors::CODE_WARNING);
+                    }
+                    
+                }
+                
             }
            
 	    }

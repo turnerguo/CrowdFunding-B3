@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<extension type="library" version="2.5" method="upgrade">
+<extension type="library" version="3.1" method="upgrade">
 	<name>CrowdFunding Library</name>
 	<libraryname>crowdfunding</libraryname>
 	<author>Todor Iliev</author>
@@ -9,15 +9,17 @@
 	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
 	<packager>ITPrism</packager>
 	<packagerurl>http://itprism.com</packagerurl>
-	<version>1.1.2</version>
-	<creationDate>16 June, 2013</creationDate>
+	<version>1.2.1</version>
+	<creationDate>28 July, 2013</creationDate>
 	<description>CrowdFunding Library</description>
 	<files folder="files">
 	    <file>currency.php</file>
 		<file>index.html</file>
 		<file>init.php</file>
+		<file>intention.php</file>
 		<file>project.php</file>
 		<file>reward.php</file>
+		<file>rewards.php</file>
 		<file>transaction.php</file>
 		<file>version.php</file>
 	</files>

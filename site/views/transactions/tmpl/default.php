@@ -29,19 +29,19 @@ defined('_JEXEC') or die;?>
             		<th>
             			<?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_AMOUNT', 'a.txn_amount', $this->listDirn, $this->listOrder); ?>
             		</th>
-            		<th>
+            		<th class="nowrap hidden-phone">
             			<?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_INVESTOR', 'e.name', $this->listDirn, $this->listOrder); ?>
             		</th>
-            		<th>
+            		<th class="nowrap hidden-phone">
             			<?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_BENEFICIARY', 'f.name', $this->listDirn, $this->listOrder); ?>
             		</th>
-            		<th>
+            		<th class="nowrap hidden-phone">
             			<?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_DATE', 'a.txn_date', $this->listDirn, $this->listOrder); ?>
             		</th>
-            		<th>
+            		<th class="nowrap hidden-phone">
             			<?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_REWARD', 'd.title', $this->listDirn, $this->listOrder); ?>
             		</th>
-            		<th>
+            		<th class="nowrap hidden-phone">
             			<?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ID', 'a.id', $this->listDirn, $this->listOrder); ?>
         		    </th>
             	</tr>
@@ -54,18 +54,16 @@ defined('_JEXEC') or die;?>
             			<?php echo JHtmlString::truncate(strip_tags($item->project), 64); ?>
             		    </a>
         		    </td>
-            		<td class="pull-center"><?php echo $this->currency->getAmountString($item->txn_amount); ?></td>
-            		<td class="pull-center"><?php echo $item->investor; ?></td>
-            		<td class="pull-center"><?php echo $item->receiver; ?></td>
-            		<td class="pull-center"><?php echo JHtml::_('date', $item->txn_date, JText::_('DATE_FORMAT_LC3')); ?></td>
-            		<td class="pull-center">
-            		    <?php if(!$item->reward_id) { ?>
-                		<img src="media/com_crowdfunding/images/noreward_16.png" alt="<?php echo JText::_('COM_CROWDFUNDING_REWARD_NOT_SELECTED'); ?>" width="16" height="16"/>
-                		<?php } else {?>
-                		<img src="media/com_crowdfunding/images/reward_16.png" alt="<?php echo JText::_('COM_CROWDFUNDING_REWARD_SELECTED'); ?>" title="<?php echo JText::sprintf('COM_CROWDFUNDING_REWARD_TOOLTIP', $item->reward); ?>" width="16" height="16" class="hasTip" />
-                		<?php }?>
+            		<td class="cf-center"><?php echo $this->currency->getAmountString($item->txn_amount); ?></td>
+            		<td class="cf-center hidden-phone"><?php echo $item->investor; ?></td>
+            		<td class="cf-center hidden-phone"><?php echo $item->receiver; ?></td>
+            		<td class="cf-center hidden-phone"><?php echo JHtml::_('date', $item->txn_date, JText::_('DATE_FORMAT_LC3')); ?></td>
+            		<td class="cf-center hidden-phone">
+            		    <?php 
+            		    $canEdit = ($this->userId != $item->receiver_id) ? false : true;
+            		    echo JHtml::_('crowdfunding.reward', $item->reward_id, $item->reward, $item->id, $item->reward_state, $canEdit ); ?>
             		</td>
-            		<td class="pull-center">
+            		<td class="cf-center hidden-phone">
             			<?php echo $item->id; ?>
             		</td>
             	</tr>
@@ -75,13 +73,22 @@ defined('_JEXEC') or die;?>
             </tfoot>
         </table>
         
-    	<?php echo $this->pagination->getListFooter(); ?>
-        
         <input type="hidden" name="task" value="" />
         <input type="hidden" name="filter_order" value="<?php echo $this->listOrder; ?>" />
         <input type="hidden" name="filter_order_Dir" value="<?php echo $this->listDirn; ?>" />
         <?php echo JHtml::_('form.token'); ?>
     </form>
+</div>
+<div class="clearfix"></div>
+<div class="pagination">
+        
+    <?php if ($this->params->def('show_pagination_results', 1)) : ?>
+        <p class="counter">
+            <?php echo $this->pagination->getPagesCounter(); ?>
+        </p>
+    <?php endif; ?>
+
+    <?php echo $this->pagination->getPagesLinks(); ?>
 </div>
 <div class="clearfix">&nbsp;</div>
 <?php echo $this->version->backlink;?>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset addfieldpath="/administrator/components/com_crowdfunding/models/fields">
+
+		<field name="title" type="text" 
+			label="JGLOBAL_TITLE"
+            description="COM_CROWDFUNDING_FIELD_PROJECT_TITLE_DESC"
+            class="inputbox"  
+			filter="trim" 
+			required="true" 
+        />
+
+        <field name="description" type="textarea" 
+	        label="COM_CROWDFUNDING_FIELD_DESCRIPTION"
+	        description="COM_CROWDFUNDING_REWARD_DESCRIPTION_DESC"
+	        class="inputbox" 
+            rows="10"
+	    />
+	    
+        <field name="amount" type="text" 
+	        label="COM_CROWDFUNDING_AMOUNT"
+	        description="COM_CROWDFUNDING_REWARD_AMOUNT_DESC"
+            class="inputbox" 
+	    />
+	    
+        <field name="number" type="text" 
+	        label="COM_CROWDFUNDING_NUMBER"
+	        description="COM_CROWDFUNDING_REWARD_NUMBER_DESC"
+            class="inputbox" 
+	    />
+            
+        <field name="distributed" type="text" 
+            label="COM_CROWDFUNDING_DISTRIBUTED" 
+            description="COM_CROWDFUNDING_REWARD_DISTRIBUTED_DESC" 
+            class="inputbox" 
+        />
+        
+        <field name="delivery" type="calendar" 
+            label="COM_CROWDFUNDING_DELIVERY"
+            description="COM_CROWDFUNDING_REWARD_DELIVERY_DESC"
+            class="inputbox" 
+        />
+        
+		<field name="id" type="text" class="readonly" 
+		    label="JGLOBAL_FIELD_ID_LABEL" 
+            description="JGLOBAL_FIELD_ID_DESC" 
+            readonly="true"  
+            default="0" />
+
+        <field name="project_id" type="hidden" />
+        
+	</fieldset>
+</form>

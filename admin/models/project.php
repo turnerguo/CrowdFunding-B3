@@ -118,15 +118,14 @@ class CrowdFundingModelProject extends JModelAdmin {
 	/**
 	 * Method to change the approved state of one or more records.
 	 *
-	 * @param   array    &$pks   A list of the primary keys to change.
-	 * @param   integer  $value  The value of the approved state.
+	 * @param   array    A list of the primary keys to change.
+	 * @param   integer  The value of the approved state.
 	 */
-	public function approve(&$pks, $value) {
+	public function approve(array $pks, $value) {
 	    
-		// Initialise variables.
-		$table   = $this->getTable();
-		$pks     = (array) $pks;
-
+	    $table      = $this->getTable();
+	    $pks        = (array)$pks;
+	     
 		$db      = JFactory::getDbo();
 		
 		$query   = $db->getQuery(true);
@@ -138,10 +137,137 @@ class CrowdFundingModelProject extends JModelAdmin {
 	    $db->setQuery($query);
 	    $db->query();
 	    
+	    // Trigger change state event
+	    
+	    $context = $this->option . '.' . $this->name;
+	     
+	    // Include the content plugins for the change of state event.
+	    JPluginHelper::importPlugin('content');
+	     
+	    // Trigger the onContentChangeState event.
+	    $dispatcher = JDispatcher::getInstance();
+	    $result     = $dispatcher->trigger($this->event_change_state, array($context, $pks, $value));
+	    
+	    if (in_array(false, $result, true)) {
+	        throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_CHANGE_STATE"), ITPrismErrors::CODE_WARNING);
+	    }
+	    
 		// Clear the component's cache
 		$this->cleanCache();
 
-		return true;
+	}
+	
+	/**
+	 * Method to toggle the featured setting of articles.
+	 *
+	 * @param   array    The ids of the items to toggle.
+	 * @param   integer  The value to toggle to.
+	 *
+	 * @return  boolean  True on success.
+	 */
+	public function featured(array $pks, $value = 0) {
+	    
+		$db      = JFactory::getDbo();
+		
+		$query   = $db->getQuery(true);
+		$query
+		    ->update($db->quoteName("#__crowdf_projects"))
+		    ->set("featured = " . (int)$value)
+		    ->where("id IN (".implode(",", $pks).")");
+
+	    $db->setQuery($query);
+	    $db->query();
+	    
+		// Clear the component's cache
+		$this->cleanCache();
+
+	}
+	
+	/**
+	 * Method to change the published state of one or more records.
+	 *
+	 * @param   array    &$pks   A list of the primary keys to change.
+	 * @param   integer  $value  The value of the published state.
+	 *
+	 * @return  boolean  True on success.
+	 *
+	 * @since   12.2
+	 */
+	public function publish(&$pks, $value = 0) {
+	    
+	    $table      = $this->getTable();
+	    $pks        = (array) $pks;
+	    
+	    // Access checks.
+	    foreach ($pks as $i => $pk) {
+	        
+	        $table->reset();
+	
+	        if ($table->load($pk)) {
+	            
+	            // Calculate starting date if the user publish a project for first time.
+	            if(!CrowdFundingHelper::isValidDate($table->funding_start)) {
+	            
+	                $fundindStart         = new JDate();
+	                $table->funding_start = $fundindStart->toSql();
+	                $table->published     = $value;
+	                
+	                // Validate funding period
+	                if(!$table->funding_days AND !CrowdFundingHelper::isValidDate($table->funding_end)) {
+	                    throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_DURATION_PERIOD"), ITPrismErrors::CODE_WARNING);
+	                }
+	                
+	                // Validate the period if there is funding days
+	                $params        = JComponentHelper::getParams($this->option);
+	                $minimumDays   = $params->get("project_days_minimum", 15);
+	                
+	                if(!empty($table->funding_days) AND ($table->funding_days < $minimumDays)) {
+	                    throw new Exception(JText::sprintf("COM_CROWDFUNDING_ERROR_INVALID_FUNDING_DAYS", $minimumDays), ITPrismErrors::CODE_WARNING);
+	                }
+	                
+	                // Validate the period if there is an ending date
+	                if(CrowdFundingHelper::isValidDate($table->funding_end)) {
+	                
+	                    // Get interval between starting and ending date
+	                    $startingDate  = new DateTime($table->funding_start);
+	                    $endingDate    = new DateTime($table->funding_end);
+	                    $interval      = $startingDate->diff($endingDate);
+	                
+	                    $days          = $interval->format("%r%a");
+	                
+	                    
+	                    if($days < $minimumDays) {
+	                        throw new Exception(JText::sprintf("COM_CROWDFUNDING_ERROR_INVALID_ENDING_DATE", $minimumDays), ITPrismErrors::CODE_WARNING);
+	                    }
+	                }
+	                
+	                $table->store();
+	                
+	            } else {
+	                $table->publish(null, $value);
+	            }
+	        }
+	    }
+	
+	    
+	    // Trigger change state event
+	    
+	    $context = $this->option . '.' . $this->name;
+	    
+	    // Include the content plugins for the change of state event.
+	    JPluginHelper::importPlugin('content');
+	    
+	    // Trigger the onContentChangeState event.
+	    $dispatcher = JDispatcher::getInstance();
+	    $result     = $dispatcher->trigger($this->event_change_state, array($context, $pks, $value));
+	
+	    if (in_array(false, $result, true)) {
+	        throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_CHANGE_STATE"), ITPrismErrors::CODE_WARNING);
+	    }
+	
+	    // Clear the component's cache
+	    $this->cleanCache();
+	
 	}
 	
 	/**

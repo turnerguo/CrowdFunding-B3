@@ -18,6 +18,16 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_currencies` (
   UNIQUE KEY `idx_crowdf_ccode` (`abbr`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `#__crowdf_intentions` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(10) unsigned NOT NULL,
+  `project_id` int(10) unsigned NOT NULL,
+  `reward_id` int(10) unsigned NOT NULL,
+  `record_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_cfints_usr_proj` (`user_id`,`project_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
 CREATE TABLE IF NOT EXISTS `#__crowdf_locations` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(200) NOT NULL,
@@ -49,6 +59,7 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_projects` (
   `pitch_image` varchar(255) NOT NULL DEFAULT '',
   `hits` smallint(5) unsigned NOT NULL DEFAULT '0',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `featured` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `published` tinyint(1) NOT NULL DEFAULT '0',
   `approved` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `ordering` tinyint(4) unsigned NOT NULL DEFAULT '0',
@@ -87,6 +98,7 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_transactions` (
   `investor_id` int(10) unsigned NOT NULL COMMENT 'The backer of the project.',
   `receiver_id` int(10) unsigned NOT NULL COMMENT 'The owner of the project.',
   `service_provider` varchar(32) NOT NULL,
+  `reward_state` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
@@ -99,3 +111,4 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_updates` (
   `user_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+

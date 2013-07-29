@@ -13,7 +13,6 @@
 
 // no direct access
 defined('_JEXEC') or die;?>
-
 <div class="cfdetails<?php echo $this->params->get("pageclass_sfx"); ?>">
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
     <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
@@ -26,7 +25,7 @@ defined('_JEXEC') or die;?>
 	</div>
 	
 	<div class="row-fluid">
-		<div class="span8">
+		<div class="span12">
 			
 			<form method="post" action="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug)."&task=backing.step1");?>" class="bs-docs-example cfbf" id="form-pledge" autocomplete="off">
 				<fieldset>
@@ -76,11 +75,6 @@ defined('_JEXEC') or die;?>
             	</div>
             	<?php }?>
             </div>
-    	</div>
-    	
-    	<div class="span4">
-    		<?php echo $this->loadTemplate("info");?>
-    		<div class="clearfix">&nbsp;</div>
     	</div>
 	</div>
 </div>

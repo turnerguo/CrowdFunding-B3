@@ -49,10 +49,13 @@ class CrowdFundingViewTransactions extends JView {
         $this->listDirn   = $this->escape($this->state->get('list.direction'));
         $this->saveOrder  = (strcmp($this->listOrder, 'a.ordering') != 0 ) ? false : true;
         
-        $this->version    = new CrowdfundingVersion();
+        $this->userId     = JFactory::getUser()->id;
         
+        // Helpers
 		JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
 		JLoader::register('JHtmlString', JPATH_LIBRARIES.'/joomla/html/html/string.php');
+		
+		$this->version        = new CrowdfundingVersion();
 		
         $this->prepareDocument();
                 
@@ -89,12 +92,12 @@ class CrowdFundingViewTransactions extends JView {
 			$this->document->setMetadata('robots', $this->params->get('robots'));
 		}
 		
-        // Head styles
-        $this->document->addStyleSheet('media/'.$this->option.'/css/site/bootstrap.min.css');
+        // Styles
         $this->document->addStyleSheet('media/'.$this->option.'/css/site/style.css');
         
+        // Scripts
         JHtml::_('behavior.tooltip');
-        $this->document->addScript('media/'.$this->option.'/js/bootstrap.min.js');
+        JHtml::_("crowdfunding.bootstrap");
     }
     
     private function prepearePageHeading() {

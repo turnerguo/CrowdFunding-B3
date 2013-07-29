@@ -33,19 +33,25 @@ defined('_JEXEC') or die;
             
             <?php echo $this->form->getLabel('image'); ?>
             <div class="fileupload fileupload-new" data-provides="fileupload">
-                <div class="input-append">
-                    <div class="uneditable-input span3">
-                        <i class="icon-file fileupload-exists"></i> 
-                        <span class="fileupload-preview"></span>
-                    </div>
-                    <span class="btn btn-file">
-                        <span class="fileupload-new"><?php echo JText::_("COM_CROWDFUNDING_SELECT_FILE");?></span>
-                        <span class="fileupload-exists"><?php echo JText::_("COM_CROWDFUNDING_CHANGE");?></span>
-                        <?php echo $this->form->getInput('image'); ?>
+                <span class="btn btn-file">
+                    <span class="fileupload-new"><?php echo JText::_("COM_CROWDFUNDING_SELECT_FILE");?></span>
+                    <span class="fileupload-exists">
+                        <?php echo JText::_("COM_CROWDFUNDING_CHANGE");?>
                     </span>
-                    <a href="#" class="btn fileupload-exists" data-dismiss="fileupload"><?php echo JText::_("COM_CROWDFUNDING_REMOVE");?></a>
-                </div>
+                <?php echo $this->form->getInput('image'); ?>
+                </span>
+                <span class="fileupload-preview"></span>
+                <a href="#" class="close fileupload-exists" data-dismiss="fileupload" style="float: none">×</a>
             </div>
+            
+            <?php 
+			if($this->params->get("project_terms", 0) AND $this->isNew) {
+			    $termsUrl = $this->params->get("project_terms_url", "");
+			?>
+			<label class="checkbox">
+            	<input type="checkbox" name="jform[terms]" value="1"> <?php echo (!$termsUrl) ? JText::_("COM_CROWDFUNDING_TERMS_AGREEMENT") : JText::sprintf("COM_CROWDFUNDING_TERMS_AGREEMENT_URL", $termsUrl);?>
+            </label>
+            <?php }?>
             
             <?php echo $this->form->getInput('id'); ?>
             <?php echo $this->form->getInput('location'); ?>
@@ -56,7 +62,7 @@ defined('_JEXEC') or die;
             <div class="clearfix"></div>
             <button type="submit" class="button button-large margin-tb-15px" <?php echo $this->disabledButton;?>>
             	<i class="icon-ok icon-white"></i>
-                <?php echo JText::_("JSAVE")?>
+                <?php echo JText::_("COM_CROWDFUNDING_SAVE_AND_CONTINUE")?>
             </button>
         </form>
     </div>
@@ -65,12 +71,13 @@ defined('_JEXEC') or die;
     	<img src="<?php echo $this->imageFolder."/".$this->imageSmall; ?>" class="img-polaroid" />
     	<?php if(!$this->debugMode) {?>
     	<div class="clearfix">&nbsp;</div>
-    	<a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=project.removeImage&id=".$this->item->id."&".JSession::getFormToken()."=1");?>" class="btn btn-mini" >
-    		<i class="icon-trash">
+    	<a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=project.removeImage&id=".$this->item->id."&".JSession::getFormToken()."=1");?>" class="btn btn-mini btn-danger" >
+    		<i class="icon-trash icon-white">
     		</i> <?php echo JText::_("COM_CROWDFUNDING_REMOVE_IMAGE");?>
 		</a>
     	<?php }?>
     </div>
     <?php }?>
 </div>
+<div class="clearfix">&nbsp;</div>
 <?php echo $this->version->backlink;?>

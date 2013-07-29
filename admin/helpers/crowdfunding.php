@@ -18,12 +18,14 @@ defined('_JEXEC') or die;
  * It is CrowdFunding helper class
  *
  */
-class CrowdFundingHelper {
+abstract class CrowdFundingHelper {
 	
     static $currency   = null;
     static $currencies = null;
     static $extension  = "com_crowdfunding";
       
+    static $statistics    = array();
+    
 	/**
 	 * Configure the Linkbar.
 	 *
@@ -146,11 +148,13 @@ class CrowdFundingHelper {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         
+        $selectFields = array();
         foreach($fields as $field) {
-            $selectFields = $db->quoteName($field);
+            $selectFields[] = $db->quoteName($field);
         }
         
-        $query->select($selectFields)
+        $query
+            ->select($selectFields)
             ->from("#__crowdf_projects")
             ->where($db->quoteName("id")." = ". (int)$projectId);
         
@@ -177,11 +181,9 @@ class CrowdFundingHelper {
         $today         = new DateTime("today");
         if(!empty($fundingDays)) {
             
-            $fundindStart = new JDate($fundingStart);
-            
             // Validate starting date. 
             // If there is not starting date, set number of day.
-            if(0 > $fundindStart->toUnix()) {
+            if(!self::isValidDate($fundingStart)) {
                 return (int)$fundingDays;
             }
             
@@ -246,4 +248,99 @@ class CrowdFundingHelper {
         
     }
     
+    /**
+     * This module collects statistical data about project - number of updates, comments, funders,...
+     *
+     * @param integer $projectId
+     * @return array
+     */
+    public static function getProjectData($projectId) {
+    
+        $db    = JFactory::getDbo();
+    
+        /// Updates
+        if(!isset(self::$statistics[$projectId])) {
+            self::$statistics[$projectId] = array(
+                    "updates"   => null,
+                    "comments"  => null,
+                    "funders"   => null
+            );
+    
+        }
+    
+        // Count updates
+        if(is_null(self::$statistics[$projectId]["updates"])) {
+    
+            $query = $db->getQuery(true);
+            $query
+            ->select("COUNT(*) AS updates")
+            ->from($db->quoteName("#__crowdf_updates"))
+            ->where("project_id = ". (int)$projectId);
+    
+            $db->setQuery($query);
+    
+            self::$statistics[$projectId]["updates"] = $db->loadResult();
+        }
+    
+        // Count comments
+        if(is_null(self::$statistics[$projectId]["comments"])) {
+    
+            $query = $db->getQuery(true);
+            $query
+            ->select("COUNT(*) AS comments")
+            ->from($db->quoteName("#__crowdf_comments"))
+            ->where("project_id = ". (int)$projectId)
+            ->where("published = 1");
+    
+            $db->setQuery($query);
+    
+            self::$statistics[$projectId]["comments"] = $db->loadResult();
+        }
+    
+        // Count funders
+        if(is_null(self::$statistics[$projectId]["funders"])) {
+    
+            $query = $db->getQuery(true);
+            $query
+            ->select("COUNT(*) AS funders")
+            ->from($db->quoteName("#__crowdf_transactions"))
+            ->where("project_id  = ". (int)$projectId);
+    
+            $db->setQuery($query);
+    
+            self::$statistics[$projectId]["funders"] = $db->loadResult();
+        }
+    
+        return self::$statistics[$projectId];
+    }
+    
+    /**
+     * This method validates the period between minimum and maximum days.
+     *
+     * @param string $fundingStart
+     * @param string $fundingEnd
+     * @param integer $minDays
+     * @param integer $maxDays
+     * @return boolean
+     */
+    public static function isValidPeriod($fundingStart, $fundingEnd, $minDays, $maxDays) {
+    
+        // Get interval between starting and ending date
+        $startingDate  = new DateTime($fundingStart);
+        $endingDate    = new DateTime($fundingEnd);
+        $interval      = $startingDate->diff($endingDate);
+    
+        $days          = $interval->format("%r%a");
+    
+        // Validate minimum dates
+        if($days < $minDays) {
+            return false;
+        }
+    
+        if(!empty($maxDays) AND $days > $maxDays) {
+            return false;
+        }
+    
+        return true;
+    }
 }

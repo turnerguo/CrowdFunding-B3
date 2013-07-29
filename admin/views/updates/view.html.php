@@ -66,6 +66,9 @@ class CrowdFundingViewUpdates extends JView {
 	 */
 	protected function setDocument() {
 		$this->document->setTitle(JText::_('COM_CROWDFUNDING_UPDATES_MANAGER'));
+		
+		// Scripts
+		JHtml::_('behavior.tooltip');
 	}
     
 }

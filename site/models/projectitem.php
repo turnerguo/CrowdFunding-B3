@@ -18,6 +18,8 @@ jimport('joomla.application.component.modelitem');
 
 class CrowdFundingModelProjectItem extends JModelItem {
     
+    const     PROJECT_STATE_PUBLISHED = 1;
+    
     protected $item = array();
     
     /**
@@ -94,45 +96,63 @@ class CrowdFundingModelProjectItem extends JModelItem {
         
         $row   = $this->getItem($itemId);
         
-        if($state == 1) {
+        // Prepare data only if the user publish the project.
+        if($state == CrowdFundingModelProjectItem::PROJECT_STATE_PUBLISHED) {
             $this->prepareTable($row);
         }
         
         $row->published = $state;
         $row->store();
+        
+        // Trigger the event
+        
+        $context = $this->option . '.project';
+        $pks     = array($row->id);
+        
+        // Include the content plugins for the change of state event.
+        JPluginHelper::importPlugin('content');
+         
+        // Trigger the onContentChangeState event.
+        $dispatcher = JDispatcher::getInstance();
+        $results    = $dispatcher->trigger("onContentChangeState", array($context, $pks, $state));
+        
+        if (in_array(false, $results, true)) {
+            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_CHANGE_STATE"), ITPrismErrors::CODE_ERROR);
+        }
+        
     }
     
     protected function prepareTable(&$table) {
         
-        $isValidDate = CrowdFundingHelper::isValidDate($table->funding_start);
+        $isValidStartDate = CrowdFundingHelper::isValidDate($table->funding_start);
         
         // Calculate starting date if the user publish a project for first time.
-        if(!$isValidDate) {
+        if(!$isValidStartDate) {
             
             $fundindStart         = new JDate();
             $table->funding_start = $fundindStart->toSql();
             
         }
         
+        // Get parameters
+        $params    = JFactory::getApplication()->getParams();
+        
+        $minDays   = $params->get("project_days_minimum", 15);
+        $maxDays   = $params->get("project_days_maximum");
+        
         // Validate the period if there is an ending date
         $isValidEndDate = CrowdFundingHelper::isValidDate($table->funding_end);
         if($isValidEndDate) {
         
-            // Get interval between starting and ending date
-            $startingDate  = new DateTime($table->funding_start);
-            $endingDate    = new DateTime($table->funding_end);
-            $interval      = $startingDate->diff($endingDate);
-        
-            $days          = $interval->format("%r%a");
-        
-            // Get parameters
-            $params        = JFactory::getApplication()->getParams();
-        
-            // Validate minimum dates
-            $minimumDays   = $params->get("project_days_minimum", 15);
-            if($days < $minimumDays) {
-                throw new Exception(JText::sprintf("COM_CROWDFUNDING_ERROR_INVALID_ENDING_DATE", $minimumDays), ITPrismErrors::CODE_WARNING);
+            if(!CrowdFundingHelper::isValidPeriod($table->funding_start, $table->funding_end, $minDays, $maxDays)) {
+                
+                if(!empty($maxDays)) {
+                    throw new Exception(JText::sprintf("COM_CROWDFUNDING_ERROR_INVALID_ENDING_DATE_MIN_MAX_DAYS", $minDays, $maxDays), ITPrismErrors::CODE_WARNING);
+                } else {
+                    throw new Exception(JText::sprintf("COM_CROWDFUNDING_ERROR_INVALID_ENDING_DATE_MIN_DAYS", $minDays), ITPrismErrors::CODE_WARNING);
+                }
             }
+            
         }
         
     }
@@ -153,10 +173,8 @@ class CrowdFundingModelProjectItem extends JModelItem {
             throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_FUNDING_TYPE"), ITPrismErrors::CODE_WARNING);
         }
         
-        $fundindEnd = new JDate($item->funding_end);
-        $endDate    = $fundindEnd->toUnix();
-        if(!$endDate AND !$item->funding_days) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_FUNDING_TYPE"), ITPrismErrors::CODE_WARNING);
+        if(!CrowdFundingHelper::isValidDate($item->funding_end) AND !$item->funding_days) {
+            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_FUNDING_DURATION"), ITPrismErrors::CODE_WARNING);
         }
         
         if(!$item->pitch_image AND !$item->pitch_video) {

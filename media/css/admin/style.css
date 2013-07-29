@@ -19,9 +19,13 @@
 .icon-48-itp-tools 	    { background-image: url(../../images/tools_48.png); }
 .icon-48-itp-dashboard 	{ background-image: url(../../images/dashboard_48.png); }
 
+.icon-48-itp-rewards 	{ background-image: url(../../images/rewards_48.png); }
+.icon-48-itp-edit-reward 	{ background-image: url(../../images/rewards_edit_48.png); }
+
 .icon-48-itp-import 	{ background-image: url(../../images/import_48.png); }
 
 .icon-32-itp-dashboard-back { background-image: url(../../images/dashboard_back_32.png); }
+.icon-32-itp-projects-back { background-image: url(../../images/projects_back_32.png); }
 .icon-32-itp-approve 	    { background-image: url(../../images/approve_32.png); }
 .icon-32-itp-disapprove	 { background-image: url(../../images/disapprove_32.png); }
 

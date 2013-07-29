@@ -72,11 +72,9 @@ class CrowdFundingViewDashboard extends JView {
 	    
 		$this->document->setTitle(JText::_('COM_CROWDFUNDING_DASHBOARD'));
 		
-		// Header styles
+		// Styles
 		$this->document->addStyleSheet('../media/'.$this->option.'/css/admin/bootstrap.min.css');
 		
-		// Load scripts
-//		JHtml::_('behavior.modal', 'a.modal');
 	}
 	
 }

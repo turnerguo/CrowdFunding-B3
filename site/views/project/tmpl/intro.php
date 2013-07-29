@@ -23,3 +23,5 @@ defined('_JEXEC') or die;
 <?php echo $this->article->introtext;?>
 <?php echo $this->article->fulltext;?>
 <?php }?>
+<div class="clearfix">&nbsp;</div>
+<?php echo $this->version->backlink;?>

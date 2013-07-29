@@ -50,7 +50,7 @@ class plgContentCrowdFundingNav extends JPlugin {
         $this->loadLanguage();
         
         $itemId = $app->input->getInt("id");
-        $stats  = $this->getNavStats($itemId);
+        $stats  = CrowdFundingHelper::getProjectData($itemId);
         
         $screen = $app->input->getCmd("screen", "home");
         
@@ -99,51 +99,5 @@ class plgContentCrowdFundingNav extends JPlugin {
         
     }
     
-    /**
-     * This method returns number of updates, comments and funders.
-     * 
-     * @param integer $itemId
-     * @return array
-     * 
-     * @todo do it with one query
-     */
-    private function getNavStats($itemId) {
-        
-        $results = array();
-        
-        $db    = JFactory::getDbo();
-        
-        /// Updates
-        $query = $db->getQuery(true);
-        $query
-            ->select("COUNT(*) AS updates")
-            ->from($db->quoteName("#__crowdf_updates"))
-            ->where("project_id = ". (int)$itemId);
-        
-        $db->setQuery($query);
-        $results["updates"] = $db->loadResult();
-        
-        // Comments
-        $query = $db->getQuery(true);
-        $query
-            ->select("COUNT(*) AS comments")
-            ->from($db->quoteName("#__crowdf_comments"))
-            ->where("project_id = ". (int)$itemId)
-            ->where("published = 1");
-        
-        $db->setQuery($query);
-        $results["comments"] = $db->loadResult();
-        
-         // Funders
-        $query = $db->getQuery(true);
-        $query
-            ->select("COUNT(*) AS funders")
-            ->from($db->quoteName("#__crowdf_transactions"))
-            ->where("project_id  = ". (int)$itemId);
-        
-        $db->setQuery($query);
-        $results["funders"] = $db->loadResult();
-        
-        return $results;
-    }
+    
 }

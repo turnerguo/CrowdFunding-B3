@@ -107,7 +107,7 @@ class CrowdFundingModelTransactions extends JModelList {
             $this->getState(
                 'list.select',
                 'a.id, a.txn_amount, a.txn_date, a.txn_currency, a.txn_id, a.txn_status, ' .
-                'a.project_id, a.reward_id, a.investor_id, a.service_provider, '.
+                'a.project_id, a.reward_id, a.investor_id, a.receiver_id, a.service_provider, a.reward_state, '.
                 'b.title AS project, ' .
                 $query->concatenate(array("b.id", "b.alias"), "-") . ' AS slug, ' .
                 $query->concatenate(array("c.id", "c.alias"), "-") . ' AS catslug, ' .

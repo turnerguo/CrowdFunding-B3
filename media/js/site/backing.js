@@ -23,27 +23,4 @@ jQuery(document).ready(function() {
 		
 	});
 	
-
-	/*jQuery("#form-pledge").bind("submit", function(event) {
-		
-		var elements  	  = jQuery("#rewards").find(".reward-amount-radio");
-		var radio 		  =  null;
-		
-		jQuery.each(elements, function(index, value) {
-			if(jQuery(value).is(':checked')) {
-				var radio =  elements[index];
-			}
-		});
-		
-		console.log(radio);
-		
-		var currentAmount = parseFloat( jQuery("#current-amount").val() );
-		var amount  	  = parseFloat( jQuery(radio).val() ); 
-		
-		if(currentAmount < amount) {
-			return false;
-		}
-	});*/
-	
 });
-	

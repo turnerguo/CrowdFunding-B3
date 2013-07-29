@@ -54,7 +54,12 @@
 
 .crowdf-share-pinterest {
     float:left;
-    margin:10px 15px 0px 0px;
+    margin: 10px 15px 0px 0px;
+}
+
+.crowdf-share-pinterest-above {
+    float:left;
+    margin: 30px 5px 0 10px;
 }
 
 .crowdf-share-buffer {

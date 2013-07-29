@@ -14,17 +14,13 @@
 // no direct access
 defined('_JEXEC') or die;
 ?>
-<div class="row-fluid<?php echo $this->params->get("pageclass_sfx"); ?>">
+<div class="embed-code<?php echo $this->params->get("pageclass_sfx"); ?>">
 	
 	<div class="row-fluid">
-    	<div class="span8">
+    	<div class="span11">
     	    <h2><?php echo JText::_("COM_CROWDFUNDING_WIDGET"); ?></h2>
 	        <p><?php echo JText::_("COM_CROWDFUNDING_WIDGET_HELP"); ?></p>
         	<textarea class="embed-code"><?php echo $this->escape($this->embedCode);?></textarea>
-    	</div>
-    	
-    	<div class="span4">
-    		<?php echo $this->loadTemplate("widget");?>
     	</div>
 	</div>
 	
