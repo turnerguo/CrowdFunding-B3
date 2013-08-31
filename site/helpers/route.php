@@ -59,7 +59,10 @@ abstract class CrowdFundingHelperRoute {
 		//Create the link
 		$link = 'index.php?option=com_crowdfunding&view=details&id='. $id;
 		if ($catid > 1) {
-		    $categories = JCategories::getInstance('crowdfunding');
+		    
+		    $options    = array("published" => 2);
+		    
+		    $categories = JCategories::getInstance('crowdfunding', $options);
 		    $category   = $categories->get($catid);
 		
 		    if($category) {
@@ -80,7 +83,7 @@ abstract class CrowdFundingHelperRoute {
 		} elseif ($item = self::_findItem()) { // Get the menu item (Itemid) from the active (current) item.
 			$link .= '&Itemid='.$item;
 		}
-
+		
 		return $link;
 	}
 	
@@ -88,7 +91,7 @@ abstract class CrowdFundingHelperRoute {
 	 * This method route item in the view "projects".
 	 */
 	public static function getProjectsRoute() {
-	
+	     
 	    /**
 	     *
 	     * # category
@@ -101,7 +104,7 @@ abstract class CrowdFundingHelperRoute {
 	     * The view "categories" won't contain category ID so it has to contain 0 for ID key.
 	     */
 	    $needles = array(
-	            'projects' => array(0),
+            'projects' => array(0),
 	    );
 	
 	    //Create the link
@@ -242,6 +245,30 @@ abstract class CrowdFundingHelperRoute {
 		}
 
 		return $link;
+	}
+	
+	/**
+	 * 
+	 * Prepare a link to discover page
+	 * 
+	 */
+	public static function getDiscoverRoute() {
+	     
+	    $needles = array(
+            'discover'   => array(0)
+	    );
+	
+	    //Create the link
+	    $link = 'index.php?option=com_crowdfunding&view=discover';
+	
+	    // Looking for menu item (Itemid)
+	    if ($item = self::_findItem($needles)) {
+	        $link .= '&Itemid='.$item;
+	    } elseif ($item = self::_findItem()) { // Get the menu item (Itemid) from the active (current) item.
+	        $link .= '&Itemid='.$item;
+	    }
+	
+	    return $link;
 	}
 
 	protected static function _findItem($needles = null) {

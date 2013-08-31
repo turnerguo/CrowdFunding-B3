@@ -43,6 +43,7 @@ $currency        = CrowdFundingCurrency::getInstance($currencyId);
 jimport("crowdfunding.project");
 jimport("crowdfunding.rewards");
 $project         = CrowdFundingProject::getInstance($projectId);
-$rewards         = $project->getRewards();
+
+$rewards         = $project->getRewards(array("state" => 1));
 
 require JModuleHelper::getLayoutPath('mod_crowdfundingrewards', $params->get('layout', 'default'));

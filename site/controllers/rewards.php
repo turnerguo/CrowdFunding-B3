@@ -47,7 +47,7 @@ class CrowdFundingControllerRewards extends ITPrismControllerAdmin {
         $userId = JFactory::getUser()->id;
         if(!$userId) {
             $redirectData = array(
-                "force_direction" => "index.php?option=com_users&view=login"
+                "force_direction"   => "index.php?option=com_users&view=login"
             );
             $this->displayNotice(JText::_("COM_CROWDFUNDING_ERROR_NOT_LOG_IN"), $redirectData);
             return;
@@ -93,10 +93,10 @@ class CrowdFundingControllerRewards extends ITPrismControllerAdmin {
             
         }
         
-		// Redirect to next page
-		$this->displayMessage(JText::_("COM_CROWDFUNDING_REWARDS_SUCCESSFULY_SAVED"), $redirectData);
-			
+        // Redirect to next page
+        $this->displayMessage(JText::_("COM_CROWDFUNDING_REWARDS_SUCCESSFULY_SAVED"), $redirectData);
     }
+
     
     /**
      * Method to change state of reward.
@@ -110,29 +110,29 @@ class CrowdFundingControllerRewards extends ITPrismControllerAdmin {
         $userId = JFactory::getUser()->id;
         if(!$userId) {
             $redirectData = array(
-                    "force_direction"   => JRoute::_("index.php?option=com_users&view=login", false)
+                "force_direction"   => JRoute::_("index.php?option=com_users&view=login", false)
             );
             $this->displayNotice(JText::_("COM_CROWDFUNDING_ERROR_NOT_LOG_IN"), $redirectData);
             return;
         }
     
         $redirectData = array(
-                "view"   => "transactions"
+            "view"   => "transactions"
         );
-    
+        
         $app = JFactory::getApplication();
         /** @var $app JAdministrator **/
     
         $txnId   = $app->input->get->getInt('txn_id');
         $state   = $app->input->get->get('state');
-    
+        
         $state   = (!$state) ? 0 : 1;
-    
+        
         if(!$txnId) {
             $this->displayWarning(JText::_("COM_CROWDFUNDING_ERROR_INVALID_TRANSACTION"), $redirectData);
             return;
         }
-    
+        
         $model     = $this->getModel();
         /** @var $model CrowdFundingModelRewards **/
     
@@ -158,7 +158,7 @@ class CrowdFundingControllerRewards extends ITPrismControllerAdmin {
             }
     
         }
-    
+        
         if(!$state) {
             $msg = JText::_("COM_CROWDFUNDING_REWARD_HAS_BEEN_SET_AS_NOT_SENT");
         } else {
@@ -166,7 +166,7 @@ class CrowdFundingControllerRewards extends ITPrismControllerAdmin {
         }
     
         $this->displayMessage($msg, $redirectData);
-         
+        	
     }
-
+    
 }

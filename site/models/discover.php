@@ -61,9 +61,25 @@ class CrowdFundingModelDiscover extends JModelList {
         $params     =  $app->getParams();
         $this->setState('params', $params);
         
-        // Set limit
-        $value      = $app->input->get("id", 0, "uint");
-        $this->setState($this->context.'.category_id', $value);
+        // Filter by country
+        $value      = $app->input->get("filter_country");
+        $this->setState($this->context.'.filter_country', $value);
+        
+        // Filter by phrase
+        $value      = $app->input->get("filter_phrase");
+        $this->setState($this->context.'.filter_phrase', $value);
+        
+        // Set category id
+        $catId      = $app->input->get("id", 0, "uint");
+        $this->setState($this->context.'.category_id', $catId);
+        
+        // It is a discovery page and I can filter it by category.
+        // If it is a subcategory page, there is a category ID
+        if(!$catId) {
+            // Filter by category
+            $value      = $app->input->get("filter_category");
+            $this->setState($this->context.'.category_id', $value);
+        }
         
         // Set limit
         $value      = $app->input->getInt("limit");
@@ -129,6 +145,21 @@ class CrowdFundingModelDiscover extends JModelList {
         $categoryId = $this->getState($this->context.".category_id", 0);
         if(!empty($categoryId)) {
             $query->where('a.catid = '.(int)$categoryId);
+        }
+        
+        // Filter by country
+        $countryCode = $this->getState($this->context.".filter_country");
+        if(!empty($countryCode)) {
+            $query->innerJoin($db->quoteName("#__crowdf_locations") . " AS l ON a.location = l.id");
+            $query->where('l.country_code = '.$db->quote($countryCode));
+        }
+        
+        // Filter by phrase
+        $phrase = $this->getState($this->context.".filter_phrase");
+        if(!empty($phrase)) {
+            $escaped = $db->escape($phrase, true);
+            $quoted  = $db->quote("%" . $escaped . "%", false);
+            $query->where('a.title LIKE '.$quoted);
         }
         
         // Filter by state
@@ -201,5 +232,6 @@ class CrowdFundingModelDiscover extends JModelList {
     
         return $result;
     }
+    
     
 }

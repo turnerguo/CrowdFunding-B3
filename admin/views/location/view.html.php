@@ -16,7 +16,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
-class CrowdFundingViewLocation extends JView {
+class CrowdFundingViewLocation extends JViewLegacy {
     
     protected $state;
     protected $item;
@@ -35,9 +35,9 @@ class CrowdFundingViewLocation extends JView {
      */
     public function display($tpl = null){
         
-        $this->state= $this->get('State');
-        $this->item = $this->get('Item');
-        $this->form = $this->get('Form');
+        $this->state = $this->get('State');
+        $this->item  = $this->get('Item');
+        $this->form  = $this->get('Form');
         
         // Prepare actions, behaviors, scritps and document
         $this->addToolbar();
@@ -59,20 +59,16 @@ class CrowdFundingViewLocation extends JView {
         $this->documentTitle = $isNew ? JText::_('COM_CROWDFUNDING_ADD_LOCATION')
 		                              : JText::_('COM_CROWDFUNDING_EDIT_LOCATION');
 		                             
-        if(!$isNew) {
-            JToolBarHelper::title($this->documentTitle, 'itp-edit-location');
-        } else {
-            JToolBarHelper::title($this->documentTitle, 'itp-add-location');
-        }
+        JToolbarHelper::title($this->documentTitle);
 		                             
-        JToolBarHelper::apply('location.apply');
-        JToolBarHelper::save2new('location.save2new');
-        JToolBarHelper::save('location.save');
+        JToolbarHelper::apply('location.apply');
+        JToolbarHelper::save2new('location.save2new');
+        JToolbarHelper::save('location.save');
     
         if(!$isNew){
-            JToolBarHelper::cancel('location.cancel', 'JTOOLBAR_CANCEL');
+            JToolbarHelper::cancel('location.cancel', 'JTOOLBAR_CANCEL');
         }else{
-            JToolBarHelper::cancel('location.cancel', 'JTOOLBAR_CLOSE');
+            JToolbarHelper::cancel('location.cancel', 'JTOOLBAR_CLOSE');
         }
         
     }
@@ -86,8 +82,10 @@ class CrowdFundingViewLocation extends JView {
 		$this->document->setTitle($this->documentTitle);
 		
 		// Scripts
-		JHtml::_('behavior.formvalidation');
+        JHtml::_('behavior.formvalidation');
         JHtml::_('behavior.tooltip');
+        
+        JHtml::_('formbehavior.chosen', 'select');
         
 		$this->document->addScript(JURI::root() . 'media/'.$this->option.'/js/admin/'.JString::strtolower($this->getName()).'.js');
 	}

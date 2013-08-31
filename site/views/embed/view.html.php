@@ -16,7 +16,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
-class CrowdFundingViewEmbed extends JView {
+class CrowdFundingViewEmbed extends JViewLegacy {
     
     protected $state;
     protected $item;
@@ -39,7 +39,7 @@ class CrowdFundingViewEmbed extends JView {
         $this->item        = $this->get("Item");
         $this->params      = $this->state->get("params");
         
-        $this->imageFolder = $this->params->get("images_directory", "images/projects");
+        $this->imageFolder = $this->params->get("images_directory", "images/crowdfunding");
         
         if (!$this->item) {
             $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"), "notice");
@@ -59,7 +59,7 @@ class CrowdFundingViewEmbed extends JView {
 		$this->socialPlatform = $this->params->get("integration_social_platform");
 		
         // Set a link to project page
-        $uri   = JFactory::getURI();
+        $uri   = JUri::getInstance();
         $host  = $uri->toString(array("scheme", "host"));
         $this->item->link        = $host.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug), false);
         
@@ -87,7 +87,7 @@ class CrowdFundingViewEmbed extends JView {
             
         }
         
-        $this->version     = new CrowdfundingVersion();
+        $this->version = new CrowdfundingVersion();
         
 		$this->prepareDocument();
 		
@@ -118,7 +118,7 @@ class CrowdFundingViewEmbed extends JView {
      */
     protected function prepareEmailForm($item) {
         
-        $model         = JModel::getInstance("FriendMail", "CrowdFundingModel", $config = array('ignore_request' => false));
+        $model         = JModelLegacy::getInstance("FriendMail", "CrowdFundingModel", $config = array('ignore_request' => false));
         
         // Prepare default content of the form
         $formData = array(
@@ -182,11 +182,11 @@ class CrowdFundingViewEmbed extends JView {
         $pathway->addItem($currentBreadcrumb, '');
         
         // Add styles
+//         $this->document->addStyleSheet( 'media/'.$this->option.'/css/site/bootstrap.min.css');
         $this->document->addStyleSheet( 'media/'.$this->option.'/css/site/style.css');
         
         // Add scripts
         JHtml::_('behavior.framework');
-        JHtml::_("crowdfunding.bootstrap");
     }
     
     private function prepearePageHeading() {

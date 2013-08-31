@@ -24,25 +24,25 @@ defined('_JEXEC') or die;?>
             <thead>
             	<tr>
             		<th>
-            		    <?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_PROJECT', 'b.title', $this->listDirn, $this->listOrder); ?>
+            		    <?php echo JHtml::_('crowdfunding.sort',  'COM_CROWDFUNDING_PROJECT', 'b.title', $this->listDirn, $this->listOrder); ?>
         		    </th>
             		<th>
-            			<?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_AMOUNT', 'a.txn_amount', $this->listDirn, $this->listOrder); ?>
+            			<?php echo JHtml::_('crowdfunding.sort',  'COM_CROWDFUNDING_AMOUNT', 'a.txn_amount', $this->listDirn, $this->listOrder); ?>
             		</th>
             		<th class="nowrap hidden-phone">
-            			<?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_INVESTOR', 'e.name', $this->listDirn, $this->listOrder); ?>
+            			<?php echo JHtml::_('crowdfunding.sort',  'COM_CROWDFUNDING_INVESTOR', 'e.name', $this->listDirn, $this->listOrder); ?>
             		</th>
             		<th class="nowrap hidden-phone">
-            			<?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_BENEFICIARY', 'f.name', $this->listDirn, $this->listOrder); ?>
+            			<?php echo JHtml::_('crowdfunding.sort',  'COM_CROWDFUNDING_BENEFICIARY', 'f.name', $this->listDirn, $this->listOrder); ?>
             		</th>
             		<th class="nowrap hidden-phone">
-            			<?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_DATE', 'a.txn_date', $this->listDirn, $this->listOrder); ?>
+            			<?php echo JHtml::_('crowdfunding.sort',  'COM_CROWDFUNDING_DATE', 'a.txn_date', $this->listDirn, $this->listOrder); ?>
             		</th>
             		<th class="nowrap hidden-phone">
-            			<?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_REWARD', 'd.title', $this->listDirn, $this->listOrder); ?>
+            			<?php echo JHtml::_('crowdfunding.sort',  'COM_CROWDFUNDING_REWARD', 'd.title', $this->listDirn, $this->listOrder); ?>
             		</th>
             		<th class="nowrap hidden-phone">
-            			<?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ID', 'a.id', $this->listDirn, $this->listOrder); ?>
+            			<?php echo JHtml::_('crowdfunding.sort',  'JGRID_HEADING_ID', 'a.id', $this->listDirn, $this->listOrder); ?>
         		    </th>
             	</tr>
             </thead>
@@ -90,5 +90,5 @@ defined('_JEXEC') or die;?>
 
     <?php echo $this->pagination->getPagesLinks(); ?>
 </div>
-<div class="clearfix">&nbsp;</div>
+<div class="clearfix"></div>
 <?php echo $this->version->backlink;?>

@@ -16,7 +16,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
-class CrowdFundingViewCurrency extends JView {
+class CrowdFundingViewCurrency extends JViewLegacy {
     
     protected $state;
     protected $item;
@@ -59,20 +59,16 @@ class CrowdFundingViewCurrency extends JView {
         $this->documentTitle = $isNew  ? JText::_('COM_CROWDFUNDING_NEW_CURRENCY')
                                        : JText::_('COM_CROWDFUNDING_EDIT_CURRENCY');
 
-        if(!$isNew) {                              
-            JToolBarHelper::title($this->documentTitle, 'itp-currency-edit');
-        } else {
-            JToolBarHelper::title($this->documentTitle, 'itp-currency-new');
-        }
+        JToolbarHelper::title($this->documentTitle);
 		                             
-        JToolBarHelper::apply('currency.apply');
-        JToolBarHelper::save2new('currency.save2new');
-        JToolBarHelper::save('currency.save');
+        JToolbarHelper::apply('currency.apply');
+        JToolbarHelper::save2new('currency.save2new');
+        JToolbarHelper::save('currency.save');
     
         if(!$isNew){
-            JToolBarHelper::cancel('currency.cancel', 'JTOOLBAR_CANCEL');
+            JToolbarHelper::cancel('currency.cancel', 'JTOOLBAR_CANCEL');
         }else{
-            JToolBarHelper::cancel('currency.cancel', 'JTOOLBAR_CLOSE');
+            JToolbarHelper::cancel('currency.cancel', 'JTOOLBAR_CLOSE');
         }
         
     }
@@ -89,6 +85,8 @@ class CrowdFundingViewCurrency extends JView {
 		// Scripts
 		JHtml::_('behavior.formvalidation');
 		JHtml::_('behavior.tooltip');
+		
+		JHtml::_('formbehavior.chosen', 'select');
 		
 		$this->document->addScript('../media/'.$this->option.'/js/admin/'.JString::strtolower($this->getName()).'.js');
         

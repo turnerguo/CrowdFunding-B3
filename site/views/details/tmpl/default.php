@@ -38,11 +38,10 @@ defined('_JEXEC') or die;?>
         	<div class="cf-details-block">
         	<?php if(!$this->item->pitch_video) {
         	    if(!$this->item->pitch_image) {
-        	        echo JHtml::_("image", "media/com_crowdfunding/images/no_image_large.png", $this->escape($this->item->title), array("class"=>"img-polaroid"));
-        	    } else {
-        	        echo JHtml::_("image", $this->imageFolder."/".$this->item->pitch_image, $this->escape($this->item->title), array("class"=>"img-polaroid"));
-        	    }
-        	    
+                    echo JHtml::_("image", "media/com_crowdfunding/images/no_image_large.png", $this->escape($this->item->title), array("class"=>"img-polaroid"));
+                } else {
+                    echo JHtml::_("image", $this->imageFolder."/".$this->item->pitch_image, $this->escape($this->item->title), array("class"=>"img-polaroid"));
+                }   
         	} else {
         	    echo JHtml::_("crowdfunding.video", $this->item->pitch_video);
         	}?>
@@ -73,8 +72,8 @@ defined('_JEXEC') or die;?>
         	}?>
         	</div>
     	</div>
+    	
 	</div>
-	
 	<?php 
 	if(!empty($this->item->event->onContentAfterDisplay)) {
 	    echo $this->item->event->onContentAfterDisplay; 

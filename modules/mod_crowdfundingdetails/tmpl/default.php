@@ -16,24 +16,15 @@ defined('_JEXEC') or die;
 ?>
 <div class="cfmdetails<?php echo $moduleclassSfx; ?>">
     <ul class="thumbnails">
-      <?php if(!empty($project->id)) {
-          
-        $raised         = $currency->getAmountString($project->funded); 
-    	
-    	// Prepare the value that I am going to display
-    	$fundedPercents = JHtml::_("crowdfunding.funded", $project->getFundedPercents());
-    	
-    	$user = JFactory::getUser($project->user_id);
-    	$socialProfile  = JHtml::_("crowdfunding.socialProfile", $socialPlatform, $user);
-     ?>
+      <?php if(!empty($project->id)) {?>
       <li>
         <div class="thumbnail">
           <img src="<?php echo $imageFolder."/".$project->image;?>" alt="<?php echo $project->title;?>" width="200" height="200">
           <div class="caption">
             <h3><a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($project->getSlug(), $project->getCatSlug())); ?>"><?php echo htmlspecialchars($project->title, ENT_QUOTES, "UTF-8");?></a></h3>
             <span class="cf-founder">by 
-                <?php if(!empty($socialProfile)){ ?>
-                <a href="<?php echo $socialProfile;?>"><?php echo $user->name; ?></a>
+                <?php if(!empty($socialProfileLink)){ ?>
+                <a href="<?php echo $socialProfileLink;?>"><?php echo $user->name; ?></a>
                 <?php } else {?>
                 <?php echo $user->name; ?>
                 <?php }?>

@@ -1,22 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
-    <fieldset name="general" label="COM_CROWDFUNDING_GENERAL">
-        <field name="bootstrap_include" type="radio" default="1" label="COM_CROWDFUNDING_BOOTSTRAP_INCLUDE" description="COM_CROWDFUNDING_BOOTSTRAP_INCLUDE_DESC" class="btn-group">
-            <option value="0">JNO</option>
-            <option value="1">JYES</option>
-        </field>
-    </fieldset>
 	<fieldset name="backing" label="COM_CROWDFUNDING_BACKING" description="COM_CROWDFUNDING_BACKING_PARAMS">
 		<field name="backing_terms" type="radio" default="0" label="COM_CROWDFUNDING_BACKING_DISPLAY_TERMS" description="COM_CROWDFUNDING_BACKING_DISPLAY_TERMS_DESC" class="btn-group">
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
-        <field name="backing_terms_url" type="text" default="" size="50" label="COM_CROWDFUNDING_TERMS_URL" description="COM_CROWDFUNDING_TERMS_URL_DESC" />
+        <field name="backing_terms_url" type="text" default="" size="50" label="COM_CROWDFUNDING_TERMS_URL" description="COM_CROWDFUNDING_TERMS_URL_DESC" class="span6" />
 	</fieldset>
 
     <fieldset name="images" label="COM_CROWDFUNDING_IMAGES_TITLE" description="COM_CROWDFUNDING_IMAGES_PARAMS">
 
-        <field name="images_directory" type="text" default="images/projects" size="50" label="COM_CROWDFUNDING_IMAGES_DIRECTORY" description="COM_CROWDFUNDING_IMAGES_DIRECTORY_DESC" />
+        <field name="images_directory" type="text" default="images/crowdfunding" size="50" label="COM_CROWDFUNDING_IMAGES_DIRECTORY" description="COM_CROWDFUNDING_IMAGES_DIRECTORY_DESC" class="span6" />
             
         <field name="image_width" type="text" default="200" size="50" label="COM_CROWDFUNDING_IMAGE_WIDTH" description="COM_CROWDFUNDING_IMAGE_WIDTH_DESC" />
         <field name="image_height" type="text" default="200" size="50" label="COM_CROWDFUNDING_IMAGE_HEIGHT" description="COM_CROWDFUNDING_IMAGE_HEIGHT_DESC" />
@@ -52,7 +46,7 @@
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
-        <field name="project_terms_url" type="text" default="" size="50" label="COM_CROWDFUNDING_TERMS_URL" description="COM_CROWDFUNDING_TERMS_URL_DESC" />
+        <field name="project_terms_url" type="text" default="" size="50" label="COM_CROWDFUNDING_TERMS_URL" description="COM_CROWDFUNDING_TERMS_URL_DESC" class="span6" />
     </fieldset>
     
     <fieldset name="project" addfieldpath="/administrator/components/com_content/models/fields">
@@ -86,14 +80,20 @@
     <fieldset name="integration" label="COM_CROWDFUNDING_INTEGRATION" description="COM_CROWDFUNDING_INTEGRATION_PARAMS">
         <field name="integration_social_platform" type="list" default="" label="COM_CROWDFUNDING_INTEGRATION_SOCIAL_PLATFORM" description="COM_CROWDFUNDING_INTEGRATION_SOCIAL_PLATFORM_DESC">
             <option value="">COM_CROWDFUNDING_NONE</option>
-            <option value="com_socialcommunity">COM_CROWDFUNDING_SOCIAL_COMMUNITY</option>
+            <option value="socialcommunity">COM_CROWDFUNDING_SOCIAL_COMMUNITY</option>
             <option value="gravatar">COM_CROWDFUNDING_GRAVATAR</option>
+            <option value="jomsocial">COM_CROWDFUNDING_JOMSOCIAL</option>
+            <option value="kunena">COM_CROWDFUNDING_KUNENA</option>
         </field>
         <field name="integration_avatars" type="list" default="" label="COM_CROWDFUNDING_INTEGRATION_AVATAR" description="COM_CROWDFUNDING_INTEGRATION_AVATAR_DESC">
             <option value="">COM_CROWDFUNDING_NONE</option>
-            <option value="com_socialcommunity">COM_CROWDFUNDING_SOCIAL_COMMUNITY</option>
+            <option value="socialcommunity">COM_CROWDFUNDING_SOCIAL_COMMUNITY</option>
             <option value="gravatar">COM_CROWDFUNDING_GRAVATAR</option>
+            <option value="jomsocial">COM_CROWDFUNDING_JOMSOCIAL</option>
+            <option value="kunena">COM_CROWDFUNDING_KUNENA</option>
         </field>
+        <field name="integration_avatars_size" type="text" default="50" label="COM_CROWDFUNDING_AVATARS_SIZE" description="COM_CROWDFUNDING_AVATARS_SIZE_DESC" />
+        <field name="integration_avatars_default" type="text" default="/media/com_crowdfunding/images/no-profile.png" label="COM_CROWDFUNDING_AVATARS_DEFAULT" description="COM_CROWDFUNDING_AVATARS_DEFAULT_DESC" class="span6" />
     </fieldset>
     
     <fieldset name="comments" label="COM_CROWDFUNDING_COMMENTS" description="COM_CROWDFUNDING_COMMENTS_PARAMS">

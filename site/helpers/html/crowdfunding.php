@@ -17,16 +17,11 @@ defined('_JEXEC') or die;
 /**
  * CrowdFunding Html Helper
  *
- * @package		CrowdFunding
- * @subpackage	Components
+ * @package		ITPrism Components
+ * @subpackage	CrowdFunding
  * @since		1.6
  */
 abstract class JHtmlCrowdFunding {
-    
-    /**
-     * @var   array   array containing information for loaded files
-     */
-    protected static $loaded = array();
     
     /**
      * 
@@ -242,10 +237,11 @@ abstract class JHtmlCrowdFunding {
         
         $title = "";
         if(!empty($tip)) {
+            JHtml::_("bootstrap.tooltip");
             
-            $tipMessage = ($value != 1) ? JText::_("COM_CROWDFUNDING_UNPUBLISHED")."::".JText::_("COM_CROWDFUNDING_PUBLISH_THIS_ITEM") : JText::_("COM_CROWDFUNDING_PUBLISHED")."::".JText::_("COM_CROWDFUNDING_UNPUBLISH_THIS_ITEM");
+            $tipMessage = ($value != 1) ? JText::_("COM_CROWDFUNDING_PUBLISH_THIS_ITEM") : JText::_("COM_CROWDFUNDING_UNPUBLISH_THIS_ITEM");
             
-            $class = ' class="btn btn-small hasTip"';
+            $class = ' class="btn btn-small hasTooltip"';
             $title = ' title="'.htmlspecialchars($tipMessage, ENT_QUOTES, "UTF-8").'"';
             
         } else {
@@ -310,186 +306,144 @@ abstract class JHtmlCrowdFunding {
         return $html;
     }
     
-    /**
-     * Generate a link to an user image of a social platform
-     * 
-     * @param string $socialPlatform	The name of the social platform.
-     * @param JUser $user		        This is a Joomla! user object.
-     * 
-     * @return string A routed link to profile
-     */ 
-    public static function socialProfile($socialPlatform, JUser $user) {
-    
-        $link = "";
-    
-        switch($socialPlatform) {
-    
-            case "com_socialcommunity":
-    
-                jimport("itprism.integrate.profile.socialcommunity");
-                $profile = new ITPrismIntegrateProfileSocialCommunity($user);
-                $link    = $profile->getLink();
-    
-                break;
-    
-            case "com_kunena":
-    
-                jimport("itprism.integrate.profile.kunena");
-                $profile = new ITPrismIntegrateProfileKunena($user);
-                $link    = $profile->getLink();
-    
-                break;
-    
-            case "gravatar":
-    
-                jimport("itprism.integrate.profile.gravatar");
-                $profile = new ITPrismIntegrateProfileGravatar($user);
-                $link    = $profile->getLink();
-    
-                break;
-    
-            default:
-                $link = "";
-                break;
-        }
-    
-        return $link;
-    
-    }
     
     /**
-     * 
-     * Generate a link to an user image of a social platform
-     * @param string $socialPlatform	The name of the social platform
-     * @param JUser  $user		        Joomla! user object
-     * @param string $default		    A link to default picture
-     * 
-     * @todo Add option for setting image size
-     */    
-    public static function socialAvatar($socialPlatform, JUser $user, $default = null) {
+     * Method to sort a column in a grid
+     *
+     * @param   string  $title          The link title
+     * @param   string  $order          The order field for the column
+     * @param   string  $direction      The current direction
+     * @param   string  $selected       The selected ordering
+     * @param   string  $task           An optional task override
+     * @param   string  $new_direction  An optional direction for the new column
+     * @param   string  $tip            An optional text shown as tooltip title instead of $title
+     *
+     * @return  string
+     *
+     * @since   11.1
+     */
+    public static function sort($title, $order, $direction = 'asc', $selected = 0, $task = null, $new_direction = 'asc', $tip = '') {
         
-        $link = "";
-
-        switch($socialPlatform) {
-
-            case "com_socialcommunity":
-                
-                jimport("itprism.integrate.profile.socialcommunity");
-                $profile = new ITPrismIntegrateProfileSocialCommunity($user);
-                $link    = $profile->getAvatar();
-                break;
-                
-            case "com_kunena":
-                
-                jimport("itprism.integrate.profile.kunena");
-                $profile = new ITPrismIntegrateProfileKunena($user);
-                $link    = $profile->getAvatar();
-                
-                break;
-                
-            case "gravatar":
-                
-                jimport("itprism.integrate.profile.gravatar");
-                $profile = new ITPrismIntegrateProfileGravatar($user);
-                $profile->setSize(50);
-                $link    = $profile->getAvatar();
-                
-                break;
-            
-            default:
-                $link = "";
-                break;
+        JHtml::_('bootstrap.tooltip');
+    
+        $direction = strtolower($direction);
+        $icon = array('arrow-up', 'arrow-down');
+        $index = (int) ($direction == 'desc');
+    
+        if ($order != $selected) {
+            $direction = $new_direction;
+        } else {
+            $direction = ($direction == 'desc') ? 'asc' : 'desc';
         }
-        
-        // Set the linke to default picture
-        if(!$link AND !empty($default)) {
-            $link = $default;
+    
+        $html = '<a href="#" onclick="Joomla.tableOrdering(\'' . $order . '\',\'' . $direction . '\',\'' . $task . '\');return false;" class="hasTooltip" title="' . JText::_('JGLOBAL_CLICK_TO_SORT_THIS_COLUMN') . '">';
+        $html .= JText::_($title);
+    
+        if ($order == $selected){
+            $html .= ' <i class="icon-' . $icon[$index] . '"></i>';
         }
-        
-		return $link;
-		
+    
+        $html .= '</a>';
+    
+        return $html;
     }
     
     public static function reward($rewardId, $reward, $txnId, $sent = 0, $canEdit = false) {
-    
+        
         $state = (!$sent) ? 1 : 0;
-    
+        
         $html = array();
-    
+        
         if(!$rewardId) {
             $icon  = "media/com_crowdfunding/images/noreward_16.png";
-            $title = 'title="' . JText::_('COM_CROWDFUNDING_REWARD_NOT_SELECTED') . '::"';
+            $title = 'title="' . JText::_('COM_CROWDFUNDING_REWARD_NOT_SELECTED') . '"';
         } else {
-    
+            
             if(!$sent) {
-    
+                
                 $icon  = "media/com_crowdfunding/images/reward_16.png";
-    
+                
                 // Prepare tooltip text
                 if($canEdit) {
-                    $tooltipText = JText::sprintf('COM_CROWDFUNDING_SENT_REWARD_TOOLTIP', htmlspecialchars($reward, ENT_QUOTES, "UTF-8"), "::");
+                    $tooltipText = JText::sprintf('COM_CROWDFUNDING_SENT_REWARD_TOOLTIP', htmlspecialchars($reward, ENT_QUOTES, "UTF-8"), "<br />");
                 } else {
-                    $tooltipText = htmlspecialchars($reward, ENT_QUOTES, "UTF-8")."::".JText::_('COM_CROWDFUNDING_REWARD_NOT_SENT');
+                    $tooltipText = htmlspecialchars($reward, ENT_QUOTES, "UTF-8")."<br />".JText::_('COM_CROWDFUNDING_REWARD_NOT_SENT');
                 }
                 $title = 'title="' . $tooltipText . '"';
-    
+                
             } else {
-    
+                
                 $icon  = "media/com_crowdfunding/images/reward_sent_16.png";
-    
+                
                 // Prepare tooltip text
                 if($canEdit) {
-                    $tooltipText = JText::sprintf('COM_CROWDFUNDING_NOT_SENT_REWARD_TOOLTIP', htmlspecialchars($reward, ENT_QUOTES, "UTF-8"), "::");
+                    $tooltipText = JText::sprintf('COM_CROWDFUNDING_NOT_SENT_REWARD_TOOLTIP', htmlspecialchars($reward, ENT_QUOTES, "UTF-8"), "<br />");
                 } else {
-                    $tooltipText = htmlspecialchars($reward, ENT_QUOTES, "UTF-8")."::".JText::_('COM_CROWDFUNDING_REWARD_HAS_BEEN_SENT');
+                    $tooltipText = htmlspecialchars($reward, ENT_QUOTES, "UTF-8")."<br />".JText::_('COM_CROWDFUNDING_REWARD_HAS_BEEN_SENT');
                 }
-    
+                
                 $title = 'title="' . $tooltipText . '"';
-    
+                
             }
-    
+            
         }
-    
+        
         // Prepare link
         if(!$rewardId OR !$canEdit) {
             $link = "javascript: void(0);";
         } else {
             $link = JRoute::_("index.php?option=com_crowdfunding&task=rewards.changeState&txn_id=".(int)$txnId."&state=".(int)$state."&".JSession::getFormToken()."=1");
         }
-    
-        $html[] = '<a href="'.$link.'" class="hasTip" '.$title.'>';
+        
+        $html[] = '<a href="'.$link.'" class="hasTooltip" '.$title.'>';
         $html[] = '<img src="'.$icon.'" width="16" height="16" />';
         $html[] = '</a>';
     
         return implode(" ", $html);
     }
     
-    /**
-     * Include Twitter Bootstrap
-     */
-    public static function bootstrap() {
     
-        // Check for disabled including.
-        $componentParams = JComponentHelper::getParams("com_crowdfunding");
+    public static function projecttitle($title, $categoryState, $slug, $catSlug) {
+    
+        $html = array();
+
+        if(!$categoryState) {
+            $html[] = htmlspecialchars($title, ENT_QUOTES, "utf-8");
+            $html[] = '<button type="button" class="hasTooltip" title="'.htmlspecialchars(JText::_("COM_CROWDFUNDING_SELECT_OTHER_CATEGORY_TOOLTIP"), ENT_QUOTES, "utf-8").'">';
+            $html[] = '<i class="icon-info-sign"></i>';
+            $html[] = '</button>';
+        } else {
+            
+            $html[] = '<a href="'. JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($slug, $catSlug)) .'">';
+            $html[] = htmlspecialchars($title, ENT_QUOTES, "utf-8");
+            $html[] = '</a>';
+        }     
+       
+        return implode("\n", $html);
+    }
+    
+    public static function date($date, $format = "d F Y") {
         
-        if(!$componentParams->get("bootstrap_include", 1)) {
-            return;
+        if(CrowdFundingHelper::isValidDate($date)) {
+            $date = JHtml::_("date", $date, $format);
+        } else {
+            $date = "---";
         }
         
-        // Only load once
-        if (!empty(self::$loaded[__METHOD__])) {
-            return;
+        return $date;
+    }
+    
+    public static function postedby($name, $date, $link = null) {
+    
+        if(!empty($link)) {
+            $profile = '<a href="'.$link.'">'.htmlspecialchars($name, ENT_QUOTES, "utf-8").'</a>';
+        } else {
+            $profile = $name;
         }
-    
-        $document = JFactory::getDocument();
         
-        $document->addStylesheet(JURI::root().'media/com_crowdfunding/css/site/bootstrap.min.css');
-        $document->addScript(JURI::root().'media/com_crowdfunding/js/bootstrap.min.js');
-        
-        self::$loaded[__METHOD__] = true;
-    
-        return;
-    
-    }   
-    
+        $date = JHTML::_('date', $date, JText::_('DATE_FORMAT_LC3'));
+        $hmtl = JText::sprintf("COM_CROWDFUNDING_POSTED_BY", $profile, $date);
+         
+        return $hmtl;
+    }
 }

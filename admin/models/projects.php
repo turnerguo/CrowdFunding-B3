@@ -148,7 +148,7 @@ class CrowdFundingModelProjects extends JModelList {
         } else if ($state === '') {
             $query->where('(a.published IN (0, 1))');
         }
-
+        
         // Filter by approved state
         $state = $this->getState('filter.approved');
         if (is_numeric($state)) {
@@ -164,7 +164,7 @@ class CrowdFundingModelProjects extends JModelList {
         } else if ($state === '') {
             $query->where('(a.featured IN (0, 1))');
         }
-        
+
         // Filter by search in title
         $search = $this->getState('filter.search');
         if (!empty($search)) {
@@ -185,34 +185,34 @@ class CrowdFundingModelProjects extends JModelList {
     }
     
     protected function getOrderString() {
-    
-        $orderCol   = $this->getState('list.ordering', 'a.created');
+        
+        $orderCol   = $this->getState('list.ordering',  'a.created');
         $orderDirn  = $this->getState('list.direction', 'asc');
         if ($orderCol == 'a.ordering') {
             $orderCol = 'a.catid '.$orderDirn.', a.ordering';
         }
-    
+        
         return $orderCol.' '.$orderDirn;
     }
     
     /**
      * Count and return rewards number.
-     *
+     * 
      * @param array $projectsIds
      * @return array
      */
     public function getRewardsNumber(array $projectsIds) {
-    
+        
         if(!$projectsIds) {
             return array();
         }
-    
+        
         $db     = $this->getDbo();
         /** @var $db JDatabaseMySQLi **/
-    
+        
         // Create a new query object.
         $query  = $db->getQuery(true);
-    
+        
         $query
             ->select("a.project_id, COUNT(*) as number")
             ->from($db->quoteName("#__crowdf_rewards") . " AS a")
@@ -220,9 +220,9 @@ class CrowdFundingModelProjects extends JModelList {
             ->group("a.project_id");
         
         $db->setQuery($query);
-    
+
         $results = $db->loadObjectList("project_id");
-    
+        
         if(!$results) {
             $results=  array();
         }

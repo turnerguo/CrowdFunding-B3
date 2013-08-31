@@ -15,7 +15,7 @@
 defined('_JEXEC') or die;
 jimport('joomla.application.component.view');
 
-class CrowdFundingViewBacking extends JView {
+class CrowdFundingViewBacking extends JViewLegacy {
     
     protected $state;
     protected $item;
@@ -60,7 +60,7 @@ class CrowdFundingViewBacking extends JView {
         $this->rewardId          = $this->state->get($this->modelContext.".rid");
         
         // Images
-        $this->imageFolder       = $this->params->get("images_directory", "images/projects");
+        $this->imageFolder       = $this->params->get("images_directory", "images/crowdfunding");
         
         // Include HTML helper
         JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
@@ -83,6 +83,13 @@ class CrowdFundingViewBacking extends JView {
             
             case "payment":
                 $this->preparePayment();
+                
+                if(!$this->flagStep1) {
+                    $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_ENTER_AMOUNT_SELECT_REWARD"), "notice");
+                    $app->redirect(JRoute::_("index.php?option=com_crowdfunding&view=backing&id=".(int)$this->item->id, false));
+                    return;
+                }
+                
                 break;
                 
             case "share":
@@ -100,7 +107,7 @@ class CrowdFundingViewBacking extends JView {
 	        $this->disabledButton = 'disabled="disabled"';
 	    }
 	    
-	    $this->version        = new CrowdfundingVersion();
+	    $this->version = new CrowdfundingVersion();
 	    
         $this->prepareDebugMode();
 		$this->prepareDocument();
@@ -277,10 +284,10 @@ class CrowdFundingViewBacking extends JView {
         $pathway->addItem($currentBreadcrumb, '');
         
         // Styles
-        $this->document->addStyleSheet('media/'.$this->option.'/css/site/style.css');
+        $this->document->addStyleSheet( 'media/'.$this->option.'/css/site/style.css');
         
         // Scripts
-        JHtml::_("crowdfunding.bootstrap");
+        JHtml::_('bootstrap.framework');
         $this->document->addScript('media/'.$this->option.'/js/site/backing.js');
     }
     

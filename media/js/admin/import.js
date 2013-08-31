@@ -1,4 +1,4 @@
-window.addEvent('domready', function(){ 
+jQuery(document).ready(function() {
 	
 	// Validation script
     Joomla.submitbutton = function(task){
@@ -7,4 +7,6 @@ window.addEvent('domready', function(){
         }
     };
     
-})
+    jQuery('.fileupload').fileupload();
+    
+});

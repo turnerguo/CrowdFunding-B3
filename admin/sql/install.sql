@@ -8,6 +8,13 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_comments` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `#__crowdf_countries` (
+  `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(128) NOT NULL,
+  `code` char(2) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf32;
+
 CREATE TABLE IF NOT EXISTS `#__crowdf_currencies` (
   `id` smallint(6) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
@@ -24,9 +31,11 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_intentions` (
   `project_id` int(10) unsigned NOT NULL,
   `reward_id` int(10) unsigned NOT NULL,
   `record_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `txn_id` varchar(64) DEFAULT '' COMMENT 'It is a transaction ID provided by some Payment Gateways.',
+  `gateway` varchar(32) NOT NULL DEFAULT '' COMMENT 'It is the name of the Payment Service.',
   PRIMARY KEY (`id`),
   KEY `idx_cfints_usr_proj` (`user_id`,`project_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__crowdf_locations` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -34,6 +43,7 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_locations` (
   `latitude` varchar(64) NOT NULL,
   `longitude` varchar(64) NOT NULL,
   `country_code` char(2) NOT NULL,
+  `state_code` char(4) NOT NULL DEFAULT '',
   `timezone` varchar(40) NOT NULL,
   `published` tinyint(3) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
@@ -81,6 +91,7 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_rewards` (
   `distributed` smallint(5) unsigned NOT NULL DEFAULT '0',
   `delivery` date NOT NULL DEFAULT '0000-00-00' COMMENT 'Estimated delivery',
   `shipping` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `published` tinyint(3) NOT NULL DEFAULT '1',
   `project_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `project_id` (`project_id`)
@@ -91,8 +102,9 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_transactions` (
   `txn_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `txn_amount` decimal(11,2) unsigned NOT NULL DEFAULT '0.00',
   `txn_currency` varchar(64) NOT NULL DEFAULT '',
-  `txn_status` varchar(64) NOT NULL DEFAULT '',
+  `txn_status` enum('pending','completed','canceled','refunded') NOT NULL DEFAULT 'pending',
   `txn_id` varchar(128) DEFAULT NULL,
+  `extra_data` varchar(2048) DEFAULT NULL COMMENT 'Additional information about transaction.',
   `project_id` int(10) unsigned NOT NULL,
   `reward_id` int(10) unsigned NOT NULL DEFAULT '0',
   `investor_id` int(10) unsigned NOT NULL COMMENT 'The backer of the project.',
@@ -111,4 +123,3 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_updates` (
   `user_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
-

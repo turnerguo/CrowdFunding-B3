@@ -2,7 +2,7 @@
 
 span.help-block {
 	font-style: italic;
-	font-size: small;
+	font-size: x-small;
 }
 
 #crowdf-funding-form span.help-block{
@@ -56,10 +56,9 @@ span.help-block {
 	right: 20px;
 }
 
-
 .cf-center {
-    margin: 0 auto !important;
-    text-align: center !important;
+	margin: 0 auto !important;
+	text-align: center !important;
 }
 
 .cf-projects-list th {
@@ -354,7 +353,7 @@ form.bs-docs-example {
 }
 
 .cf-transactions th{
-	text-align: center;
+	text-align: center !important;
 }
 
 .cf-funder-row {
@@ -383,6 +382,7 @@ form.bs-docs-example {
 .cf-projects-list .button:hover{
 	color: white; 
 }
+
 .cf-manager {
 	border: thin solid #D1D1D1;
    margin-top: 10px;
@@ -399,3 +399,17 @@ form.bs-docs-example {
     padding: 10px;
     text-shadow: 0 1px 0 #FFFFFF;
 }
+
+
+.parsley-error-list li{
+	color: red;
+}
+
+.cf-rewards-submit-btn {
+	margin:15px 0 50px !important;
+}
+
+.cf-fm {
+	font-size: medium;
+}
+

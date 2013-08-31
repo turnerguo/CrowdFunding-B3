@@ -44,12 +44,14 @@ defined('_JEXEC') or die;?>
     	    if(!empty($item->funding_days)) {
     	        $duration = JText::sprintf("COM_CROWDFUNDING_DURATION_DAYS", (int)$item->funding_days);
     	    } else {
-    	        if(!CrowdFundingHelper::isValidDate($item->funding_end)){
+
+                if(!CrowdFundingHelper::isValidDate($item->funding_end)){ 
                     $duration = "--";
                 } else {
-                    $duration = JHtml::_('date', $item->funding_end, JText::_('DATE_FORMAT_LC3'));
-                    $duration = JText::sprintf("COM_CROWDFUNDING_DURATION_END_DATE", $duration);
-                }
+        	        $duration = JHtml::_('date', $item->funding_end, JText::_('DATE_FORMAT_LC3'));
+        	        $duration = JText::sprintf("COM_CROWDFUNDING_DURATION_END_DATE", $duration);
+    	        }
+    	        
     	    }
     	    
     	    // Starting Date
@@ -63,25 +65,23 @@ defined('_JEXEC') or die;?>
     	?>
     	<tr>
     		<td>
-    		    <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($item->slug, $item->catslug));?>">
-    		    <?php echo $this->escape($item->title);?>
-		        </a>
+    		  <?php echo JHtml::_("crowdfunding.projecttitle", $item->title, $item->catstate, $item->slug, $item->catslug);?>
     		</td>
     		<td class="cf-center hidden-phone"><?php echo $goal; ?></td>
-    		<td class="cf-center"><span class="hasTip cursor-help" title="<?php echo JText::sprintf("COM_CROWDFUNDING_PERCENTS_FUNDED", $fundedPercent);?>"><?php echo $funded; ?></span></td>
+    		<td class="cf-center"><span class="hasTooltip cursor-help" title="<?php echo JText::sprintf("COM_CROWDFUNDING_PERCENTS_FUNDED", $fundedPercent);?>"><?php echo $funded; ?></span></td>
     		<td class="cf-center hidden-phone"><?php echo $startingDate; ?></td>
     		<td class="cf-center hidden-phone"><?php echo $duration; ?></td>
     		<td class="cf-center">
-    		<?php echo JHtml::_("crowdfunding.state", $item->published, JRoute::_("index.php?option=com_crowdfunding&task=projects.savestate&id=".$item->id."&state=".$state."&".JSession::getFormToken()."=1"), true)?>
+    		    <?php echo JHtml::_("crowdfunding.state", $item->published, JRoute::_("index.php?option=com_crowdfunding&task=projects.savestate&id=".$item->id."&state=".$state."&".JSession::getFormToken()."=1"), true)?>
     		</td>
     		<td class="cf-center hidden-phone">
-    		<?php echo JHtml::_("crowdfunding.approved", $item->approved); ?>
+    		    <?php echo JHtml::_("crowdfunding.approved", $item->approved); ?>
     		</td>
     		<td class="hidden-phone">
-    			<a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getFormRoute($item->id)) ;?>" class="button">
-        			<i class="icon-edit icon-white"></i> 
-        			<?php echo JText::_("COM_CROWDFUNDING_EDIT");?>
-    			</a>
+    			<a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getFormRoute($item->id)) ;?>" class="btn btn-small">
+    			    <i class="icon-edit"></i> 
+    			    <?php echo JText::_("COM_CROWDFUNDING_EDIT");?>
+			    </a>
     		</td>
     	</tr>
     	<?php }?>
@@ -89,5 +89,4 @@ defined('_JEXEC') or die;?>
     
     </table>
 </div>
-<div class="clearfix">&nbsp;</div>
 <?php echo $this->version->backlink;?>

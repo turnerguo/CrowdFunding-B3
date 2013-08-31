@@ -27,8 +27,8 @@ defined('_JEXEC') or die;?>
     <?php echo JHtml::_('form.token'); ?>
     
     <div class="clearfix"></div>
-    <button type="submit" class="button"><?php echo JText::_("COM_CROWDFUNDING_SEND")?></button>
-    <button type="submit" class="button" id="cf-comments-reset"><?php echo JText::_("COM_CROWDFUNDING_RESET")?></button>
+    <button type="submit" class="btn btn-primary"><?php echo JText::_("COM_CROWDFUNDING_SEND")?></button>
+    <button type="submit" class="btn" id="cf-comments-reset"><?php echo JText::_("COM_CROWDFUNDING_RESET")?></button>
     
 </form>
 <div class="hr margin-tb-15px"></div>
@@ -42,26 +42,21 @@ defined('_JEXEC') or die;?>
             continue;
         }
         
-        $user = JFactory::getUser($item->user_id);
-        $socialProfile  = JHtml::_("crowdfunding.socialProfile", $this->socialPlatform, $user);
-        $socialAvatar   = JHtml::_("crowdfunding.socialAvatar", $this->avatars, $user, "media/com_crowdfunding/images/no-profile.png");
+        $socialProfile  = (!$this->socialProfiles) ? null : $this->socialProfiles->getLink($this->item->user_id);
+        $socialAvatar   = (!$this->socialProfilesAvatars) ? $this->defaultAvatar : $this->socialProfilesAvatars->getAvatar($this->item->user_id, $this->avatarsSize);
         
 ?>
     <div class="row-fluid cf-comment-item" id="comment<?php echo $item->id;?>">
         
         <div class="media">
             <a class="pull-left" href="<?php echo (!$socialProfile) ? "javascript: void(0);" : $socialProfile;?>">
-                <img class="media-object" src="<?php echo $socialAvatar;?>">
+                <img class="media-object" src="<?php echo $socialAvatar;?>" width="<?php echo $this->avatarsSize;?>" height="<?php echo $this->avatarsSize;?>">
             </a>
             
             <div class="media-body">
             	<div class="cf-info-bar"> 
             		<div class="pull-left">
-            		    <?php if(!$socialProfile) { ?>
-            		    <?php echo $item->author; ?>
-            		    <?php } else {?>
-            		    <a href="<?php echo $socialProfile;?>"><?php echo $item->author; ?></a>
-            		    <?php } ?> | <?php echo JHTML::_('date', $item->record_date,JText::_('DATE_FORMAT_LC3')); ?>
+            		    <?php echo JHtml::_("crowdfunding.postedby", $item->author, $item->record_date, $socialProfile)?>
             			<?php if(!$item->published AND ( $item->user_id == $this->userId) ) {?>
                     		<p class="message"><?php echo JText::_("COM_CROWDFUNDING_COMMENT_NOT_APPROVED");?></p>
                         <?php }?>

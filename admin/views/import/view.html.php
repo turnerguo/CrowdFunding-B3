@@ -16,7 +16,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
-class CrowdFundingViewImport extends JView {
+class CrowdFundingViewImport extends JViewLegacy {
     
     protected $state;
     protected $form;
@@ -39,12 +39,22 @@ class CrowdFundingViewImport extends JView {
         $this->state = $this->get('State');
         $this->form  = $this->get('Form');
         
-        $importType  = $this->state->get("import.context");
+        $this->importType  = $this->state->get("import.context");
         
-        switch($importType) {
+        switch($this->importType) {
             case "locations":
                 $this->legend = JText::_("COM_CROWDFUNDING_IMPORT_LOCATIONS_DATA");
                 $this->uploadTask = "import.locations";
+                break;
+                
+            case "countries":
+                $this->legend = JText::_("COM_CROWDFUNDING_IMPORT_COUNTRIES_DATA");
+                $this->uploadTask = "import.countries";
+                break;
+                
+            case "states":
+                $this->legend = JText::_("COM_CROWDFUNDING_IMPORT_STATES_DATA");
+                $this->uploadTask = "import.states";
                 break;
                 
             default: // Currencies
@@ -54,8 +64,11 @@ class CrowdFundingViewImport extends JView {
              
         }
         
+        // HTML Helpers
+        JHtml::addIncludePath(ITPRISM_PATH_LIBRARY.'/ui/helpers');
+        
         // Add submenu
-        CrowdFundingHelper::addSubmenu($importType);
+        CrowdFundingHelper::addSubmenu($this->importType);
         
         // Prepare actions
         $this->addToolbar();
@@ -73,13 +86,13 @@ class CrowdFundingViewImport extends JView {
     protected function addToolbar(){
         
         // Set toolbar items for the page
-        JToolBarHelper::title(JText::_('COM_CROWDFUNDING_IMPORT_MANAGER'), 'itp-import');
+        JToolbarHelper::title(JText::_('COM_CROWDFUNDING_IMPORT_MANAGER'));
         
         // Upload
-		JToolBarHelper::custom($this->uploadTask, "upload", "", JText::_("COM_CROWDFUNDING_UPLOAD"), false);
+		JToolbarHelper::custom($this->uploadTask, "upload", "", JText::_("COM_CROWDFUNDING_UPLOAD"), false);
 		
-        JToolBarHelper::divider();
-        JToolBarHelper::cancel('import.cancel', 'JTOOLBAR_CANCEL');
+        JToolbarHelper::divider();
+        JToolbarHelper::cancel('import.cancel', 'JTOOLBAR_CANCEL');
         
     }
     
@@ -89,12 +102,14 @@ class CrowdFundingViewImport extends JView {
 	 * @return void
 	 */
 	protected function setDocument() {
-	    
-		$this->document->setTitle(JText::_('COM_CROWDFUNDING_IMPORT_MANAGER'));
+		
+	    $this->document->setTitle(JText::_('COM_CROWDFUNDING_IMPORT_MANAGER'));
 		
 		// Scripts
-        JHtml::_('behavior.tooltip');
         JHtml::_('behavior.formvalidation');
+        
+        JHtml::_('bootstrap.tooltip');
+        JHtml::_('itprism.ui.bootstrap_fileupload');
         
 		$this->document->addScript('../media/'.$this->option.'/js/admin/'.JString::strtolower($this->getName()).'.js');
 	}

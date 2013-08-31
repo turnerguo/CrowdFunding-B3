@@ -29,8 +29,7 @@ $itemSpan = (!empty($this->numberInRow)) ? round(12/$this->numberInRow) : 4;
 		  // Prepare the value that I am going to display
 		  $fundedPercents = JHtml::_("crowdfunding.funded", $item->funded_percents);
 		
-		  $user = JFactory::getUser($item->user_id);
-		  $socialProfile  = JHtml::_("crowdfunding.socialProfile", $this->socialPlatform, $user);
+		  $socialProfile  = (!$this->socialProfiles) ? null : $this->socialProfiles->getLink($item->user_id);
 	 ?>
       <li class="span<?php echo $itemSpan;?>">
         <div class="thumbnail">
@@ -69,7 +68,7 @@ $itemSpan = (!empty($this->numberInRow)) ? round(12/$this->numberInRow) : 4;
           </div>
         </div>
       </li>
-    <?php }?>
+    <?php } ?>
     </ul>
     <?php }?>
     <div class="clearfix"></div>

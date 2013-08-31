@@ -16,11 +16,18 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
-class CrowdFundingViewUpdates extends JView {
+class CrowdFundingViewUpdates extends JViewLegacy {
     
     protected $state;
     protected $items;
     protected $pagination;
+    
+    protected $option;
+    
+    public function __construct($config) {
+        parent::__construct($config);
+        $this->option = JFactory::getApplication()->input->get("option");
+    }
     
     public function display($tpl = null){
         
@@ -28,19 +35,51 @@ class CrowdFundingViewUpdates extends JView {
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
         
+        // Add submenu
+        CrowdFundingHelper::addSubmenu($this->getName());
+        
+        // Prepare sorting data
+        $this->prepareSorting();
+        
+        // Prepare actions
+        $this->addToolbar();
+        $this->addSidebar();
+        $this->setDocument();
+        
+        parent::display($tpl);
+    }
+    
+    /**
+     * Prepare sortable fields, sort values and filters.
+     */
+    protected function prepareSorting() {
+    
         // Prepare filters
         $this->listOrder  = $this->escape($this->state->get('list.ordering'));
         $this->listDirn   = $this->escape($this->state->get('list.direction'));
         $this->saveOrder  = (strcmp($this->listOrder, 'a.ordering') != 0 ) ? false : true;
-        
-        // Add submenu
-        CrowdFundingHelper::addSubmenu($this->getName());
-        
-        // Prepare actions
-        $this->addToolbar();
-        $this->setDocument();
-        
-        parent::display($tpl);
+    
+        if ($this->saveOrder) {
+            $this->saveOrderingUrl = 'index.php?option='.$this->option.'&task='.$this->getName().'.saveOrderAjax&format=raw';
+            JHtml::_('sortablelist.sortable', $this->getName().'List', 'adminForm', strtolower($this->listDirn), $this->saveOrderingUrl);
+        }
+    
+        $this->sortFields = array(
+            'a.title'         => JText::_('COM_CROWDFUNDING_TITLE'),
+            'a.record_date'   => JText::_('JDATE'),
+            'b.title'         => JText::_('COM_CROWDFUNDING_PROJECT'),
+            'a.id'            => JText::_('JGRID_HEADING_ID')
+        );
+    
+    }
+    
+    /**
+     * Add a menu on the sidebar of page
+     */
+    protected function addSidebar() {
+    
+        $this->sidebar = JHtmlSidebar::render();
+    
     }
     
     /**
@@ -51,12 +90,12 @@ class CrowdFundingViewUpdates extends JView {
     protected function addToolbar(){
         
         // Set toolbar items for the page
-        JToolBarHelper::title(JText::_('COM_CROWDFUNDING_UPDATES_MANAGER'), 'itp-updates');
-        JToolBarHelper::editList('update.edit');
-        JToolBarHelper::divider();
-        JToolBarHelper::deleteList(JText::_("COM_CROWDFUNDING_DELETE_ITEMS_QUESTION"), "updates.delete");
-        JToolBarHelper::divider();
-        JToolBarHelper::custom('updates.backToDashboard', "itp-dashboard-back", "", JText::_("COM_CROWDFUNDING_DASHBOARD"), false);
+        JToolbarHelper::title(JText::_('COM_CROWDFUNDING_UPDATES_MANAGER'));
+        JToolbarHelper::editList('update.edit');
+        JToolbarHelper::divider();
+        JToolbarHelper::deleteList(JText::_("COM_CROWDFUNDING_DELETE_ITEMS_QUESTION"), "updates.delete");
+        JToolbarHelper::divider();
+        JToolbarHelper::custom('updates.backToDashboard', "dashboard", "", JText::_("COM_CROWDFUNDING_DASHBOARD"), false);
         
     }
     
@@ -65,10 +104,17 @@ class CrowdFundingViewUpdates extends JView {
 	 * @return void
 	 */
 	protected function setDocument() {
-		$this->document->setTitle(JText::_('COM_CROWDFUNDING_UPDATES_MANAGER'));
+	    
+        $this->document->setTitle(JText::_('COM_CROWDFUNDING_UPDATES_MANAGER'));
 		
 		// Scripts
-		JHtml::_('behavior.tooltip');
+		JHtml::_('behavior.multiselect');
+		JHtml::_('bootstrap.tooltip');
+		
+		JHtml::_('formbehavior.chosen', 'select');
+		
+		$this->document->addScript('../media/'.$this->option.'/js/admin/list.js');
+		
 	}
     
 }

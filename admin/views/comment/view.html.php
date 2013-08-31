@@ -16,7 +16,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
-class CrowdFundingViewComment extends JView {
+class CrowdFundingViewComment extends JViewLegacy {
     
     protected $state;
     protected $item;
@@ -59,19 +59,15 @@ class CrowdFundingViewComment extends JView {
         $this->documentTitle = $isNew ? JText::_('COM_CROWDFUNDING_NEW_COMMENT')
 		                              : JText::_('COM_CROWDFUNDING_EDIT_COMMENT');
         
-		if(!$isNew) {
-		    JToolBarHelper::title($this->documentTitle, 'itp-edit-comment');
-		} else {
-            JToolBarHelper::title($this->documentTitle, 'itp-new-comment');
-		}
+		JToolbarHelper::title($this->documentTitle);
 		                             
-        JToolBarHelper::apply('comment.apply');
-        JToolBarHelper::save('comment.save');
+        JToolbarHelper::apply('comment.apply');
+        JToolbarHelper::save('comment.save');
     
         if(!$isNew){
-            JToolBarHelper::cancel('comment.cancel', 'JTOOLBAR_CANCEL');
+            JToolbarHelper::cancel('comment.cancel', 'JTOOLBAR_CANCEL');
         }else{
-            JToolBarHelper::cancel('comment.cancel', 'JTOOLBAR_CLOSE');
+            JToolbarHelper::cancel('comment.cancel', 'JTOOLBAR_CLOSE');
         }
         
     }
@@ -86,10 +82,12 @@ class CrowdFundingViewComment extends JView {
 	    $this->document->setTitle($this->documentTitle);
 	    
 	    // Scripts
-	    JHtml::_('behavior.formvalidation');
+        JHtml::_('behavior.formvalidation');
         JHtml::_('behavior.tooltip');
-		
-		$this->document->addScript('../media/'.$this->option.'/js/admin/'.strtolower($this->getName()).'.js');
+        
+        JHtml::_('formbehavior.chosen', 'select');
+        
+		$this->document->addScript('../media/'.$this->option.'/js/admin/'.JString::strtolower($this->getName()).'.js');
         
 	}
 

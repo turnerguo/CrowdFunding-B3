@@ -87,7 +87,7 @@ class CrowdFundingControllerStory extends ITPrismControllerFormFrontend {
             $this->displayNotice($form->getErrors(), $redirectData);
             return;
         }
-       
+        
         try {
             
             // Get image
@@ -141,14 +141,14 @@ class CrowdFundingControllerStory extends ITPrismControllerFormFrontend {
         // Validate pitch image and video URL
         $item    = $model->getItem($itemId, $userId);
         if(!$item->pitch_image AND !$item->pitch_video) {
-        
+            
             // Redirect to next page
             $redirectData = array(
-                    "view"   => "project",
-                    "layout" => "story",
-                    "id"     => $itemId
+                "view"   => "project",
+                "layout" => "story",
+                "id"     => $itemId
             );
-        
+            
             $this->displayNotice(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PITCH_IMAGE_OR_VIDEO"), $redirectData);
             return;
         }

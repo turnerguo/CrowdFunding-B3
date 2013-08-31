@@ -16,7 +16,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.model');
 
-class CrowdFundingModelBacking extends JModel {
+class CrowdFundingModelBacking extends JModelLegacy {
     
     protected $item;
     
@@ -79,7 +79,7 @@ class CrowdFundingModelBacking extends JModel {
      * Method to get an ojbect.
      *
      * @param	integer	The id of the object to get.
-     *
+     * 
      * @return	mixed	Object on success, false on failure.
      */
     public function getItem($id = null) {
@@ -118,12 +118,13 @@ class CrowdFundingModelBacking extends JModel {
                 
                 // Calculate eding date by days left
                 if(!empty($result->funding_days)) {
-                    $result->funding_end = CrowdFundingHelper::calcualteEndDate($result->funding_days, $result->funding_start);
+                    $result->funding_end     = CrowdFundingHelper::calcualteEndDate($result->funding_days, $result->funding_start);
                 }
                 
                 $result->funded_percents = CrowdFundingHelper::calculatePercent($result->funded, $result->goal);
                 $result->days_left       = CrowdFundingHelper::calcualteDaysLeft($result->funding_days, $result->funding_start, $result->funding_end);
                 $this->item              = $result;
+                
             } 
         }
         

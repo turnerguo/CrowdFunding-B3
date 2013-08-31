@@ -49,7 +49,7 @@ defined('_JEXEC') or die;?>
             </form>
 			
 			<div class="cfrewards">
-			<div class="reward_title pull-center"><?php echo JText::_("COM_CROWDFUNDING_REWARDS");?></div>
+			    <div class="reward_title pull-center"><?php echo JText::_("COM_CROWDFUNDING_REWARDS");?></div>
 			
             	<div class="reward">
             		<a href="javascript: void(0);" class="reward-amount" >
@@ -76,6 +76,7 @@ defined('_JEXEC') or die;?>
             	<?php }?>
             </div>
     	</div>
+    	
 	</div>
 </div>
 <div class="clearfix">&nbsp;</div>

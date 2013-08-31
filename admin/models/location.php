@@ -87,6 +87,7 @@ class CrowdFundingModelLocation extends JModelAdmin {
         $longitude    = JArrayHelper::getValue($data, "longitude");
         $countryCode  = JArrayHelper::getValue($data, "country_code");
         $timezone     = JArrayHelper::getValue($data, "timezone");
+        $stateCode    = JArrayHelper::getValue($data, "state_code");
         $published    = JArrayHelper::getValue($data, "published");
         
         // Load a record from the database
@@ -98,6 +99,7 @@ class CrowdFundingModelLocation extends JModelAdmin {
         $row->set("longitude",    $longitude);
         $row->set("country_code", $countryCode);
         $row->set("timezone",     $timezone);
+        $row->set("state_code",   $stateCode);
         $row->set("published",    $published);
         
         $row->store();

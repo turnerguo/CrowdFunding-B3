@@ -16,7 +16,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
-class CrowdFundingViewProjects extends JView {
+class CrowdFundingViewProjects extends JViewLegacy {
     
 	protected $state;
 	protected $items;
@@ -41,9 +41,9 @@ class CrowdFundingViewProjects extends JView {
     		$this->currency    = CrowdFundingHelper::getCurrency($currencyId);
 		}
 
-		$this->version    = new CrowdfundingVersion();
-		
 		JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
+		
+		$this->version = new CrowdfundingVersion();
 		
         $this->prepareDocument();
                 
@@ -82,10 +82,9 @@ class CrowdFundingViewProjects extends JView {
 		
         // Styles
         $this->document->addStyleSheet('media/'.$this->option.'/css/site/style.css');
-        
+
         // Scripts
-        JHtml::_('behavior.tooltip');
-        JHtml::_("crowdfunding.bootstrap");
+        JHtml::_('bootstrap.tooltip');
     }
     
     private function prepearePageHeading() {

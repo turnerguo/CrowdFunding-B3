@@ -178,8 +178,7 @@ class CrowdFundingModelFunding extends CrowdFundingModelProject {
 	        
 	    } else { // Validate funding type "date"
 	        
-	        $fundingDate    = JArrayHelper::getValue($data, "funding_end");
-	    
+            $fundingDate    = JArrayHelper::getValue($data, "funding_end");
             if(!CrowdFundingHelper::isValidDate($fundingDate)) {
                 throw new Exception( JText::_('COM_CROWDFUNDING_ERROR_INVALID_DATE'), ITPrismErrors::CODE_WARNING );
             }

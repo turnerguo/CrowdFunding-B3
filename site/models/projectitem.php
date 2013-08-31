@@ -113,7 +113,7 @@ class CrowdFundingModelProjectItem extends JModelItem {
         JPluginHelper::importPlugin('content');
          
         // Trigger the onContentChangeState event.
-        $dispatcher = JDispatcher::getInstance();
+        $dispatcher = JEventDispatcher::getInstance();
         $results    = $dispatcher->trigger("onContentChangeState", array($context, $pks, $state));
         
         if (in_array(false, $results, true)) {
@@ -186,9 +186,10 @@ class CrowdFundingModelProjectItem extends JModelItem {
             throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_DESCRIPTION"), ITPrismErrors::CODE_WARNING);
         }
         
-        if(!$this->countRewards($item->id)) {
+        // Validate rewards. If there is now rewards, throw exception.
+        /* if(!$this->countRewards($item->id)) {
             throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_REWARDS"), ITPrismErrors::CODE_WARNING);
-        }
+        } */
     }
     
     /**

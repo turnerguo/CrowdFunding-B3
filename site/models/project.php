@@ -123,7 +123,7 @@ class CrowdFundingModelProject extends JModelForm {
 	    if($this->item) {
 	        return $this->item;
 	    }
-	    
+
 		// Initialise variables.
 		$table = $this->getTable();
 
@@ -197,7 +197,7 @@ class CrowdFundingModelProject extends JModelForm {
         $context = $this->option.'.'.$this->name;
         
         // Include the content plugins for the change of state event.
-        $dispatcher = JDispatcher::getInstance();
+        $dispatcher = JEventDispatcher::getInstance();
         JPluginHelper::importPlugin('content');
          
         // Trigger the onContentAfterSave event.
@@ -258,7 +258,7 @@ class CrowdFundingModelProject extends JModelForm {
             if(!empty($table->image)){
                 
                 $params       = JComponentHelper::getParams($this->option);
-		        $imagesFolder = $params->get("images_directory", "images/projects");
+		        $imagesFolder = $params->get("images_directory", "images/crowdfunding");
 		    
                 // Remove an image from the filesystem
                 $fileImage  = $imagesFolder .DIRECTORY_SEPARATOR. $table->image;
@@ -313,7 +313,7 @@ class CrowdFundingModelProject extends JModelForm {
         
         // Load parameters.
         $params        = JComponentHelper::getParams($this->option);
-        $destFolder    = $params->get("images_directory", "images/projects");
+        $destFolder    = $params->get("images_directory", "images/crowdfunding");
         
         $tmpFolder       = $app->getCfg("tmp_path");
         
@@ -421,7 +421,7 @@ class CrowdFundingModelProject extends JModelForm {
             jimport('joomla.filesystem.file');
             
             $params       = JComponentHelper::getParams($this->option);
-		    $imagesFolder = $params->get("images_directory", "images/projects");
+		    $imagesFolder = $params->get("images_directory", "images/crowdfunding");
 		    
             // Remove an image from the filesystem
             $fileImage  = $imagesFolder.DIRECTORY_SEPARATOR.$row->image;
@@ -463,10 +463,18 @@ class CrowdFundingModelProject extends JModelForm {
 		
 		$search = $db->quote($db->escape($string, true).'%');
 		
+		$caseWhen  = ' CASE WHEN ';
+		$caseWhen .= $query->charLength('a.state_code', '!=', '0');
+		$caseWhen .= ' THEN ';
+		$caseWhen .= $query->concatenate(array('a.name', 'a.state_code', 'a.country_code'), ', ');
+		$caseWhen .= ' ELSE ';
+		$caseWhen .= $query->concatenate(array('a.name', 'a.country_code'), ', ');
+		$caseWhen .= ' END as name';
+		
 		$query
-		    ->select("id, CONCAT(name,', ',country_code) AS name")
-		    ->from("#__crowdf_locations")
-		    ->where($db->quoteName("name")." LIKE " . $search);
+		    ->select("a.id, ". $caseWhen)
+		    ->from($db->quoteName("#__crowdf_locations") . " AS a")
+		    ->where($db->quoteName("a.name")." LIKE " . $search);
 		
 	    $db->setQuery($query, 0, 8);
 		$results = $db->loadAssocList();
@@ -511,20 +519,20 @@ class CrowdFundingModelProject extends JModelForm {
     }
     
     public function isOwner($itemId, $userId) {
-    
+        
         $db     = JFactory::getDbo();
         $query  = $db->getQuery(true);
-    
+        
         $query
-        ->select("COUNT(*)")
-        ->from($db->quoteName("#__crowdf_projects") . " AS a")
-        ->where("a.id = " . (int)$itemId)
-        ->where("a.user_id = " . (int)$userId);
-    
+            ->select("COUNT(*)")
+            ->from($db->quoteName("#__crowdf_projects") . " AS a")
+            ->where("a.id = " . (int)$itemId)
+            ->where("a.user_id = " . (int)$userId);
+        
         $db->setQuery($query, 0, 1);
         $result = $db->loadResult();
-    
+        
         return (bool)$result;
-    
+        
     }
 }

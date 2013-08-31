@@ -59,11 +59,11 @@ class CrowdFundingProject extends CrowdFundingTableProject {
         $this->fundedPercents = CrowdFundingHelper::calculatePercent($this->funded, $this->goal);
     }
     
-    public function getRewards() {
+    public function getRewards($options = array()) {
         
         if(is_null($this->rewards)) {
             jimport("crowdfunding.rewards");
-            $this->rewards = CrowdFundingRewards::getInstance($this->id);
+            $this->rewards = CrowdFundingRewards::getInstance($this->id, $options);
         }
         
         return $this->rewards;

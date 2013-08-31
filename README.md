@@ -1,12 +1,32 @@
 CrowdFunding for Joomla! 
 ==========================
-( Version 1.2.1 )
+( Version 1.3 )
 - - -
 
 CrowdFunding is a platform that provides functionality for creating collective funding websites, powered by Joomla!
 
 Changelog
 -----------
+
+###v1.3
+
+* Integrated with JomSocial and Kunena.
+* Improved integration.
+    * Added option for avatar size.
+    * Added option for default avatar picture.
+* Added countries and states
+* Improved import and export functionality.
+* Fixed loading locations lag.
+* Now, rewards are optional. You are able to publish project without rewards.
+* Improved usability of the wizard used for project creating.
+* Fixed [issue #29] (https://github.com/ITPrism/CrowdFunding/issues/29). Now, rewards are set as trashed, it they are part of transaction.
+* Removed some plugins from the package. The plugins are "Search - CrowdFunding", "Content - CrowdFunding - Manager" and "CrowdFunding Info". 
+* Developed some modules - "CrowdFunding Search", "CrowdFunding Latest", "CrowdFunding Popular". 
+* Developed some payment plugins
+    * Bank Transfer
+    * Mollie iDEAL
+
+NOTE: All new extensions and the removed from the package are available for downloading on [CrowdFunding extension page] (http://itprism.com/free-joomla-extensions/ecommerce-gamification/crowdfunding-collective-raising-capital).
 
 ###v1.2.1
 

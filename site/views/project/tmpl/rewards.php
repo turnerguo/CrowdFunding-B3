@@ -47,12 +47,45 @@ defined('_JEXEC') or die;
         <button class="btn btn-large btn-block" type="button" id="cf_add_new_reward"><?php echo JText::_("COM_CROWDFUNDING_REWARDS_ADD_REWARD");?></button>
         <?php }?>
         
-        <button type="submit" class="button button-large margin-tb-15px" <?php echo $this->disabledButton;?>>
-        	<i class="icon-ok icon-white"></i>
-            <?php echo JText::_("JSAVE")?>
-        </button>
+        <div class="btn-group cf-rewards-submit-btn">
+            <button class="btn" <?php echo $this->disabledButton;?>>
+                <i class="icon-ok"></i>
+                <?php echo JText::_("COM_CROWDFUNDING_SAVE_REWARDS");?>
+            </button>
+            <?php if(empty($this->item->published)) {?>
+            <button class="btn dropdown-toggle" data-toggle="dropdown" <?php echo $this->disabledButton;?>>
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=projects.savestate&id=".$this->item->id."&state=1&".JSession::getFormToken()."=1&return=1"); ?>" id="js-btn-rewards-publish">
+                        <i class="icon-ok-circle"></i>
+                        <?php echo JText::_("COM_CROWDFUNDING_PUBLISH_NOW");?>
+                    </a>
+                </li>
+            </ul>
+            <?php }?>
+        </div>
+        
     </form>
 </div>
 <?php echo $this->loadTemplate("tmpl");?>
-<div class="clearfix">&nbsp;</div>
+
 <?php echo $this->version->backlink;?>
+
+<?php if(empty($this->item->published)) {?>
+<div class="modal hide fade" id="js-modal-publish-project">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3><?php echo JText::_("COM_CROWDFUNDING_PUBLISHING_PROJECT");?></h3>
+    </div>
+    <div class="modal-body">
+        <p class="cf-fm"><?php echo JText::_("COM_CROWDFUNDING_QUESTION_PUBLISH_PROJECT");?></p>
+        <p><?php echo JText::_("COM_CROWDFUNDING_NOTE_PUBLISHING_PROJECT");?></p>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="btn btn-primary" id="js-modal-btn-pp-yes"><?php echo JText::_("JYES");?></a>
+        <a href="#" class="btn" id="js-modal-btn-pp-no"><?php echo JText::_("JNO");?></a>
+    </div>
+</div>
+<?php }?>

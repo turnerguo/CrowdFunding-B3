@@ -114,11 +114,12 @@ class CrowdFundingModelProjects extends JModelList {
             	'a.funding_end, a.funding_days, a.funding_start, '.
                 $query->concatenate(array("a.id", "a.alias"), "-") . ' AS slug, ' .
             	'a.published, a.approved, ' .
+                'b.published AS catstate, ' .
             	$query->concatenate(array("b.id", "b.alias"), "-") . " AS catslug"
             )
         );
         $query->from('`#__crowdf_projects` AS a');
-        $query->innerJoin($db->quoteName('#__categories').' AS b ON a.catid = b.id');
+        $query->leftJoin($db->quoteName('#__categories').' AS b ON a.catid = b.id');
 
         // Filter by state
         $state = $this->getState('filter.state');
@@ -127,7 +128,7 @@ class CrowdFundingModelProjects extends JModelList {
         } else if ($state === '') {
             $query->where('(a.published IN (0, 1))');
         }
-
+        
         $userId = $this->getState('filter.user_id');
         $query->where('a.user_id='.(int)$userId);
         

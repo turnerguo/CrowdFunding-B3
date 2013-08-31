@@ -64,7 +64,7 @@ class CrowdFundingControllerCurrency extends ITPrismControllerFormBackend {
             
         try {
             $itemId = $model->save($validData);
-        } catch (Exception $e) {
+        } catch(Exception $e) {
             JLog::add($e->getMessage());
             throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }

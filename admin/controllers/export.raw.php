@@ -22,7 +22,7 @@ jimport( 'joomla.application.component.controller' );
  * @package      CrowdFunding
  * @subpackage   Components
  */
-class CrowdFundingControllerExport extends JController {
+class CrowdFundingControllerExport extends JControllerLegacy {
     
     /**
      * Proxy for getModel.
@@ -52,6 +52,11 @@ class CrowdFundingControllerExport extends JController {
                 case "currencies": 
                     $output      = $model->getCurrencies();
                     $fileName    = "currencies.xml";
+                    break;
+                    
+                case "countries":
+                    $output      = $model->getCountries();
+                    $fileName    = "countries.xml";
                     break;
                     
                 default: // Error

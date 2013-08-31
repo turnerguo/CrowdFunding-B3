@@ -17,7 +17,7 @@ defined('_JEXEC') or die;
 jimport('joomla.application.categories');
 jimport('joomla.application.component.view');
 
-class CrowdFundingViewProject extends JView {
+class CrowdFundingViewProject extends JViewLegacy {
     
     protected $form       = null;
     protected $state      = null;
@@ -45,7 +45,6 @@ class CrowdFundingViewProject extends JView {
         }
         
         // HTML Helpers
-        JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
         JHtml::addIncludePath(ITPRISM_PATH_LIBRARY.'/ui/helpers');
         
         $this->layout = $this->getLayout();
@@ -73,7 +72,7 @@ class CrowdFundingViewProject extends JView {
                 break;
         }
         
-        $this->version    = new CrowdfundingVersion();
+        $this->version = new CrowdfundingVersion();
         
         $this->prepareDebugMode();
         $this->prepareDocument();
@@ -114,7 +113,7 @@ class CrowdFundingViewProject extends JView {
         $app = JFactory::getApplication();
         /** @var $app JSite **/
         
-        $model             = JModel::getInstance("Intro", "CrowdFundingModel", $config = array('ignore_request' => false));
+        $model             = JModelLegacy::getInstance("Intro", "CrowdFundingModel", $config = array('ignore_request' => false));
         $this->state       = $model->getState();
         $this->params      = $this->state->get("params");
         
@@ -127,7 +126,7 @@ class CrowdFundingViewProject extends JView {
     
     protected function prepareBasic() {
         
-        $model             = JModel::getInstance("Project", "CrowdFundingModel", $config = array('ignore_request' => false));
+        $model             = JModelLegacy::getInstance("Project", "CrowdFundingModel", $config = array('ignore_request' => false));
         
         $this->state       = $model->getState();
         $this->params      = $this->state->get("params");
@@ -144,7 +143,7 @@ class CrowdFundingViewProject extends JView {
         
         $this->form        = $model->getForm();
             
-        $this->imageFolder = $this->params->get("images_directory", "images/projects");
+        $this->imageFolder = $this->params->get("images_directory", "images/crowdfunding");
         $this->imageSmall  = $this->item->get("image_small");
         
         $this->pathwayName = JText::_("COM_CROWDFUNDING_STEP_BASIC");
@@ -153,7 +152,7 @@ class CrowdFundingViewProject extends JView {
     
     protected function prepareFunding() {
         
-        $model             = JModel::getInstance("Funding", "CrowdFundingModel", $config = array('ignore_request' => false));
+        $model             = JModelLegacy::getInstance("Funding", "CrowdFundingModel", $config = array('ignore_request' => false));
         
         // Initialise variables
         $this->state       = $model->getState();
@@ -185,24 +184,24 @@ class CrowdFundingViewProject extends JView {
     } 
     
     private function prepareFundingDurationType() {
-    
+        
         $this->fundingDuration     = $this->params->get("project_funding_duration");
-    
+        
         switch($this->fundingDuration) {
-    
+        
             case "days":
                 $this->checkedDays = 'checked="checked"';
                 break;
-    
+        
             case "date":
                 $this->checkedDate = 'checked="checked"';
                 break;
-    
+        
             default:
-    
+        
                 $this->checkedDays = 0;
                 $this->checkedDate = "";
-    
+                
                 if(!empty($this->item->funding_days)) {
                     $this->checkedDays = 'checked="checked"';
                     $this->checkedDate = '';
@@ -210,19 +209,19 @@ class CrowdFundingViewProject extends JView {
                     $this->checkedDays = '';
                     $this->checkedDate = 'checked="checked"';
                 }
-    
+        
                 // If missing both, select days
                 if(!$this->checkedDays AND !$this->checkedDate) {
                     $this->checkedDays = 'checked="checked"';
                 }
                 break;
-    
+        
         }
     }
     
     protected function prepareStory() {
         
-        $model             = JModel::getInstance("Story", "CrowdFundingModel", $config = array('ignore_request' => false));
+        $model             = JModelLegacy::getInstance("Story", "CrowdFundingModel", $config = array('ignore_request' => false));
         
         // Initialise variables
         $this->state       = $model->getState();
@@ -234,7 +233,7 @@ class CrowdFundingViewProject extends JView {
         $this->form        = $model->getForm();
         $this->params      = $this->state->get("params");
             
-        $this->imageFolder = $this->params->get("images_directory", "images/projects");
+        $this->imageFolder = $this->params->get("images_directory", "images/crowdfunding");
         $this->pitchImage  = $this->item->get("pitch_image");
         
         $this->pWidth      = $this->params->get("pitch_image_width", 600);
@@ -246,7 +245,7 @@ class CrowdFundingViewProject extends JView {
     
     protected function prepareRewards() {
         
-        $model             = JModel::getInstance("Rewards", "CrowdFundingModel", $config = array('ignore_request' => false));
+        $model             = JModelLegacy::getInstance("Rewards", "CrowdFundingModel", $config = array('ignore_request' => false));
         
         // Initialise variables
         $this->state       = $model->getState();
@@ -317,18 +316,20 @@ class CrowdFundingViewProject extends JView {
         $this->document->addStyleSheet('media/'.$this->option.'/css/site/style.css');
         
         // Scripts
-        JHtml::_('behavior.keepalive');
-        JHtml::_('behavior.tooltip');
-        JHtml::_('behavior.formvalidation');
+        JHtml::_('bootstrap.framework');
+        JHtml::_('bootstrap.tooltip');
+        JHtml::_('formbehavior.chosen', 'select');
         
-        JHtml::_("crowdfunding.bootstrap");
+        JHtml::_('behavior.keepalive');
+        JHtml::_('behavior.formvalidation');
         
         switch($this->layout) {
             
             case "rewards":
                 
                 // Scripts
-		        JHtml::_('itprism.ui.pnotify');
+                JHtml::_('bootstrap.loadCSS');
+                JHtml::_('itprism.ui.pnotify');
 		        $this->document->addScript('media/'.$this->option.'/js/helper.js');
 		        $this->document->addScript('media/'.$this->option.'/js/site/project_rewards.js');
 		        
@@ -351,7 +352,12 @@ class CrowdFundingViewProject extends JView {
                 // Scripts
                 JHtml::_('itprism.ui.bootstrap_fileupload');
                 JHtml::_('itprism.ui.bootstrap_maxlength');
+                JHtml::_('itprism.ui.bootstrap_typeahead');
+                JHtml::_('itprism.ui.parsley');
 		        $this->document->addScript('media/'.$this->option.'/js/site/project_basic.js');
+		        
+		        // Load language string in JavaScript
+		        JText::script('COM_CROWDFUNDING_THIS_VALUE_IS_REQUIRED');
                 break;
         }
 		

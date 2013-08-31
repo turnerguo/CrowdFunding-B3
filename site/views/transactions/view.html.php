@@ -16,7 +16,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
-class CrowdFundingViewTransactions extends JView {
+class CrowdFundingViewTransactions extends JViewLegacy {
     
 	protected $state;
 	protected $items;
@@ -55,7 +55,7 @@ class CrowdFundingViewTransactions extends JView {
 		JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
 		JLoader::register('JHtmlString', JPATH_LIBRARIES.'/joomla/html/html/string.php');
 		
-		$this->version        = new CrowdfundingVersion();
+		$this->version = new CrowdfundingVersion();
 		
         $this->prepareDocument();
                 
@@ -96,8 +96,7 @@ class CrowdFundingViewTransactions extends JView {
         $this->document->addStyleSheet('media/'.$this->option.'/css/site/style.css');
         
         // Scripts
-        JHtml::_('behavior.tooltip');
-        JHtml::_("crowdfunding.bootstrap");
+        JHtml::_('bootstrap.tooltip');
     }
     
     private function prepearePageHeading() {

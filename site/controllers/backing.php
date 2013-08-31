@@ -22,7 +22,7 @@ jimport('joomla.application.component.controller');
  * @package     ITPrism Components
  * @subpackage  CrowdFunding
   */
-class CrowdFundingControllerBacking extends JController {
+class CrowdFundingControllerBacking extends JControllerLegacy {
     
 	/**
      * Method to get a model object, loading it if required.
@@ -117,8 +117,8 @@ class CrowdFundingControllerBacking extends JController {
         
         // Store intention
         $intentionKeys = array(
-                "user_id"    => $userId,
-                "project_id" => $item->id
+            "user_id"    => $userId,
+            "project_id" => $item->id
         );
         
         jimport("crowdfunding.intention");
@@ -127,10 +127,10 @@ class CrowdFundingControllerBacking extends JController {
         $date   = new JDate();
         
         $custom = array(
-                "project_id" =>  $item->id,
-                "reward_id"  =>  $rewardId,
-                "user_id"    =>  $userId,
-                "record_date" => $date->toSql()
+            "project_id" =>  $item->id,
+            "reward_id"  =>  $rewardId,
+            "user_id"    =>  $userId,
+            "record_date" => $date->toSql()
         );
         
         $intention->bind($custom);

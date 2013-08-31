@@ -58,7 +58,7 @@ function CrowdFundingBuildRoute(&$query){
 			unset($query['view']);
 		}
 	};
-    
+	
     // are we dealing with a category that is attached to a menu item?
 	if (isset($view) AND ($mView == $view) AND (isset($query['id'])) AND ($mId == intval($query['id']))) {
 		unset($query['view']);
@@ -84,15 +84,6 @@ function CrowdFundingBuildRoute(&$query){
 	            unset($query['catid']);
     	        
     	        $segments[] = "backing";
-    	        
-    	        /* if(isset($query["rid"])) {
-    	            
-    	            if( !empty($query["rid"]) ) {
-                        $segments[] = $query["rid"];
-    	            }
-    	            
-    	            unset($query["rid"]);
-    	        } */
     	        
     	        break;
     	        
@@ -151,7 +142,7 @@ function CrowdFundingBuildRoute(&$query){
 	    $segments[] = $query["screen"];
 	    unset($query['screen']);
 	}
-    
+	
     return $segments;
 }
 
@@ -244,7 +235,7 @@ function CrowdFundingParseRoute($segments){
 	            
             case "embed": // Backing without reward
 	            
-	            $itemId         = (int)$segments[$count - 2];
+                $itemId         = (int)$segments[$count - 2];
                 
                 // Get catid from menu item
                 if(!empty($item->query["id"])) {
@@ -252,7 +243,7 @@ function CrowdFundingParseRoute($segments){
                 } else {
                     $catId    = (int)$segments[$count - 3];
                 }
-	            
+                
         	    $vars['view']   = 'embed';
         		$vars['id']     = (int)$itemId;
         		$vars['catid']  = (int)$catId;

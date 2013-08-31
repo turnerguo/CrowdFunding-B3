@@ -22,6 +22,7 @@ abstract class CrowdFundingHelper {
 	
     static $currency   = null;
     static $currencies = null;
+    static $countries  = null;
     static $extension  = "com_crowdfunding";
       
     static $statistics    = array();
@@ -34,55 +35,61 @@ abstract class CrowdFundingHelper {
 	 */
 	public static function addSubmenu($vName = 'dashboard') {
 	    
-	    JSubMenuHelper::addEntry(
+	    JHtmlSidebar::addEntry(
 			JText::_('COM_CROWDFUNDING_DASHBOARD'),
 			'index.php?option='.self::$extension.'&view=dashboard',
 			$vName == 'dashboard'
 		);
 		
-		JSubMenuHelper::addEntry(
+		JHtmlSidebar::addEntry(
 			JText::_('COM_CROWDFUNDING_CATEGORIES'),
 			'index.php?option=com_categories&extension='.self::$extension.'',
 			$vName == 'categories'
 		);
 		
-		JSubMenuHelper::addEntry(
+		JHtmlSidebar::addEntry(
 			JText::_('COM_CROWDFUNDING_PROJECTS'),
 			'index.php?option='.self::$extension.'&view=projects',
 			$vName == 'projects'
 		);
 		
-		JSubMenuHelper::addEntry(
+		JHtmlSidebar::addEntry(
 			JText::_('COM_CROWDFUNDING_TRANSACTIONS'),
 			'index.php?option='.self::$extension.'&view=transactions',
 			$vName == 'transactions'
 		);
 		
-		JSubMenuHelper::addEntry(
+		JHtmlSidebar::addEntry(
 			JText::_('COM_CROWDFUNDING_LOCATIONS'),
 			'index.php?option='.self::$extension.'&view=locations',
 			$vName == 'locations'
 		);
 		
-		JSubMenuHelper::addEntry(
+		JHtmlSidebar::addEntry(
+    		JText::_('COM_CROWDFUNDING_COUNTRIES'),
+    		'index.php?option='.self::$extension.'&view=countries',
+    		$vName == 'countries'
+        );
+		
+		JHtmlSidebar::addEntry(
 			JText::_('COM_CROWDFUNDING_CURRENCIES'),
 			'index.php?option='.self::$extension.'&view=currencies',
 			$vName == 'currencies'
 		);
 		
-		JSubMenuHelper::addEntry(
+		JHtmlSidebar::addEntry(
 			JText::_('COM_CROWDFUNDING_UPDATES'),
 			'index.php?option='.self::$extension.'&view=updates',
 			$vName == 'updates'
 		);
 		
-		JSubMenuHelper::addEntry(
+		JHtmlSidebar::addEntry(
 			JText::_('COM_CROWDFUNDING_COMMENTS'),
 			'index.php?option='.self::$extension.'&view=comments',
 			$vName == 'comments'
 		);
 		
-		JSubMenuHelper::addEntry(
+		JHtmlSidebar::addEntry(
     		JText::_('COM_CROWDFUNDING_PLUGINS'),
     		'index.php?option=com_plugins&view=plugins&filter_search='.rawurlencode("crowdfunding"),
     		$vName == 'plugins'
@@ -122,6 +129,25 @@ abstract class CrowdFundingHelper {
         
         return self::$currency;
         
+    }
+    
+    public static function getCountries() {
+    
+        if(is_null(self::$countries)) {
+    
+            $db     = JFactory::getDbo();
+            $query  = $db->getQuery(true);
+    
+            $query
+                ->select("a.id, a.name, a.code")
+                ->from($db->quoteName("#__crowdf_countries") . " AS a");
+    
+            $db->setQuery($query);
+            self::$countries = $db->loadObjectList();
+        }
+    
+        return self::$countries;
+    
     }
     
     public static function getCurrencies($index = "id", $force = false) {
@@ -195,7 +221,6 @@ abstract class CrowdFundingHelper {
         }
         
         $interval      = $today->diff($endingDate);
-        
         $daysLeft      = $interval->format("%r%a");
         
         // If the 
@@ -250,73 +275,73 @@ abstract class CrowdFundingHelper {
     
     /**
      * This module collects statistical data about project - number of updates, comments, funders,...
-     *
+     * 
      * @param integer $projectId
      * @return array
      */
     public static function getProjectData($projectId) {
-    
+        
         $db    = JFactory::getDbo();
-    
+        
         /// Updates
         if(!isset(self::$statistics[$projectId])) {
             self::$statistics[$projectId] = array(
-                    "updates"   => null,
-                    "comments"  => null,
-                    "funders"   => null
+                "updates"   => null,
+                "comments"  => null,
+                "funders"   => null
             );
-    
+            
         }
-    
+        
         // Count updates
         if(is_null(self::$statistics[$projectId]["updates"])) {
-    
+            
             $query = $db->getQuery(true);
             $query
-            ->select("COUNT(*) AS updates")
-            ->from($db->quoteName("#__crowdf_updates"))
-            ->where("project_id = ". (int)$projectId);
-    
+                ->select("COUNT(*) AS updates")
+                ->from($db->quoteName("#__crowdf_updates"))
+                ->where("project_id = ". (int)$projectId);
+            
             $db->setQuery($query);
-    
+            
             self::$statistics[$projectId]["updates"] = $db->loadResult();
         }
-    
+        
         // Count comments
         if(is_null(self::$statistics[$projectId]["comments"])) {
-    
+        
             $query = $db->getQuery(true);
             $query
-            ->select("COUNT(*) AS comments")
-            ->from($db->quoteName("#__crowdf_comments"))
-            ->where("project_id = ". (int)$projectId)
-            ->where("published = 1");
-    
+                ->select("COUNT(*) AS comments")
+                ->from($db->quoteName("#__crowdf_comments"))
+                ->where("project_id = ". (int)$projectId)
+                ->where("published = 1");
+        
             $db->setQuery($query);
-    
+        
             self::$statistics[$projectId]["comments"] = $db->loadResult();
         }
-    
+        
         // Count funders
         if(is_null(self::$statistics[$projectId]["funders"])) {
-    
+        
             $query = $db->getQuery(true);
             $query
-            ->select("COUNT(*) AS funders")
-            ->from($db->quoteName("#__crowdf_transactions"))
-            ->where("project_id  = ". (int)$projectId);
-    
+                ->select("COUNT(*) AS funders")
+                ->from($db->quoteName("#__crowdf_transactions"))
+                ->where("project_id  = ". (int)$projectId);
+        
             $db->setQuery($query);
-    
+        
             self::$statistics[$projectId]["funders"] = $db->loadResult();
         }
-    
+        
         return self::$statistics[$projectId];
     }
     
     /**
      * This method validates the period between minimum and maximum days.
-     *
+     * 
      * @param string $fundingStart
      * @param string $fundingEnd
      * @param integer $minDays
@@ -324,23 +349,80 @@ abstract class CrowdFundingHelper {
      * @return boolean
      */
     public static function isValidPeriod($fundingStart, $fundingEnd, $minDays, $maxDays) {
-    
+        
         // Get interval between starting and ending date
         $startingDate  = new DateTime($fundingStart);
         $endingDate    = new DateTime($fundingEnd);
         $interval      = $startingDate->diff($endingDate);
-    
+        
         $days          = $interval->format("%r%a");
-    
+        
         // Validate minimum dates
         if($days < $minDays) {
             return false;
         }
-    
+        
         if(!empty($maxDays) AND $days > $maxDays) {
             return false;
         }
-    
+        
         return true;
     }
+    
+    public static function getSocialProfile($userId, $type) {
+    
+        $profile = null;
+        
+        switch($type) {
+            
+            case "socialcommunity":
+                
+                if(!defined("SOCIALCOMMUNITY_PATH_COMPONENT_SITE")) {
+                    define("SOCIALCOMMUNITY_PATH_COMPONENT_SITE", JPATH_SITE . DIRECTORY_SEPARATOR. "components" . DIRECTORY_SEPARATOR ."com_socialcommunity");
+                }
+                
+                JLoader::register("SocialCommunityHelperRoute", SOCIALCOMMUNITY_PATH_COMPONENT_SITE . DIRECTORY_SEPARATOR . "helpers" . DIRECTORY_SEPARATOR . "route.php");
+                
+                jimport("itprism.integrate.profile.socialcommunity");
+                
+                $profile = ITPrismIntegrateProfileSocialCommunity::getInstance($userId);
+                
+                // Set path to pictures
+                $params  = JComponentHelper::getParams("com_socialcommunity");
+                $path    = $params->get("images_directory", "images/profiles")."/";
+                
+                $profile->setPath($path);
+                
+                break;
+                
+            case "gravatar":
+            
+                jimport("itprism.integrate.profile.gravatar");
+                $profile = ITPrismIntegrateProfileGravatar::getInstance($userId);
+            
+                break;
+                
+            case "kunena":
+            
+                jimport("itprism.integrate.profile.kunena");
+                $profile = ITPrismIntegrateProfileKunena::getInstance($userId);
+            
+                break;
+            
+            case "jomsocial":
+            
+                jimport("itprism.integrate.profile.jomsocial");
+                $profile = ITPrismIntegrateProfileJomSocial::getInstance($userId);
+            
+                break;
+                
+            default:
+                
+                break;
+        }
+    
+        return $profile;
+    }
+    
+    
 }

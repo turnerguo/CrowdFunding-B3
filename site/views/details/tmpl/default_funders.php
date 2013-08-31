@@ -17,10 +17,8 @@ defined('_JEXEC') or die;?>
 if(!empty($this->items)) { 
     
     foreach($this->items as $item ) {
-    
-    $user = JFactory::getUser($item->id);
-    $socialProfile  = JHtml::_("crowdfunding.socialProfile", $this->socialPlatform, $user);
-    $socialAvatar   = JHtml::_("crowdfunding.socialAvatar", $this->avatars, $user, "media/com_crowdfunding/images/no-profile.png");
+        $socialProfile  = (!$this->socialProfiles) ? null : $this->socialProfiles->getLink($item->id);
+        $socialAvatar   = (!$this->socialProfilesAvatars) ? $this->defaultAvatar : $this->socialProfilesAvatars->getAvatar($item->id, $this->avatarsSize);
 ?>
     <div class="row-fluid">
         
@@ -28,7 +26,7 @@ if(!empty($this->items)) {
         
             <div class="media">
                 <a class="pull-left" href="<?php echo (!$socialProfile) ? "javascript: void(0);" : $socialProfile;?>">
-                    <img class="media-object" src="<?php echo $socialAvatar;?>">
+                    <img class="media-object" src="<?php echo $socialAvatar;?>" width="<?php echo $this->avatarsSize;?>" height="<?php echo $this->avatarsSize;?>">
                 </a>
                 <div class="media-body">
                     <?php if(!empty($socialProfile)){ ?>

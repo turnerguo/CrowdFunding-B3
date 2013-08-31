@@ -102,7 +102,7 @@ class CrowdFundingModelDetails extends JModelItem {
                 
                 // Calculate end date
                 if(!empty($result->funding_days)) {
-                    $result->funding_end = CrowdFundingHelper::calcualteEndDate($result->funding_days, $result->funding_start);
+                    $result->funding_end = (!CrowdFundingHelper::isValidDate($result->funding_start)) ? "0000-00-00" : CrowdFundingHelper::calcualteEndDate($result->funding_days, $result->funding_start); 
                 }
                 
                 $result->funded_percents = CrowdFundingHelper::calculatePercent($result->funded, $result->goal);
@@ -151,29 +151,28 @@ class CrowdFundingModelDetails extends JModelItem {
     
     /**
      * Check for valid owner.
-     * If the project is not published and not approved,
+     * If the project is not published and not approved, 
      * only the owner will be able to view the project.
-     *
+     * 
      * @param object $item
      * @param integer $userId
      * @return boolean
      */
     public function isRestricted($item, $userId) {
-    
+        
         if(empty($item->id) OR empty($item->user_id)) {
             return true;
         }
-    
+        
         // Check for the owner of the project.
         // If it is not published and not approved, only the owner will be able to view the project.
         if((!$item->published OR !$item->approved) AND ($item->user_id != $userId)) {
             return true;
         }
-    
+        
         return false;
-    
+        
     }
-    
     
     /**
      * Increase number of hits.

@@ -17,8 +17,8 @@ class CrowdFundingTableReward extends JTable {
     
     protected $available = 0;
     
-	public function __construct( $db ) {
-        parent::__construct( '#__crowdf_rewards', 'id', $db );
+	public function __construct($db) {
+        parent::__construct('#__crowdf_rewards', 'id', $db);
     }
     
     public function load($keys = null, $reset = true) {

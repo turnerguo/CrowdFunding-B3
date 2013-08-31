@@ -33,6 +33,7 @@ if(!$projectId) {
     echo JText::_("MOD_CROWDFUNDINGINFO_ERROR_INVALID_PROJECT");
     return;
 }
+
 $componentParams = JComponentHelper::getParams("com_crowdfunding");
 
 // Get currency

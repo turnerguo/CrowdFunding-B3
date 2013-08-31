@@ -5,7 +5,7 @@
 		<field name="title" type="text" 
 			label="JGLOBAL_TITLE"
             description="COM_CROWDFUNDING_FIELD_PROJECT_TITLE_DESC"
-            class="inputbox"  
+            class="span6"  
 			filter="trim" 
 			required="true" 
         />
@@ -13,32 +13,28 @@
         <field name="description" type="textarea" 
 	        label="COM_CROWDFUNDING_FIELD_DESCRIPTION"
 	        description="COM_CROWDFUNDING_REWARD_DESCRIPTION_DESC"
-	        class="inputbox" 
+	        class="span6" 
             rows="10"
 	    />
 	    
-        <field name="amount" type="text" 
+        <field name="amount" type="cfamount" 
 	        label="COM_CROWDFUNDING_AMOUNT"
 	        description="COM_CROWDFUNDING_REWARD_AMOUNT_DESC"
-            class="inputbox" 
 	    />
 	    
         <field name="number" type="text" 
 	        label="COM_CROWDFUNDING_NUMBER"
 	        description="COM_CROWDFUNDING_REWARD_NUMBER_DESC"
-            class="inputbox" 
 	    />
             
         <field name="distributed" type="text" 
             label="COM_CROWDFUNDING_DISTRIBUTED" 
             description="COM_CROWDFUNDING_REWARD_DISTRIBUTED_DESC" 
-            class="inputbox" 
         />
         
         <field name="delivery" type="calendar" 
             label="COM_CROWDFUNDING_DELIVERY"
             description="COM_CROWDFUNDING_REWARD_DELIVERY_DESC"
-            class="inputbox" 
         />
         
 		<field name="id" type="text" class="readonly" 

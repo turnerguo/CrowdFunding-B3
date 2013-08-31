@@ -52,14 +52,14 @@ defined('_JEXEC') or die;
 	</div>
 	<?php } else {?>
 	<div class="cfinfo-funding-action">
-		<a class="btn btn-large btn-block" href="<?php echo JText::_(CrowdFundingHelperRoute::getBackingRoute($project->getSlug(), $project->getCatSlug()));?>"><?php echo JText::_("MOD_CROWDFUNDINGINFO_INVEST_NOW"); ?></a>
+		<a class="btn btn-large btn-block" href="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($project->getSlug(), $project->getCatSlug()));?>"><?php echo JText::_("MOD_CROWDFUNDINGINFO_INVEST_NOW"); ?></a>
 	</div>
 	<?php }?>
     
     <div class="cfinfo-funding-type-info">
     	<?php
     	
-    	$endDate = JHtml::_('date', $project->funding_end, JText::_('DATE_FORMAT_LC3'));
+    	$endDate = JHtml::_('crowdfunding.date', $project->funding_end, JText::_('DATE_FORMAT_LC3'));
     	
     	if($project->funding_type == "FIXED") {
     	    echo JText::sprintf("MOD_CROWDFUNDINGINFO_FUNDING_TYPE_INFO_FIXED", $fundedAmount, $endDate);

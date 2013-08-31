@@ -61,9 +61,11 @@ class CrowdFundingControllerProject extends ITPrismControllerFormBackend {
             $this->displayNotice($form->getErrors(), $redirectData);
             return;
         }
-            
+        
         try {
+            
             $itemId = $model->save($validData);
+            
         } catch (Exception $e) {
             
             JLog::add($e->getMessage());

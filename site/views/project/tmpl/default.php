@@ -17,7 +17,7 @@ defined('_JEXEC') or die;
 <?php echo $this->loadTemplate("nav");?>
 <div class="row-fluid">
     <div class="span6">
-        <form enctype="multipart/form-data"  action="<?php echo JRoute::_('index.php?option=com_crowdfunding'); ?>" method="post" name="projectForm" id="crowdf-project-form" class="form-validate" autocomplete="off">
+        <form enctype="multipart/form-data"  action="<?php echo JRoute::_('index.php?option=com_crowdfunding'); ?>" method="post" name="projectForm" id="crowdf-project-form" novalidate autocomplete="off" >
             
             <?php echo $this->form->getLabel('title'); ?>
             <?php echo $this->form->getInput('title'); ?>
@@ -34,6 +34,7 @@ defined('_JEXEC') or die;
             <?php echo $this->form->getLabel('image'); ?>
             <div class="fileupload fileupload-new" data-provides="fileupload">
                 <span class="btn btn-file">
+                    <i class="icon-upload"></i>
                     <span class="fileupload-new"><?php echo JText::_("COM_CROWDFUNDING_SELECT_FILE");?></span>
                     <span class="fileupload-exists">
                         <?php echo JText::_("COM_CROWDFUNDING_CHANGE");?>
@@ -49,7 +50,7 @@ defined('_JEXEC') or die;
 			    $termsUrl = $this->params->get("project_terms_url", "");
 			?>
 			<label class="checkbox">
-            	<input type="checkbox" name="jform[terms]" value="1"> <?php echo (!$termsUrl) ? JText::_("COM_CROWDFUNDING_TERMS_AGREEMENT") : JText::sprintf("COM_CROWDFUNDING_TERMS_AGREEMENT_URL", $termsUrl);?>
+            	<input type="checkbox" name="jform[terms]" value="1" required="required"> <?php echo (!$termsUrl) ? JText::_("COM_CROWDFUNDING_TERMS_AGREEMENT") : JText::sprintf("COM_CROWDFUNDING_TERMS_AGREEMENT_URL", $termsUrl);?>
             </label>
             <?php }?>
             
@@ -60,8 +61,8 @@ defined('_JEXEC') or die;
             <?php echo JHtml::_('form.token'); ?>
             
             <div class="clearfix"></div>
-            <button type="submit" class="button button-large margin-tb-15px" <?php echo $this->disabledButton;?>>
-            	<i class="icon-ok icon-white"></i>
+            <button type="submit" class="btn margin-tb-15px" <?php echo $this->disabledButton;?>>
+            	<i class="icon-ok"></i>
                 <?php echo JText::_("COM_CROWDFUNDING_SAVE_AND_CONTINUE")?>
             </button>
         </form>
@@ -72,12 +73,11 @@ defined('_JEXEC') or die;
     	<?php if(!$this->debugMode) {?>
     	<div class="clearfix">&nbsp;</div>
     	<a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=project.removeImage&id=".$this->item->id."&".JSession::getFormToken()."=1");?>" class="btn btn-mini btn-danger" >
-    		<i class="icon-trash icon-white">
+    		<i class="icon-trash">
     		</i> <?php echo JText::_("COM_CROWDFUNDING_REMOVE_IMAGE");?>
 		</a>
     	<?php }?>
     </div>
     <?php }?>
 </div>
-<div class="clearfix">&nbsp;</div>
 <?php echo $this->version->backlink;?>

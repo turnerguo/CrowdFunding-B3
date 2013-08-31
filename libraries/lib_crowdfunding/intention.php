@@ -21,17 +21,75 @@ JLoader::register("CrowdFundingTableIntention", JPATH_ADMINISTRATOR .DIRECTORY_S
  * @package      CrowdFunding
  * @subpackage   Libraries
  */
-class CrowdFundingIntention extends CrowdFundingTableIntention {
+class CrowdFundingIntention {
+    
+    private $table;
+
+    protected $db; 
     
     public function __construct($id) {
         
-        $db = JFactory::getDbo();
-        parent::__construct( $db );
+        $this->db       = JFactory::getDbo();
+        $this->table    = new CrowdFundingTableIntention($this->db);
         
         if(!empty($id)) {
-            $this->load($id);
+            $this->table->load($id);
         }
     }
-
     
+    public function bind($src, $ignore = array()) {
+        $this->table->bind($src, $ignore);
+    }
+
+    public function store($updateNulls = false) {
+        $this->table->store($updateNulls);
+    }
+    
+    public function getId() {
+        return $this->table->id;
+    }
+    
+    public function getUserId() {
+        return $this->table->user_id;
+    }
+    
+    public function getProjectId() {
+        return $this->table->project_id;
+    }
+    
+    public function getRewardId() {
+        return $this->table->reward_id;
+    }
+    
+    public function getRecordDate() {
+        return $this->table->record_date;
+    }
+    
+    public function getTransactionId() {
+        return $this->table->txn_id;
+    }
+    
+    public function getGateway() {
+        return $this->table->gateway;
+    }
+    
+    public function getTable() {
+        return $this->table;
+    }
+    
+    public function delete($pk = null) {
+        $this->table->delete($pk);
+    }
+    
+    public function __get($name) {
+        
+        if (isset($this->$name)) {
+            return $this->$name;
+        } else if (isset($this->table->$name)) {
+            return $this->table->$name;
+        }
+        
+        return null;
+        
+    }
 }

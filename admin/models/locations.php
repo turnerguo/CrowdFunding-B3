@@ -35,6 +35,7 @@ class CrowdFundingModelLocations extends JModelList {
                 'id', 'a.id',
                 'name', 'a.name',
                 'country_code', 'a.country_code',
+                'state_code', 'a.state_code',
                 'timezone', 'a.timezone',
             	'published', 'a.published'
             );
@@ -106,7 +107,7 @@ class CrowdFundingModelLocations extends JModelList {
             $this->getState(
                 'list.select',
                 'a.id, a.name, a.latitude, a.longitude, a.country_code, a.timezone, '.
-            	'a.published'
+            	'a.state_code, a.published'
             )
         );
         $query->from($db->quoteName('#__crowdf_locations').' AS a');

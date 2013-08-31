@@ -22,7 +22,7 @@ jimport('joomla.application.component.controller');
  * @package     CrowdFunding
  * @subpackage  Components
  */
-class CrowdFundingControllerProjects extends JController {
+class CrowdFundingControllerProjects extends JControllerLegacy {
     
 	/**
      * Method to get a model object, loading it if required.
@@ -47,6 +47,7 @@ class CrowdFundingControllerProjects extends JController {
 		
         $userId = JFactory::getUser()->id;
         if(!$userId) {
+            
             $this->setMessage(JText::_("COM_CROWDFUNDING_ERROR_NOT_LOG_IN"), "notice");
             $link = "index.php?option=com_users&view=login";
             $this->setRedirect(JRoute::_($link, false));
@@ -66,15 +67,15 @@ class CrowdFundingControllerProjects extends JController {
         
         // Get referer link and prepare return link
         if(!empty($return)) {
-        
+            
             // Filter referer
             $referer    = JArrayHelper::getValue($_SERVER, 'HTTP_REFERER');
             if(!empty($referer)) {
                 $uri        = new JUri($referer);
                 $returnLink = $uri->toString();
             }
-        
-        }
+            
+        } 
         
         $model   = $this->getModel();
         /** @var $model CrowdFundingModelProjectItem **/
@@ -122,11 +123,10 @@ class CrowdFundingControllerProjects extends JController {
 		if(!$state) {
 		    $this->setMessage(JText::_("COM_CROWDFUNDING_PROJECT_UNPUBLISHED_SUCCESSFULY"));
 		} else {
-		    $this->setMessage(JText::_("COM_CROWDFUNDING_PROJECT_PUBLISHED_SUCCESSFULY"));
+		    $this->setMessage(JText::_("COM_CROWDFUNDING_PROJECT_PUBLISHED_SUCCESSFULY_INFO"));
 		}
 		
 		$this->setRedirect($returnLink);
-		
     }
     
 }

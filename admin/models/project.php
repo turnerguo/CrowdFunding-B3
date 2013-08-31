@@ -145,7 +145,7 @@ class CrowdFundingModelProject extends JModelAdmin {
 	    JPluginHelper::importPlugin('content');
 	     
 	    // Trigger the onContentChangeState event.
-	    $dispatcher = JDispatcher::getInstance();
+	    $dispatcher = JEventDispatcher::getInstance();
 	    $result     = $dispatcher->trigger($this->event_change_state, array($context, $pks, $value));
 	    
 	    if (in_array(false, $result, true)) {
@@ -258,7 +258,7 @@ class CrowdFundingModelProject extends JModelAdmin {
 	    JPluginHelper::importPlugin('content');
 	    
 	    // Trigger the onContentChangeState event.
-	    $dispatcher = JDispatcher::getInstance();
+	    $dispatcher = JEventDispatcher::getInstance();
 	    $result     = $dispatcher->trigger($this->event_change_state, array($context, $pks, $value));
 	
 	    if (in_array(false, $result, true)) {

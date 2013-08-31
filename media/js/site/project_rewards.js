@@ -108,4 +108,36 @@ jQuery(document).ready(function() {
 			jQuery("#reward_box_"+index).remove();
 		}
 	});
+	
+	// Display modal window and ask a question when publishing project
+	var btnPublishProject = jQuery("#js-btn-rewards-publish");
+	if(btnPublishProject.length > 0) {
+		
+		jQuery("#js-btn-rewards-publish").on("click", function(event){
+			event.preventDefault();
+			jQuery("#js-modal-publish-project").modal('show');
+		});
+		
+		jQuery("#js-modal-btn-pp-no").on("click", function(event){
+			event.preventDefault();
+			jQuery("#js-modal-publish-project").modal('hide');
+		});
+		
+		// Publish the item
+		jQuery("#js-modal-btn-pp-yes").on("click", function(event){
+			
+			event.preventDefault();
+			
+			jQuery("#js-modal-publish-project").modal('hide');
+			
+			var url = jQuery("#js-btn-rewards-publish").attr("href");
+			window.location.href = url;
+			
+		});
+	}
+	
 });
+
+
+
+

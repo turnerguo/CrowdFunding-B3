@@ -63,8 +63,8 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
         $terms   = JArrayHelper::getValue($data, "terms", false, "bool");
         
         $redirectData = array(
-            "view" => "project",
-            "id"   => $itemId
+            "view"   => "project",
+            "id"     => $itemId
         );
         
         $model   = $this->getModel();
@@ -87,7 +87,7 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
         }
         
         if(!empty($itemId)) { // Validate owner if the item is not new.
-        
+            
             $userId = JFactory::getUser()->id;
         
             if(!$model->isOwner($itemId, $userId)){
@@ -95,13 +95,13 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
                 $this->displayWarning(JText::_('COM_CROWDFUNDING_INVALID_ITEM'), $redirectData);
                 return;
             }
-        
+            
             $this->isNew = false;
         
         } else { // Verify terms of use during the process of creating a project.
         
             $params = JComponentHelper::getParams($this->option);
-        
+            
             if($params->get("project_terms", 0) AND !$terms) {
                 $redirectData = array("view" => "project");
                 $this->displayWarning(JText::_("COM_CROWDFUNDING_ERROR_TERMS_NOT_ACCEPTED"), $redirectData);
@@ -167,7 +167,7 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
             "layout" => "funding",
             "id"     => $itemId
         );
-
+        
         $this->displayMessage(JText::_("COM_CROWDFUNDING_PROJECT_SUCCESSFULY_SAVED"), $redirectData);
 			
     }
