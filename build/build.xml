@@ -3,7 +3,7 @@
 	<description>CrowdFunding Lite Ant Build File</description>
 
 	<!-- load variables from config file -->
-	<property name="cfg.configFile" location="antconfig.txt" />
+	<property name="cfg.configFile" location="antconfig_j2.5.txt" />
 	<loadproperties srcfile="${cfg.configFile}" />
 
 	<!-- auto values but should be checked -->
