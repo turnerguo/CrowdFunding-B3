@@ -11,4 +11,4 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_countries` (
   `name` varchar(128) NOT NULL,
   `code` char(2) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf32;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
