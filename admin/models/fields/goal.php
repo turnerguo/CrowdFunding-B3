@@ -49,8 +49,8 @@ class JFormFieldGoal extends JFormField {
 		jimport("crowdfunding.currency");
 		$currency    = CrowdFundingCurrency::getInstance($currencyId);
 		
-		if(!empty($currency->symbol)) { // Prepended
-		    $html = '<div class="input-prepend input-append"><span class="add-on">'.$currency->symbol.'</span>';
+		if($currency->getSymbol()) { // Prepended
+		    $html = '<div class="input-prepend input-append"><span class="add-on">'.$currency->getSymbol().'</span>';
 		} else { // Append
 		    $html = '<div class="input-append">';
 		}
@@ -58,7 +58,7 @@ class JFormFieldGoal extends JFormField {
 		$html .= '<input type="text" name="' . $this->name . '" id="' . $this->id . '"' . ' value="'. htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '"' . $class . $size . $disabled . $readonly . $onchange . $maxLength . '/>';
 			
 		// Appended
-		$html .= '<span class="add-on">'.$currency->abbr.'</span></div>';
+		$html .= '<span class="add-on">'.$currency->getAbbr().'</span></div>';
 		
 		return $html;
 	}

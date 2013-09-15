@@ -10,8 +10,8 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_comments` (
 
 CREATE TABLE IF NOT EXISTS `#__crowdf_countries` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(128) NOT NULL,
-  `code` char(2) NOT NULL,
+  `name` varchar(128) CHARACTER SET utf32 NOT NULL,
+  `code` char(2) CHARACTER SET utf32 NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
@@ -25,6 +25,15 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_currencies` (
   UNIQUE KEY `idx_crowdf_ccode` (`abbr`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `#__crowdf_images` (
+  `id` smallint(6) unsigned NOT NULL AUTO_INCREMENT,
+  `image` varchar(24) NOT NULL,
+  `thumb` varchar(24) NOT NULL,
+  `project_id` smallint(6) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_cfimg_pid` (`project_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
 CREATE TABLE IF NOT EXISTS `#__crowdf_intentions` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(10) unsigned NOT NULL,
@@ -33,6 +42,7 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_intentions` (
   `record_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `txn_id` varchar(64) DEFAULT '' COMMENT 'It is a transaction ID provided by some Payment Gateways.',
   `gateway` varchar(32) NOT NULL DEFAULT '' COMMENT 'It is the name of the Payment Service.',
+  `auser_id` varchar(32) NOT NULL DEFAULT '' COMMENT 'It is a hash ID of an anonymous user.',
   PRIMARY KEY (`id`),
   KEY `idx_cfints_usr_proj` (`user_id`,`project_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

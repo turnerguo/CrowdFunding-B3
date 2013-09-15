@@ -7,6 +7,6 @@ jQuery(document).ready(function() {
         }
     };
     
-    jQuery('.fileupload').fileupload();
+    jQuery('.fileupload').fileuploadstyle();
     
 });

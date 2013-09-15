@@ -75,8 +75,8 @@ class CrowdFundingModelFunding extends CrowdFundingModelProject {
         $id             = JArrayHelper::getValue($data, "id");
         $goal           = JArrayHelper::getValue($data, "goal");
         $fundingType    = JArrayHelper::getValue($data, "funding_type");
-        $fundingEnd     = JArrayHelper::getValue($data, "funding_end");
-        $fundingDays    = JArrayHelper::getValue($data, "funding_days");
+        $fundingEnd     = JArrayHelper::getValue($data, "funding_end", "0000-00-00");
+        $fundingDays    = JArrayHelper::getValue($data, "funding_days", 0);
         $durationType   = JArrayHelper::getValue($data, "funding_duration_type");
         
         // Load a record from the database
@@ -85,10 +85,8 @@ class CrowdFundingModelFunding extends CrowdFundingModelProject {
         
         $row->set("goal",          $goal);
         $row->set("funding_type",  $fundingType);
-        $row->set("funding_end",   $fundingEnd);
-        $row->set("funding_days",  $fundingDays);
         
-        $this->prepareTable($row, $durationType);
+        $this->prepareTable($row, $durationType, $fundingEnd, $fundingDays);
         
         $row->store();
         
@@ -101,7 +99,7 @@ class CrowdFundingModelFunding extends CrowdFundingModelProject {
 	 *
 	 * @since	1.6
 	 */
-	protected function prepareTable(&$table, $durationType) {
+	protected function prepareTable(&$table, $durationType, $fundingEnd, $fundingDays) {
 	    
 	    $userId = JFactory::getUser()->id;
 	    
@@ -109,30 +107,38 @@ class CrowdFundingModelFunding extends CrowdFundingModelProject {
             throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"), ITPrismErrors::CODE_ERROR);
 		}
 		
-		$fundingEndDate = "0000-00-00";
-		
 		switch($durationType) {
 		    
+		    case "days":
+		        
+		        $table->funding_days = $fundingDays;
+		        
+		        // Clacluate end date
+		        if(!empty($table->funding_start)) {
+		            $table->funding_end   = CrowdFundingHelper::calcualteEndDate($table->funding_start, $table->funding_days);
+		        } else {
+		            $table->funding_end = "0000-00-00";
+		        }
+		        
+		        break;
+		        
 		    case "date":
 		        
-		        $table->set("funding_days", 0);
-		        
-		        if(CrowdFundingHelper::isValidDate($table->funding_end)) {
-		            jimport('joomla.utilities.date');
-		            $date = new JDate($table->get("funding_end"));
-		            $fundingEndDate = $date->toSql();
+		        if(!CrowdFundingHelper::isValidDate($fundingEnd)) {
+		            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_DATE"), ITPrismErrors::CODE_WARNING);
 		        } 
 		        
-                $table->set("funding_end", $fundingEndDate);
+		        jimport('joomla.utilities.date');
+		        $date = new JDate($fundingEnd);
+                
+		        $table->funding_days = 0;
+		        $table->funding_end  = $date->toSql();
+                
 		        break;
 	        
-		    case "days":
-		        $table->set("funding_end", $fundingEndDate);
-		        break;
-		        
 		    default:
-		        $table->set("funding_days", 0);
-		        $table->set("funding_end",  $fundingEndDate);
+		        $table->funding_days = 0;
+		        $table->funding_end  = "0000-00-00";
 		        break;
 		}
 		

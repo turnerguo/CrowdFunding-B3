@@ -87,9 +87,9 @@ class CrowdFundingViewEmbed extends JViewLegacy {
             
         }
         
-        $this->version = new CrowdfundingVersion();
-        
 		$this->prepareDocument();
+		
+		$this->version = new CrowdFundingVersion();
 		
         parent::display($tpl);
     }

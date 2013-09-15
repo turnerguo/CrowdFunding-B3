@@ -67,8 +67,6 @@ class CrowdFundingViewDetails extends JViewLegacy {
         // Get the current screen
         $this->screen = $app->input->getCmd("screen", "home");
         
-        $this->version = new CrowdfundingVersion();
-        
         $this->prepareDocument();
         
         switch($this->screen) {
@@ -106,6 +104,8 @@ class CrowdFundingViewDetails extends JViewLegacy {
 		
 		// Count hits
 		$model->hit($this->item->id);
+		
+		$this->version = new CrowdFundingVersion();
 		
         parent::display($tpl);
     }

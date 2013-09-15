@@ -21,10 +21,6 @@ defined('_JEXEC') or die;
             <fieldset>
                 
                 <div class="control-group">
-                    <div class="control-label"><?php echo $this->form->getLabel('investor_id'); ?></div>
-    				<div class="controls"><?php echo $this->form->getInput('investor_id'); ?></div>
-                </div>
-                <div class="control-group">
                     <div class="control-label"><?php echo $this->form->getLabel('txn_amount'); ?></div>
     				<div class="controls"><?php echo $this->form->getInput('txn_amount'); ?></div>
                 </div>
@@ -47,6 +43,10 @@ defined('_JEXEC') or die;
                 <div class="control-group">
                     <div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
     				<div class="controls"><?php echo $this->form->getInput('id'); ?></div>
+                </div>
+                <div class="control-group">
+                    <div class="control-label"><?php echo $this->form->getLabel('investor_id'); ?></div>
+    				<div class="controls"><?php echo $this->form->getInput('investor_id'); ?></div>
                 </div>
                 
             </fieldset>

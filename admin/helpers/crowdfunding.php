@@ -233,10 +233,10 @@ abstract class CrowdFundingHelper {
     /**
 	 * Calculate end date
 	 * 
-	 * @param int    $fundingDays
-	 * @param string $fundingStart
+	 * @param string This is starting date
+	 * @param int    This is period in days.
 	 */
-	public static function calcualteEndDate($fundingDays, $fundingStart) {
+	public static function calcualteEndDate($fundingStart, $fundingDays) {
 	    
         // Calcualte days left
         $endingDate  = new DateTime($fundingStart);
@@ -349,6 +349,12 @@ abstract class CrowdFundingHelper {
      * @return boolean
      */
     public static function isValidPeriod($fundingStart, $fundingEnd, $minDays, $maxDays) {
+
+        // Get only date and remove the time
+        $date          = new DateTime($fundingStart);
+        $fundingStart  = $date->format("Y-m-d");
+        $date          = new DateTime($fundingEnd);
+        $fundingEnd    = $date->format("Y-m-d");
         
         // Get interval between starting and ending date
         $startingDate  = new DateTime($fundingStart);
@@ -424,5 +430,83 @@ abstract class CrowdFundingHelper {
         return $profile;
     }
     
+    /**
+     * This method returns intention 
+     * basd on user ID or anonymous hash user ID.
+     * 
+     * @param $userId       Registered user ID
+     * @param $aUserId      Anonymous user hash ID
+     * @param $projectId    Project ID
+     * 
+     * @return CrowdFundingIntention
+     */
+    public static function getIntention($userId, $aUserId, $projectId) {
+        
+        // Prepare keys for anonymous user.
+        if(!empty($aUserId)) {
+        
+            $intentionKeys = array(
+                "auser_id"   => $aUserId,
+                "project_id" => $projectId
+            );
+        
+        } else {// Prepare keys for registered user.
+        
+            $intentionKeys = array(
+                "user_id"    => $userId,
+                "project_id" => $projectId
+            );
+        
+        }
+        
+        jimport("crowdfunding.intention");
+        $intention = new CrowdFundingIntention($intentionKeys);
+        
+        return $intention;
+    }
+    
+    /**
+     * Generate a path to the folder, where the images are stored. 
+     *
+     * @param number User Id.
+     * @param string A base path to the folder. It can be JPATH_BASE, JPATH_ROOT, JPATH_SITE,... Default is JPATH_ROOT. 
+     * 
+     * @return string
+     */
+    public static function getImagesFolder($userId = 0, $path = JPATH_ROOT) {
+        
+        $params = JComponentHelper::getParams(self::$extension);
+        /** @var $params JRegistry **/
+        
+        jimport('joomla.filesystem.path');
+        $folder = JPath::clean($path."/".$params->get("images_directory", "images/crowdfunding"));
+        
+        if(!empty($userId)) {
+            $folder .= "/user".(int)$userId;
+        }
+        
+        return $folder;
+    }
+    
+    /**
+     * Generate a URI path to the folder, where the images are stored.
+     *
+     * @param number User Id.
+     *
+     * @return string
+     */
+    public static function getImagesFolderUri($userId = 0) {
+    
+        $params = JComponentHelper::getParams(self::$extension);
+        /** @var $params JRegistry **/
+    
+        $uriImages = $params->get("images_directory", "images/crowdfunding");
+    
+        if(!empty($userId)) {
+            $uriImages .= "/user".(int)$userId;
+        }
+    
+        return $uriImages;
+    }
     
 }

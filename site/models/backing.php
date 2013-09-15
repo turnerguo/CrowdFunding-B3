@@ -52,27 +52,34 @@ class CrowdFundingModelBacking extends JModelLegacy {
     protected function populateState() {
         
         $app     = JFactory::getApplication();
-        $params  = $app->getParams();
         
         // Project ID
         $itemId   = $app->input->getUint('id');
-        $this->setState($this->context.'.id', $itemId);
+        $this->setState('id', $itemId);
         
-        $projectContext = $this->context.".project".$itemId;
-        
-        // Reward ID
-        $value   = $app->getUserStateFromRequest($projectContext.".rid", 'rid');
-        $this->setState($this->context.'.rid', $value);
+        // Get reward ID
+        $projectContext = $this->getProjectContext($itemId);
+        $value          = $app->getUserStateFromRequest($projectContext.".rid", 'rid');
+        $this->setState('reward_id', $value);
         
         // Load the parameters.
+        $params  = $app->getParams();
         $this->setState('params', $params);
     }
     
     /**
      * Return the context of the model
      */
-    public function getContext() {
+    /* public function getContext() {
         return $this->context;        
+    } */
+    
+    /**
+     * Return the context, 
+     * used to for storing project data in this model.
+     */
+    public function getProjectContext($projectId) {
+        return $this->context.".project".$projectId;
     }
     
     /**
@@ -85,7 +92,7 @@ class CrowdFundingModelBacking extends JModelLegacy {
     public function getItem($id = null) {
         
         if (empty($id)) {
-            $id = $this->getState($this->context.'.id');
+            $id = $this->getState('id');
         }
         
         if (is_null($this->item)) {
@@ -118,7 +125,7 @@ class CrowdFundingModelBacking extends JModelLegacy {
                 
                 // Calculate eding date by days left
                 if(!empty($result->funding_days)) {
-                    $result->funding_end     = CrowdFundingHelper::calcualteEndDate($result->funding_days, $result->funding_start);
+                    $result->funding_end     = CrowdFundingHelper::calcualteEndDate($result->funding_start, $result->funding_days);
                 }
                 
                 $result->funded_percents = CrowdFundingHelper::calculatePercent($result->funded, $result->goal);
@@ -136,7 +143,7 @@ class CrowdFundingModelBacking extends JModelLegacy {
      * Load all rewards of a project
      * @param integer $id Project ID
      */
-    public function getRewards($id = null) {
+    /* public function getRewards($id = null) {
         
         if (empty($id)) {
             $id = $this->getState($this->context.'.id');
@@ -160,21 +167,21 @@ class CrowdFundingModelBacking extends JModelLegacy {
         }
         
         return $results;
-    }
+    } */
     
     /**
      * 
      * Get reward
      * @param integer $id
      */
-    public function getReward($rewardId = null) {
+    /* public function getReward($rewardId = null) {
         
         if (empty($rewardId)) {
-            $rewardId = $this->getState($this->context.'.rid');
+            $rewardId = $this->getState('reward_id');
         }
         
         // Get project id
-        $projectId = $this->getState($this->context . '.id');
+        $projectId = $this->getState('id');
         
         $row = null;
         
@@ -192,5 +199,5 @@ class CrowdFundingModelBacking extends JModelLegacy {
         }
         
         return $row;
-    }
+    } */
 }

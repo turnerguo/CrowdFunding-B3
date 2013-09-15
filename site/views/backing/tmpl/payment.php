@@ -20,7 +20,10 @@ defined('_JEXEC') or die;?>
 	
 	<div class="row-fluid">
 		<div class="span12">
-    		<?php echo $this->loadTemplate("nav");?>	
+    		<?php 
+        		$layout      = new JLayoutFile('payment_wizard', $this->layoutsBasePath);
+        		echo $layout->render($this->layoutData);
+    		?>	
     	</div>
 	</div>
 	
@@ -45,11 +48,11 @@ defined('_JEXEC') or die;?>
 			
 			<h2><?php echo JText::_("COM_CROWDFUNDING_SELECTED_REWARD");?></h2>
 			<div class="bs-docs-example">
-			<?php if(!$this->rewardId) {?>
+			<?php if(!$this->paymentProcess->rewardId) {?>
 				<p><?php echo JText::_("COM_CROWDFUNDING_NO_SELECTED_REWARD");?></p>
 			<?php } else { ?>
-				<h4><?php echo $this->escape($this->reward->title);?></h4>
-				<p><?php echo $this->escape($this->reward->description);?></p>
+				<h4><?php echo $this->escape($this->reward->getTitle());?></h4>
+				<p><?php echo $this->escape($this->reward->getDescription());?></p>
 			<?php } ?>
 			</div>
 			

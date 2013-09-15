@@ -119,7 +119,7 @@ class CrowdFundingModelTransactions extends JModelList {
         $query->innerJoin($db->quoteName('#__crowdf_projects').' AS c ON a.project_id = c.id');
         $query->leftJoin($db->quoteName('#__crowdf_rewards').' AS d ON a.reward_id = d.id');
         
-        $query->innerJoin($db->quoteName('#__users').' AS e ON a.investor_id = e.id');
+        $query->leftJoin($db->quoteName('#__users').' AS e ON a.investor_id = e.id');
 
         // Filter by search in title
         $search = $this->getState('filter.search');

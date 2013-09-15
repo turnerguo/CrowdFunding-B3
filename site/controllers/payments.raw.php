@@ -17,7 +17,6 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.controller');
 
 /**
- * 
  * This controller provides functionality 
  * that helps to payment plugins to prepare their payment data.
  * 
@@ -44,12 +43,29 @@ class CrowdFundingControllerPayments extends JControllerLegacy {
 
     /**
      * Prepare data before payment via iDEAL ( Mollie ).
-     * 
      */
     public function mollieideal() {
         
         $app = JFactory::getApplication();
         /** @var $app JSite **/
+        
+        $model = $this->getModel();
+        /** @var CrowdFundingModelPayments **/
+        
+        // Get component parameters
+        $componentParams = JComponentHelper::getParams("com_crowdfunding");
+        
+        // Check for disabled payment functionality
+        if($componentParams->get("debug_payment_disabled", 0)) {
+            $response = array(
+                "success" => false,
+                "title"   => JText::_("COM_CROWDFUNDING_FAIL"),
+                "text"    => JText::_("COM_CROWDFUNDING_ERROR_PAYMENT_HAS_BEEN_DISABLED_MESSAGE")
+            );
+            
+            echo json_encode($response);
+            JFactory::getApplication()->close();
+        }
         
         $plugin = JPluginHelper::getPlugin('crowdfundingpayment', 'mollieideal');
         $pluginParams = new JRegistry($plugin->params);
@@ -57,7 +73,7 @@ class CrowdFundingControllerPayments extends JControllerLegacy {
         $partnerId = $pluginParams->get("partner_id");
         
         $projectId = $app->input->getInt("project_id");
-        $bankId    = $app->input->getInt("bank_id");
+        $bankId    = $app->input->getAlnum("bank_id");
         $amount    = $app->input->get("amount", 0, "float");
         
         $uri        = JUri::getInstance();
@@ -73,8 +89,6 @@ class CrowdFundingControllerPayments extends JControllerLegacy {
         
         // Save data
         try {
-            
-            // @todo do it to work with anonymous users
             
             jimport("itprism.payment.mollie.ideal");
             $paymentGateway = new ITPrismPaymentMollieIdeal($partnerId);
@@ -125,20 +139,15 @@ class CrowdFundingControllerPayments extends JControllerLegacy {
             //  INTENTIONS
             
             // Prepare custom data
-            $userId   = JFactory::getUser()->id;
-            $rewardId = $app->input->get("reward_id");
             
-            // Get intention and store the data,
-            // which is needed for transaction validation.
-            $intentionKeys = array(
-                "user_id"         => $userId,
-                "project_id"      => $projectId,
-            );
+            $rewardId     = $app->input->get("reward_id");
             
-            jimport("crowdfunding.intention");
-            $intention = new CrowdFundingIntention($intentionKeys);
+            $userId       = JFactory::getUser()->id;
+            $aUserId      = $app->getUserState("auser_id");
             
-            // Update intention data.
+            $intention    = CrowdFundingHelper::getIntention($userId, $aUserId, $projectId);
+            
+            // Prepare intention data.
             $intentionData = array(
                 "txn_id"        => $txnId,
                 "gateway"       => "Mollie iDEAL",
@@ -149,9 +158,10 @@ class CrowdFundingControllerPayments extends JControllerLegacy {
                 
                 $recordDate = new JDate();
                 
-                $intentionData["user_id"] = $userId;
-                $intentionData["project_id"] = $projectId;
-                $intentionData["reward_id"] = $rewardId;
+                $intentionData["user_id"]     = $userId;
+                $intentionData["auser_id"]    = $aUserId; // This is hash user ID used for anonymous users.
+                $intentionData["project_id"]  = $projectId;
+                $intentionData["reward_id"]   = $rewardId;
                 $intentionData["record_date"] = $recordDate->toSql();
                 
             }
@@ -191,23 +201,36 @@ class CrowdFundingControllerPayments extends JControllerLegacy {
     /**
      * Register a bank transfer transaction.
      * 
-     * @todo validate reward ( availableility, correct project,.. )
      */
     public function banktransfer() {
     
         $app = JFactory::getApplication();
         /** @var $app JSite **/
         
+        $model = $this->getModel();
+        /** @var CrowdFundingModelPayments **/
+        
         // Get plugin parameters
         $plugin       = JPluginHelper::getPlugin('crowdfundingpayment', 'banktransfer');
         $pluginParams = new JRegistry($plugin->params);
         
         // Get component parameters
-        $componentHelper = JComponentHelper::getParams("com_crowdfunding");
+        $componentParams = JComponentHelper::getParams("com_crowdfunding");
+        
+        // Check for disabled payment functionality
+        if($componentParams->get("debug_payment_disabled", 0)) {
+            $response = array(
+                "success" => false,
+                "title"   => JText::_("COM_CROWDFUNDING_FAIL"),
+                "text"    => JText::_("COM_CROWDFUNDING_ERROR_PAYMENT_HAS_BEEN_DISABLED_MESSAGE")
+            );
+            
+            echo json_encode($response);
+            JFactory::getApplication()->close();
+        }
         
         $projectId    = $app->input->getInt("project_id");
         $amount       = $app->input->getFloat("amount");
-        $userId       = JFactory::getUser()->id;
         
         $uri          = JUri::getInstance();
     
@@ -230,7 +253,7 @@ class CrowdFundingControllerPayments extends JControllerLegacy {
             }
             
             jimport("crowdfunding.currency");
-            $currencyId = $componentHelper->get("project_currency");
+            $currencyId = $componentParams->get("project_currency");
             $currency   = CrowdFundingCurrency::getInstance($currencyId);
             
             // Prepare return URL
@@ -239,18 +262,21 @@ class CrowdFundingControllerPayments extends JControllerLegacy {
                 $returnUrl = $uri->toString(array("scheme", "host")).JRoute::_(CrowdFundingHelperRoute::getBackingRoute($project->getSlug(), $project->getCatslug(), "share"), false);
             }
     
-            // Get intention and store the data,
-            // which is needed for transaction validation.
-            $intentionKeys = array(
-                "user_id"         => $userId,
-                "project_id"      => $projectId,
-            );
-    
-            jimport("crowdfunding.intention");
-            $intention = new CrowdFundingIntention($intentionKeys);
-    
-            // Set main data if it is a new intention.
-            if(!$intention->id) {
+            
+            // Intentions
+            
+            $userId       = JFactory::getUser()->get("id");
+            $aUserId      = $app->getUserState("auser_id");
+            
+            // Reset anonymous user hash ID 
+            if(!empty($aUserId)) {
+                $app->setUserState("auser_id", "");
+            }
+            
+            $intention    = CrowdFundingHelper::getIntention($userId, $aUserId, $projectId);
+            
+            // Validate intention record
+            if(!$intention->getId()) {
     
                 $response = array(
                     "success" => false,
@@ -262,20 +288,31 @@ class CrowdFundingControllerPayments extends JControllerLegacy {
                 JFactory::getApplication()->close();
     
             }
-    
+            
+            // Validate Reward
+            // If the user is anonymous, the system will store 0 for reward ID. 
+            // The anonymous users can't select rewards.
+            $rewardId = ($intention->isAnonymous()) ? 0 : (int)$intention->getRewardId();
+            if(!empty($rewardId)) {
+                $rewardId= $model->updateRewardBankTransfer($rewardId, $projectId, $amount);
+            }
+            
+            // Prepare transaction data
             jimport("itprism.string");
+            $transactinoId   = JString::strtoupper(ITPrismString::generateRandomString(12, "BT"));
             $transactionData = array(
                 "txn_amount"   => $amount,
-                "txn_currency" => $currency->abbr,
+                "txn_currency" => $currency->getAbbr(),
                 "txn_status"   => "pending",
-                "txn_id"       => JString::strtoupper(ITPrismString::generateRandomString(12, "BT")),
+                "txn_id"       => $transactinoId,
                 "project_id"   => $projectId,
-                "reward_id"    => $intention->reward_id,
-                "investor_id"  => $userId,
-                "receiver_id"  => $project->user_id,
+                "reward_id"    => $rewardId, 
+                "investor_id"  => (int)$userId,
+                "receiver_id"  => (int)$project->user_id,
                 "service_provider"  => "Bank Transfer"
             );
             
+            // Store transaction data
             jimport("crowdfunding.transaction");
             $transaction = new CrowdFundingTransaction();
             $transaction->bind($transactionData);
@@ -285,9 +322,11 @@ class CrowdFundingControllerPayments extends JControllerLegacy {
             // Remove intention
             $intention->delete();
             
-            // Initialize step one
-            $projectContext = "com_crowdfunding.backing.project".$projectId;
-            $app->setUserState($projectContext.".step1", false);
+            // Reset the values of the payment process ( the flag step 1 ).
+            $paymentProcessContext = CrowdFundingConstants::PAYMENT_PROCESS_CONTEXT.$projectId;
+            $paymentProcess        = $app->getUserState($paymentProcessContext);
+            $paymentProcess->step1 = false;
+            $app->setUserState($paymentProcessContext, $paymentProcess);
     
         } catch (Exception $e) {
     
@@ -306,6 +345,42 @@ class CrowdFundingControllerPayments extends JControllerLegacy {
     
         $language = JFactory::getLanguage();
         $language->load("plg_crowdfundingpayment_banktransfer", JPATH_ADMINISTRATOR);
+        
+        
+        // Send mail to administrator
+        if($pluginParams->get("send_admin_mail", 0)) {
+            
+            $subject = JText::_("PLG_CROWDFUNDINGPAYMENT_BANKTRANSFER_NEW_INVESTMENT_ADMIN_SUBJECT");
+            $body    = JText::sprintf("PLG_CROWDFUNDINGPAYMENT_BANKTRANSFER_NEW_INVESTMENT_ADMIN_BODY", $project->title);
+            $return  = JFactory::getMailer()->sendMail($app->getCfg("mailfrom"), $app->getCfg("fromname"), $app->getCfg("mailfrom"), $subject, $body);
+            
+            // Check for an error.
+            if ($return !== true) {
+                $error = JText::sprintf("PLG_CROWDFUNDINGPAYMENT_BANKTRANSFER_ERROR_MAIL_SENDING_ADMIN");
+                JLog::add($error);
+            }
+            
+        }
+        
+        // Send mail to user
+        if($pluginParams->get("send_user_mail", 0)) {
+        
+            jimport("itprism.string");
+            $amount = ITPrismString::getAmount($transaction->txn_amount, $transaction->txn_currency);
+            
+            $user     = JUser::getInstance($project->user_id);
+            
+            $subject = JText::sprintf("PLG_CROWDFUNDINGPAYMENT_BANKTRANSFER_NEW_INVESTMENT_USER_SUBJECT", $project->title);
+            $body    = JText::sprintf("PLG_CROWDFUNDINGPAYMENT_BANKTRANSFER_NEW_INVESTMENT_USER_BODY", $amount, $project->title, $transactinoId, $transactinoId);
+            $return  = JFactory::getMailer()->sendMail($app->getCfg("mailfrom"), $app->getCfg("fromname"), $app->getCfg("mailfrom"), $subject, $body);
+        
+            // Check for an error.
+            if ($return !== true) {
+                $error = JText::sprintf("PLG_CROWDFUNDINGPAYMENT_BANKTRANSFER_ERROR_MAIL_SENDING_USER");
+                JLog::add($error);
+            }
+        
+        }
         
         $response = array(
             "success" => true,

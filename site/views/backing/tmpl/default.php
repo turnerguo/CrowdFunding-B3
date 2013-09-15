@@ -20,7 +20,10 @@ defined('_JEXEC') or die;?>
 	
 	<div class="row-fluid">
 		<div class="span12">
-    		<?php echo $this->loadTemplate("nav");?>	
+    		<?php 
+        		$layout      = new JLayoutFile('payment_wizard', $this->layoutsBasePath);
+        		echo $layout->render($this->layoutData);
+    		?>	
     	</div>
 	</div>
 	

@@ -3,18 +3,14 @@
 * @package      CrowdFunding
 * @subpackage   Libraries
 * @author       Todor Iliev
-* @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+* @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
 * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
-* CrowdFunding is free software. This vpversion may have been modified pursuant
-* to the GNU General Public License, and as distributed it includes or
-* is derivative of works licensed under the GNU General Public License or
-* other free or open source software licenses.
 */
 
 defined('JPATH_PLATFORM') or die;
 
 /**
- * Version information
+ * This is a class that provides information about CrowdFunding version.
  *
  * @package      CrowdFunding
  * @subpackage   Libraries
@@ -40,7 +36,7 @@ class CrowdfundingVersion {
      * 
      * @var integer
      */
-    public $devLevel  = '3.1';
+    public $devLevel  = '4';
     
     /**
      * Release Type
@@ -61,7 +57,7 @@ class CrowdfundingVersion {
      * 
      * @var string
      */
-    public $releaseDate= '03-September-2013';
+    public $releaseDate= '15-September-2013';
     
     /**
      * License
@@ -75,7 +71,7 @@ class CrowdfundingVersion {
      * 
      * @var string
      */
-    public $copyright  = '&copy; 2010 ITPrism. All rights reserved.';
+    public $copyright  = '&copy; 2013 ITPrism. All rights reserved.';
     
     /**
      * URL

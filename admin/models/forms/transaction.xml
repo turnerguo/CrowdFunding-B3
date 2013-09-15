@@ -3,9 +3,9 @@
     <fieldset name="update">
 
         <field name="investor_id" type="user"
-            label="COM_CROWDFUNDINGSHARES_USER" 
+            label="COM_CROWDFUNDING_SENDER" 
+            description="COM_CROWDFUNDING_SENDER_DESC" 
             filter="int"
-            required="true"
         />
            
         <field name="txn_amount" type="text"

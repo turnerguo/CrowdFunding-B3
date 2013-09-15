@@ -1,7 +1,7 @@
 jQuery(document).ready(function() {
 	
 	// Style file input
-	jQuery('.fileupload').fileupload();
+	jQuery('.fileupload').fileuploadstyle();
 	
 	jQuery('#jform_short_desc').attr("maxlength", 255);
 	

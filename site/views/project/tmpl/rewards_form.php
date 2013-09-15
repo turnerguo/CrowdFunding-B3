@@ -35,11 +35,11 @@ if($deliveryDate) {
     <div class="span10">
     	<label class="hasTooltip" data-placement="left" for="reward_amount_<?php echo $this->formIndex;?>" title="<?php echo JText::_("COM_CROWDFUNDING_REWARDS_AMOUNT_DESC");?>"><?php echo JText::_("COM_CROWDFUNDING_AMOUNT"); ?><span class="star">&nbsp;*</span></label>
         <div class="input-prepend input-append">
-        	<?php if(!empty($this->currency->symbol)){?>
-            <span class="add-on"><?php echo $this->currency->symbol;?></span>
+        	<?php if($this->currency->getSymbol()){?>
+            <span class="add-on"><?php echo $this->currency->getSymbol();?></span>
             <?php }?>
             <input name="rewards[<?php echo $this->formIndex;?>][amount]" id="reward_amount_<?php echo $this->formIndex;?>" type="text" value="<?php echo JArrayHelper::getValue($this->formItem,  "amount")?>" />
-            <span class="add-on"><?php echo $this->currency->abbr;?></span>
+            <span class="add-on"><?php echo $this->currency->getAbbr();?></span>
         </div>
         
         <label class="hasTooltip" data-placement="left" for="reward_title_<?php echo $this->formIndex;?>" title="<?php echo JText::_("COM_CROWDFUNDING_REWARDS_TITLE_DESC");?>"><?php echo JText::_("COM_CROWDFUNDING_TITLE"); ?><span class="star">&nbsp;*</span></label>

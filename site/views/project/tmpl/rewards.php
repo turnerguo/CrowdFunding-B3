@@ -71,8 +71,6 @@ defined('_JEXEC') or die;
 </div>
 <?php echo $this->loadTemplate("tmpl");?>
 
-<?php echo $this->version->backlink;?>
-
 <?php if(empty($this->item->published)) {?>
 <div class="modal hide fade" id="js-modal-publish-project">
     <div class="modal-header">
@@ -89,3 +87,4 @@ defined('_JEXEC') or die;
     </div>
 </div>
 <?php }?>
+<?php echo $this->version->backlink;?>

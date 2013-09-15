@@ -69,6 +69,10 @@ class CrowdFundingModelDiscover extends JModelList {
         $value      = $app->input->get("filter_phrase");
         $this->setState($this->context.'.filter_phrase', $value);
         
+        // Filter by filter type
+        $value      = $app->input->get("filter_fundingtype");
+        $this->setState($this->context.'.filter_fundingtype', $value);
+        
         // Set category id
         $catId      = $app->input->get("id", 0, "uint");
         $this->setState($this->context.'.category_id', $catId);
@@ -154,6 +158,15 @@ class CrowdFundingModelDiscover extends JModelList {
             $query->where('l.country_code = '.$db->quote($countryCode));
         }
         
+        // Filter by funding type
+        $filterFundingType = JString::strtoupper(JString::trim($this->getState($this->context.".filter_fundingtype")));
+        if(!empty($filterFundingType)) {
+            $allowedFundingTypes = array("FIXED", "FLEXIBLE");
+            if(in_array($filterFundingType, $allowedFundingTypes)) {
+                $query->where('a.funding_type = '.$db->quote($filterFundingType));
+            }
+        }
+        
         // Filter by phrase
         $phrase = $this->getState($this->context.".filter_phrase");
         if(!empty($phrase)) {
@@ -218,7 +231,7 @@ class CrowdFundingModelDiscover extends JModelList {
     
                 // Calculate funding end date
                 if(!empty($item->funding_days)) {
-                    $result[$key]->funding_end = CrowdFundingHelper::calcualteEndDate($item->funding_days, $item->funding_start);
+                    $result[$key]->funding_end = CrowdFundingHelper::calcualteEndDate($item->funding_start, $item->funding_days);
                 }
     
                 // Calculate funded

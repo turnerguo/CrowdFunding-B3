@@ -3,12 +3,8 @@
  * @package      CrowdFunding
  * @subpackage   Plugins
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * CrowdFunding is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -57,12 +53,15 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
         // Load language
         $this->loadLanguage();
         
+        // This is a URI path to the plugin folder
+        $pluginURI = "plugins/crowdfundingpayment/paypal";
+        
         $notifyUrl = $this->getNotifyUrl();
         $returnUrl = $this->getReturnUrl($item->slug, $item->catslug);
         $cancelUrl = $this->getCancelUrl($item->slug, $item->catslug);
         
         $html  =  "";
-        $html .= '<h4>'.JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_TITLE").'</h4>';
+        $html .= '<h4><img src="'.$pluginURI.'/images/paypal_icon.png" width="36" height="32" alt="PayPal" />'.JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_TITLE").'</h4>';
         $html .= '<p>'.JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_INFO").'</p>';
         
         if(!$this->params->get('paypal_sandbox', 1)) {
@@ -86,21 +85,15 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
         $title = JText::sprintf("PLG_CROWDFUNDINGPAYMENT_PAYPAL_INVESTING_IN_S", htmlentities($item->title, ENT_QUOTES, "UTF-8"));
         $html .= '<input type="hidden" name="item_name" value="'.$title.'" />';
         
-
+        // Get intention
+        $userId        = JFactory::getUser()->id;
+        $aUserId       = $app->getUserState("auser_id");
+        
+        $intention = CrowdFundingHelper::getIntention($userId, $aUserId, $item->id);
+        
         // Prepare custom data
-        $userId = JFactory::getUser()->id;
-        
-        $intentionKeys = array(
-            "user_id"    => $userId,
-            "project_id" => $item->id
-        );
-        
-        jimport("crowdfunding.intention");
-        $intention = new CrowdFundingIntention($intentionKeys);
-        
-        // Custom data
         $custom = array(
-            "intention_id" =>  $intention->id,
+            "intention_id" =>  $intention->getId(),
             "gateway"	   =>  "PayPal"
         );
         
@@ -208,10 +201,10 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
             $intentionId     = JArrayHelper::getValue($custom, "intention_id", 0, "int");
             
             jimport("crowdfunding.intention");
-            $intention = new CrowdFundingIntention($intentionId);
+            $intention       = new CrowdFundingIntention($intentionId);
             
             // Validate transaction data
-            $validData = $this->validateData($_POST, $currency->abbr, $intention);
+            $validData = $this->validateData($_POST, $currency->getAbbr(), $intention);
             if(is_null($validData)) {
                 return $result;
             }
@@ -295,10 +288,6 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
             return;
         }
        
-        // DEBUG
-        $debugString = "CONTEXT:" .var_export($context, true)."\n";
-        JLog::add($debugString, JLog::DEBUG);
-        
         if(strcmp("com_crowdfunding.notify.paypal", $context) != 0){
             return;
         }
@@ -353,9 +342,9 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
         
         // Prepare transaction data
         $transaction = array(
-            "investor_id"		     => (int)$intention->user_id,
-            "project_id"		     => (int)$intention->project_id,
-            "reward_id"			     => (int)$intention->reward_id,
+            "investor_id"		     => (int)$intention->getUserId(),
+            "project_id"		     => (int)$intention->getProjectId(),
+            "reward_id"			     => ($intention->isAnonymous()) ? 0 : (int)$intention->getRewardId(),
         	"service_provider"       => "PayPal",
         	"txn_id"                 => JArrayHelper::getValue($data, "txn_id", null, "string"),
         	"txn_amount"		     => JArrayHelper::getValue($data, "mc_gross", null, "float"),
@@ -365,8 +354,8 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
         ); 
         
         
-        // Check User Id, Project ID and Transaction ID
-        if(!$transaction["investor_id"] OR !$transaction["project_id"] OR !$transaction["txn_id"]) {
+        // Check Project ID and Transaction ID
+        if(!$transaction["project_id"] OR !$transaction["txn_id"]) {
             $error  = JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_ERROR_INVALID_TRANSACTION_DATA");
             $error .= "\n". JText::sprintf("PLG_CROWDFUNDINGPAYMENT_PAYPAL_TRANSACTION_DATA", var_export($transaction, true));
             JLog::add($error);
@@ -411,15 +400,14 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
     protected function updateReward(&$data) {
         
         jimport("crowdfunding.reward");
-        $reward = new CrowdFundingReward();
         $keys   = array(
         	"id"         => $data["reward_id"], 
         	"project_id" => $data["project_id"]
         );
-        $reward->load($keys);
+        $reward = new CrowdFundingReward($keys);
         
         // Check for valid reward
-        if(!$reward->id) {
+        if(!$reward->getId()) {
             $error  = JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_ERROR_INVALID_REWARD");
             $error .= "\n". JText::sprintf("PLG_CROWDFUNDINGPAYMENT_PAYPAL_TRANSACTION_DATA", var_export($data, true));
 			JLog::add($error);
@@ -430,7 +418,7 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
         
         // Check for valida amount between reward value and payed by user
         $txnAmount = JArrayHelper::getValue($data, "txn_amount");
-        if($txnAmount < $reward->amount) {
+        if($txnAmount < $reward->getAmount()) {
             $error  = JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_ERROR_INVALID_REWARD_AMOUNT");
             $error .= "\n". JText::sprintf("PLG_CROWDFUNDINGPAYMENT_PAYPAL_TRANSACTION_DATA", var_export($data, true));
 			JLog::add($error);
@@ -471,7 +459,6 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
         
         // Get transaction by txn ID
         jimport("crowdfunding.transaction");
-        
         $keys = array(
             "txn_id" => JArrayHelper::getValue($data, "txn_id")
         );

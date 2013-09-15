@@ -22,8 +22,8 @@ defined('_JEXEC') or die;
             <?php echo JHtml::_('grid.id', $i, $item->id); ?>
         </td>
         <td><a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=transaction&layout=edit&id=".$item->id);?>"><?php echo $item->txn_id; ?></a></td>
-		<td class="center hidden-phone"><?php echo $item->sender; ?></td>
-		<td class="center hidden-phone"><?php echo $item->beneficiary; ?></td>
+		<td class="center hidden-phone"><?php echo JHtml::_("crowdfunding.name", $item->sender); ?></td>
+		<td class="center hidden-phone"><?php echo $this->escape($item->beneficiary); ?></td>
 		<td class="center hidden-phone">
 			<a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=transactions&filter_search=pid:".$item->project_id);?>">
 		    <?php echo JHtmlString::truncate(strip_tags($item->project), 53); ?>

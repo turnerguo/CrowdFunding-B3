@@ -16,12 +16,12 @@ defined('_JEXEC') or die;?>
 <div class="row-fluid">
     <ul class="thumbnails">
       <?php if(isset($this->item)) {
-        $raised   = $this->currency->getAmountString($this->item->funded);
-    	
-        // Prepare the value that I am going to display
-        $user = JFactory::getUser($this->item->user_id);
+        $raised         = $this->currency->getAmountString($this->item->funded);
         $fundedPercents = JHtml::_("crowdfunding.funded", $this->item->funded_percents);
-        $socialProfile  = JHtml::_("crowdfunding.socialProfile", $this->socialPlatform, $user);
+    	
+        // Get social platform and a link to the profile
+        $socialProfile      = CrowdFundingHelper::getSocialProfile($this->item->user_id, $this->socialPlatform);
+        $socialProfileLink  = (!$socialProfile) ? null : $socialProfile->getLink();
     	
      ?>
       <li class="span12">
@@ -30,8 +30,8 @@ defined('_JEXEC') or die;?>
           <div class="caption">
             <h3><a href="<?php echo JRoute::_( CrowdFundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug) ); ?>" target="_blank"><?php echo $this->item->title;?></a></h3>
             <span class="cf-founder">by 
-                <?php if(!empty($socialProfile)){ ?>
-                <a href="<?php echo $socialProfile;?>"  target="_blank"><?php echo $this->item->user_name; ?></a>
+                <?php if(!empty($socialProfileLink)){ ?>
+                <a href="<?php echo $socialProfileLink;?>"  target="_blank"><?php echo $this->item->user_name; ?></a>
                 <?php } else {?>
                 <?php echo $this->item->user_name; ?>
                 <?php }?>

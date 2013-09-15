@@ -92,11 +92,11 @@ class CrowdFundingControllerNotifier extends JControllerLegacy {
             
             // Clear the name of the payment gateway.
             $filter = new JFilterInput();
-            $paymentGatewayClear = JString::strtolower($filter->clean($paymentGateway, ALNUM));
+            $paymentGateway = JString::strtolower($filter->clean($paymentGateway, "ALNUM"));
             
             // Event After Payment
             JPluginHelper::importPlugin('crowdfundingpayment');
-            $dispatcher->trigger('onAfterPayment', array('com_crowdfunding.notify.'.$paymentGatewayClear, &$transaction, $params, $project, $reward));
+            $dispatcher->trigger('onAfterPayment', array('com_crowdfunding.notify.'.$paymentGateway, &$transaction, $params, $project, $reward));
         		
         } catch (Exception $e) {
             

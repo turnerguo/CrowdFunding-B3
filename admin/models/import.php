@@ -68,10 +68,17 @@ class CrowdFundingModelImport extends JModelForm {
         
         $dir          = new DirectoryIterator($destFolder);
         
+        $fileName     = JFile::stripExt(JFile::getName($file));
+        
         foreach ($dir as $fileinfo) {
-            if (!$fileinfo->isDot()) {
+            
+            $currentFileName  = JFile::stripExt($fileinfo->getFilename());
+            
+            if (!$fileinfo->isDot() AND strcmp($fileName, $currentFileName) == 0) {
                 $filePath     = $destFolder. DIRECTORY_SEPARATOR . JFile::makeSafe($fileinfo->getFilename());
+                break;
             }
+            
         }
             
         return $filePath;

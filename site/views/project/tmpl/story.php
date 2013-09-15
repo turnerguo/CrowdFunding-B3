@@ -66,4 +66,7 @@ defined('_JEXEC') or die;
         
     </form>
 </div>
+<?php if($this->params->get("extra_images", 0)){
+    echo $this->loadTemplate("extraimages");
+}?>
 <?php echo $this->version->backlink;?>

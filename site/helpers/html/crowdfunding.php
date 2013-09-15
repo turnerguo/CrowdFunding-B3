@@ -56,8 +56,11 @@ abstract class JHtmlCrowdFunding {
      */
     public static function inputAmount($value, $currency, $options) {
         
-        $class = "";
-        if(!empty($currency->symbol)){
+        $class  = "";
+        $symbol = $currency->getSymbol();
+        $currencyCode = $currency->getAbbr();
+        
+        if(!empty($symbol)){
             $class = "input-prepend ";
         }
         
@@ -65,8 +68,8 @@ abstract class JHtmlCrowdFunding {
         
         $html = '<div class="'.$class.'">';
         
-        if(!empty($currency->symbol)){
-            $html .= '<span class="add-on">'. $currency->symbol .'</span>';
+        if(!empty($symbol)){
+            $html .= '<span class="add-on">'. $symbol .'</span>';
         }
             
         $name = JArrayHelper::getValue($options, "name");
@@ -86,8 +89,8 @@ abstract class JHtmlCrowdFunding {
         
         $html .= '<input type="text" name="'.$name.'" value="'.$value.'" '.$id.' '.$class.' />';
         
-        if(!empty($currency->abbr)) {
-            $html .= '<span class="add-on">'.$currency->abbr.'</span>';
+        if(!empty($currencyCode)) {
+            $html .= '<span class="add-on">'.$currencyCode.'</span>';
         }
             
         $html .= '</div>';
@@ -433,6 +436,29 @@ abstract class JHtmlCrowdFunding {
         return $date;
     }
     
+    public static function duration($startDate, $endDate, $days, $format = "d F Y") {
+    
+        $otuput = "";
+        
+        if(!empty($days)) {
+            $otuput .= JText::sprintf("COM_CROWDFUNDING_DURATION_DAYS", (int)$days);
+            
+            // Display end date
+            if(CrowdFundingHelper::isValidDate($endDate)) {
+                $otuput .= '<div class="info-mini">';
+                $otuput .= JText::sprintf("COM_CROWDFUNDING_DURATION_END_DATE", JHTML::_('date', $endDate, $format));
+                $otuput .= '</div>';
+            }
+            
+        } else if(CrowdFundingHelper::isValidDate($endDate)) {
+            $otuput .= JText::sprintf("COM_CROWDFUNDING_DURATION_END_DATE", JHTML::_('date', $endDate, $format));
+        } else {
+            $otuput .= "---";
+        }
+    
+        return $otuput;
+    }
+    
     public static function postedby($name, $date, $link = null) {
     
         if(!empty($link)) {
@@ -442,8 +468,19 @@ abstract class JHtmlCrowdFunding {
         }
         
         $date = JHTML::_('date', $date, JText::_('DATE_FORMAT_LC3'));
-        $hmtl = JText::sprintf("COM_CROWDFUNDING_POSTED_BY", $profile, $date);
+        $html = JText::sprintf("COM_CROWDFUNDING_POSTED_BY", $profile, $date);
          
-        return $hmtl;
+        return $html;
+    }
+    
+    public static function name($name) {
+    
+        if(!empty($name)) {
+            $output = htmlspecialchars($name, ENT_QUOTES, "UTF-8");
+        } else {
+            $output = JText::_("COM_CROWDFUNDING_ANONYMOUS");
+        }
+    
+        return $output;
     }
 }

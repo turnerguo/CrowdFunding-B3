@@ -109,7 +109,7 @@ class CrowdFundingViewImport extends JViewLegacy {
         JHtml::_('behavior.formvalidation');
         
         JHtml::_('bootstrap.tooltip');
-        JHtml::_('itprism.ui.bootstrap_fileupload');
+        JHtml::_('itprism.ui.bootstrap_fileuploadstyle');
         
 		$this->document->addScript('../media/'.$this->option.'/js/admin/'.JString::strtolower($this->getName()).'.js');
 	}

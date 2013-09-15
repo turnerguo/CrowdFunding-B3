@@ -72,10 +72,10 @@ class CrowdFundingViewProject extends JViewLegacy {
                 break;
         }
         
-        $this->version = new CrowdfundingVersion();
-        
         $this->prepareDebugMode();
         $this->prepareDocument();
+        
+        $this->version = new CrowdFundingVersion();
         
         parent::display($tpl);
     }
@@ -189,15 +189,15 @@ class CrowdFundingViewProject extends JViewLegacy {
         
         switch($this->fundingDuration) {
         
-            case "days":
+            case "days": // Only days type is enabled
                 $this->checkedDays = 'checked="checked"';
                 break;
         
-            case "date":
+            case "date": // Only date type is enabled
                 $this->checkedDate = 'checked="checked"';
                 break;
         
-            default:
+            default: // Both ( days and date ) types are enabled
         
                 $this->checkedDays = 0;
                 $this->checkedDate = "";
@@ -239,6 +239,28 @@ class CrowdFundingViewProject extends JViewLegacy {
         $this->pWidth      = $this->params->get("pitch_image_width", 600);
         $this->pHeight     = $this->params->get("pitch_image_height", 400);
         
+        // Prepare extra images folder
+        if($this->params->get("extra_images", 0) AND !empty($this->userId)) {
+
+            jimport('joomla.filesystem.folder');
+            
+            $userDestinationFolder = CrowdFundingHelper::getImagesFolder($this->userId);
+            if(!JFolder::exists($userDestinationFolder)) {
+                JFolder::create($userDestinationFolder);
+                
+                $userDestinationFolderIndex = JPath::clean($userDestinationFolder."/index.html");
+                $bufffer = "<!DOCTYPE html><title></title>";
+                
+                jimport('joomla.filesystem.file');
+                JFile::write($userDestinationFolderIndex, $bufffer);
+            }
+            
+            jimport("crowdfunding.images");
+            $this->images = new CrowdFundingImages($itemId);
+            
+            $this->extraImagesUri = CrowdFundingHelper::getImagesFolderUri($this->userId);
+        }
+            
         $this->pathwayName = JText::_("COM_CROWDFUNDING_STEP_STORY");
         
     } 
@@ -342,7 +364,14 @@ class CrowdFundingViewProject extends JViewLegacy {
             case "story":
                 
                 // Scripts
-                JHtml::_('itprism.ui.bootstrap_fileupload');
+                JHtml::_('itprism.ui.bootstrap_fileuploadstyle');
+                
+                if($this->params->get("extra_images", 0)) {
+                    JHtml::_('itprism.ui.fileupload');
+                    JHtml::_('itprism.ui.pnotify');
+                    $this->document->addScript('media/'.$this->option.'/js/helper.js');
+                }
+                
                 $this->document->addScript('media/'.$this->option.'/js/site/project_story.js');
                 
                 break;
@@ -350,7 +379,7 @@ class CrowdFundingViewProject extends JViewLegacy {
             default: // Basic
                 
                 // Scripts
-                JHtml::_('itprism.ui.bootstrap_fileupload');
+                JHtml::_('itprism.ui.bootstrap_fileuploadstyle');
                 JHtml::_('itprism.ui.bootstrap_maxlength');
                 JHtml::_('itprism.ui.bootstrap_typeahead');
                 JHtml::_('itprism.ui.parsley');

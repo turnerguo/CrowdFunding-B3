@@ -5,6 +5,11 @@ span.help-block {
 	font-size: x-small;
 }
 
+div.info-mini {
+	font-size: xx-small;
+	font-style: italic;
+}
+
 #crowdf-funding-form span.help-block{
 	width: 300px;
 }
@@ -413,3 +418,19 @@ form.bs-docs-example {
 	font-size: medium;
 }
 
+#js-extra-images-rows {
+	margin-top: 50px;
+}
+
+.extra-image-row {
+	border: thin solid #dcdcdc;
+	margin: 20px 0px;
+}
+
+.extra-image-row img, .extra-image-row a {
+	margin: 10px;
+}
+
+.extra-image-row:hover {
+	background: #eaeaea;
+}

@@ -15,46 +15,8 @@ defined('_JEXEC') or die;
 
 class CrowdFundingTableReward extends JTable {
     
-    protected $available = 0;
-    
 	public function __construct($db) {
         parent::__construct('#__crowdf_rewards', 'id', $db);
     }
     
-    public function load($keys = null, $reset = true) {
-        parent::load($keys, $reset);
-        
-        // Calculate available
-        $this->available = $this->calcualteAvailable();
-                
-    }
-    
-    /**
-     * Check for limited reward. 
-     * If there is a number of rewards, it is limited.
-     */
-    public function isLimited() {
-	    return ( !empty($this->number) ) ? true : false;
-	}
-	
-	/**
-	 * 
-	 * Calculate the number of rewards
-	 * that are available for distribution
-	 */
-	protected function calcualteAvailable() {
-        
-        if($this->isLimited()) {
-            return $this->number - $this->distributed; 
-        }
-        return 0;
-    } 
-    
-	/**
-	 * Return available number of items
-     * @return integer $available
-     */
-    public function getAvailable() {
-        return $this->available;
-    }
 }

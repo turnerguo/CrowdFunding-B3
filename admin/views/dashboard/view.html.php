@@ -81,9 +81,6 @@ class CrowdFundingViewDashboard extends JViewLegacy {
 	    
 		$this->document->setTitle(JText::_('COM_CROWDFUNDING_DASHBOARD'));
 		
-		// Styles
-		$this->document->addStyleSheet('../media/'.$this->option.'/css/admin/bootstrap.min.css');
-		
 	}
 	
 }

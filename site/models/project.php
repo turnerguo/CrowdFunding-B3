@@ -398,7 +398,6 @@ class CrowdFundingModelProject extends JModelForm {
         return $names; 
     }
     
-    
 	/**
      * Delete image only
      *
@@ -518,6 +517,13 @@ class CrowdFundingModelProject extends JModelForm {
 		
     }
     
+    /**
+     * Validate the owner of the project.
+     * 
+     * @param integer $itemId
+     * @param integer $userId
+     * @return boolean
+     */
     public function isOwner($itemId, $userId) {
         
         $db     = JFactory::getDbo();
@@ -535,4 +541,239 @@ class CrowdFundingModelProject extends JModelForm {
         return (bool)$result;
         
     }
+    
+    /**
+     * Validate the owner of the images.
+     *
+     * @param integer Image Id
+     * @param integer $userId
+     * @return boolean
+     */
+    public function isImageOwner($id, $userId) {
+    
+        $db     = JFactory::getDbo();
+        
+        $subQuery  = $db->getQuery(true);
+        $subQuery
+            ->select("b.project_id")
+            ->from($db->quoteName("#__crowdf_images", "b"))
+            ->where("b.id = " . (int)$id);
+        
+        $query  = $db->getQuery(true);
+        $query
+            ->select("COUNT(*)")
+            ->from($db->quoteName("#__crowdf_projects", "a"))
+            ->where("a.id = (" . $subQuery .")")
+            ->where("a.user_id = " . (int)$userId);
+    
+        $db->setQuery($query, 0, 1);
+        $result = $db->loadResult();
+    
+        return (bool)$result;
+    
+    }
+    
+    
+    protected function createThumb($fileName, $options) {
+    
+        $destination  = JArrayHelper::getValue($options, "destination", "images/crowdfunding");
+        $width        = JArrayHelper::getValue($options, "width", 100);
+        $height       = JArrayHelper::getValue($options, "height", 100);
+        $scale        = JArrayHelper::getValue($options, "scale", JImage::SCALE_INSIDE);
+        $prefix       = JArrayHelper::getValue($options, "prefix", "thumb");
+        
+        // Make thumbnail
+        $newFile = $destination.DIRECTORY_SEPARATOR.$fileName;
+    
+        $ext     = JFile::getExt(JFile::makeSafe($fileName));
+    
+        $image   = new JImage();
+        $image->loadFile($newFile);
+        if (!$image->isLoaded()) {
+            throw new Exception(JText::sprintf('COM_CROWDFUNDING_ERROR_FILE_NOT_FOUND', $newFile));
+        }
+    
+        // Resize the file as a new object
+        $thumb     = $image->resize($width, $height, true, $scale);
+    
+        jimport("itprism.string");
+        $thumbName = ITPrismString::generateRandomString(6, $prefix) . ".".$ext;
+        $thumbFile = $destination.DIRECTORY_SEPARATOR.$thumbName;
+    
+        switch ($ext) {
+            case "gif":
+                $type = IMAGETYPE_GIF;
+                break;
+    
+            case "png":
+                $type = IMAGETYPE_PNG;
+                break;
+    
+            case IMAGETYPE_JPEG:
+            default:
+                $type = IMAGETYPE_JPEG;
+        }
+    
+        $thumb->toFile($thumbFile, $type);
+    
+        return $thumbName;
+    }
+    
+    
+    public function uploadExtraImages($files, $options){
+    
+        $options["prefix"] = "extra_thumb_";
+        
+        $destination       = JArrayHelper::getValue($options, "destination", "images/crowdfunding");
+         
+        $images = array();
+    
+        // check for error
+        foreach($files as $file){
+    
+            // Upload image
+            if(!empty($file['name'])){
+    
+                $upload          = new ITPrismFileUploadImage($file);
+    
+                // Validate image and if there is an error, throw exception
+                $this->validateImage($upload);
+                
+                $ext = JFile::getExt( JFile::makeSafe($file["name"]) );
+    
+                // Generate name of the image
+                jimport("itprism.string");
+                $imageName = ITPrismString::generateRandomString(6, "extra_").".".$ext;
+                $dest      = $destination . DIRECTORY_SEPARATOR . $imageName;
+    
+                $upload->upload($dest);
+    
+                $names = array("image" => "", "thumb" => "");
+                $names['image'] = $imageName;
+                $names["thumb"] = $this->createThumb($imageName, $options);
+    
+                $images[] = $names;
+    
+            }
+        }
+    
+        return $images;
+    
+    }
+    
+    /**
+     *
+     * Save additional images names to the project
+     * @param array $images
+     *
+     * * @throws Exception
+     */
+    public function storeExtraImage($images, $projectId, $imagesUri){
+    
+        settype($images,    "array");
+        settype($projectId, "integer");
+        $result = array();
+    
+        if(!empty($images) AND !empty($projectId)){
+    
+            $image = array_shift($images);
+    
+            $db = JFactory::getDbo();
+            /** @var $db JDatabaseMySQLi **/
+    
+            $query = $db->getQuery(true);
+            $query
+                ->insert($db->quoteName("#__crowdf_images"))
+                ->set( $db->quoteName("image")      ."=". $db->quote($image["image"]))
+                ->set( $db->quoteName("thumb")      ."=". $db->quote($image["thumb"]))
+                ->set( $db->quoteName("project_id") ."=". (int)$projectId);
+    
+            $db->setQuery($query);
+            $db->query();
+    
+            $lastId = $db->insertid();
+    
+            // Add URI path to images
+            $result = array(
+                "id"     => $lastId,
+                "image"  => $imagesUri."/".$image["image"],
+                "thumb"  => $imagesUri."/".$image["thumb"]
+            );
+    
+        }
+    
+        return $result;
+    
+    }
+    
+    protected function validateImage(&$upload) {
+    
+        // Joomla! media extension parameters
+        $mediaParams     = JComponentHelper::getParams("com_media");
+    
+        // Get allowed mime types from media manager options
+        $mimeTypes = explode(",", $mediaParams->get("upload_mime"));
+        $upload->setMimeTypes($mimeTypes);
+    
+        // Get allowed image extensions from media manager options
+        $imageExtensions = explode(",", $mediaParams->get("image_extensions"));
+        $upload->setImageExtensions($imageExtensions);
+    
+        $uploadMaxSize   = $mediaParams->get("upload_maxsize");
+        $KB              = 1024 * 1024;
+        $upload->setMaxFileSize( round($uploadMaxSize * $KB, 0) );
+    
+        // Validate the file
+        $upload->validate();
+    
+    }
+    
+    /**
+     * Only delete an additionl image
+     *
+     * @param integer Image ID
+     * @param string  A path to the images folder.
+     */
+    public function removeExtraImage($id, $imagesFolder){
+    
+        $db = JFactory::getDbo();
+        /** @var $db JDatabaseMySQLi **/
+    
+        // Get the image
+        $query = $db->getQuery(true);
+        $query
+            ->select("a.image, a.thumb")
+            ->from($db->quoteName("#__crowdf_images") .' AS a')
+            ->where("a.id = " . (int)$id );
+    
+        $db->setQuery($query);
+        $row = $db->loadObject();
+         
+        if(!empty($row)){
+    
+            // Remove the image from the filesystem
+            $file = $imagesFolder.DIRECTORY_SEPARATOR.$row->image;
+            
+            if(is_file($file)) {
+                JFile::delete($file);
+            }
+    
+            // Remove the thumbnail from the filesystem
+            $file = $imagesFolder.DIRECTORY_SEPARATOR. $row->thumb;
+            if(is_file($file)) {
+                JFile::delete($file);
+            }
+    
+            // Delete the record
+            $query = $db->getQuery(true);
+            $query
+                ->delete($db->quoteName("#__crowdf_images"))
+                ->where($db->quoteName("id") ." = ". (int)$id );
+    
+            $db->setQuery($query);
+            $db->query();
+        }
+    
+    }
+    
 }
