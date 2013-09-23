@@ -116,7 +116,7 @@ class CrowdFundingViewRewards extends JViewLegacy {
         JToolbarHelper::title(JText::sprintf('COM_CROWDFUNDING_REWARDS_MANAGER', $this->projectTitle));
         
         // Add custom buttons
-        $bar = JToolBar::getInstance('toolbar');
+        $bar = JToolbar::getInstance('toolbar');
         
         // Import
         $link = JRoute::_('index.php?option=com_crowdfunding&view=projects');

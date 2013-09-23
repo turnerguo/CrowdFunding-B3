@@ -72,10 +72,10 @@ class CrowdFundingViewProject extends JViewLegacy {
                 break;
         }
         
+        $this->version = new CrowdFundingVersion();
+        
         $this->prepareDebugMode();
         $this->prepareDocument();
-        
-        $this->version = new CrowdFundingVersion();
         
         parent::display($tpl);
     }

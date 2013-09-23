@@ -89,7 +89,7 @@ class CrowdFundingViewDetails extends JViewLegacy {
         
         // Events
         JPluginHelper::importPlugin('content');
-        $dispatcher	       = JDispatcher::getInstance();
+        $dispatcher	       = JEventDispatcher::getInstance();
         $this->item->event = new stdClass();
         $offset            = 0;
         

@@ -67,9 +67,9 @@ class CrowdFundingViewFeatured extends JViewLegacy {
 		// Include HTML helper
         JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
         
-        $this->prepareDocument();
-        
         $this->version = new CrowdFundingVersion();
+        
+        $this->prepareDocument();
         
         parent::display($tpl);
     }

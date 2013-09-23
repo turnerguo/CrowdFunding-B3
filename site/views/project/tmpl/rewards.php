@@ -49,7 +49,7 @@ defined('_JEXEC') or die;
         
         <div class="btn-group cf-rewards-submit-btn">
             <button class="btn" <?php echo $this->disabledButton;?>>
-                <i class="icon-ok"></i>
+                <i class="icon-ok icon-white"></i>
                 <?php echo JText::_("COM_CROWDFUNDING_SAVE_REWARDS");?>
             </button>
             <?php if(empty($this->item->published)) {?>
@@ -59,7 +59,7 @@ defined('_JEXEC') or die;
             <ul class="dropdown-menu">
                 <li>
                     <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=projects.savestate&id=".$this->item->id."&state=1&".JSession::getFormToken()."=1&return=1"); ?>" id="js-btn-rewards-publish">
-                        <i class="icon-ok-circle"></i>
+                        <i class="icon-ok-circle icon-white"></i>
                         <?php echo JText::_("COM_CROWDFUNDING_PUBLISH_NOW");?>
                     </a>
                 </li>
@@ -70,6 +70,7 @@ defined('_JEXEC') or die;
     </form>
 </div>
 <?php echo $this->loadTemplate("tmpl");?>
+<?php echo $this->version->backlink;?>
 
 <?php if(empty($this->item->published)) {?>
 <div class="modal hide fade" id="js-modal-publish-project">
@@ -87,4 +88,3 @@ defined('_JEXEC') or die;
     </div>
 </div>
 <?php }?>
-<?php echo $this->version->backlink;?>

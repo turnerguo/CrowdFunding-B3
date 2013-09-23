@@ -71,7 +71,7 @@ defined('_JEXEC') or die;
         
         <div class="clearfix"></div>
         <button type="submit" class="btn margin-tb-15px" <?php echo $this->disabledButton;?>>
-        	<i class="icon-ok"></i>
+        	<i class="icon-ok icon-white"></i>
             <?php echo JText::_("COM_CROWDFUNDING_SAVE_AND_CONTINUE")?>
         </button>
     </form>

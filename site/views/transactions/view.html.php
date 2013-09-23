@@ -55,10 +55,10 @@ class CrowdFundingViewTransactions extends JViewLegacy {
 		JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
 		JLoader::register('JHtmlString', JPATH_LIBRARIES.'/joomla/html/html/string.php');
 		
+		$this->version = new CrowdFundingVersion();
+		
         $this->prepareDocument();
                 
-        $this->version = new CrowdFundingVersion();
-        
         parent::display($tpl);
     }
     

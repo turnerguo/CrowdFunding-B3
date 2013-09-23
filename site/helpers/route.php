@@ -248,9 +248,7 @@ abstract class CrowdFundingHelperRoute {
 	}
 	
 	/**
-	 * 
 	 * Prepare a link to discover page
-	 * 
 	 */
 	public static function getDiscoverRoute() {
 	     

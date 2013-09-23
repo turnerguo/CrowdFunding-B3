@@ -108,10 +108,10 @@ class CrowdFundingViewBacking extends JViewLegacy {
             "paymentProcess" => $paymentProcess,
 	    ));
 	    
+	    $this->version = new CrowdFundingVersion();
+	    
         $this->prepareDebugMode($paymentProcess);
 		$this->prepareDocument();
-		
-		$this->version = new CrowdFundingVersion();
 		
         parent::display($tpl);
     }
@@ -242,7 +242,7 @@ class CrowdFundingViewBacking extends JViewLegacy {
         
         // Events
         JPluginHelper::importPlugin('crowdfundingpayment');
-        $dispatcher	        = JDispatcher::getInstance();
+        $dispatcher	        = JEventDispatcher::getInstance();
         $results            = $dispatcher->trigger('onProjectPayment', array('com_crowdfunding.payment', $item, $this->params));
         
         $this->item->event  = new stdClass();
@@ -273,7 +273,7 @@ class CrowdFundingViewBacking extends JViewLegacy {
     
         // Events
         JPluginHelper::importPlugin('content');
-        $dispatcher	       = JDispatcher::getInstance();
+        $dispatcher	       = JEventDispatcher::getInstance();
         
         $offset            = 0;
     

@@ -105,7 +105,7 @@ class CrowdFundingViewLocations extends JViewLegacy {
         JToolbarHelper::divider();
         
         // Add custom buttons
-		$bar = JToolBar::getInstance('toolbar');
+		$bar = JToolbar::getInstance('toolbar');
 		
 		// Import
 		$link = JRoute::_('index.php?option=com_crowdfunding&view=import&type=locations');

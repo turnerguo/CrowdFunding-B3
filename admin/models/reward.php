@@ -82,6 +82,7 @@ class CrowdFundingModelReward extends JModelAdmin {
         $distributed  = JArrayHelper::getValue($data, "distributed");
         $delivery     = JArrayHelper::getValue($data, "delivery");
         $shipping     = JArrayHelper::getValue($data, "shipping");
+        $published    = JArrayHelper::getValue($data, "published");
         $projectId    = JArrayHelper::getValue($data, "project_id");
         
         // Load a record from the database
@@ -95,6 +96,7 @@ class CrowdFundingModelReward extends JModelAdmin {
         $row->set("distributed",    $distributed);
         $row->set("delivery",       $delivery);
         $row->set("shipping",       $shipping);
+        $row->set("published",      $published);
         $row->set("project_id",     $projectId);
         
         $row->store();

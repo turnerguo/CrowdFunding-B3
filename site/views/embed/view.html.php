@@ -87,9 +87,9 @@ class CrowdFundingViewEmbed extends JViewLegacy {
             
         }
         
+        $this->version = new CrowdFundingVersion();
+        
 		$this->prepareDocument();
-		
-		$this->version = new CrowdFundingVersion();
 		
         parent::display($tpl);
     }
@@ -182,7 +182,6 @@ class CrowdFundingViewEmbed extends JViewLegacy {
         $pathway->addItem($currentBreadcrumb, '');
         
         // Add styles
-//         $this->document->addStyleSheet( 'media/'.$this->option.'/css/site/bootstrap.min.css');
         $this->document->addStyleSheet( 'media/'.$this->option.'/css/site/style.css');
         
         // Add scripts

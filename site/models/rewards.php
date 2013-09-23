@@ -161,30 +161,6 @@ class CrowdFundingModelRewards extends JModelLegacy {
         
     }
     
-    /**
-     * 
-     * This method removes many rewards with one query.
-     * 
-     * @param array $pks
-     * @param itneger $userId
-     */
-    /* public function remove($pks, $userId) {
-        
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
-        
-        $query
-            ->delete()
-            ->from("#__crowdf_rewards USING #__crowdf_rewards")
-            ->innerJoin("#__crowdf_projects ON #__crowdf_rewards.project_id = #__crowdf_projects.id")
-            ->where("#__crowdf_rewards.id IN (". implode(",", $pks) .")")
-            ->where("(#__crowdf_projects.user_id = ". (int)$userId .")");
-        
-        $db->setQuery($query);
-        $db->query();
-        
-    } */
-    
     public function remove($rewardId, $userId) {
     
         $db    = JFactory::getDbo();

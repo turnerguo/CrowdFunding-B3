@@ -6,8 +6,8 @@
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <authorEmail>todor@itprism.com</authorEmail>
     <authorUrl>http://itprism.com</authorUrl>
-    <version>1.4</version>
-    <creationDate>15 September, 2013</creationDate>
+    <version>1.4.1</version>
+    <creationDate>23 September, 2013</creationDate>
 	<description>PLG_SYSTEM_CROWDFUNDINGMODULES_DESC</description>
 	
 	<languages folder="language">

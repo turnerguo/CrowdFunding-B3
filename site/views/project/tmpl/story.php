@@ -44,7 +44,7 @@ defined('_JEXEC') or die;
             <?php if(!$this->debugMode) {?>
             <div class="clearfix">&nbsp;</div>
         	<a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=story.removeImage&id=".$this->item->id."&".JSession::getFormToken()."=1");?>" class="btn btn-mini btn-danger">
-        	   <i class="icon-trash"></i> 
+        	   <i class="icon-trash icon-white"></i> 
         	   <?php echo JText::_("COM_CROWDFUNDING_REMOVE_IMAGE");?>
     	    </a>
         	<?php }?>
@@ -58,15 +58,18 @@ defined('_JEXEC') or die;
             <input type="hidden" name="task" value="story.save" />
             <?php echo JHtml::_('form.token'); ?>
             
+            <div class="clearfix"></div>
+            <?php if($this->params->get("extra_images", 0)){
+                echo $this->loadTemplate("extraimages");
+            }?>
+            <div class="clearfix"></div>
+            
             <button type="submit" class="btn margin-tb-15px" <?php echo $this->disabledButton;?>>
-            	<i class="icon-ok"></i>
+            	<i class="icon-ok icon-white"></i>
                 <?php echo JText::_("COM_CROWDFUNDING_SAVE_AND_CONTINUE")?>
             </button>
         </div>
         
     </form>
 </div>
-<?php if($this->params->get("extra_images", 0)){
-    echo $this->loadTemplate("extraimages");
-}?>
 <?php echo $this->version->backlink;?>

@@ -41,7 +41,7 @@ defined('_JEXEC') or die;
         <input name="rewards[][id]" type="hidden" value="" id="reward_id_d" />
         <?php if(!$this->debugMode) {?>
         <a href="#" class="btn btn-danger btn_remove_reward" id="reward_remove_d" data-reward-id="0" data-index-id="0" >
-            <i class="icon-trash"></i> 
+            <i class="icon-trash icon-white"></i> 
             <?php echo JText::_("COM_CROWDFUNDING_REMOVE")?>
         </a>
         <?php }?>

@@ -52,8 +52,11 @@ class CrowdFundingControllerProjects extends ITPrismControllerAdmin {
 		// Check for request forgeries
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
+		$app = JFactory::getApplication();
+		/** @var $app JAdministrator **/
+		
 		// Get items to publish from the request.
-		$cid   = $this->input->get('cid', array(), 'array');
+		$cid   = $app->input->get('cid', array(), 'array');
 		$data  = array(
 	        'approve'    => 1, 
 	        'disapprove' => 0
@@ -106,7 +109,10 @@ class CrowdFundingControllerProjects extends ITPrismControllerAdmin {
 	    // Check for request forgeries
 	    JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 	
-	    $ids    = $this->input->get('cid', array(), 'array');
+	    $app = JFactory::getApplication();
+	    /** @var $app JAdministrator **/
+	    
+	    $ids    = $app->input->get('cid', array(), 'array');
 	    
 	    $values = array(
             'featured'   => 1, 
@@ -160,7 +166,10 @@ class CrowdFundingControllerProjects extends ITPrismControllerAdmin {
 	    // Check for request forgeries
 	    JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 	
-	    $ids    = $this->input->get('cid', array(), 'array');
+	    $app = JFactory::getApplication();
+	    /** @var $app JAdministrator **/
+	    
+	    $ids    = $app->input->get('cid', array(), 'array');
 	     
 	    $values = array(
             'publish'   => 1,

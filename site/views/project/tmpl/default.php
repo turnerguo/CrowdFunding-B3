@@ -62,7 +62,7 @@ defined('_JEXEC') or die;
             
             <div class="clearfix"></div>
             <button type="submit" class="btn margin-tb-15px" <?php echo $this->disabledButton;?>>
-            	<i class="icon-ok"></i>
+            	<i class="icon-ok icon-white"></i>
                 <?php echo JText::_("COM_CROWDFUNDING_SAVE_AND_CONTINUE")?>
             </button>
         </form>
@@ -73,7 +73,7 @@ defined('_JEXEC') or die;
     	<?php if(!$this->debugMode) {?>
     	<div class="clearfix">&nbsp;</div>
     	<a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=project.removeImage&id=".$this->item->id."&".JSession::getFormToken()."=1");?>" class="btn btn-mini btn-danger" >
-    		<i class="icon-trash">
+    		<i class="icon-trash icon-white">
     		</i> <?php echo JText::_("COM_CROWDFUNDING_REMOVE_IMAGE");?>
 		</a>
     	<?php }?>

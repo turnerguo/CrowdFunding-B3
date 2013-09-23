@@ -29,8 +29,8 @@
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
-        <field name="extra_image_thumb_width" type="text" default="50" label="COM_CROWDFUNDING_EXTRA_IMAGE_THUMB_WIDTH" description="COM_CROWDFUNDING_EXTRA_IMAGE_THUMB_WIDTH_DESC" />
-        <field name="extra_image_thumb_height" type="text" default="50"  label="COM_CROWDFUNDING_EXTRA_IMAGE_THUMB_HEIGHT" description="COM_CROWDFUNDING_EXTRA_IMAGE_THUMB_HEIGHT_DESC" />
+        <field name="extra_image_thumb_width" type="text" default="100" label="COM_CROWDFUNDING_EXTRA_IMAGE_THUMB_WIDTH" description="COM_CROWDFUNDING_EXTRA_IMAGE_THUMB_WIDTH_DESC" />
+        <field name="extra_image_thumb_height" type="text" default="100"  label="COM_CROWDFUNDING_EXTRA_IMAGE_THUMB_HEIGHT" description="COM_CROWDFUNDING_EXTRA_IMAGE_THUMB_HEIGHT_DESC" />
         
         <field name="extra_images_thumb_scale" type="list" default="2" label="COM_CROWDFUNDING_EXTRA_IMAGES_SCALE" description="COM_CROWDFUNDING_EXTRA_IMAGES_SCALE_DESC" class="btn-group">
             <option value="1">COM_CROWDFUNDING_FILL</option>

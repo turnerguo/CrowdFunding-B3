@@ -20,7 +20,7 @@
         />
 
         <field name="service_provider" type="text"
-            label="COM_CROWDFUNDING_CURRENCY"
+            label="COM_CROWDFUNDING_PAYMENT_GETAWAY"
             filter="trim" 
             required="true"
         />

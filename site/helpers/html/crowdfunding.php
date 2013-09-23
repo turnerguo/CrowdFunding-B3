@@ -326,30 +326,33 @@ abstract class JHtmlCrowdFunding {
      * @since   11.1
      */
     public static function sort($title, $order, $direction = 'asc', $selected = 0, $task = null, $new_direction = 'asc', $tip = '') {
-        
-        JHtml::_('bootstrap.tooltip');
-    
-        $direction = strtolower($direction);
-        $icon = array('arrow-up', 'arrow-down');
-        $index = (int) ($direction == 'desc');
-    
-        if ($order != $selected) {
-            $direction = $new_direction;
-        } else {
-            $direction = ($direction == 'desc') ? 'asc' : 'desc';
-        }
-    
-        $html = '<a href="#" onclick="Joomla.tableOrdering(\'' . $order . '\',\'' . $direction . '\',\'' . $task . '\');return false;" class="hasTooltip" title="' . JText::_('JGLOBAL_CLICK_TO_SORT_THIS_COLUMN') . '">';
-        $html .= JText::_($title);
-    
-        if ($order == $selected){
-            $html .= ' <i class="icon-' . $icon[$index] . '"></i>';
-        }
-    
-        $html .= '</a>';
-    
-        return $html;
-    }
+
+		$direction = strtolower($direction);
+		$icon = array('arrow-up', 'arrow-down');
+		$index = (int) ($direction == 'desc');
+
+		if ($order != $selected) {
+			$direction = $new_direction;
+		} else {
+			$direction = ($direction == 'desc') ? 'asc' : 'desc';
+		}
+
+		$html = '<a href="#" onclick="Joomla.tableOrdering(\'' . $order . '\',\'' . $direction . '\',\'' . $task . '\');return false;" class="hasTooltip" title="' . JHtml::tooltipText(($tip ? $tip : $title), 'JGLOBAL_CLICK_TO_SORT_THIS_COLUMN') . '">';
+
+		if (isset($title['0']) && $title['0'] == '<') {
+			$html .= $title;
+		} else {
+			$html .= JText::_($title);
+		}
+
+		if ($order == $selected) {
+			$html .= ' <i class="icon-' . $icon[$index] . '"></i>';
+		}
+
+		$html .= '</a>';
+
+		return $html;
+	}
     
     public static function reward($rewardId, $reward, $txnId, $sent = 0, $canEdit = false) {
         
@@ -406,7 +409,7 @@ abstract class JHtmlCrowdFunding {
     }
     
     
-    public static function projecttitle($title, $categoryState, $slug, $catSlug) {
+    public static function projectTitle($title, $categoryState, $slug, $catSlug) {
     
         $html = array();
 
@@ -479,6 +482,44 @@ abstract class JHtmlCrowdFunding {
             $output = htmlspecialchars($name, ENT_QUOTES, "UTF-8");
         } else {
             $output = JText::_("COM_CROWDFUNDING_ANONYMOUS");
+        }
+    
+        return $output;
+    }
+    
+    /**
+     * Display a percent string.
+     *
+     * <code>
+     * $percentString = CrowdFundingHelper::percent(100);
+     * echo $percentString;
+     * </code>
+     *
+     * @param string $value
+     * @return string
+     */
+    public static function percent($value) {
+    
+        if(!$value) {
+            $value = "0.0";
+        }
+    
+        return $value . "%";
+    }
+    
+    public static function socialProfileLink($link, $name, $options = array()) {
+    
+        if(!empty($link)) {
+            
+            $targed = "";
+            if(!empty($options["target"])) {
+                $targed = 'target="'.JArrayHelper::getValue($options, "target").'"';
+            }
+            
+            $output = '<a href="'.$link.'" '.$targed.'>'.htmlspecialchars($name, ENT_QUOTES, "UTF-8").'</a>';
+            
+        } else {
+            $output = htmlspecialchars($name, ENT_QUOTES, "utf-8");
         }
     
         return $output;

@@ -12,7 +12,7 @@
         <field name="description" type="textarea" class="span12"
             label="COM_CROWDFUNDING_FIELD_DESCRIPTION" 
             filter="trim"
-            rows="20" 
+            rows="5" 
             required="true"
         />
 

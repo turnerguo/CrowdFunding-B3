@@ -37,6 +37,18 @@
             description="COM_CROWDFUNDING_REWARD_DELIVERY_DESC"
         />
         
+        <field name="published" type="list" class="inputbox" 
+            label="JSTATUS" 
+            description="JFIELD_PUBLISHED_DESC" 
+            filter="intval" 
+            size="1" 
+            default="1"
+        >
+            <option value="1">JPUBLISHED</option>
+            <option value="0">JUNPUBLISHED</option>
+            <option value="-2">JTRASHED</option>
+        </field>
+        
 		<field name="id" type="text" class="readonly" 
 		    label="JGLOBAL_FIELD_ID_LABEL" 
             description="JGLOBAL_FIELD_ID_DESC" 

@@ -47,12 +47,12 @@ defined('_JEXEC') or die;?>
             	?>
             	<tr>
             		<td>
-            		  <?php echo JHtml::_("crowdfunding.projecttitle", $item->title, $item->catstate, $item->slug, $item->catslug);?>
+            		  <?php echo JHtml::_("crowdfunding.projectTitle", $item->title, $item->catstate, $item->slug, $item->catslug);?>
             		</td>
             		<td class="cf-center hidden-phone"><?php echo $goal; ?></td>
             		<td class="cf-center"><span class="hasTooltip cursor-help" title="<?php echo JText::sprintf("COM_CROWDFUNDING_PERCENTS_FUNDED", $fundedPercent);?>"><?php echo $funded; ?></span></td>
             		<td class="cf-center hidden-phone"><?php echo JHtml::_("crowdfunding.date", $item->funding_start, JText::_('DATE_FORMAT_LC3')); ?></td>
-            		<td class="cf-center hidden-phone"><?php echo JHtml::_("crowdfunding.duration", $item->funding_start, $item->funding_end, $item->funding_days, JText::_('DATE_FORMAT_LC3'));; ?></td>
+            		<td class="cf-center hidden-phone"><?php echo JHtml::_("crowdfunding.duration", $item->funding_start, $item->funding_end, $item->funding_days, JText::_('DATE_FORMAT_LC3')); ?></td>
             		<td class="cf-center">
             		    <?php echo JHtml::_("crowdfunding.state", $item->published, JRoute::_("index.php?option=com_crowdfunding&task=projects.savestate&id=".$item->id."&state=".$state."&".JSession::getFormToken()."=1"), true)?>
             		</td>
@@ -61,7 +61,7 @@ defined('_JEXEC') or die;?>
             		</td>
             		<td class="hidden-phone">
             			<a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getFormRoute($item->id)) ;?>" class="btn btn-small">
-            			    <i class="icon-edit"></i> 
+            			    <i class="icon-edit icon-white"></i> 
             			    <?php echo JText::_("COM_CROWDFUNDING_EDIT");?>
         			    </a>
             		</td>

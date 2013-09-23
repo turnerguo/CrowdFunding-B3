@@ -15,7 +15,7 @@ defined('JPATH_PLATFORM') or die;
  * @package      CrowdFunding
  * @subpackage   Libraries
  */
-class CrowdfundingVersion {
+class CrowdFundingVersion {
 	
     /**
      * Extension name
@@ -36,7 +36,7 @@ class CrowdfundingVersion {
      * 
      * @var integer
      */
-    public $devLevel  = '4';
+    public $devLevel  = '4.1';
     
     /**
      * Release Type
@@ -57,7 +57,7 @@ class CrowdfundingVersion {
      * 
      * @var string
      */
-    public $releaseDate= '15-September-2013';
+    public $releaseDate= '23-September-2013';
     
     /**
      * License

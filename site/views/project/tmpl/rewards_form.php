@@ -58,7 +58,7 @@ if($deliveryDate) {
         
         <?php if(!$this->debugMode) {?>
         <a href="#" class="btn btn-danger btn_remove_reward" data-reward-id="<?php echo JArrayHelper::getValue($this->formItem,  "id")?>" data-index-id="<?php echo $this->formIndex;?>" >
-        	<i class="icon-trash"></i> 
+        	<i class="icon-trash icon-white"></i> 
         	<?php echo JText::_("COM_CROWDFUNDING_REMOVE")?>
     	</a>
     	<?php }?>

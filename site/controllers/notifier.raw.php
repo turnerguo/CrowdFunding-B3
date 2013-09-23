@@ -61,7 +61,7 @@ class CrowdFundingControllerNotifier extends JControllerLegacy {
         try {
             
             // Events
-            $dispatcher	       = JDispatcher::getInstance();
+            $dispatcher	 = JEventDispatcher::getInstance();
             
             // Event Notify
             JPluginHelper::importPlugin('crowdfundingpayment');

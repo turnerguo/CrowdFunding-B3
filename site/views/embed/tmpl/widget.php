@@ -29,12 +29,8 @@ defined('_JEXEC') or die;?>
           <img src="<?php echo $this->item->link_image;?>" alt="<?php echo $this->item->title;?>" width="200" height="200">
           <div class="caption">
             <h3><a href="<?php echo JRoute::_( CrowdFundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug) ); ?>" target="_blank"><?php echo $this->item->title;?></a></h3>
-            <span class="cf-founder">by 
-                <?php if(!empty($socialProfileLink)){ ?>
-                <a href="<?php echo $socialProfileLink;?>"  target="_blank"><?php echo $this->item->user_name; ?></a>
-                <?php } else {?>
-                <?php echo $this->item->user_name; ?>
-                <?php }?>
+            <span class="cf-founder">
+                by <?php echo JHtml::_("crowdfunding.socialProfileLink", $socialProfileLink, $this->item->user_name, array("target" => "_blank")); ?> 
             </span>
             <p><?php echo $this->item->short_desc;?></p>
             <div class="progress progress-success">

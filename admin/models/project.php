@@ -18,8 +18,6 @@ jimport('joomla.application.component.modeladmin');
 
 class CrowdFundingModelProject extends JModelAdmin {
     
-    const     PROJECT_STATE_PUBLISHED   = 1;
-    
     /**
      * @var     string  The prefix to use with controller messages.
      * @since   1.6
@@ -207,7 +205,7 @@ class CrowdFundingModelProject extends JModelAdmin {
 	
 	        if ($table->load($pk)) {
 	            
-	            if($value == self::PROJECT_STATE_PUBLISHED) { // Publish a project
+	            if($value == CrowdFundingConstants::PUBLISHED) { // Publish a project
 
 	                // Validate funding period
 	                if(!$table->funding_days AND !CrowdFundingHelper::isValidDate($table->funding_end)) {

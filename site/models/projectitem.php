@@ -194,10 +194,6 @@ class CrowdFundingModelProjectItem extends JModelItem {
             throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_DESCRIPTION"), ITPrismErrors::CODE_WARNING);
         }
         
-        // Validate rewards. If there is now rewards, throw exception.
-        /* if(!$this->countRewards($item->id)) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_REWARDS"), ITPrismErrors::CODE_WARNING);
-        } */
     }
     
     /**

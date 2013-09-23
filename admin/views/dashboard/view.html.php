@@ -68,7 +68,7 @@ class CrowdFundingViewDashboard extends JViewLegacy {
         JToolbarHelper::divider();
         
         // Help button
-        $bar = JToolBar::getInstance('toolbar');
+        $bar = JToolbar::getInstance('toolbar');
 		$bar->appendButton('Link', 'help', JText::_('JHELP'), JText::_('COM_CROWDFUNDING_HELP_URL'));
     }
 
