@@ -119,7 +119,7 @@ class CrowdFundingModelTransactions extends JModelList {
         $query->innerJoin($db->quoteName('#__crowdf_projects').' AS c ON a.project_id = c.id');
         $query->leftJoin($db->quoteName('#__crowdf_rewards').' AS d ON a.reward_id = d.id');
         
-        $query->innerJoin($db->quoteName('#__users').' AS e ON a.investor_id = e.id');
+        $query->leftJoin($db->quoteName('#__users').' AS e ON a.investor_id = e.id');
 
         // Filter by search in title
         $search = $this->getState('filter.search');
@@ -129,12 +129,14 @@ class CrowdFundingModelTransactions extends JModelList {
                 $query->where('a.id = '.(int) substr($search, 3));
             } else if(stripos($search, 'bid:') === 0) {
                 $query->where('a.receiver_id = '.(int) substr($search, 4));
+            } else if(stripos($search, 'sid:') === 0) {
+                $query->where('a.investor_id = '.(int) substr($search, 4));
             } else if(stripos($search, 'pid:') === 0) {
                 $query->where('a.project_id = '.(int) substr($search, 4));
             } else {
                 $escaped = $db->escape($search, true);
                 $quoted  = $db->quote("%" . $escaped . "%", false);
-                $query->where('b.name LIKE '.$quoted);
+                $query->where('a.txn_id LIKE '.$quoted);
             }
         }
 

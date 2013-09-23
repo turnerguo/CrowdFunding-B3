@@ -21,12 +21,18 @@ defined('_JEXEC') or die;
             <legend><?php echo $this->legend; ?></legend>
             
             <ul class="adminformlist">
+            
                 <li><?php echo $this->form->getLabel('data'); ?>
                 <?php echo $this->form->getInput('data'); ?></li>
                 
+                
+                <?php if(strcmp($this->importType, "states") != 0) {?>
                 <li><?php echo $this->form->getLabel('reset_id'); ?>
                 <?php echo $this->form->getInput('reset_id'); ?></li>
+                <?php }?>
+                
             </ul>
+            
 		</fieldset>
 	</div>
     

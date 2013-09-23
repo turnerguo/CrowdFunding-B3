@@ -30,6 +30,11 @@
             description="COM_CROWDFUNDING_TIMEZONE_DESC"
         />
         
+        <field name="state_code" type="text" class="inputbox"
+            label="COM_CROWDFUNDING_STATE"
+            description="COM_CROWDFUNDING_LOCATION_STATE_DESC"
+        />
+        
         <field name="published" type="list" 
             label="JSTATUS" 
             description="JFIELD_PUBLISHED_DESC" 

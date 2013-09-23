@@ -19,11 +19,11 @@ defined('_JEXEC') or die;
     <div class="span10">
     	<label for="reward_amount_d" id="reward_amount_label_d"><?php echo JText::_("COM_CROWDFUNDING_AMOUNT"); ?><span class="star">&nbsp;*</span></label>
         <div class="input-prepend input-append">
-        	<?php if(!empty($this->currency->symbol)){?>
-            <span class="add-on"><?php echo $this->currency->symbol;?></span>
+        	<?php if($this->currency->getSymbol()){?>
+            <span class="add-on"><?php echo $this->currency->getSymbol();?></span>
             <?php }?>
             <input name="rewards[][amount]" id="reward_amount_d" type="text" value="" />
-            <span class="add-on"><?php echo $this->currency->abbr;?></span>
+            <span class="add-on"><?php echo $this->currency->getAbbr();?></span>
         </div>
         
         <label for="reward_title_d" id="reward_title_title_d"><?php echo JText::_("COM_CROWDFUNDING_TITLE"); ?><span class="star">&nbsp;*</span></label>
@@ -40,8 +40,8 @@ defined('_JEXEC') or die;
         
         <input name="rewards[][id]" type="hidden" value="" id="reward_id_d" />
         <?php if(!$this->debugMode) {?>
-        <a href="#" class="btn btn_remove_reward" id="reward_remove_d" data-reward-id="0" data-index-id="0" >
-            <i class="icon-trash"></i> 
+        <a href="#" class="btn btn-danger btn_remove_reward" id="reward_remove_d" data-reward-id="0" data-index-id="0" >
+            <i class="icon-trash icon-white"></i> 
             <?php echo JText::_("COM_CROWDFUNDING_REMOVE")?>
         </a>
         <?php }?>

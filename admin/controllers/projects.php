@@ -170,15 +170,16 @@ class CrowdFundingControllerProjects extends ITPrismControllerAdmin {
 	    $ids    = $app->input->get('cid', array(), 'array');
 	
 	    $values = array(
-	            'publish'   => 1,
-	            'unpublish' => 0
+            'publish'   => 1,
+            'unpublish' => 0,
+            'trash'     => -2,
 	    );
 	
 	    $task   = $this->getTask();
 	    $value  = JArrayHelper::getValue($values, $task, 0, 'int');
 	
 	    $redirectData = array(
-	            "view" => "projects"
+            "view" => "projects"
 	    );
 	
 	    // Make sure the item ids are integers

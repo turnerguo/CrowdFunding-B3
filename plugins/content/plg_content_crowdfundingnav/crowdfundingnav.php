@@ -3,12 +3,8 @@
  * @package      CrowdFunding
  * @subpackage   Plugins
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * CrowdFunding is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -54,41 +50,47 @@ class plgContentCrowdFundingNav extends JPlugin {
         
         $screen = $app->input->getCmd("screen", "home");
         
-        $html  = '<ul class="nav nav-pills">';
+        $html  = '<ul class="nav nav-pills cf-plg-navigation">';
         
         if($this->params->get("display_home")) {
-            $class = "";
+            $class = 'class="cf-plg-nav-home';
             if(strcmp($screen, "home") == 0) {
-                $class = 'class="active"';
+                $class .= ' active';
             }
+            $class .= '"';
+            
             $html .= '<li '.$class.'><a href="'.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($article->slug, $article->catslug)).'">'.JText::_("PLG_CONTENT_CROWDFUNDINGNAV_HOME")."</a></li>";
         }
         
         if($this->params->get("display_updates")) {
-            $class = "";
+            $class = 'class="cf-plg-nav-updates';
             if(strcmp($screen, "updates") == 0) {
-                $class = 'class="active"';
+                $class .= ' active';
             }
+            $class .= '"';
             
             $stat  = '<span class="label">'.JArrayHelper::getValue($stats, "updates", 0).'</span>';
             $html .= '<li '.$class.'><a href="'.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($article->slug, $article->catslug, "updates")).'">'.JText::_("PLG_CONTENT_CROWDFUNDINGNAV_UPDATES") .' '. $stat .'</a></li>';
         }
         
         if($this->params->get("display_comments")) {
-            $class = "";
+            $class = 'class="cf-plg-nav-comments';
             if(strcmp($screen, "comments") == 0) {
-                $class = 'class="active"';
+                $class .= ' active';
             }
+            $class .= '"';
             
             $stat  = '<span class="label">'.JArrayHelper::getValue($stats, "comments", 0).'</span>';
             $html .= '<li '.$class.'><a href="'.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($article->slug, $article->catslug, "comments")).'">'.JText::_("PLG_CONTENT_CROWDFUNDINGNAV_COMMENTS") .' '. $stat .'</a></li>';
         }
         
         if($this->params->get("display_funders")) {
-            $class = "";
+            $class = 'class="cf-plg-nav-funders';
             if(strcmp($screen, "funders") == 0) {
-                $class = 'class="active"';
+                $class .= ' active';
             }
+            $class .= '"';
+            
             $stat  = '<span class="label">'.JArrayHelper::getValue($stats, "funders", 0).'</span>';
             $html .= '<li '.$class.'><a href="'.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($article->slug, $article->catslug, "funders")).'">'.JText::_("PLG_CONTENT_CROWDFUNDINGNAV_FUNDERS") .' '. $stat .'</a></li>';
         }

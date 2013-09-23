@@ -11,12 +11,12 @@
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
-        <field name="backing_terms_url" type="text" default="" size="50" label="COM_CROWDFUNDING_TERMS_URL" description="COM_CROWDFUNDING_TERMS_URL_DESC" />
+        <field name="backing_terms_url" type="text" default="" size="50" label="COM_CROWDFUNDING_TERMS_URL" description="COM_CROWDFUNDING_TERMS_URL_DESC" class="span6" />
 	</fieldset>
 
     <fieldset name="images" label="COM_CROWDFUNDING_IMAGES_TITLE" description="COM_CROWDFUNDING_IMAGES_PARAMS">
 
-        <field name="images_directory" type="text" default="images/projects" size="50" label="COM_CROWDFUNDING_IMAGES_DIRECTORY" description="COM_CROWDFUNDING_IMAGES_DIRECTORY_DESC" />
+        <field name="images_directory" type="text" default="images/crowdfunding" size="50" label="COM_CROWDFUNDING_IMAGES_DIRECTORY" description="COM_CROWDFUNDING_IMAGES_DIRECTORY_DESC" class="span6" />
             
         <field name="image_width" type="text" default="200" size="50" label="COM_CROWDFUNDING_IMAGE_WIDTH" description="COM_CROWDFUNDING_IMAGE_WIDTH_DESC" />
         <field name="image_height" type="text" default="200" size="50" label="COM_CROWDFUNDING_IMAGE_HEIGHT" description="COM_CROWDFUNDING_IMAGE_HEIGHT_DESC" />
@@ -30,6 +30,19 @@
         <field name="pitch_image_width" type="text" default="600" size="50" label="COM_CROWDFUNDING_PITCH_IMAGE_WIDTH" description="COM_CROWDFUNDING_PITCH_IMAGE_WIDTH_DESC" />
         <field name="pitch_image_height" type="text" default="400" size="50" label="COM_CROWDFUNDING_PITCH_IMAGE_HEIGHT" description="COM_CROWDFUNDING_PITCH_IMAGE_HEIGHT_DESC" />
         
+        <field name="spacer1" type="spacer" label="COM_CROWDFUNDING_EXTRA_IMAGES_OPTIONS" />
+        <field name="extra_images" type="radio" default="0" label="COM_CROWDFUNDING_EXTRA_IMAGES" description="COM_CROWDFUNDING_EXTRA_IMAGES_DESC" class="btn-group">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        <field name="extra_image_thumb_width" type="text" default="100" label="COM_CROWDFUNDING_EXTRA_IMAGE_THUMB_WIDTH" description="COM_CROWDFUNDING_EXTRA_IMAGE_THUMB_WIDTH_DESC" />
+        <field name="extra_image_thumb_height" type="text" default="100"  label="COM_CROWDFUNDING_EXTRA_IMAGE_THUMB_HEIGHT" description="COM_CROWDFUNDING_EXTRA_IMAGE_THUMB_HEIGHT_DESC" />
+        
+        <field name="extra_images_thumb_scale" type="list" default="2" label="COM_CROWDFUNDING_EXTRA_IMAGES_SCALE" description="COM_CROWDFUNDING_EXTRA_IMAGES_SCALE_DESC" class="btn-group">
+            <option value="1">COM_CROWDFUNDING_FILL</option>
+            <option value="2">COM_CROWDFUNDING_INSIDE</option>
+            <option value="3">COM_CROWDFUNDING_OUTSIDE</option>
+        </field>
     </fieldset>
     
     <fieldset name="project" label="COM_CROWDFUNDING_PROJECT" description="COM_CROWDFUNDING_PROJECTS_PARAMS" addfieldpath="/administrator/components/com_crowdfunding/models/fields">
@@ -52,7 +65,7 @@
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
-        <field name="project_terms_url" type="text" default="" size="50" label="COM_CROWDFUNDING_TERMS_URL" description="COM_CROWDFUNDING_TERMS_URL_DESC" />
+        <field name="project_terms_url" type="text" default="" size="50" label="COM_CROWDFUNDING_TERMS_URL" description="COM_CROWDFUNDING_TERMS_URL_DESC" class="span6" />
     </fieldset>
     
     <fieldset name="project" addfieldpath="/administrator/components/com_content/models/fields">
@@ -86,14 +99,20 @@
     <fieldset name="integration" label="COM_CROWDFUNDING_INTEGRATION" description="COM_CROWDFUNDING_INTEGRATION_PARAMS">
         <field name="integration_social_platform" type="list" default="" label="COM_CROWDFUNDING_INTEGRATION_SOCIAL_PLATFORM" description="COM_CROWDFUNDING_INTEGRATION_SOCIAL_PLATFORM_DESC">
             <option value="">COM_CROWDFUNDING_NONE</option>
-            <option value="com_socialcommunity">COM_CROWDFUNDING_SOCIAL_COMMUNITY</option>
+            <option value="socialcommunity">COM_CROWDFUNDING_SOCIAL_COMMUNITY</option>
             <option value="gravatar">COM_CROWDFUNDING_GRAVATAR</option>
+            <option value="jomsocial">COM_CROWDFUNDING_JOMSOCIAL</option>
+            <option value="kunena">COM_CROWDFUNDING_KUNENA</option>
         </field>
         <field name="integration_avatars" type="list" default="" label="COM_CROWDFUNDING_INTEGRATION_AVATAR" description="COM_CROWDFUNDING_INTEGRATION_AVATAR_DESC">
             <option value="">COM_CROWDFUNDING_NONE</option>
-            <option value="com_socialcommunity">COM_CROWDFUNDING_SOCIAL_COMMUNITY</option>
+            <option value="socialcommunity">COM_CROWDFUNDING_SOCIAL_COMMUNITY</option>
             <option value="gravatar">COM_CROWDFUNDING_GRAVATAR</option>
+            <option value="jomsocial">COM_CROWDFUNDING_JOMSOCIAL</option>
+            <option value="kunena">COM_CROWDFUNDING_KUNENA</option>
         </field>
+        <field name="integration_avatars_size" type="text" default="50" label="COM_CROWDFUNDING_AVATARS_SIZE" description="COM_CROWDFUNDING_AVATARS_SIZE_DESC" />
+        <field name="integration_avatars_default" type="text" default="/media/com_crowdfunding/images/no-profile.png" label="COM_CROWDFUNDING_AVATARS_DEFAULT" description="COM_CROWDFUNDING_AVATARS_DEFAULT_DESC" class="span6" />
     </fieldset>
     
     <fieldset name="comments" label="COM_CROWDFUNDING_COMMENTS" description="COM_CROWDFUNDING_COMMENTS_PARAMS">
@@ -138,4 +157,17 @@
         <field name="debug_disabled_functionality_msg" type="text" default="" size="60" label="COM_CROWDFUNDING_MESSAGE" description="COM_CROWDFUNDING_DEBUG_DISABLED_FUNCTIONALITY_MSG_DESC" />
      </fieldset>
      
+     <fieldset name="permissions"
+        description="JCONFIG_PERMISSIONS_DESC"
+        label="JCONFIG_PERMISSIONS_LABEL"
+     >
+
+     <field name="rules" type="rules"
+            component="com_crowdfunding"
+            filter="rules"
+            validate="rules"
+            label="JCONFIG_PERMISSIONS_LABEL"
+            section="component" />
+    </fieldset>
+    
 </config>

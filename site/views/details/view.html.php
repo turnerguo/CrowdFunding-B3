@@ -51,7 +51,7 @@ class CrowdFundingViewDetails extends JView {
         }
         
         // Get rewards of the project
-        $this->imageFolder    = $this->params->get("images_directory", "images/projects");
+        $this->imageFolder    = $this->params->get("images_directory", "images/crowdfunding");
         
         // Include HTML helper
         JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
@@ -66,8 +66,6 @@ class CrowdFundingViewDetails extends JView {
         
         // Get the current screen
         $this->screen = $app->input->getCmd("screen", "home");
-        
-        $this->version        = new CrowdfundingVersion();
         
         $this->prepareDocument();
         
@@ -107,6 +105,8 @@ class CrowdFundingViewDetails extends JView {
 		// Count hits
 		$model->hit($this->item->id);
 		
+		$this->version = new CrowdFundingVersion();
+		
         parent::display($tpl);
     }
     
@@ -119,9 +119,14 @@ class CrowdFundingViewDetails extends JView {
         $this->userId  = JFactory::getUser()->id;
         $this->isOwner = ($this->userId != $this->item->user_id) ? false : true;
         
-        // Get a social platform for integration
-        $this->socialPlatform = $this->params->get("integration_social_platform");
-        $this->avatars        = $this->params->get("integration_avatars");
+        // Get users IDs
+        $usersIds = array();
+        foreach($this->items as $item) {
+            $usersIds[] = $item->user_id;
+        }
+        
+        // Prepare integration. Load avatars and profiles.
+        $this->prepareIntegration($usersIds, $this->params);
         
         // Scripts
         JHtml::_('behavior.keepalive');
@@ -141,9 +146,14 @@ class CrowdFundingViewDetails extends JView {
         $this->userId  = JFactory::getUser()->id;
         $this->isOwner = ($this->userId != $this->item->user_id) ? false : true;
         
-        // Get a social platform for integration
-        $this->socialPlatform = $this->params->get("integration_social_platform");
-        $this->avatars        = $this->params->get("integration_avatars");
+        // Get users IDs
+        $usersIds = array();
+        foreach($this->items as $item) {
+            $usersIds[] = $item->user_id;
+        }
+        
+        // Prepare integration. Load avatars and profiles.
+        $this->prepareIntegration($usersIds, $this->params);
         
         // Scripts
         JHtml::_('behavior.keepalive');
@@ -159,9 +169,14 @@ class CrowdFundingViewDetails extends JView {
         $model         = JModel::getInstance("Funders", "CrowdFundingModel", $config = array('ignore_request' => false));
         $this->items   = $model->getItems();
         
-        // Get a social platform for integration
-		$this->socialPlatform = $this->params->get("integration_social_platform");
-		$this->avatars        = $this->params->get("integration_avatars");
+        // Get users IDs
+        $usersIds = array();
+        foreach($this->items as $item) {
+            $usersIds[] = $item->id;
+        }
+        
+        // Prepare integration. Load avatars and profiles.
+        $this->prepareIntegration($usersIds, $this->params);
     }
     
     /**
@@ -206,7 +221,6 @@ class CrowdFundingViewDetails extends JView {
         // Add scripts
         JHtml::_('behavior.framework');
         JHtml::_("crowdfunding.bootstrap");
-        JHtml::_('itprism.ui.pnotify');
     }
     
     private function prepearePageHeading() {
@@ -266,4 +280,46 @@ class CrowdFundingViewDetails extends JView {
     
     }
 
+    /**
+     * Prepare social profiles
+     *
+     * @param array     $items
+     * @param JRegistry $params
+     *
+     * @todo Move it to a trait when traits become mass.
+     */
+    protected function prepareIntegration($usersIds, $params) {
+    
+        // Get a social platform for integration
+        $socialPlatform        = $params->get("integration_social_platform");
+        $avatarsService        = $params->get("integration_avatars");
+    
+        $this->avatarsSize           = $params->get("integration_avatars_size", 50);
+    
+        $this->socialProfiles        = null;
+        $this->socialProfilesAvatars = null;
+        $this->defaultAvatar         = $params->get("integration_avatars_default", "/media/com_crowdfunding/images/no-profile.png");
+    
+        // If there is now users, do not continue.
+        if(!$usersIds) {
+            return;
+        }
+    
+        // Load the class
+        if(!empty($socialPlatform) OR !empty($avatarsService)) {
+            jimport("itprism.integrate.profiles");
+        }
+    
+        // Load the social profiles
+        if(!empty($socialPlatform)) {
+            $this->socialProfiles   =  ITPrismIntegrateProfiles::factory($socialPlatform, $usersIds);
+        }
+    
+        // Load the social profiles used for avatars
+        if(!empty($avatarsService)) {
+            $this->socialProfilesAvatars    =  ITPrismIntegrateProfiles::factory($avatarsService, $usersIds);
+    
+        }
+    
+    }
 }

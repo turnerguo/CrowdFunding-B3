@@ -29,8 +29,7 @@ $itemSpan = (!empty($this->numberInRow)) ? round(12/$this->numberInRow) : 4;
 		  // Prepare the value that I am going to display
 		  $fundedPercents = JHtml::_("crowdfunding.funded", $item->funded_percents);
 		
-		  $user = JFactory::getUser($item->user_id);
-		  $socialProfile  = JHtml::_("crowdfunding.socialProfile", $this->socialPlatform, $user);
+		  $socialProfile  = (!$this->socialProfiles) ? null : $this->socialProfiles->getLink($item->user_id);
 	 ?>
       <li class="span<?php echo $itemSpan;?>">
         <div class="thumbnail">
@@ -43,12 +42,8 @@ $itemSpan = (!empty($this->numberInRow)) ? round(12/$this->numberInRow) : 4;
       	  </a>
           <div class="caption">
             <h3><a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($item->slug, $item->catslug)); ?>"><?php echo $item->title;?></a></h3>
-            <span class="cf-founder">by 
-                <?php if(!empty($socialProfile)){ ?>
-                <a href="<?php echo $socialProfile;?>"><?php echo $item->user_name; ?></a>
-                <?php } else {?>
-                <?php echo $item->user_name; ?>
-                <?php }?>
+            <span class="cf-founder">
+                by <?php echo JHtml::_("crowdfunding.socialProfileLink", $socialProfile, $item->user_name); ?>
             </span>
             <p><?php echo $item->short_desc;?></p>
                 <?php echo JHtml::_("crowdfunding.progressbar", $fundedPercents, $item->days_left, $item->funding_type);?>

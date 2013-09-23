@@ -109,7 +109,7 @@ class CrowdFundingTableProject extends JTable {
                 
         // Calculate end date
         if(!empty($this->funding_days)) {
-            $this->funding_end = (!CrowdFundingHelper::isValidDate($this->funding_start)) ? "0000-00-00" : CrowdFundingHelper::calcualteEndDate($this->funding_days, $this->funding_start);
+            $this->funding_end = (!CrowdFundingHelper::isValidDate($this->funding_start)) ? "0000-00-00" : CrowdFundingHelper::calcualteEndDate($this->funding_start, $this->funding_days);
         }
         
         // Calcualte days left

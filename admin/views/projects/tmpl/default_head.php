@@ -45,9 +45,6 @@ defined('_JEXEC') or die;
 	<th width="10%">
 	     <?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_END_DATE', 'a.funding_end', $this->listDirn, $this->listOrder); ?>
 	</th>
-	<th width="5%">
-	     <?php echo JText::_("COM_CROWDFUNDING_FUNDING_DAYS"); ?>
-	</th>
 	<th width="10%">
         <?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ORDERING', 'a.ordering', $this->listDirn, $this->listOrder); ?>
         <?php if ($this->saveOrder) {?>

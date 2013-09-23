@@ -36,6 +36,7 @@ class CrowdFundingModelRewards extends JModelList {
                 'distributed', 'a.distributed',
                 'available', 
                 'delivery', 'a.delivery',
+                'published', 'a.published',
             );
         }
 
@@ -60,6 +61,10 @@ class CrowdFundingModelRewards extends JModelList {
         $value = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
         $this->setState('filter.search', $value);
 
+        // Load filter state.
+        $value = $this->getUserStateFromRequest($this->context.'.filter.state', 'filter_state');
+        $this->setState('filter.state', $value);
+        
         // Load filter category.
         $value = $this->getUserStateFromRequest($this->context.'.pid', 'pid', 0, 'int');
         $this->setState('project_id', $value);
@@ -107,7 +112,7 @@ class CrowdFundingModelRewards extends JModelList {
             $this->getState(
                 'list.select',
                 'a.id, a.title, a.amount, a.number, a.distributed, a.delivery, '. 
-                'a.shipping, a.project_id, (a.number - a.distributed) AS available '
+                'a.shipping, a.project_id, (a.number - a.distributed) AS available, a.published '
             )
         );
         $query->from($db->quoteName('#__crowdf_rewards').' AS a');
@@ -116,6 +121,14 @@ class CrowdFundingModelRewards extends JModelList {
         $projectId = $this->getState('project_id');
         if (!empty($projectId)) {
             $query->where('a.project_id = '.(int) $projectId);
+        }
+        
+        // Filter by state ID
+        $state = $this->getState('filter.state');
+        if (is_numeric($state)) {
+            $query->where('a.published = '.(int) $state);
+        } else if ($state === '') {
+            $query->where('(a.published IN (0, 1))');
         }
         
         // Filter by search in title

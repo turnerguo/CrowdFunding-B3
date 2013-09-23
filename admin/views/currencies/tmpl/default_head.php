@@ -21,7 +21,7 @@ defined('_JEXEC') or die;
 	<th class="title" >
 	     <?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_TITLE', 'a.title', $this->listDirn, $this->listOrder); ?>
 	</th>
-	<th width="20%">
+	<th width="10%">
 	    <?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_ABBR', 'a.abbr', $this->listDirn, $this->listOrder); ?>
 	</th>
 	<th width="10%">

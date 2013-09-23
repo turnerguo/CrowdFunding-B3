@@ -52,40 +52,47 @@ class CrowdFundingModelBacking extends JModel {
     protected function populateState() {
         
         $app     = JFactory::getApplication();
-        $params  = $app->getParams();
         
         // Project ID
         $itemId   = $app->input->getUint('id');
-        $this->setState($this->context.'.id', $itemId);
+        $this->setState('id', $itemId);
         
-        $projectContext = $this->context.".project".$itemId;
-        
-        // Reward ID
-        $value   = $app->getUserStateFromRequest($projectContext.".rid", 'rid');
-        $this->setState($this->context.'.rid', $value);
+        // Get reward ID
+        $projectContext = $this->getProjectContext($itemId);
+        $value          = $app->getUserStateFromRequest($projectContext.".rid", 'rid');
+        $this->setState('reward_id', $value);
         
         // Load the parameters.
+        $params  = $app->getParams();
         $this->setState('params', $params);
     }
     
     /**
      * Return the context of the model
      */
-    public function getContext() {
+    /* public function getContext() {
         return $this->context;        
+    } */
+    
+    /**
+     * Return the context, 
+     * used to for storing project data in this model.
+     */
+    public function getProjectContext($projectId) {
+        return $this->context.".project".$projectId;
     }
     
     /**
      * Method to get an ojbect.
      *
      * @param	integer	The id of the object to get.
-     *
+     * 
      * @return	mixed	Object on success, false on failure.
      */
     public function getItem($id = null) {
         
         if (empty($id)) {
-            $id = $this->getState($this->context.'.id');
+            $id = $this->getState('id');
         }
         
         if (is_null($this->item)) {
@@ -118,78 +125,16 @@ class CrowdFundingModelBacking extends JModel {
                 
                 // Calculate eding date by days left
                 if(!empty($result->funding_days)) {
-                    $result->funding_end = CrowdFundingHelper::calcualteEndDate($result->funding_days, $result->funding_start);
+                    $result->funding_end     = CrowdFundingHelper::calcualteEndDate($result->funding_start, $result->funding_days);
                 }
                 
                 $result->funded_percents = CrowdFundingHelper::calculatePercent($result->funded, $result->goal);
                 $result->days_left       = CrowdFundingHelper::calcualteDaysLeft($result->funding_days, $result->funding_start, $result->funding_end);
                 $this->item              = $result;
+                
             } 
         }
         
         return $this->item;
-    }
-
-    /**
-     * 
-     * Load all rewards of a project
-     * @param integer $id Project ID
-     */
-    public function getRewards($id = null) {
-        
-        if (empty($id)) {
-            $id = $this->getState($this->context.'.id');
-        }
-        
-        $results = array();
-        
-        if (!empty($id)) {
-            
-            $db = $this->getDbo();
-            $query = $db->getQuery(true);
-            
-            $query
-                ->select("a.id, a.title, a.description, a.amount")
-                ->from($db->quoteName("#__crowdf_rewards") ." AS a")
-                ->where("a.project_id = " .(int)$id);
-
-            $db->setQuery($query);
-            $results = $db->loadObjectList();
-            
-        }
-        
-        return $results;
-    }
-    
-    /**
-     * 
-     * Get reward
-     * @param integer $id
-     */
-    public function getReward($rewardId = null) {
-        
-        if (empty($rewardId)) {
-            $rewardId = $this->getState($this->context.'.rid');
-        }
-        
-        // Get project id
-        $projectId = $this->getState($this->context . '.id');
-        
-        $row = null;
-        
-        if (!empty($rewardId) AND !empty($projectId) ) {
-            
-            $keys = array(
-                "id"         => $rewardId,
-                "project_id" => $projectId
-            );
-            $row = $this->getTable("Reward");
-            $row->load($keys);
-            if(!$row->id) {
-                $row = null;
-            }
-        }
-        
-        return $row;
     }
 }

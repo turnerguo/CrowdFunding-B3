@@ -22,6 +22,7 @@ abstract class CrowdFundingHelper {
 	
     static $currency   = null;
     static $currencies = null;
+    static $countries  = null;
     static $extension  = "com_crowdfunding";
       
     static $statistics    = array();
@@ -63,6 +64,12 @@ abstract class CrowdFundingHelper {
 			'index.php?option='.self::$extension.'&view=locations',
 			$vName == 'locations'
 		);
+		
+		JSubMenuHelper::addEntry(
+    		JText::_('COM_CROWDFUNDING_COUNTRIES'),
+    		'index.php?option='.self::$extension.'&view=countries',
+    		$vName == 'countries'
+        );
 		
 		JSubMenuHelper::addEntry(
 			JText::_('COM_CROWDFUNDING_CURRENCIES'),
@@ -122,6 +129,25 @@ abstract class CrowdFundingHelper {
         
         return self::$currency;
         
+    }
+    
+    public static function getCountries() {
+    
+        if(is_null(self::$countries)) {
+    
+            $db     = JFactory::getDbo();
+            $query  = $db->getQuery(true);
+    
+            $query
+            ->select("a.id, a.name, a.code")
+            ->from($db->quoteName("#__crowdf_countries") . " AS a");
+    
+            $db->setQuery($query);
+            self::$countries = $db->loadObjectList();
+        }
+    
+        return self::$countries;
+    
     }
     
     public static function getCurrencies($index = "id", $force = false) {
@@ -208,10 +234,10 @@ abstract class CrowdFundingHelper {
     /**
 	 * Calculate end date
 	 * 
-	 * @param int    $fundingDays
-	 * @param string $fundingStart
+	 * @param string This is starting date
+	 * @param int    This is period in days.
 	 */
-	public static function calcualteEndDate($fundingDays, $fundingStart) {
+	public static function calcualteEndDate($fundingStart, $fundingDays) {
 	    
         // Calcualte days left
         $endingDate  = new DateTime($fundingStart);
@@ -325,6 +351,12 @@ abstract class CrowdFundingHelper {
      */
     public static function isValidPeriod($fundingStart, $fundingEnd, $minDays, $maxDays) {
     
+        // Get only date and remove the time
+        $date          = new DateTime($fundingStart);
+        $fundingStart  = $date->format("Y-m-d");
+        $date          = new DateTime($fundingEnd);
+        $fundingEnd    = $date->format("Y-m-d");
+        
         // Get interval between starting and ending date
         $startingDate  = new DateTime($fundingStart);
         $endingDate    = new DateTime($fundingEnd);
@@ -342,5 +374,139 @@ abstract class CrowdFundingHelper {
         }
     
         return true;
+    }
+    
+    public static function getSocialProfile($userId, $type) {
+    
+        $profile = null;
+    
+        switch($type) {
+    
+            case "socialcommunity":
+    
+                if(!defined("SOCIALCOMMUNITY_PATH_COMPONENT_SITE")) {
+                    define("SOCIALCOMMUNITY_PATH_COMPONENT_SITE", JPATH_SITE . DIRECTORY_SEPARATOR. "components" . DIRECTORY_SEPARATOR ."com_socialcommunity");
+                }
+    
+                JLoader::register("SocialCommunityHelperRoute", SOCIALCOMMUNITY_PATH_COMPONENT_SITE . DIRECTORY_SEPARATOR . "helpers" . DIRECTORY_SEPARATOR . "route.php");
+    
+                jimport("itprism.integrate.profile.socialcommunity");
+    
+                $profile = ITPrismIntegrateProfileSocialCommunity::getInstance($userId);
+    
+                // Set path to pictures
+                $params  = JComponentHelper::getParams("com_socialcommunity");
+                $path    = $params->get("images_directory", "images/profiles")."/";
+    
+                $profile->setPath($path);
+    
+                break;
+    
+            case "gravatar":
+    
+                jimport("itprism.integrate.profile.gravatar");
+                $profile = ITPrismIntegrateProfileGravatar::getInstance($userId);
+    
+                break;
+    
+            case "kunena":
+    
+                jimport("itprism.integrate.profile.kunena");
+                $profile = ITPrismIntegrateProfileKunena::getInstance($userId);
+    
+                break;
+    
+            case "jomsocial":
+    
+                jimport("itprism.integrate.profile.jomsocial");
+                $profile = ITPrismIntegrateProfileJomSocial::getInstance($userId);
+    
+                break;
+    
+            default:
+    
+                break;
+        }
+    
+        return $profile;
+    }
+    
+    /**
+     * This method returns intention
+     * basd on user ID or anonymous hash user ID.
+     *
+     * @param $userId       Registered user ID
+     * @param $aUserId      Anonymous user hash ID
+     * @param $projectId    Project ID
+     *
+     * @return CrowdFundingIntention
+     */
+    public static function getIntention($userId, $aUserId, $projectId) {
+    
+        // Prepare keys for anonymous user.
+        if(!empty($aUserId)) {
+    
+            $intentionKeys = array(
+                    "auser_id"   => $aUserId,
+                    "project_id" => $projectId
+            );
+    
+        } else {// Prepare keys for registered user.
+    
+            $intentionKeys = array(
+                    "user_id"    => $userId,
+                    "project_id" => $projectId
+            );
+    
+        }
+    
+        jimport("crowdfunding.intention");
+        $intention = new CrowdFundingIntention($intentionKeys);
+    
+        return $intention;
+    }
+    
+    /**
+     * Generate a path to the folder, where the images are stored.
+     *
+     * @param number User Id.
+     * @param string A base path to the folder. It can be JPATH_BASE, JPATH_ROOT, JPATH_SITE,... Default is JPATH_ROOT.
+     *
+     * @return string
+     */
+    public static function getImagesFolder($userId = 0, $path = JPATH_ROOT) {
+    
+        $params = JComponentHelper::getParams(self::$extension);
+        /** @var $params JRegistry **/
+    
+        jimport('joomla.filesystem.path');
+        $folder = JPath::clean($path."/".$params->get("images_directory", "images/crowdfunding"));
+    
+        if(!empty($userId)) {
+            $folder .= "/user".(int)$userId;
+        }
+    
+        return $folder;
+    }
+    
+    /**
+     * Generate a URI path to the folder, where the images are stored.
+     *
+     * @param number User Id.
+     *
+     * @return string
+     */
+    public static function getImagesFolderUri($userId = 0) {
+    
+        $params = JComponentHelper::getParams(self::$extension);
+        /** @var $params JRegistry **/
+    
+        $uriImages = $params->get("images_directory", "images/crowdfunding");
+    
+        if(!empty($userId)) {
+            $uriImages .= "/user".(int)$userId;
+        }
+    
+        return $uriImages;
     }
 }

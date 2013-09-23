@@ -37,7 +37,7 @@ defined('_JEXEC') or die;
     
     	<div class="row-fluid">
             <div class="span2">
-            	<label title="<?php echo JText::_("COM_CROWDFUNDING_FIELD_FUNDING_DURATION")."::".JText::_("COM_CROWDFUNDING_FIELD_FUNDING_DURATION_DESC");?>" class="hasTip required" for="jform_funding_type" id="jform_funding_type-lbl">
+            	<label title="<?php echo JText::_("COM_CROWDFUNDING_FIELD_FUNDING_DURATION_DESC");?>" class="hasTip required" for="jform_funding_duration_type" id="jform_funding_duration_type-lbl">
             	<?php echo JText::_("COM_CROWDFUNDING_FIELD_FUNDING_DURATION");?><span class="star">&nbsp;*</span>
             	</label>
             </div>
@@ -76,5 +76,4 @@ defined('_JEXEC') or die;
         </button>
     </form>
 </div>
-<div class="clearfix">&nbsp;</div>
 <?php echo $this->version->backlink;?>

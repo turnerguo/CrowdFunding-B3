@@ -114,7 +114,7 @@ class CrowdFundingModelStory extends CrowdFundingModelProject {
             if(!empty($table->pitch_image)){
                 
                 $params       = JComponentHelper::getParams($this->option);
-		        $imagesFolder = $params->get("images_directory", "images/projects");
+		        $imagesFolder = $params->get("images_directory", "images/crowdfunding");
 		    
                 // Remove an image from the filesystem
                 $pitchImage  = $imagesFolder .DIRECTORY_SEPARATOR. $table->pitch_image;
@@ -150,7 +150,7 @@ class CrowdFundingModelStory extends CrowdFundingModelProject {
         
         // Load parameters.
         $params        = JComponentHelper::getParams($this->option);
-        $destFolder    = $params->get("images_directory", "images/projects");
+        $destFolder    = $params->get("images_directory", "images/crowdfunding");
         
         $tmpFolder       = $app->getCfg("tmp_path");
         
@@ -234,7 +234,7 @@ class CrowdFundingModelStory extends CrowdFundingModelProject {
             jimport('joomla.filesystem.file');
             
             $params       = JComponentHelper::getParams($this->option);
-		    $imagesFolder = $params->get("images_directory", "images/projects");
+		    $imagesFolder = $params->get("images_directory", "images/crowdfunding");
 		    
             // Remove an image from the filesystem
             $pitchImage  = $imagesFolder.DIRECTORY_SEPARATOR.$row->pitch_image;

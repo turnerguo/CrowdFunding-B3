@@ -13,15 +13,18 @@
 
 // no direct access
 defined('_JEXEC') or die;
+
+if(!empty($this->article)) {
+
+    if($this->params->get("project_intro_article_title", 0)){
+        echo "<h2>".$this->escape($this->article->title)."</h2>";
+    }
+
+    echo $this->article->introtext;
+    echo $this->article->fulltext;
+    
+} else {
+    echo JText::_("COM_CROWDFUNDING_INTRO_ARTICLE_INFO");
+}
 ?>
-<?php if(!empty($this->article)) {?>
-
-<?php if($this->params->get("project_intro_article_title", 0)){?>
-<h2><?php echo $this->article->title;?></h2>
-<?php }?>
-
-<?php echo $this->article->introtext;?>
-<?php echo $this->article->fulltext;?>
-<?php }?>
-<div class="clearfix">&nbsp;</div>
 <?php echo $this->version->backlink;?>

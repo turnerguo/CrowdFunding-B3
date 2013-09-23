@@ -41,9 +41,14 @@ class CrowdFundingViewProjects extends JView {
     		$this->currency    = CrowdFundingHelper::getCurrency($currencyId);
 		}
 
-		$this->version    = new CrowdfundingVersion();
+		// Prepare filters
+		$this->listOrder  = $this->escape($this->state->get('list.ordering'));
+		$this->listDirn   = $this->escape($this->state->get('list.direction'));
+		$this->saveOrder  = (strcmp($this->listOrder, 'a.ordering') != 0 ) ? false : true;
 		
 		JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
+		
+		$this->version = new CrowdFundingVersion();
 		
         $this->prepareDocument();
                 

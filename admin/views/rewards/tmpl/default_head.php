@@ -34,6 +34,9 @@ defined('_JEXEC') or die;
 	<th width="10%">
 	   <?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_DELIVERY', 'a.delivery', $this->listDirn, $this->listOrder); ?>
 	</th>
+	<th width="5%">
+	   <?php echo JHtml::_('grid.sort',  'JSTATUS', 'a.published', $this->listDirn, $this->listOrder); ?>
+   </th>
     <th width="3%" class="nowrap">
         <?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ID', 'a.id', $this->listDirn, $this->listOrder); ?>
     </th>

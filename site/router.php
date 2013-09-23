@@ -85,15 +85,6 @@ function CrowdFundingBuildRoute(&$query){
     	        
     	        $segments[] = "backing";
     	        
-    	        /* if(isset($query["rid"])) {
-    	            
-    	            if( !empty($query["rid"]) ) {
-                        $segments[] = $query["rid"];
-    	            }
-    	            
-    	            unset($query["rid"]);
-    	        } */
-    	        
     	        break;
     	        
 	       case "details":

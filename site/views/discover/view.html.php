@@ -48,20 +48,26 @@ class CrowdFundingViewDiscover extends JView {
         $this->items          = $model->prepareItems($this->items); 
         
         // Get the folder with images
-        $this->imageFolder    = $params->get("images_directory", "images/projects");
+        $this->imageFolder    = $params->get("images_directory", "images/crowdfunding");
         
         // Get currency
         jimport("crowdfunding.currency");
         $currencyId           = $this->params->get("project_currency");
         $this->currency       = CrowdFundingCurrency::getInstance($currencyId);
 		
-		// Get a social platform for integration
-		$this->socialPlatform = $this->params->get("integration_social_platform");
+		// Get users IDs
+        $usersIds = array();
+        foreach($this->items as $item) {
+            $usersIds[] = $item->user_id;
+        }
+        
+        // Prepare integration. Load avatars and profiles.
+        $this->prepareIntegration($usersIds, $this->params);
 		
 		// Include HTML helper
         JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
         
-        $this->version        = new CrowdfundingVersion();
+        $this->version = new CrowdFundingVersion();
         
         $this->prepareFilters();
         $this->prepareDocument();
@@ -154,4 +160,31 @@ class CrowdFundingViewDiscover extends JView {
 		
     }
     
+    /**
+     * Prepare social profiles
+     *
+     * @param array     $items
+     * @param JRegistry $params
+     *
+     * @todo Move it to a trait when traits become mass.
+     */
+    protected function prepareIntegration($usersIds, $params) {
+    
+        $this->socialProfiles        = null;
+    
+        // If there is now users, do not continue.
+        if(!$usersIds) {
+            return;
+        }
+    
+        // Get a social platform for integration
+        $socialPlatform        = $params->get("integration_social_platform");
+    
+        // Load the class
+        if(!empty($socialPlatform)) {
+            jimport("itprism.integrate.profiles");
+            $this->socialProfiles   =  ITPrismIntegrateProfiles::factory($socialPlatform, $usersIds);
+        }
+    
+    }
 }

@@ -20,9 +20,6 @@ defined('_JEXEC') or die;
             <legend><?php echo JText::_("COM_CROWDFUNDING_TRANSACTION_MANAGER_LEGEND"); ?></legend>
             
             <ul class="adminformlist">
-                <li><?php echo $this->form->getLabel('investor_id'); ?>
-                <?php echo $this->form->getInput('investor_id'); ?></li>
-    
                 <li><?php echo $this->form->getLabel('txn_amount'); ?>
                 <?php echo $this->form->getInput('txn_amount'); ?></li>
                 
@@ -40,6 +37,9 @@ defined('_JEXEC') or die;
                 
                 <li><?php echo $this->form->getLabel('id'); ?>
                 <?php echo $this->form->getInput('id'); ?></li>
+                
+                <li><?php echo $this->form->getLabel('investor_id'); ?>
+                <?php echo $this->form->getInput('investor_id'); ?></li>
                 
             </ul>
             

@@ -73,7 +73,7 @@ class CrowdFundingViewProject extends JView {
                 break;
         }
         
-        $this->version    = new CrowdfundingVersion();
+        $this->version = new CrowdFundingVersion();
         
         $this->prepareDebugMode();
         $this->prepareDocument();
@@ -144,7 +144,7 @@ class CrowdFundingViewProject extends JView {
         
         $this->form        = $model->getForm();
             
-        $this->imageFolder = $this->params->get("images_directory", "images/projects");
+        $this->imageFolder = $this->params->get("images_directory", "images/crowdfunding");
         $this->imageSmall  = $this->item->get("image_small");
         
         $this->pathwayName = JText::_("COM_CROWDFUNDING_STEP_BASIC");
@@ -190,15 +190,15 @@ class CrowdFundingViewProject extends JView {
     
         switch($this->fundingDuration) {
     
-            case "days":
+            case "days": // Only days type is enabled
                 $this->checkedDays = 'checked="checked"';
                 break;
     
-            case "date":
+            case "date": // Only date type is enabled
                 $this->checkedDate = 'checked="checked"';
                 break;
     
-            default:
+            default: // Both ( days and date ) types are enabled
     
                 $this->checkedDays = 0;
                 $this->checkedDate = "";
@@ -234,11 +234,33 @@ class CrowdFundingViewProject extends JView {
         $this->form        = $model->getForm();
         $this->params      = $this->state->get("params");
             
-        $this->imageFolder = $this->params->get("images_directory", "images/projects");
+        $this->imageFolder = $this->params->get("images_directory", "images/crowdfunding");
         $this->pitchImage  = $this->item->get("pitch_image");
         
         $this->pWidth      = $this->params->get("pitch_image_width", 600);
         $this->pHeight     = $this->params->get("pitch_image_height", 400);
+        
+        // Prepare extra images folder
+        if($this->params->get("extra_images", 0) AND !empty($this->userId)) {
+        
+            jimport('joomla.filesystem.folder');
+        
+            $userDestinationFolder = CrowdFundingHelper::getImagesFolder($this->userId);
+            if(!JFolder::exists($userDestinationFolder)) {
+                JFolder::create($userDestinationFolder);
+        
+                $userDestinationFolderIndex = JPath::clean($userDestinationFolder."/index.html");
+                $bufffer = "<!DOCTYPE html><title></title>";
+        
+                jimport('joomla.filesystem.file');
+                JFile::write($userDestinationFolderIndex, $bufffer);
+            }
+        
+            jimport("crowdfunding.images");
+            $this->images = new CrowdFundingImages($itemId);
+        
+            $this->extraImagesUri = CrowdFundingHelper::getImagesFolderUri($this->userId);
+        }
         
         $this->pathwayName = JText::_("COM_CROWDFUNDING_STEP_STORY");
         
@@ -318,8 +340,8 @@ class CrowdFundingViewProject extends JView {
         
         // Scripts
         JHtml::_('behavior.keepalive');
-        JHtml::_('behavior.tooltip');
         JHtml::_('behavior.formvalidation');
+        JHtml::_('behavior.tooltip');
         
         JHtml::_("crowdfunding.bootstrap");
         
@@ -341,17 +363,29 @@ class CrowdFundingViewProject extends JView {
             case "story":
                 
                 // Scripts
-                JHtml::_('itprism.ui.bootstrap_fileupload');
-                $this->document->addScript('media/'.$this->option.'/js/site/project_story.js');
+                JHtml::_('itprism.ui.bootstrap_fileuploadstyle');
                 
+                if($this->params->get("extra_images", 0)) {
+                    JHtml::_('itprism.ui.fileupload');
+                    JHtml::_('itprism.ui.pnotify');
+                    $this->document->addScript('media/'.$this->option.'/js/helper.js');
+                }
+                
+                $this->document->addScript('media/'.$this->option.'/js/site/project_story.js');
                 break;
                     
             default: // Basic
                 
                 // Scripts
-                JHtml::_('itprism.ui.bootstrap_fileupload');
+                JHtml::_('itprism.ui.bootstrap_fileuploadstyle');
                 JHtml::_('itprism.ui.bootstrap_maxlength');
+                JHtml::_('itprism.ui.bootstrap_typeahead');
+                JHtml::_('itprism.ui.parsley');
 		        $this->document->addScript('media/'.$this->option.'/js/site/project_basic.js');
+		        
+		        // Load language string in JavaScript
+		        JText::script('COM_CROWDFUNDING_THIS_VALUE_IS_REQUIRED');
+		        
                 break;
         }
 		

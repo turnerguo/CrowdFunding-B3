@@ -27,6 +27,7 @@ defined('_JEXEC') or die;
             <?php echo $this->form->getLabel('pitch_image'); ?>
             <div class="fileupload fileupload-new" data-provides="fileupload">
                 <span class="btn btn-file">
+                    <i class="icon-upload"></i>
                     <span class="fileupload-new"><?php echo JText::_("COM_CROWDFUNDING_SELECT_FILE");?></span>
                     <span class="fileupload-exists">
                         <?php echo JText::_("COM_CROWDFUNDING_CHANGE");?>
@@ -57,13 +58,17 @@ defined('_JEXEC') or die;
             <input type="hidden" name="task" value="story.save" />
             <?php echo JHtml::_('form.token'); ?>
             
+            <div class="clearfix"></div>
+            <?php if($this->params->get("extra_images", 0)){
+                echo $this->loadTemplate("extraimages");
+            }?>
+            <div class="clearfix"></div>
+            
             <button type="submit" class="button button-large margin-tb-15px" <?php echo $this->disabledButton;?>>
             	<i class="icon-ok icon-white"></i>
                 <?php echo JText::_("COM_CROWDFUNDING_SAVE_AND_CONTINUE")?>
             </button>
         </div>
-        
     </form>
 </div>
-<div class="clearfix">&nbsp;</div>
 <?php echo $this->version->backlink;?>

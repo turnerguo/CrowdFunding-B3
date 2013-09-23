@@ -14,7 +14,7 @@
 // no direct access
 defined('_JEXEC') or die;
 ?>
-<form enctype="multipart/form-data"  action="<?php echo JRoute::_('index.php?option=com_crowdfunding&layout=edit'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate" >
+<form enctype="multipart/form-data"  action="<?php echo JRoute::_('index.php?option=com_crowdfunding'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate" >
     <div class="width-40 fltlft">
         <fieldset class="adminform">
             <legend><?php echo JText::_("COM_CROWDFUNDING_CURRENCY_LEGEND"); ?></legend>

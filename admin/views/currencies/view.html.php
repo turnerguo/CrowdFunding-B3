@@ -36,13 +36,9 @@ class CrowdFundingViewCurrencies extends JView {
         $this->pagination = $this->get('Pagination');
         
         // Prepare filters
-        $listOrder        = $this->escape($this->state->get('list.ordering'));
-        $listDirn         = $this->escape($this->state->get('list.direction'));
-        $saveOrder        = (strcmp($listOrder, 'a.ordering') != 0 ) ? false : true;
-        
-        $this->listOrder  = $listOrder;
-        $this->listDirn   = $listDirn;
-        $this->saveOrder  = $saveOrder;
+        $this->listOrder  = $this->escape($this->state->get('list.ordering'));
+        $this->listDirn   = $this->escape($this->state->get('list.direction'));
+        $this->saveOrder  = (strcmp($this->listOrder, 'a.ordering') != 0 ) ? false : true;
         
         // Add submenu
         CrowdFundingHelper::addSubmenu($this->getName());
@@ -90,7 +86,11 @@ class CrowdFundingViewCurrencies extends JView {
 	 * @return void
 	 */
 	protected function setDocument() {
+	    
 		$this->document->setTitle(JText::_('COM_CROWDFUNDING_CURRENCY_MANAGER'));
+		
+		JHtml::_('behavior.tooltip');
+		
 	}
     
 }

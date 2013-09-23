@@ -35,7 +35,7 @@ class CrowdFundingModelExport extends JModel {
         $db->setQuery($query);
         $results = $db->loadAssocList();
         
-        $output = $this->prepareXML($results, "currencies", "curreny");
+        $output = $this->prepareXML($results, "currencies", "currency");
         
         return $output;
     }
@@ -51,8 +51,8 @@ class CrowdFundingModelExport extends JModel {
         // Select the required fields from the table.
         $query
             ->select(
-            'a.id, a.name, a.latitude, a.longitude, a.country_code, 
-             a.timezone, a.published'
+            'a.id, a.name, a.latitude, a.longitude, a.country_code, '.
+            'a.timezone, a.state_code, a.published'
             )
             ->from($db->quoteName('#__crowdf_locations').' AS a');
         
@@ -65,20 +65,38 @@ class CrowdFundingModelExport extends JModel {
         return $output;
     }
     
+    public function getCountries() {
+    
+        $db     = $this->getDbo();
+        /** @var $db JDatabaseMySQLi **/
+    
+        // Create a new query object.
+        $query  = $db->getQuery(true);
+    
+        // Select the required fields from the table.
+        $query
+        ->select('a.id, a.name, a.code')
+        ->from($db->quoteName('#__crowdf_countries').' AS a');
+    
+        $db->setQuery($query);
+        $results = $db->loadAssocList();
+    
+        $output = $this->prepareXML($results, "countries", "country");
+    
+        return $output;
+    }
+    
     protected function prepareXML($results, $root, $child) {
         
-        $xml = new SimpleXMLElement('<xml/>');
-
+        $xml = new SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?><'.$root.'/>');
+        
         if(!empty($root) AND !empty($child) ) {
             
-            // Set ROOT item
-            $rootItem = $xml->addChild($root);
-            
-            foreach( $results as $currency ) {
+            foreach( $results as $data ) {
                 
-                $item = $rootItem->addChild($child);
+                $item = $xml->addChild($child);
                 
-                foreach( $currency as $key => $value ) {
+                foreach( $data as $key => $value ) {
                     $item->addChild($key, $value);
                 }
             }

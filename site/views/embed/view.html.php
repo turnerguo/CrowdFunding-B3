@@ -39,7 +39,7 @@ class CrowdFundingViewEmbed extends JView {
         $this->item        = $this->get("Item");
         $this->params      = $this->state->get("params");
         
-        $this->imageFolder = $this->params->get("images_directory", "images/projects");
+        $this->imageFolder = $this->params->get("images_directory", "images/crowdfunding");
         
         if (!$this->item) {
             $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"), "notice");
@@ -59,7 +59,7 @@ class CrowdFundingViewEmbed extends JView {
 		$this->socialPlatform = $this->params->get("integration_social_platform");
 		
         // Set a link to project page
-        $uri   = JFactory::getURI();
+        $uri   = JUri::getInstance();
         $host  = $uri->toString(array("scheme", "host"));
         $this->item->link        = $host.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug), false);
         
@@ -87,7 +87,7 @@ class CrowdFundingViewEmbed extends JView {
             
         }
         
-        $this->version     = new CrowdfundingVersion();
+        $this->version = new CrowdFundingVersion();
         
 		$this->prepareDocument();
 		

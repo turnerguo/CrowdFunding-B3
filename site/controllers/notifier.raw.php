@@ -51,17 +51,9 @@ class CrowdFundingControllerNotifier extends JController {
         // Check for disabled payment functionality
         if($params->get("debug_payment_disabled", 0)) {
             $error  = JText::_("COM_CROWDFUNDING_ERROR_PAYMENT_HAS_BEEN_DISABLED");
-            $error .= "\n". JText::sprintf("COM_CROWDFUNDING_TRANSACTION_DATA", var_export($_POST, true));
+            $error .= "\n". JText::sprintf("COM_CROWDFUNDING_TRANSACTION_DATA", var_export($_REQUEST, true));
 			JLog::add($error);
 			return null;
-        }
-        
-        $requestMethod = $app->input->getMethod();
-        if("POST" != $requestMethod) {
-            $error  = "COM_CROWDFUNDING_ERROR_INVALID_TRANSACTION_REQUEST_METHOD (" .$requestMethod . "):\n";
-            $error .= "INPUT: " . var_export($app->input, true) . "\n";
-            JLog::add($error);
-            return;
         }
         
         // Save data
@@ -72,35 +64,49 @@ class CrowdFundingControllerNotifier extends JController {
             
             // Event Notify
             JPluginHelper::importPlugin('crowdfundingpayment');
-            $results     = $dispatcher->trigger('onPaymenNotify', array('com_crowdfunding.notify', $_POST, $params));
+            $results     = $dispatcher->trigger('onPaymenNotify', array('com_crowdfunding.notify', $params));
             
             $transaction = null;
             $project     = null;
             $reward      = null;
+            $paymentGateway = null;
             
             if(!empty($results)) {
                 foreach($results as $result) {
                     if(!empty($result) AND isset($result["transaction"])) {
-                        $transaction = JArrayHelper::getValue($result, "transaction");
-                        $project     = JArrayHelper::getValue($results[0], "project");
-                        $reward      = JArrayHelper::getValue($results[0], "reward");
+                        $transaction    = JArrayHelper::getValue($result, "transaction");
+                        $project        = JArrayHelper::getValue($results[0], "project");
+                        $reward         = JArrayHelper::getValue($results[0], "reward");
+                        $paymentGateway = JArrayHelper::getValue($results[0], "payment_service");
                         break;
                     }
                 }
             }
             
-            // Check for error.
+            // If there is no transaction data, the status might be pending or another one.
+            // So, we have to stop the script execution.
             if(empty($transaction)) {
                 return;
             }
             
+            // Clear the name of the payment gateway.
+            $filter = new JFilterInput();
+            $paymentGateway = JString::strtolower($filter->clean($paymentGateway, "ALNUM"));
+            
             // Event After Payment
             JPluginHelper::importPlugin('crowdfundingpayment');
-            $dispatcher->trigger('onAfterPayment', array('com_crowdfunding.notify', &$transaction, $params, $project, $reward));
+            $dispatcher->trigger('onAfterPayment', array('com_crowdfunding.notify.'.$paymentGateway, &$transaction, $params, $project, $reward));
         		
         } catch (Exception $e) {
+            
             JLog::add($e->getMessage());
-            return;
+            $input = "INPUT:" .var_export($app->input, true)."\n";
+            JLog::add($input);
+            
+            // Send notification about the error to the administrator.
+            $model = $this->getModel();
+            $model->sendMailToAdministrator();
+            
         }
         
     }

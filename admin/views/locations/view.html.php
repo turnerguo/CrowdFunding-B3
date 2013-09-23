@@ -68,7 +68,10 @@ class CrowdFundingViewLocations extends JView {
 		
 		// Import
 		$link = JRoute::_('index.php?option=com_crowdfunding&view=import&type=locations');
-		$bar->appendButton('Link', 'upload', JText::_("COM_CROWDFUNDING_IMPORT"), $link);
+		$bar->appendButton('Link', 'upload', JText::_("COM_CROWDFUNDING_IMPORT_LOCATIONS"), $link);
+		
+		$link = JRoute::_('index.php?option=com_crowdfunding&view=import&type=states');
+		$bar->appendButton('Link', 'upload', JText::_("COM_CROWDFUNDING_IMPORT_STATES"), $link);
 		
 		// Export
 		$link = JRoute::_('index.php?option=com_crowdfunding&task=export.download&format=raw&type=locations');
@@ -95,9 +98,6 @@ class CrowdFundingViewLocations extends JView {
 		
 		// Add scripts
 		JHtml::_('behavior.tooltip');
-		JHtml::_('behavior.formvalidation');
-		
-		$this->document->addScript(JURI::root() . 'media/'.$this->option.'/js/admin/'.JString::strtolower($this->getName()).'.js');
 		
 	}
 

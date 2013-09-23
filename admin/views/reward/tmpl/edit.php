@@ -34,6 +34,9 @@ defined('_JEXEC') or die;
                 
                 <li><?php echo $this->form->getLabel('delivery'); ?>
                 <?php echo $this->form->getInput('delivery'); ?></li>
+                
+                <li><?php echo $this->form->getLabel('published'); ?>
+                <?php echo $this->form->getInput('published'); ?></li>
     
                 <li><?php echo $this->form->getLabel('id'); ?>
                 <?php echo $this->form->getInput('id'); ?></li>

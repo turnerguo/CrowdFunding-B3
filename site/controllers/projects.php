@@ -122,7 +122,7 @@ class CrowdFundingControllerProjects extends JController {
 		if(!$state) {
 		    $this->setMessage(JText::_("COM_CROWDFUNDING_PROJECT_UNPUBLISHED_SUCCESSFULY"));
 		} else {
-		    $this->setMessage(JText::_("COM_CROWDFUNDING_PROJECT_PUBLISHED_SUCCESSFULY"));
+		    $this->setMessage(JText::_("COM_CROWDFUNDING_PROJECT_PUBLISHED_SUCCESSFULY_INFO"));
 		}
 		
 		$this->setRedirect($returnLink);

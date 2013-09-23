@@ -19,9 +19,12 @@ defined('_JEXEC') or die;
 	?>
 	<tr class="row<?php echo $i % 2; ?>">
         <td><?php echo JHtml::_('grid.id', $i, $item->id); ?></td>
-		<td><a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=transaction&layout=edit&id=".$item->id);?>"><?php echo $item->beneficiary; ?></a></td>
-		<td><?php echo $item->sender; ?></td>
-		<td>
+        <td >
+            <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=transaction&layout=edit&id=".$item->id);?>"><?php echo $item->txn_id; ?></a>
+        </td>
+        <td class="center"><?php echo JHtml::_("crowdfunding.name", $item->sender); ?></td>
+		<td class="center"><?php echo $this->escape($item->beneficiary); ?></td>
+		<td class="center">
 			<a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=transactions&filter_search=pid:".$item->project_id);?>">
 		    <?php echo JHtmlString::truncate(strip_tags($item->project), 53); ?>
 		    </a>
@@ -36,10 +39,9 @@ defined('_JEXEC') or die;
 		?></td>
 		<td class="center"><?php echo $item->txn_date; ?></td>
 		<td class="center"><?php echo $item->service_provider; ?></td>
-		<td class="center"><?php echo $item->txn_id; ?>
 		<td class="center"><?php echo $item->txn_status; ?></td>
 		<td class="center">
-		<?php echo JHtml::_('crowdfundingbackend.reward', $item->reward_id, $item->reward, $item->project_id, $item->reward_state ); ?>
+		  <?php echo JHtml::_('crowdfundingbackend.reward', $item->reward_id, $item->reward, $item->project_id, $item->reward_state ); ?>
 		</td>
         <td class="center"><?php echo $item->id;?></td>
 	</tr>

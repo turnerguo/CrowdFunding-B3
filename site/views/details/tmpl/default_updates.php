@@ -35,28 +35,21 @@ defined('_JEXEC') or die;?>
 <div class="hr margin-tb-15px"></div>
 <?php }?>
 <?php if(!empty($this->items)) {
-    
-    $user = JFactory::getUser($this->item->user_id);
-    $socialProfile  = JHtml::_("crowdfunding.socialProfile", $this->socialPlatform, $user);
-    $socialAvatar   = JHtml::_("crowdfunding.socialAvatar", $this->avatars, $user, "media/com_crowdfunding/images/no-profile.png");
-    
+    $socialProfile  = (!$this->socialProfiles) ? null : $this->socialProfiles->getLink($this->item->user_id); 
+    $socialAvatar   = (!$this->socialProfilesAvatars) ? $this->defaultAvatar : $this->socialProfilesAvatars->getAvatar($this->item->user_id, $this->avatarsSize); 
 ?>
 <?php foreach($this->items as $item ) { ?>
     <div class="row-fluid cf-update-item" id="update<?php echo $item->id;?>">
     
         <div class="media">
             <a class="pull-left" href="<?php echo (!$socialProfile) ? "javascript: void(0);" : $socialProfile;?>">
-                <img class="media-object" src="<?php echo $socialAvatar;?>">
+                <img class="media-object" src="<?php echo $socialAvatar;?>" width="<?php echo $this->avatarsSize;?>" height="<?php echo $this->avatarsSize;?>">
             </a>
             
             <div class="media-body">
             	<div class="cf-info-bar"> 
             		<div class="pull-left">
-            		    <?php if(!$socialProfile) { ?>
-            		    <?php echo $item->author; ?>
-            		    <?php } else {?>
-            		    <a href="<?php echo $socialProfile;?>"><?php echo $item->author; ?></a>
-            		    <?php } ?> | <?php echo JHTML::_('date', $item->record_date, JText::_('DATE_FORMAT_LC3')); ?>
+            		    <?php echo JHtml::_("crowdfunding.postedby", $item->author, $item->record_date, $socialProfile)?>
             		</div>
                 	<?php if($this->userId == $item->user_id ) {?>
                 	<div class="pull-right">

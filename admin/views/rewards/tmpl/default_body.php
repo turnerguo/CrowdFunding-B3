@@ -25,6 +25,9 @@ defined('_JEXEC') or die;
 		<td class="center"><?php echo $item->distributed;?></td>
 		<td class="center"><?php echo $item->available;?></td>
 		<td class="center"><?php echo (CrowdFundingHelper::isValidDate($item->delivery)) ? JHtml::_('date', $item->delivery, JText::_('DATE_FORMAT_LC3')) : "--";?></td>
+		<td class="center">
+            <?php echo JHtml::_('jgrid.published', $item->published, $i, "rewards."); ?>
+        </td>
         <td class="center"><?php echo $item->id;?></td>
 	</tr>
 <?php }?>

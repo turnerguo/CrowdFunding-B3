@@ -39,12 +39,23 @@ class CrowdFundingViewImport extends JView {
         $this->state = $this->get('State');
         $this->form  = $this->get('Form');
         
-        $importType  = $this->state->get("import.context");
+        $this->importType  = $this->state->get("import.context");
         
-        switch($importType) {
+        switch($this->importType) {
+            
             case "locations":
                 $this->legend = JText::_("COM_CROWDFUNDING_IMPORT_LOCATIONS_DATA");
                 $this->uploadTask = "import.locations";
+                break;
+                
+            case "countries":
+                $this->legend = JText::_("COM_CROWDFUNDING_IMPORT_COUNTRIES_DATA");
+                $this->uploadTask = "import.countries";
+                break;
+            
+            case "states":
+                $this->legend = JText::_("COM_CROWDFUNDING_IMPORT_STATES_DATA");
+                $this->uploadTask = "import.states";
                 break;
                 
             default: // Currencies
@@ -55,7 +66,7 @@ class CrowdFundingViewImport extends JView {
         }
         
         // Add submenu
-        CrowdFundingHelper::addSubmenu($importType);
+        CrowdFundingHelper::addSubmenu($this->importType);
         
         // Prepare actions
         $this->addToolbar();

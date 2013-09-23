@@ -52,11 +52,17 @@ class JFormFieldCfCategories extends JFormFieldList {
             ->from('#__categories AS a')
             ->order("a.title ASC");
         
+        // Set state
+        $state = JArrayHelper::getValue($this->element, "state");
+        if(!is_null($state)) {
+            $query->where("published = ".(int)$state);
+        }
+        
         // Get the options.
         $db->setQuery($query);
         $options = $db->loadObjectList();
         
-        array_unshift($options, JHTML::_('select.option', '0', '- '.JText::_('COM_CROWDFUNDING_SELECT_CATEGORY').' -', 'value', 'text'));
+        array_unshift($options, JHtml::_('select.option', '0', '- '.JText::_('COM_CROWDFUNDING_SELECT_CATEGORY').' -', 'value', 'text'));
         
         // Merge any additional options in the XML definition.
         $options = array_merge(parent::getOptions(), $options);

@@ -60,7 +60,7 @@ class CrowdFundingModelProjectItem extends JModelItem {
      *
      * @param	integer	The id of the object to get.
      *
-     * @return	mixed	Object on success, false on failure.
+     * @return	CrowdFundingTableProject|null	
      */
     public function getItem($id = null) {
         
@@ -101,7 +101,7 @@ class CrowdFundingModelProjectItem extends JModelItem {
             $this->prepareTable($row);
         }
         
-        $row->published = $state;
+        $row->published = (int)$state;
         $row->store();
         
         // Trigger the event
@@ -122,15 +122,24 @@ class CrowdFundingModelProjectItem extends JModelItem {
         
     }
     
+    /**
+     * This method calculate start date and validate funding period.
+     * 
+     * @param unknown $table
+     * @throws Exception
+     */
     protected function prepareTable(&$table) {
         
-        $isValidStartDate = CrowdFundingHelper::isValidDate($table->funding_start);
-        
-        // Calculate starting date if the user publish a project for first time.
-        if(!$isValidStartDate) {
+        // Calculate start and end date if the user publish a project for first time.
+        if(!CrowdFundingHelper::isValidDate($table->funding_start)) {
             
             $fundindStart         = new JDate();
             $table->funding_start = $fundindStart->toSql();
+            
+            // If funding type is "days", calculate end date.
+            if(!empty($table->funding_days)) {
+                $table->funding_end = CrowdFundingHelper::calcualteEndDate($table->funding_start, $table->funding_days);
+            }
             
         }
         
@@ -141,8 +150,7 @@ class CrowdFundingModelProjectItem extends JModelItem {
         $maxDays   = $params->get("project_days_maximum");
         
         // Validate the period if there is an ending date
-        $isValidEndDate = CrowdFundingHelper::isValidDate($table->funding_end);
-        if($isValidEndDate) {
+        if(CrowdFundingHelper::isValidDate($table->funding_end)) {
         
             if(!CrowdFundingHelper::isValidPeriod($table->funding_start, $table->funding_end, $minDays, $maxDays)) {
                 
@@ -186,9 +194,6 @@ class CrowdFundingModelProjectItem extends JModelItem {
             throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_DESCRIPTION"), ITPrismErrors::CODE_WARNING);
         }
         
-        if(!$this->countRewards($item->id)) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_REWARDS"), ITPrismErrors::CODE_WARNING);
-        }
     }
     
     /**

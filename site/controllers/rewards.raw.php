@@ -82,7 +82,17 @@ class CrowdFundingControllerRewards extends JController {
 		$model = $this->getModel();
 
         try {
-            $model->remove($pks, $userId);
+            
+            $rewardId = JArrayHelper::getValue($pks, 0);
+            
+            // If the reward is part of transaction,
+            // move set it as trashed.
+            if($model->isSelectedByUser($rewardId)) {
+                $model->trash($rewardId, $userId);
+            } else {
+                $model->remove($rewardId, $userId);
+            }
+            
         } catch (Exception $e) {
             JLog::add($e->getMessage());
             throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));

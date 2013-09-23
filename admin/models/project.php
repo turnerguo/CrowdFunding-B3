@@ -205,50 +205,52 @@ class CrowdFundingModelProject extends JModelAdmin {
 	
 	        if ($table->load($pk)) {
 	            
-	            // Calculate starting date if the user publish a project for first time.
-	            if(!CrowdFundingHelper::isValidDate($table->funding_start)) {
-	            
-	                $fundindStart         = new JDate();
-	                $table->funding_start = $fundindStart->toSql();
-	                $table->published     = $value;
-	                
+	            if($value == CrowdFundingConstants::PUBLISHED) { // Publish a project
+
 	                // Validate funding period
 	                if(!$table->funding_days AND !CrowdFundingHelper::isValidDate($table->funding_end)) {
 	                    throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_DURATION_PERIOD"), ITPrismErrors::CODE_WARNING);
 	                }
 	                
-	                // Validate the period if there is funding days
-	                $params        = JComponentHelper::getParams($this->option);
-	                $minimumDays   = $params->get("project_days_minimum", 15);
 	                
-	                if(!empty($table->funding_days) AND ($table->funding_days < $minimumDays)) {
-	                    throw new Exception(JText::sprintf("COM_CROWDFUNDING_ERROR_INVALID_FUNDING_DAYS", $minimumDays), ITPrismErrors::CODE_WARNING);
-	                }
-	                
-	                // Validate the period if there is an ending date
-	                if(CrowdFundingHelper::isValidDate($table->funding_end)) {
-	                
-	                    // Get interval between starting and ending date
-	                    $startingDate  = new DateTime($table->funding_start);
-	                    $endingDate    = new DateTime($table->funding_end);
-	                    $interval      = $startingDate->diff($endingDate);
-	                
-	                    $days          = $interval->format("%r%a");
-	                
+	                // Calculate starting date if the user publish a project for first time.
+	                if(!CrowdFundingHelper::isValidDate($table->funding_start)) {
+	                    $fundindStart         = new JDate();
+	                    $table->funding_start = $fundindStart->toSql();
 	                    
-	                    if($days < $minimumDays) {
-	                        throw new Exception(JText::sprintf("COM_CROWDFUNDING_ERROR_INVALID_ENDING_DATE", $minimumDays), ITPrismErrors::CODE_WARNING);
+	                    // If funding type is "days", calculate end date.
+	                    if(!empty($table->funding_days)) {
+	                        $table->funding_end = CrowdFundingHelper::calcualteEndDate($table->funding_start, $table->funding_days);
 	                    }
 	                }
 	                
+	                // Validate the period if the funding type is days
+	                $params    = JComponentHelper::getParams($this->option);
+	                
+	                $minDays   = $params->get("project_days_minimum", 15);
+	                $maxDays   = $params->get("project_days_maximum");
+	                
+	                if(CrowdFundingHelper::isValidDate($table->funding_end)) {
+	                    
+	                    if(!CrowdFundingHelper::isValidPeriod($table->funding_start, $table->funding_end, $minDays, $maxDays)) {
+	                        if(!empty($maxDays)) {
+	                            throw new Exception(JText::sprintf("COM_CROWDFUNDING_ERROR_INVALID_ENDING_DATE_MIN_MAX_DAYS", $minDays, $maxDays), ITPrismErrors::CODE_WARNING);
+	                        } else {
+	                            throw new Exception(JText::sprintf("COM_CROWDFUNDING_ERROR_INVALID_ENDING_DATE_MIN_DAYS", $minDays), ITPrismErrors::CODE_WARNING);
+	                        }
+	                    }
+	                
+	                }
+	                
+	                $table->published = self::PROJECT_STATE_PUBLISHED;
 	                $table->store();
 	                
-	            } else {
+	                
+	            } else { // Set other states - unpublished, trash,...
 	                $table->publish(null, $value);
 	            }
 	        }
 	    }
-	
 	    
 	    // Trigger change state event
 	    

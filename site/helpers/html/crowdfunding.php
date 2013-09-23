@@ -24,9 +24,37 @@ defined('_JEXEC') or die;
 abstract class JHtmlCrowdFunding {
     
     /**
-     * @var   array   array containing information for loaded files
+     * @var array array containing information for loaded files
      */
     protected static $loaded = array();
+    
+    /**
+     * Include Twitter Bootstrap
+    */
+    public static function bootstrap() {
+    
+        // Check for disabled including.
+        $componentParams = JComponentHelper::getParams("com_crowdfunding");
+    
+        if(!$componentParams->get("bootstrap_include", 1)) {
+            return;
+        }
+    
+        // Only load once
+        if (!empty(self::$loaded[__METHOD__])) {
+            return;
+        }
+    
+        $document = JFactory::getDocument();
+    
+        $document->addStylesheet(JURI::root().'media/com_crowdfunding/css/site/bootstrap.min.css');
+        $document->addScript(JURI::root().'media/com_crowdfunding/js/bootstrap.min.js');
+    
+        self::$loaded[__METHOD__] = true;
+    
+        return;
+    
+    }
     
     /**
      * 
@@ -310,105 +338,6 @@ abstract class JHtmlCrowdFunding {
         return $html;
     }
     
-    /**
-     * Generate a link to an user image of a social platform
-     * 
-     * @param string $socialPlatform	The name of the social platform.
-     * @param JUser $user		        This is a Joomla! user object.
-     * 
-     * @return string A routed link to profile
-     */ 
-    public static function socialProfile($socialPlatform, JUser $user) {
-    
-        $link = "";
-    
-        switch($socialPlatform) {
-    
-            case "com_socialcommunity":
-    
-                jimport("itprism.integrate.profile.socialcommunity");
-                $profile = new ITPrismIntegrateProfileSocialCommunity($user);
-                $link    = $profile->getLink();
-    
-                break;
-    
-            case "com_kunena":
-    
-                jimport("itprism.integrate.profile.kunena");
-                $profile = new ITPrismIntegrateProfileKunena($user);
-                $link    = $profile->getLink();
-    
-                break;
-    
-            case "gravatar":
-    
-                jimport("itprism.integrate.profile.gravatar");
-                $profile = new ITPrismIntegrateProfileGravatar($user);
-                $link    = $profile->getLink();
-    
-                break;
-    
-            default:
-                $link = "";
-                break;
-        }
-    
-        return $link;
-    
-    }
-    
-    /**
-     * 
-     * Generate a link to an user image of a social platform
-     * @param string $socialPlatform	The name of the social platform
-     * @param JUser  $user		        Joomla! user object
-     * @param string $default		    A link to default picture
-     * 
-     * @todo Add option for setting image size
-     */    
-    public static function socialAvatar($socialPlatform, JUser $user, $default = null) {
-        
-        $link = "";
-
-        switch($socialPlatform) {
-
-            case "com_socialcommunity":
-                
-                jimport("itprism.integrate.profile.socialcommunity");
-                $profile = new ITPrismIntegrateProfileSocialCommunity($user);
-                $link    = $profile->getAvatar();
-                break;
-                
-            case "com_kunena":
-                
-                jimport("itprism.integrate.profile.kunena");
-                $profile = new ITPrismIntegrateProfileKunena($user);
-                $link    = $profile->getAvatar();
-                
-                break;
-                
-            case "gravatar":
-                
-                jimport("itprism.integrate.profile.gravatar");
-                $profile = new ITPrismIntegrateProfileGravatar($user);
-                $profile->setSize(50);
-                $link    = $profile->getAvatar();
-                
-                break;
-            
-            default:
-                $link = "";
-                break;
-        }
-        
-        // Set the linke to default picture
-        if(!$link AND !empty($default)) {
-            $link = $default;
-        }
-        
-		return $link;
-		
-    }
     
     public static function reward($rewardId, $reward, $txnId, $sent = 0, $canEdit = false) {
     
@@ -464,32 +393,120 @@ abstract class JHtmlCrowdFunding {
         return implode(" ", $html);
     }
     
+    public static function projectTitle($title, $categoryState, $slug, $catSlug) {
+    
+        $html = array();
+    
+        if(!$categoryState) {
+            $html[] = htmlspecialchars($title, ENT_QUOTES, "utf-8");
+            $html[] = '<button type="button" class="hasTooltip" title="'.htmlspecialchars(JText::_("COM_CROWDFUNDING_SELECT_OTHER_CATEGORY_TOOLTIP"), ENT_QUOTES, "utf-8").'">';
+            $html[] = '<i class="icon-info-sign"></i>';
+            $html[] = '</button>';
+        } else {
+    
+            $html[] = '<a href="'. JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($slug, $catSlug)) .'">';
+            $html[] = htmlspecialchars($title, ENT_QUOTES, "utf-8");
+            $html[] = '</a>';
+        }
+         
+        return implode("\n", $html);
+    }
+    
+    public static function date($date, $format = "d F Y") {
+    
+        if(CrowdFundingHelper::isValidDate($date)) {
+            $date = JHtml::_("date", $date, $format);
+        } else {
+            $date = "---";
+        }
+    
+        return $date;
+    }
+    
+    public static function duration($startDate, $endDate, $days, $format = "d F Y") {
+    
+        $otuput = "";
+    
+        if(!empty($days)) {
+            $otuput .= JText::sprintf("COM_CROWDFUNDING_DURATION_DAYS", (int)$days);
+    
+            // Display end date
+            if(CrowdFundingHelper::isValidDate($endDate)) {
+                $otuput .= '<div class="info-mini">';
+                $otuput .= JText::sprintf("COM_CROWDFUNDING_DURATION_END_DATE", JHTML::_('date', $endDate, $format));
+                $otuput .= '</div>';
+            }
+    
+        } else if(CrowdFundingHelper::isValidDate($endDate)) {
+            $otuput .= JText::sprintf("COM_CROWDFUNDING_DURATION_END_DATE", JHTML::_('date', $endDate, $format));
+        } else {
+            $otuput .= "---";
+        }
+    
+        return $otuput;
+    }
+    
+    public static function postedby($name, $date, $link = null) {
+    
+        if(!empty($link)) {
+            $profile = '<a href="'.$link.'">'.htmlspecialchars($name, ENT_QUOTES, "utf-8").'</a>';
+        } else {
+            $profile = $name;
+        }
+    
+        $date = JHTML::_('date', $date, JText::_('DATE_FORMAT_LC3'));
+        $html = JText::sprintf("COM_CROWDFUNDING_POSTED_BY", $profile, $date);
+         
+        return $html;
+    }
+    
+    public static function name($name) {
+    
+        if(!empty($name)) {
+            $output = htmlspecialchars($name, ENT_QUOTES, "UTF-8");
+        } else {
+            $output = JText::_("COM_CROWDFUNDING_ANONYMOUS");
+        }
+    
+        return $output;
+    }
+    
     /**
-     * Include Twitter Bootstrap
+     * Display a percent string.
+     * 
+     * <code>
+     * $percentString = CrowdFundingHelper::percent(100);
+     * echo $percentString;
+     * </code>
+     * 
+     * @param string $value
+     * @return string
      */
-    public static function bootstrap() {
+    public static function percent($value) {
     
-        // Check for disabled including.
-        $componentParams = JComponentHelper::getParams("com_crowdfunding");
-        
-        if(!$componentParams->get("bootstrap_include", 1)) {
-            return;
-        }
-        
-        // Only load once
-        if (!empty(self::$loaded[__METHOD__])) {
-            return;
+        if(!$value) {
+            $value = "0.0";
         }
     
-        $document = JFactory::getDocument();
-        
-        $document->addStylesheet(JURI::root().'media/com_crowdfunding/css/site/bootstrap.min.css');
-        $document->addScript(JURI::root().'media/com_crowdfunding/js/bootstrap.min.js');
-        
-        self::$loaded[__METHOD__] = true;
+        return $value . "%";
+    }
     
-        return;
+    public static function socialProfileLink($link, $name, $options = array()) {
     
-    }   
+        if(!empty($link)) {
+            
+            $targed = "";
+            if(!empty($options["target"])) {
+                $targed = 'target="'.JArrayHelper::getValue($options, "target").'"';
+            }
+            
+            $output = '<a href="'.$link.'" '.$targed.'>'.htmlspecialchars($name, ENT_QUOTES, "UTF-8").'</a>';
+            
+        } else {
+            $output = htmlspecialchars($name, ENT_QUOTES, "utf-8");
+        }
+    
+        return $output;
+    }
     
 }

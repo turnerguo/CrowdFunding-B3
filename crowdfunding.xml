@@ -4,11 +4,11 @@
 	<author>Todor Iliev</author>
 	<authorEmail>todor@itprism.com</authorEmail>
 	<authorUrl>http://itprism.com</authorUrl>
-	<copyright>Copyright (C) 2010 Todor Iliev ( ITPrism.com )</copyright>
+	<copyright>Copyright (C) 2013 Todor Iliev ( ITPrism.com )</copyright>
 	<license>http://www.gnu.org/copyleft/gpl.html</license>
-	<version>1.2.1</version>
-	<creationDate>28 July, 2013</creationDate>
-	<description>COM_CROWDFUNDING_DESCRIPTION</description>
+	<version>1.4.1</version>
+	<creationDate>23 September, 2013</creationDate>
+	<description>COM_CROWDFUNDING_XML_DESCRIPTION</description>
 
 	<install>
         <sql>
@@ -57,6 +57,7 @@
 		<files folder="admin">		    		
 			<folder>controllers</folder>
 			<folder>helpers</folder>
+            <folder>layouts</folder>
 			<folder>libraries</folder>
 			<folder>models</folder>
 			<folder>sql</folder>

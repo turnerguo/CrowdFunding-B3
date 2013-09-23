@@ -3,6 +3,9 @@
 .icon-48-itp-projects 	    { background-image: url(../../images/projects_48.png); }
 .icon-48-itp-add-project 	{ background-image: url(../../images/project_add_48.png); }
 .icon-48-itp-edit-project 	{ background-image: url(../../images/project_edit_48.png); }
+.icon-48-itp-countries       { background-image: url(../../images/countries_48.png); }
+.icon-48-itp-country-new    { background-image: url(../../images/country_add_48.png); }
+.icon-48-itp-country-edit   { background-image: url(../../images/country_edit_48.png); }
 
 .icon-48-itp-updates 	    { background-image: url(../../images/updates_48.png); }
 .icon-48-itp-edit-update	{ background-image: url(../../images/update_edit_48.png); }

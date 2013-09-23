@@ -37,9 +37,9 @@ abstract class JHtmlCrowdFundingBackend {
             $class  = "approve";
         }
     
-        $html[] = '<a class="jgrid"';
+        $html[] = '<a class="jgrid hasTip"';
         $html[] = ' href="javascript:void(0);" onclick="return listItemTask(\'' . $checkbox . $i . '\',\'' . $task . '\')"';
-        $html[] = ' title="' . addslashes(htmlspecialchars(JText::_($title), ENT_COMPAT, 'UTF-8')) . '">';
+        $html[] = ' title="' . addslashes(htmlspecialchars(JText::_($title)."::", ENT_COMPAT, 'UTF-8')) . '">';
         $html[] = '<span class="state ' . $class . '">';
         $html[] = '<span class="text">' . JText::_($text) . '</span>';
         $html[] = '</span>';

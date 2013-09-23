@@ -70,16 +70,18 @@ class CrowdFundingViewRewards extends JView {
         $link = JRoute::_('index.php?option=com_crowdfunding&view=projects');
         $bar->appendButton('Link', 'itp-projects-back', JText::_("COM_CROWDFUNDING_BACK_TO_PROJECTS"), $link);
         
-        JToolBarHelper::custom('updates.backToDashboard', "itp-dashboard-back", "", JText::_("COM_CROWDFUNDING_DASHBOARD"), false);
+        JToolbarHelper::divider();
+        JToolBarHelper::custom('projects.backToDashboard', "itp-dashboard-back", "", JText::_("COM_CROWDFUNDING_DASHBOARD"), false);
         
     }
     
 	/**
-	 * Method to set up the document properties
+	 * Method to set up the document properties.
+	 * 
 	 * @return void
 	 */
 	protected function setDocument() {
-		$this->document->setTitle(JText::_('COM_CROWDFUNDING_UPDATES_MANAGER'));
+		$this->document->setTitle(JText::_('COM_CROWDFUNDING_REWARDS_MANAGER_BROWSER_TITLE'));
 		
 		// Scripts
 		JHtml::_('behavior.tooltip');

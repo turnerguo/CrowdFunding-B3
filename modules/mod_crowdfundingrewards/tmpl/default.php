@@ -3,22 +3,19 @@
  * @package      CrowdFunding
  * @subpackage   Modules
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * CrowdFunding is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
  
 // no direct access
 defined('_JEXEC') or die; ?>
+<?php if(count($rewards) > 0) {?>
 <div class="cfrewards<?php echo $moduleclassSfx; ?>">
 
 	<div class="reward_title center"><?php echo JText::_("MOD_CROWDFUNDINGREWARDS_PLEDGE_REWARDS");?></div>
 	<?php foreach($rewards as $reward) {?>
     	<div class="reward">
-    		<a href="<?php echo JText::_(CrowdFundingHelperRoute::getBackingRoute($project->getSlug(), $project->getCatSlug(), "default", $reward->id));?>">
+    		<a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($project->getSlug(), $project->getCatSlug(), "default", $reward->id));?>">
     			<span class="ramount">
     			<?php 
     			$amount = $currency->getAmountString($reward->amount); 
@@ -29,5 +26,5 @@ defined('_JEXEC') or die; ?>
     		</a>
     	</div>
 	<?php }?>
-	
 </div>
+<?php }?>

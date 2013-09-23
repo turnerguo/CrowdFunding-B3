@@ -78,6 +78,8 @@ class CrowdFundingModelTransaction extends JModelAdmin {
      */
     public function save($data){
         
+        $statusEdited     = false;
+        
         $id               = JArrayHelper::getValue($data, "id");
         $txnAmount        = JArrayHelper::getValue($data, "txn_amount");
         $txnCurrency      = JArrayHelper::getValue($data, "txn_currency");
@@ -86,10 +88,25 @@ class CrowdFundingModelTransaction extends JModelAdmin {
         $serviceProvider  = JArrayHelper::getValue($data, "service_provider");
         $investorId       = JArrayHelper::getValue($data, "investor_id");
         
-        // Load a record from the database
+        // Load a record from the database.
         $row = $this->getTable();
         $row->load($id);
         
+        // Check for changed transaction status.
+        $oldState = $row->txn_status;
+        $newState = $txnStatus;
+        if((strcmp($oldState, $newState) != 0)) {
+        
+            // Include the content plugins for the on save events.
+            JPluginHelper::importPlugin('crowdfundingpayment');
+        
+            // Trigger the onTransactionChangeStatus event.
+            $dispatcher = JDispatcher::getInstance();
+            $dispatcher->trigger("onTransactionChangeStatus", array($this->option . '.' . $this->name, $row, $oldState, $newState));
+        
+        }
+        
+        // Store the transaction data.
         $row->set("txn_amount",        $txnAmount);
         $row->set("txn_currency",      $txnCurrency);
         $row->set("txn_status",        $txnStatus);

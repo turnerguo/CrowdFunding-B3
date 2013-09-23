@@ -3,12 +3,8 @@
  * @package      CrowdFunding
  * @subpackage   Modules
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * CrowdFunding is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
  
 // no direct access
@@ -52,14 +48,14 @@ defined('_JEXEC') or die;
 	</div>
 	<?php } else {?>
 	<div class="cfinfo-funding-action">
-		<a class="btn btn-large btn-block" href="<?php echo JText::_(CrowdFundingHelperRoute::getBackingRoute($project->getSlug(), $project->getCatSlug()));?>"><?php echo JText::_("MOD_CROWDFUNDINGINFO_INVEST_NOW"); ?></a>
+		<a class="btn btn-large btn-block" href="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($project->getSlug(), $project->getCatSlug()));?>"><?php echo JText::_("MOD_CROWDFUNDINGINFO_INVEST_NOW"); ?></a>
 	</div>
 	<?php }?>
     
     <div class="cfinfo-funding-type-info">
     	<?php
     	
-    	$endDate = JHtml::_('date', $project->funding_end, JText::_('DATE_FORMAT_LC3'));
+    	$endDate = JHtml::_('crowdfunding.date', $project->funding_end, JText::_('DATE_FORMAT_LC3'));
     	
     	if($project->funding_type == "FIXED") {
     	    echo JText::sprintf("MOD_CROWDFUNDINGINFO_FUNDING_TYPE_INFO_FIXED", $fundedAmount, $endDate);

@@ -61,9 +61,10 @@ class CrowdFundingModelRewards extends JModel {
         $query = $db->getQuery(true);
         
         $query
-            ->select("id, amount, title, description, number, distributed, delivery")
-            ->from("#__crowdf_rewards")
-            ->where("project_id = ". (int)$projectId);
+            ->select("a.id, a.amount, a.title, a.description, a.number, a.distributed, a.delivery")
+            ->from($db->quoteName("#__crowdf_rewards") . " AS a")
+            ->where("a.project_id = ". (int)$projectId)
+            ->where("a.published = 1");
         
         $db->setQuery($query);
         return $db->loadAssocList();
@@ -160,33 +161,110 @@ class CrowdFundingModelRewards extends JModel {
         
     }
     
-    public function remove($pks, $userId) {
-        
+    public function remove($rewardId, $userId) {
+    
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
-        
+    
         $query
             ->delete()
             ->from("#__crowdf_rewards USING #__crowdf_rewards")
             ->innerJoin("#__crowdf_projects ON #__crowdf_rewards.project_id = #__crowdf_projects.id")
-            ->where("#__crowdf_rewards.id IN (". implode(",", $pks) .")")
+            ->where("#__crowdf_rewards.id = ". (int)$rewardId)
             ->where("(#__crowdf_projects.user_id = ". (int)$userId .")");
         
         $db->setQuery($query);
         $db->query();
-        
+    
     }
     
-    public function changeState($txnId, $state, $userId) {
+    /**
+     * Set the reward as trashed, if user want to remove it 
+     * but it is part of transaction.
+     *
+     * @param $rewardId integer
+     * @param $userId integer
+     * 
+     *
+     * @todo move it in other model or class. It have to be part of item object.
+     */
+    public function trash($rewardId, $userId) {
     
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
     
+        // Validate reward
         $query
-        ->update("#__crowdf_transactions")
-        ->set("reward_state = ".(int)$state)
-        ->where("id = ".(int)$txnId)
-        ->where("receiver_id = " .(int)$userId);
+            ->select("a.id")
+            ->from($db->quoteName("#__crowdf_rewards"). " AS a")
+            ->innerJoin($db->quoteName("#__crowdf_projects"). " AS b ON a.project_id = b.id")
+            ->where("a.id = ". (int)$rewardId)
+            ->where("b.user_id = ".(int)$userId);
+        
+        $db->setQuery($query, 0, 1);
+        $rewardId = $db->loadResult();
+        
+        if(!empty($rewardId)) {
+            
+            $query = $db->getQuery(true);
+            
+            $query
+                ->update($db->quoteName("#__crowdf_rewards"))
+                ->set($db->quoteName("published") ."=". $db->quote("-2"))
+                ->where($db->quoteName("id") ."=". (int)$rewardId );
+            
+            $db->setQuery($query);
+            $db->query();
+            
+        }
+    
+    }
+
+    /**
+     * This method check for selected reward from user.
+     * It checks, if the reward is part of transactions.
+     * 
+     * @param $rewardId integer
+     * @return bool
+     * 
+     * @todo move it in other model or class. It have to be part of item object.
+     */
+    public function isSelectedByUser($rewardId) {
+        
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        
+        // Validate reward
+        $query
+            ->select("COUNT(*)")
+            ->from($db->quoteName("#__crowdf_transactions"). " AS a")
+            ->where("a.reward_id = ". (int)$rewardId);
+        
+        $db->setQuery($query, 0, 1);
+        $number = $db->loadResult();
+        
+        return (!$number) ? false : true;
+    }
+    
+    /**
+     * Set a state as SENT or NOT SENT in the transaction table
+     * 
+     * @param integer $txnId
+     * @param itneger $state
+     * @param itneger $userId
+     * 
+     * @todo move it in other model or class. It have to be part of item object.
+     */
+    public function changeState($txnId, $state, $userId) {
+    
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+            
+        $query
+            ->update("#__crowdf_transactions")
+            ->set("reward_state = ".(int)$state)
+            ->where("id = ".(int)$txnId)
+            ->where("receiver_id = " .(int)$userId);
     
         $db->setQuery($query);
         $db->query();

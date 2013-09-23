@@ -20,7 +20,7 @@ defined('_JEXEC') or die;?>
 	
 	<div class="row-fluid">
 		<div class="span12">
-    		<?php echo $this->loadTemplate("nav");?>	
+    		<?php include $this->layoutsBasePath."/payment_wizard.php";?>	
     	</div>
 	</div>
 	

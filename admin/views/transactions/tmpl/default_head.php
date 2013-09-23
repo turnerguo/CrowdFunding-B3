@@ -18,11 +18,14 @@ defined('_JEXEC') or die;
     <th width="1%">
         <input type="checkbox" name="checkall-toggle" value="" onclick="checkAll(this)" />
     </th>
-	<th class="title" >
-	     <?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_BENEFICIARY', 'b.name', $this->listDirn, $this->listOrder); ?>
+    <th class="title">
+	     <?php echo JText::_('COM_CROWDFUNDING_TXN_ID'); ?>
 	</th>
 	<th width="10%" >
 	     <?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_SENDER', 'e.name', $this->listDirn, $this->listOrder); ?>
+	</th>
+	<th width="10%">
+	     <?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_BENEFICIARY', 'b.name', $this->listDirn, $this->listOrder); ?>
 	</th>
 	<th width="10%">
 	     <?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_PROJECT', 'c.title', $this->listDirn, $this->listOrder); ?>
@@ -36,9 +39,7 @@ defined('_JEXEC') or die;
 	<th width="10%">
 	     <?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_PAYMENT_GETAWAY', 'a.service_provider', $this->listDirn, $this->listOrder); ?>
 	</th>
-	<th width="10%">
-	     <?php echo JText::_('COM_CROWDFUNDING_TXN_ID'); ?>
-	</th>
+	
 	<th width="10%">
 	    <?php echo JText::_('COM_CROWDFUNDING_PAYMENT_STATUS'); ?>
 	</th>

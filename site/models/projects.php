@@ -36,8 +36,10 @@ class CrowdFundingModelProjects extends JModelList {
             $config['filter_fields'] = array(
                 'id', 'a.id',
                 'title', 'a.title',
-            	'published', 'a.published',
-            	'approved', 'a.approved',
+            	'goal', 'a.goal',
+            	'funded', 'a.funded',
+            	'funding_start', 'a.funding_start',
+            	'funding_end', 'a.funding_end',
             	'ordering', 'a.ordering'
             );
         }
@@ -86,7 +88,6 @@ class CrowdFundingModelProjects extends JModelList {
     protected function getStoreId($id = '') {
         
         // Compile the store id.
-//        $id .= ':' . $this->getState('filter.search');
         $id .= ':' . $this->getState('filter.state');
         $id .= ':' . $this->getState('filter.user_id');
 
@@ -114,11 +115,12 @@ class CrowdFundingModelProjects extends JModelList {
             	'a.funding_end, a.funding_days, a.funding_start, '.
                 $query->concatenate(array("a.id", "a.alias"), "-") . ' AS slug, ' .
             	'a.published, a.approved, ' .
+                'b.published AS catstate, ' .
             	$query->concatenate(array("b.id", "b.alias"), "-") . " AS catslug"
             )
         );
-        $query->from('`#__crowdf_projects` AS a');
-        $query->innerJoin($db->quoteName('#__categories').' AS b ON a.catid = b.id');
+        $query->from($db->quoteName('#__crowdf_projects', "a"));
+        $query->leftJoin($db->quoteName('#__categories', "b").' ON a.catid = b.id');
 
         // Filter by state
         $state = $this->getState('filter.state');
@@ -143,6 +145,6 @@ class CrowdFundingModelProjects extends JModelList {
         $orderCol   = $this->getState('list.ordering');
         $orderDirn  = $this->getState('list.direction');
         
-        return $orderCol.' '.$orderDirn;
+        return 'a.published DESC,'.$orderCol.' '.$orderDirn;
     }
 }

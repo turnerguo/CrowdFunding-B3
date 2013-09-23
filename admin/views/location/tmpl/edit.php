@@ -12,8 +12,7 @@
  */
 
 // no direct access
-defined('_JEXEC') or die;
-?>
+defined('_JEXEC') or die;?>
 <form enctype="multipart/form-data"  action="<?php echo JRoute::_('index.php?option=com_crowdfunding'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate">
     <div class="width-40 fltlft">
         <fieldset class="adminform">
@@ -34,6 +33,9 @@ defined('_JEXEC') or die;
                 
     			<li><?php echo $this->form->getLabel('timezone'); ?>
                 <?php echo $this->form->getInput('timezone'); ?></li>  
+                
+    			<li><?php echo $this->form->getLabel('state_code'); ?>
+                <?php echo $this->form->getInput('state_code'); ?></li>  
                 
                 <li><?php echo $this->form->getLabel('published'); ?>
                 <?php echo $this->form->getInput('published'); ?></li>   

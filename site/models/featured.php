@@ -181,7 +181,7 @@ class CrowdFundingModelFeatured extends JModelList {
     
                 // Calculate funding end date
                 if(!empty($item->funding_days)) {
-                    $result[$key]->funding_end = CrowdFundingHelper::calcualteEndDate($item->funding_days, $item->funding_start);
+                    $result[$key]->funding_end = CrowdFundingHelper::calcualteEndDate($item->funding_start, $item->funding_days);
                 }
     
                 // Calculate funded

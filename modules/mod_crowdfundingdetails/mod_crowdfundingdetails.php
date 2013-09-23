@@ -3,12 +3,8 @@
  * @package      CrowdFunding
  * @subpackage   Modules
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * CrowdFunding is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -35,20 +31,38 @@ if(!$projectId) {
     echo JText::_("MOD_CROWDFUNDINGDETAILS_ERROR_INVALID_PROJECT");
     return;
 }
-$componentParams = JComponentHelper::getParams("com_crowdfunding");
 
-// Get a social platform for integration
+// Get project
+jimport("crowdfunding.project");
+$project         = CrowdFundingProject::getInstance($projectId);
+
+if(empty($project->id)) {
+    echo JText::_("MOD_CROWDFUNDINGDETAILS_ERROR_INVALID_PROJECT");
+    return;
+}
+
+// Get component params
+$componentParams   = JComponentHelper::getParams("com_crowdfunding");
 $socialPlatform    = $componentParams->get("integration_social_platform");
-
-$imageFolder       = $componentParams->get("images_directory", "images/projects");
+$imageFolder       = $componentParams->get("images_directory", "images/crowdfunding");
 
 // Get currency
 jimport("crowdfunding.currency");
 $currencyId      = $componentParams->get("project_currency");
 $currency        = CrowdFundingCurrency::getInstance($currencyId);
 
-jimport("crowdfunding.project");
-$project         = CrowdFundingProject::getInstance($projectId);
-$fundedAmount    = $currency->getAmountString($project->goal);
+// Get social platform and a link to the profile
+jimport("itprism.integrate.profile.".JString::strtolower($socialPlatform));
+$socialProfile      = CrowdFundingHelper::getSocialProfile($project->user_id, $socialPlatform);
+$socialProfileLink  = (!$socialProfile) ? null : $socialProfile->getLink();
+
+// Get amounts
+$fundedAmount     = $currency->getAmountString($project->goal);
+$raised           = $currency->getAmountString($project->funded);
+ 
+// Prepare the value that I am going to display
+$fundedPercents   = JHtml::_("crowdfunding.funded", $project->getFundedPercents());
+
+$user = JFactory::getUser($project->user_id);
 
 require JModuleHelper::getLayoutPath('mod_crowdfundingdetails', $params->get('layout', 'default'));

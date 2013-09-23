@@ -26,6 +26,7 @@ defined('_JEXEC') or die;
 		<td class="center"><?php echo $item->timezone; ?></td>
 		<td class="center"><?php echo $item->latitude; ?></td>
 		<td class="center"><?php echo $item->longitude; ?></td>
+		<td class="center"><?php echo $item->state_code; ?></td>
 		<td class="center"><?php echo JHtml::_('jgrid.published', $item->published, $i, "locations."); ?></td>
         <td align="center"><?php echo $item->id;?></td>
 	</tr>

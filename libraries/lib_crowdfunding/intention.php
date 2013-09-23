@@ -3,35 +3,85 @@
  * @package      CrowdFunding
  * @subpackage   Libraries
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * CrowdFunding is free software. This vpversion may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 defined('JPATH_PLATFORM') or die;
 
 JLoader::register("CrowdFundingTableIntention", JPATH_ADMINISTRATOR .DIRECTORY_SEPARATOR."components".DIRECTORY_SEPARATOR."com_crowdfunding".DIRECTORY_SEPARATOR."tables".DIRECTORY_SEPARATOR."intention.php");
+JLoader::register("CrowdFundingInterfaceTable", JPATH_LIBRARIES .DIRECTORY_SEPARATOR."crowdfunding".DIRECTORY_SEPARATOR."interface".DIRECTORY_SEPARATOR."table.php");
 
 /**
- * This class provieds functionality that manage intention.
+ * This class provieds functionality that manage intentions.
  * 
  * @package      CrowdFunding
  * @subpackage   Libraries
  */
-class CrowdFundingIntention extends CrowdFundingTableIntention {
+class CrowdFundingIntention implements CrowdFundingInterfaceTable {
     
+    protected $table;
+
     public function __construct($id) {
         
-        $db = JFactory::getDbo();
-        parent::__construct( $db );
+        $this->table    = new CrowdFundingTableIntention(JFactory::getDbo());
+        $this->load($id);
         
-        if(!empty($id)) {
-            $this->load($id);
-        }
+    }
+    
+    public function bind($src, $ignore = array()) {
+        $this->table->bind($src, $ignore);
+    }
+    
+    public function load($keys = null, $reset = true) {
+        $this->table->load($keys, $reset);
     }
 
+    public function store($updateNulls = false) {
+        $this->table->store($updateNulls);
+    }
     
+    public function getId() {
+        return $this->table->id;
+    }
+    
+    public function getUserId() {
+        return $this->table->user_id;
+    }
+    
+    public function getProjectId() {
+        return $this->table->project_id;
+    }
+    
+    public function getRewardId() {
+        return $this->table->reward_id;
+    }
+    
+    public function getRecordDate() {
+        return $this->table->record_date;
+    }
+    
+    public function getTransactionId() {
+        return $this->table->txn_id;
+    }
+    
+    public function getGateway() {
+        return $this->table->gateway;
+    }
+    
+    public function getTable() {
+        return $this->table;
+    }
+    
+    public function delete($pk = null) {
+        $this->table->delete($pk);
+    }
+    
+    public function isAnonymous() {
+        return (!$this->table->auser_id) ? false : true;
+    }
+    
+    public function getProperties() {
+        return $this->table->getProperties();
+    }
 }

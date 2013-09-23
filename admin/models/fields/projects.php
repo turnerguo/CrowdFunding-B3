@@ -49,7 +49,7 @@ class JFormFieldProjects extends JFormFieldList {
         
         $options = $db->loadObjectList();
         
-        array_unshift($options, JHTML::_('select.option', '0', '- '.JText::_('COM_CROWDFUNDING_SELECT_PROJECT').' -', 'value', 'text'));
+        array_unshift($options, JHtml::_('select.option', '0', '- '.JText::_('COM_CROWDFUNDING_SELECT_PROJECT').' -', 'value', 'text'));
         
         // Merge any additional options in the XML definition.
         $options = array_merge(parent::getOptions(), $options);

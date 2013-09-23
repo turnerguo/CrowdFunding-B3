@@ -102,7 +102,7 @@ class CrowdFundingModelDetails extends JModelItem {
                 
                 // Calculate end date
                 if(!empty($result->funding_days)) {
-                    $result->funding_end = CrowdFundingHelper::calcualteEndDate($result->funding_days, $result->funding_start);
+                    $result->funding_end = (!CrowdFundingHelper::isValidDate($result->funding_start)) ? "0000-00-00" : CrowdFundingHelper::calcualteEndDate($result->funding_start, $result->funding_days);
                 }
                 
                 $result->funded_percents = CrowdFundingHelper::calculatePercent($result->funded, $result->goal);

@@ -86,6 +86,7 @@ class CrowdFundingViewReward extends JView {
 		$this->document->setTitle($this->documentTitle);
         
 		// Scripts
+		JHtml::_('behavior.keepalive');
 		JHtml::_('behavior.formvalidation');
 		JHtml::_('behavior.tooltip');
 		
