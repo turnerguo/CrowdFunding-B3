@@ -10,8 +10,8 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_comments` (
 
 CREATE TABLE IF NOT EXISTS `#__crowdf_countries` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(128) CHARACTER SET utf32 NOT NULL,
-  `code` char(2) CHARACTER SET utf32 NOT NULL,
+  `name` varchar(128) CHARACTER SET utf8 NOT NULL,
+  `code` char(2) CHARACTER SET utf8 NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 

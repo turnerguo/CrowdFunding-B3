@@ -6,8 +6,8 @@
 	<authorUrl>http://itprism.com</authorUrl>
 	<copyright>Copyright (C) 2013 Todor Iliev ( ITPrism.com )</copyright>
 	<license>http://www.gnu.org/copyleft/gpl.html</license>
-	<version>1.4.1</version>
-	<creationDate>23 September, 2013</creationDate>
+	<version>1.4.2</version>
+	<creationDate>25 September, 2013</creationDate>
 	<description>COM_CROWDFUNDING_XML_DESCRIPTION</description>
 
 	<install>
