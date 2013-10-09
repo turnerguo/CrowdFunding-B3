@@ -39,6 +39,6 @@ $currency        = CrowdFundingCurrency::getInstance($currencyId);
 
 jimport("crowdfunding.project");
 $project         = CrowdFundingProject::getInstance($projectId);
-$fundedAmount    = $currency->getAmountString($project->goal);
+$fundedAmount    = $currency->getAmountString($project->getGoal());
 
 require JModuleHelper::getLayoutPath('mod_crowdfundinginfo', $params->get('layout', 'default'));

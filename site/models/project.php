@@ -3,12 +3,8 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * CrowdFunding is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -126,7 +122,7 @@ class CrowdFundingModelProject extends JModelForm {
 
 		// Initialise variables.
 		$table = $this->getTable();
-
+		
 		if ($pk > 0 AND $userId > 0) {
 		    
 		    $keys = array(
@@ -136,7 +132,7 @@ class CrowdFundingModelProject extends JModelForm {
 		    
 			// Attempt to load the row.
 			$return = $table->load($keys);
-
+			
 			// Check for a table object error.
 			if ($return === false && $table->getError()) {
 			    JLog::add($table->getError() . " [ CrowdFundingProject->getItem() ]");

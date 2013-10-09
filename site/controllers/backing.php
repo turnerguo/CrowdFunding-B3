@@ -3,12 +3,8 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * CrowdFunding is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -23,6 +19,8 @@ jimport('joomla.application.component.controller');
  * @subpackage  CrowdFunding
   */
 class CrowdFundingControllerBacking extends JControllerLegacy {
+    
+    protected $wizardType;
     
 	/**
      * Method to get a model object, loading it if required.
@@ -41,41 +39,52 @@ class CrowdFundingControllerBacking extends JControllerLegacy {
     
     public function step1() {
         
-        // Check for request forgeries.
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-		
-		// Authorise the user
-		$user   = JFactory::getUser();
-        if(!$user->authorise("crowdfunding.donate", "com_crowdfunding")) {
-            $this->setRedirect(JRoute::_("index.php?option=com_users&view=login", false), JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), "notice");
-            return;
-        }
-        
         $app = JFactory::getApplication();
         /** @var $app JSite **/
         
-		// Get the data from the form
-		$itemId       = $app->input->post->getInt('id', 0);
-		$rewardId     = $app->input->post->getInt('rid', 0);
-		$userId       = (int)$user->get("id");
-		
-		// Anonymous user ID
-		$aUserId      = "";
-		
+        // If the system use wizard type in three steps, check the token.
+        $requestMethod = $app->input->getMethod();
+        if(strcmp("POST", $requestMethod) == 0) {
+            // Check for request forgeries.
+            JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+        }
+        
+        // Get params
+        $params           = JComponentHelper::getParams("com_crowdfunding");
+        
+        $this->wizardType = $params->get("backing_wizard_type", "three_steps");
+        
+        // Get the data from the form
+        $itemId       = $app->input->getInt('id', 0);
+        $rewardId     = $app->input->getInt('rid', 0);
+        
+        // Get user ID
+        $user         = JFactory::getUser();
+        $userId       = (int)$user->get("id");
+        
+        // Anonymous user ID
+        $aUserId      = "";
+        
+        // Get amount
+        $amount       = $app->input->get("amount", 0, "float");
+        
         $model        = $this->getModel();
         /** @var $model CrowdFundingModelBacking **/
         
         // Get the item
-        $item   = $model->getItem($itemId);
+        $item         = $model->getItem($itemId);
+		
+		// Authorise the user
+        if(!$user->authorise("crowdfunding.donate", "com_crowdfunding")) {
+            $this->prepareRedirect($item, $rewardId, $amount);
+            return;
+        }
         
         // Check for valid project
         if(empty($item->id))  {
             $this->setRedirect(JRoute::_("index.php?option=com_crowdfunding&view=discover", false), JText::_('COM_CROWDFUNDING_ERROR_INVALID_PROJECT'), "notice");
             return;
         }
-        
-        // Get params
-        $params        = JComponentHelper::getParams("com_crowdfunding");
         
         // Check for maintenance (debug) state
         if($params->get("debug_payment_disabled", 0)) {
@@ -89,7 +98,7 @@ class CrowdFundingControllerBacking extends JControllerLegacy {
         
 		// Check for agreed conditions from the user
         if($params->get("backing_terms", 0)) {
-            $terms = $app->input->post->get("terms", 0, "int");
+            $terms = $app->input->get("terms", 0, "int");
             if(!$terms) {
                 $link = CrowdFundingHelperRoute::getBackingRoute($item->slug, $item->catslug);
                 $this->setRedirect(JRoute::_($link, false), JText::_("COM_CROWDFUNDING_ERROR_TERMS_NOT_ACCEPTED"), "notice");
@@ -98,7 +107,6 @@ class CrowdFundingControllerBacking extends JControllerLegacy {
         }
         
         // Check for valid amount
-        $amount       = $app->input->post->get("amount", 0, "float");
         if(!$amount) {
             $link = CrowdFundingHelperRoute::getBackingRoute($item->slug, $item->catslug);
             $this->setRedirect(JRoute::_($link, false), JText::_("COM_CROWDFUNDING_ERROR_INVALID_AMOUNT"), "notice");
@@ -163,10 +171,42 @@ class CrowdFundingControllerBacking extends JControllerLegacy {
         $intention->bind($custom);
         $intention->store();
         
-        
         // Redirect to next page
         $link = CrowdFundingHelperRoute::getBackingRoute($item->slug, $item->catslug, "payment");
 		$this->setRedirect(JRoute::_($link, false));
     }
     
+    protected function prepareRedirect($item, $rewardId, $amount) {
+        
+        switch($this->wizardType) {
+        
+            case "four_steps":
+        
+                $app = JFactory::getApplication();
+                /** @var $app JSite **/
+                
+                // Store the data for the payment process,
+                // which comes from step 1.
+                $options = array(
+                    "id"     => $item->id,
+                    "rid"    => $rewardId,
+                    "amount" => $amount
+                );
+                
+                $app->setUserState("com_crowdfunding.backing.login", $options);
+                
+                $link = CrowdFundingHelperRoute::getBackingRoute($item->slug, $item->catslug, "login");
+                $this->setRedirect(JRoute::_($link, false));
+        
+                break;
+        
+            default: // three steps wizard type
+                
+                $returnUrl = CrowdFundingHelperRoute::getBackingRoute($item->slug, $item->catslug);
+                $this->setRedirect(JRoute::_("index.php?option=com_users&view=login&return=".base64_encode($returnUrl), false), JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), "notice");
+                
+                break;
+        }
+        
+    }
 }

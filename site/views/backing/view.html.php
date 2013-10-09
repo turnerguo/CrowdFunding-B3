@@ -3,12 +3,8 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * CrowdFunding is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -25,6 +21,7 @@ class CrowdFundingViewBacking extends JViewLegacy {
     protected $layoutsBasePath;
     
     protected $paymentProcessContext;
+    protected $wizardType;
     
     public function __construct($config) {
         parent::__construct($config);
@@ -76,10 +73,20 @@ class CrowdFundingViewBacking extends JViewLegacy {
         // Set a link to image
         $this->item->link_image  = $host."/".$this->imageFolder."/".$this->item->image;
         
-        $this->layout      = $this->getLayout();
+        // Get params
+        $params           = JComponentHelper::getParams("com_crowdfunding");
+        
+        // Get wizard type
+        $this->wizardType = $params->get("backing_wizard_type", "three_steps");
+        
+        $this->layout     = $this->getLayout();
         
         switch($this->layout) {
             
+            case "login":
+                $this->prepareLogin($paymentProcess);
+                break;
+                
             case "payment":
                 $this->preparePayment($paymentProcess);
                 break;
@@ -114,6 +121,36 @@ class CrowdFundingViewBacking extends JViewLegacy {
 		$this->prepareDocument();
 		
         parent::display($tpl);
+    }
+    
+    protected function prepareLogin(&$paymentProcess) {
+    
+        $app = JFactory::getApplication();
+        /** @var $app JSite **/
+    
+        // Check for both user states. The user must have only one state, registered or anonymous.
+        $userId  = JFactory::getUser()->id;
+        $aUserId = $app->getUserState("auser_id");
+    
+        if(!empty($userId)) {
+            
+            $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_LOGGED_IN"), "notice");
+            
+            $link = CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug, "payment");
+            $app->redirect(JRoute::_("index.php?option=com_crowdfunding&view=backing&id=".(int)$this->item->id, false));
+        }
+        
+        // Get the form.
+        JForm::addFormPath(JPATH_COMPONENT . '/models/forms');
+        JForm::addFieldPath(JPATH_COMPONENT . '/models/fields');
+        
+        $form = JForm::getInstance('com_users.login', 'login', array('load_data' => false), false, false);
+        
+        $this->loginForm = $form;
+        
+        $options = $app->getUserState("com_crowdfunding.backing.login");
+        $this->returnUrl = "index.php?option=com_crowdfunding&task=backing.step1".CrowdFundingHelper::generateUrlParams($options);
+        
     }
     
     protected function prepareRewards(&$paymentProcess) {

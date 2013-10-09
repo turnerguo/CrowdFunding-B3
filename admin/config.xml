@@ -6,6 +6,10 @@
             <option value="1">JYES</option>
         </field>
         <field name="backing_terms_url" type="text" default="" size="50" label="COM_CROWDFUNDING_TERMS_URL" description="COM_CROWDFUNDING_TERMS_URL_DESC" class="span6" />
+        <field name="backing_wizard_type" type="list" default="three_steps" label="COM_CROWDFUNDING_BACKING_WIZARD_TYPE" description="COM_CROWDFUNDING_BACKING_WIZARD_TYPE_DESC" >
+            <option value="three_steps">COM_CROWDFUNDING_BACKING_THREE_STEPS</option>
+            <option value="four_steps">COM_CROWDFUNDING_BACKING_FOUR_STEPS</option>
+        </field>
 	</fieldset>
 
     <fieldset name="images" label="COM_CROWDFUNDING_IMAGES_TITLE" description="COM_CROWDFUNDING_IMAGES_PARAMS">

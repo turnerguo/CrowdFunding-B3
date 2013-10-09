@@ -67,7 +67,7 @@ class plgContentCrowdFundingShare extends JPlugin {
         }
         
         if($this->params->get("loadCss")) {
-            $doc->addStyleSheet(JURI::root() . "plugins/content/crowdfundingshare/style.css");
+            $doc->addStyleSheet(JUri::root() . "plugins/content/crowdfundingshare/style.css");
         }
         
         // Generate content

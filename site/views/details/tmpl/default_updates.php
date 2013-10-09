@@ -3,16 +3,13 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * CrowdFunding is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
-defined('_JEXEC') or die;?>
+defined('_JEXEC') or die;
+?>
 <?php if($this->isOwner) {?>
 <form action="<?php echo JRoute::_('index.php?option=com_crowdfunding'); ?>" method="post" name="updatesForm" id="crowdf-updates-form" class="form-validate" autocomplete="off">
             

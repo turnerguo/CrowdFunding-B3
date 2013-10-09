@@ -36,7 +36,7 @@ if(!$projectId) {
 jimport("crowdfunding.project");
 $project         = CrowdFundingProject::getInstance($projectId);
 
-if(empty($project->id)) {
+if(!$project->getId()) {
     echo JText::_("MOD_CROWDFUNDINGDETAILS_ERROR_INVALID_PROJECT");
     return;
 }
@@ -53,16 +53,16 @@ $currency        = CrowdFundingCurrency::getInstance($currencyId);
 
 // Get social platform and a link to the profile
 jimport("itprism.integrate.profile.".JString::strtolower($socialPlatform));
-$socialProfile      = CrowdFundingHelper::getSocialProfile($project->user_id, $socialPlatform);
+$socialProfile      = CrowdFundingHelper::getSocialProfile($project->getUserId(), $socialPlatform);
 $socialProfileLink  = (!$socialProfile) ? null : $socialProfile->getLink();
 
 // Get amounts
-$fundedAmount     = $currency->getAmountString($project->goal);
-$raised           = $currency->getAmountString($project->funded);
+$fundedAmount     = $currency->getAmountString($project->getGoal());
+$raised           = $currency->getAmountString($project->getFunded());
  
 // Prepare the value that I am going to display
 $fundedPercents   = JHtml::_("crowdfunding.funded", $project->getFundedPercents());
 
-$user = JFactory::getUser($project->user_id);
+$user = JFactory::getUser($project->getUserId());
 
 require JModuleHelper::getLayoutPath('mod_crowdfundingdetails', $params->get('layout', 'default'));

@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 ?>
 <div class="cfinfo<?php echo $moduleclassSfx; ?>">
     <div class="cfinfo-raised">
-    	<?php echo $currency->getAmountString($project->funded); ?>
+    	<?php echo $currency->getAmountString($project->getFunded()); ?>
     </div>
     <div class="cfinfo-raised-of">
         <?php echo JText::sprintf("MOD_CROWDFUNDINGINFO_RAISED_OF", $fundedAmount);?>
@@ -38,13 +38,13 @@ defined('_JEXEC') or die;
 	</div>
 	<div class="clearfix"></div>
     <div class="cfinfo-funding-type">
-        <?php echo JText::_("MOD_CROWDFUNDINGINFO_FUNDING_TYPE_".JString::strtoupper($project->funding_type)); ?>
+        <?php echo JText::_("MOD_CROWDFUNDINGINFO_FUNDING_TYPE_".JString::strtoupper($project->getFundingType())); ?>
     </div>
     
 	<?php if(!$project->getDaysLeft()) {?>
 	<div class="well">
-		<div class="cf-fund-result-state pull-center"><?php echo JHtml::_("crowdfunding.resultState", $project->getFundedPercents(), $project->funding_type);?></div>
-		<div class="cf-frss pull-center"><?php echo JHtml::_("crowdfunding.resultStateText", $project->getFundedPercents(), $project->funding_type);?></div>
+		<div class="cf-fund-result-state pull-center"><?php echo JHtml::_("crowdfunding.resultState", $project->getFundedPercents(), $project->getFundingType());?></div>
+		<div class="cf-frss pull-center"><?php echo JHtml::_("crowdfunding.resultStateText", $project->getFundedPercents(), $project->getFundingType());?></div>
 	</div>
 	<?php } else {?>
 	<div class="cfinfo-funding-action">
@@ -55,9 +55,9 @@ defined('_JEXEC') or die;
     <div class="cfinfo-funding-type-info">
     	<?php
     	
-    	$endDate = JHtml::_('crowdfunding.date', $project->funding_end, JText::_('DATE_FORMAT_LC3'));
+    	$endDate = JHtml::_('crowdfunding.date', $project->getFundingEnd(), JText::_('DATE_FORMAT_LC3'));
     	
-    	if($project->funding_type == "FIXED") {
+    	if("FIXED" == $project->getFundingType()) {
     	    echo JText::sprintf("MOD_CROWDFUNDINGINFO_FUNDING_TYPE_INFO_FIXED", $fundedAmount, $endDate);
     	} else {
     	    echo JText::sprintf("MOD_CROWDFUNDINGINFO_FUNDING_TYPE_INFO_FLEXIBLE", $endDate);

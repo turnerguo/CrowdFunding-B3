@@ -3,12 +3,8 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * CrowdFunding is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -20,10 +16,12 @@ defined('_JEXEC') or die;
         
         <div class="span12">
         
-            <?php echo $this->form->getLabel('pitch_video'); ?>
-            <?php echo $this->form->getInput('pitch_video'); ?>
-            <span class="help-block"><?php echo JText::_("COM_CROWDFUNDING_FIELD_FUNDING_VIDEO_HELP_BLOCK");?></span>
-            
+            <div class="control-group">
+                <div class="control-label"><?php echo $this->form->getLabel('pitch_video'); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('pitch_video'); ?></div>
+				<span class="help-block"><?php echo JText::_("COM_CROWDFUNDING_FIELD_FUNDING_VIDEO_HELP_BLOCK");?></span>
+            </div>
+                
             <?php echo $this->form->getLabel('pitch_image'); ?>
             <div class="fileupload fileupload-new" data-provides="fileupload">
                 <span class="btn btn-file">
@@ -72,4 +70,5 @@ defined('_JEXEC') or die;
         
     </form>
 </div>
+<div class="clearfix">&nbsp;</div>
 <?php echo $this->version->backlink;?>

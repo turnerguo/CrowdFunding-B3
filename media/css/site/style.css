@@ -434,3 +434,7 @@ form.bs-docs-example {
 .extra-image-row:hover {
 	background: #eaeaea;
 }
+
+#jform_pitch_video-lbl:after, #jform_pitch_image-lbl:after {
+	content: " *";
+}

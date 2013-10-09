@@ -3,12 +3,8 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * CrowdFunding is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -58,7 +54,7 @@ defined('_JEXEC') or die;
             </button>
             <ul class="dropdown-menu">
                 <li>
-                    <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=projects.savestate&id=".$this->item->id."&state=1&".JSession::getFormToken()."=1&return=1"); ?>" id="js-btn-rewards-publish">
+                    <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=projects.savestate&id=".(int)$this->item->id."&state=1&".JSession::getFormToken()."=1&return=1"); ?>" id="js-btn-rewards-publish">
                         <i class="icon-ok-circle icon-white"></i>
                         <?php echo JText::_("COM_CROWDFUNDING_PUBLISH_NOW");?>
                     </a>
@@ -70,6 +66,7 @@ defined('_JEXEC') or die;
     </form>
 </div>
 <?php echo $this->loadTemplate("tmpl");?>
+<div class="clearfix">&nbsp;</div>
 <?php echo $this->version->backlink;?>
 
 <?php if(empty($this->item->published)) {?>

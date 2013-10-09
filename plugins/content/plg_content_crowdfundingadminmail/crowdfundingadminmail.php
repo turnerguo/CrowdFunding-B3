@@ -20,9 +20,6 @@ jimport('joomla.plugin.plugin');
  */
 class plgContentCrowdFundingAdminMail extends JPlugin {
     
-    const PROJECT_STATE_PUBLISHED = 1;
-    const MAIL_MODE_HTML          = true;
-    
     public function onContentChangeState($context, $ids, $state) {
         
         $app = JFactory::getApplication();
@@ -41,10 +38,12 @@ class plgContentCrowdFundingAdminMail extends JPlugin {
         if(!$this->params->get("send_when_published")) {
             return true;
         }
+
+        jimport("crowdfunding.constants");
         
         JArrayHelper::toInteger($ids);
         
-        if(!empty($ids) AND $state == self::PROJECT_STATE_PUBLISHED) {
+        if(!empty($ids) AND $state == CrowdFundingConstants::PUBLISHED) {
             
             $this->loadLanguage();
             
@@ -65,7 +64,7 @@ class plgContentCrowdFundingAdminMail extends JPlugin {
                 $subject = JText::sprintf("PLG_CONTENT_CROWDFUNDINGADMINMAIL_MAIL_MSG_PROJECT_INFORMATION", $project->title);
                 $body    = JText::sprintf("PLG_CONTENT_CROWDFUNDINGADMINMAIL_MAIL_MSG_PROJECT_PUBLISHED", $app->getCfg("fromname"), $project->title, JUri::root(), $siteName);
                 
-                $return  = $mailer->sendMail($app->getCfg("mailfrom"), $app->getCfg("fromname"), $app->getCfg("mailfrom"), $subject, $body, self::MAIL_MODE_HTML);
+                $return  = $mailer->sendMail($app->getCfg("mailfrom"), $app->getCfg("fromname"), $app->getCfg("mailfrom"), $subject, $body, CrowdFundingConstants::MAIL_MODE_HTML);
                 
                 // Check for an error.
                 if ($return !== true) {
@@ -109,6 +108,8 @@ class plgContentCrowdFundingAdminMail extends JPlugin {
             return true;
         }
         
+        jimport("crowdfunding.constants");
+        
         if(!empty($project->id) AND $isNew) {
             
             $this->loadLanguage();
@@ -123,7 +124,7 @@ class plgContentCrowdFundingAdminMail extends JPlugin {
             $subject = JText::sprintf("PLG_CONTENT_CROWDFUNDINGADMINMAIL_MAIL_MSG_PROJECT_INFORMATION", $project->title);
             $body    = JText::sprintf("PLG_CONTENT_CROWDFUNDINGADMINMAIL_MAIL_MSG_PROJECT_CREATED", $app->getCfg("fromname"), $user->name, $project->title, JUri::root(), $siteName);
             
-            $return  = $mailer->sendMail($app->getCfg("mailfrom"), $app->getCfg("fromname"), $app->getCfg("mailfrom"), $subject, $body, self::MAIL_MODE_HTML);
+            $return  = $mailer->sendMail($app->getCfg("mailfrom"), $app->getCfg("fromname"), $app->getCfg("mailfrom"), $subject, $body, CrowdFundingConstants::MAIL_MODE_HTML);
             
             // Check for an error.
             if ($return !== true) {

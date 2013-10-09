@@ -6,9 +6,15 @@
 	<license>http://www.gnu.org/copyleft/gpl.html</license>
 	<authorEmail>todor@itprism.com</authorEmail>
 	<authorUrl>http://itprism.com</authorUrl>
-	<version>1.4.2</version>
-	<creationDate>25 September, 2013</creationDate>
-	<description>MOD_CROWDFUNDINGREWARDS_DESCRIPTION</description>
+	<version>1.4.3</version>
+	<creationDate>08 October, 2013</creationDate>
+	<description>
+<![CDATA[
+<p>CrowdFunding Rewards is a module that displays project rewards.</p>
+<p><a href="http://itprism.com/" target="_blank">Subscribe for the newsletter</a> to receive <strong>gifts</strong>, <strong>discount codes</strong>, information about <strong>updates</strong> and information about <strong>new ITPrism extensions</strong>.</p>
+<p>Please, <a href="http://extensions.joomla.org/extensions/e-commerce/donations/23876" target="_blank">vote for the extension</a> on Joomla! Extensions Directory</p>
+]]>
+    </description>
 	
 	<languages folder="language">
         <language tag="en-GB">en-GB/en-GB.mod_crowdfundingrewards.ini</language>
