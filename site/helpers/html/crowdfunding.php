@@ -3,12 +3,8 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * CrowdFunding is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -89,8 +85,11 @@ abstract class JHtmlCrowdFunding {
      */
     public static function inputAmount($value, $currency, $options) {
         
-        $class = "";
-        if(!empty($currency->symbol)){
+        $class  = "";
+        $symbol = $currency->getSymbol();
+        $currencyCode = $currency->getAbbr();
+        
+        if(!empty($symbol)){
             $class = "input-prepend ";
         }
         
@@ -98,8 +97,8 @@ abstract class JHtmlCrowdFunding {
         
         $html = '<div class="'.$class.'">';
         
-        if(!empty($currency->symbol)){
-            $html .= '<span class="add-on">'. $currency->symbol .'</span>';
+        if(!empty($symbol)){
+            $html .= '<span class="add-on">'. $symbol .'</span>';
         }
             
         $name = JArrayHelper::getValue($options, "name");
@@ -119,8 +118,8 @@ abstract class JHtmlCrowdFunding {
         
         $html .= '<input type="text" name="'.$name.'" value="'.$value.'" '.$id.' '.$class.' />';
         
-        if(!empty($currency->abbr)) {
-            $html .= '<span class="add-on">'.$currency->abbr.'</span>';
+        if(!empty($currencyCode)) {
+            $html .= '<span class="add-on">'.$currencyCode.'</span>';
         }
             
         $html .= '</div>';

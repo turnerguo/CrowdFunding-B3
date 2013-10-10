@@ -24,4 +24,8 @@ class CrowdFundingConstants {
     const PUBLISHED   = 1;
     const UNPUBLISHED = 2;
     const TRASHED     = -2;
+    
+    // Mail modes - html and plain text.
+    const MAIL_MODE_HTML       = true;
+    const MAIL_MODE_PLAIN_TEXT = false;
 }

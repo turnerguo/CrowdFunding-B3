@@ -3,12 +3,8 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * CrowdFunding is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -102,7 +98,7 @@ class CrowdFundingControllerPayments extends JControllerLegacy {
             jimport("crowdfunding.project");
             $project    = CrowdFundingProject::getInstance($projectId);
             
-            if(!$project->id) {
+            if(!$project->getId()) {
                 $response = array(
                     "success" => false,
                     "title"   => JText::_("COM_CROWDFUNDING_FAIL"),
@@ -114,7 +110,7 @@ class CrowdFundingControllerPayments extends JControllerLegacy {
             }
             
             // Prepare description
-            $paymentOptions["description"] = JString::substr($project->title, 0, 29);
+            $paymentOptions["description"] = JString::substr($project->getTitle(), 0, 29);
             
             // Prepare return URL
             $returnUrl = JString::trim($pluginParams->get('returnurl'));
@@ -241,7 +237,7 @@ class CrowdFundingControllerPayments extends JControllerLegacy {
             jimport("crowdfunding.project");
             $project    = CrowdFundingProject::getInstance($projectId);
     
-            if(!$project->id) {
+            if(!$project->getId()) {
                 $response = array(
                     "success" => false,
                     "title"   => JText::_("COM_CROWDFUNDING_FAIL"),
@@ -308,7 +304,7 @@ class CrowdFundingControllerPayments extends JControllerLegacy {
                 "project_id"   => $projectId,
                 "reward_id"    => $rewardId, 
                 "investor_id"  => (int)$userId,
-                "receiver_id"  => (int)$project->user_id,
+                "receiver_id"  => (int)$project->getUserId(),
                 "service_provider"  => "Bank Transfer"
             );
             
@@ -351,7 +347,7 @@ class CrowdFundingControllerPayments extends JControllerLegacy {
         if($pluginParams->get("send_admin_mail", 0)) {
             
             $subject = JText::_("PLG_CROWDFUNDINGPAYMENT_BANKTRANSFER_NEW_INVESTMENT_ADMIN_SUBJECT");
-            $body    = JText::sprintf("PLG_CROWDFUNDINGPAYMENT_BANKTRANSFER_NEW_INVESTMENT_ADMIN_BODY", $project->title);
+            $body    = JText::sprintf("PLG_CROWDFUNDINGPAYMENT_BANKTRANSFER_NEW_INVESTMENT_ADMIN_BODY", $project->getTitle());
             $return  = JFactory::getMailer()->sendMail($app->getCfg("mailfrom"), $app->getCfg("fromname"), $app->getCfg("mailfrom"), $subject, $body);
             
             // Check for an error.
@@ -366,12 +362,12 @@ class CrowdFundingControllerPayments extends JControllerLegacy {
         if($pluginParams->get("send_user_mail", 0)) {
         
             jimport("itprism.string");
-            $amount = ITPrismString::getAmount($transaction->txn_amount, $transaction->txn_currency);
+            $amount  = ITPrismString::getAmount($transaction->getAmount(), $transaction->getCurrency());
             
-            $user     = JUser::getInstance($project->user_id);
+            $user    = JUser::getInstance($project->getUserId());
             
-            $subject = JText::sprintf("PLG_CROWDFUNDINGPAYMENT_BANKTRANSFER_NEW_INVESTMENT_USER_SUBJECT", $project->title);
-            $body    = JText::sprintf("PLG_CROWDFUNDINGPAYMENT_BANKTRANSFER_NEW_INVESTMENT_USER_BODY", $amount, $project->title, $transactinoId, $transactinoId);
+            $subject = JText::sprintf("PLG_CROWDFUNDINGPAYMENT_BANKTRANSFER_NEW_INVESTMENT_USER_SUBJECT", $project->getTitle());
+            $body    = JText::sprintf("PLG_CROWDFUNDINGPAYMENT_BANKTRANSFER_NEW_INVESTMENT_USER_BODY", $amount, $project->getTitle(), $transactinoId, $transactinoId);
             $return  = JFactory::getMailer()->sendMail($app->getCfg("mailfrom"), $app->getCfg("fromname"), $app->getCfg("mailfrom"), $subject, $body);
         
             // Check for an error.

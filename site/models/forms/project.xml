@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<form>
+<form addrulepath="/administrator/components/com_crowdfunding/models/rules">
     <fieldset name="project" label="COM_CROWDFUNDING_PROJECT_DEFAULT_LABEL" addfieldpath="/administrator/components/com_crowdfunding/models/fields">
 
         <field name="title" type="text" class="span12"
@@ -21,6 +21,8 @@
             label="JCATEGORY"
             extension="com_crowdfunding" 
             filter="int"
+            required="true"
+            validate="cfcategory"
             published="1"
          />
          

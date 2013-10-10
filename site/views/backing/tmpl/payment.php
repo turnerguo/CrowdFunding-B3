@@ -3,24 +3,27 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * CrowdFunding is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
-defined('_JEXEC') or die;?>
-<div class="cfdetails<?php echo $this->params->get("pageclass_sfx"); ?>">
+defined('_JEXEC') or die;
+?>
+<div class="cfbacking<?php echo $this->params->get("pageclass_sfx"); ?>">
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
     <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php endif; ?>
 	
 	<div class="row-fluid">
 		<div class="span12">
-    		<?php include $this->layoutsBasePath."/payment_wizard.php";?>	
+    		<?php 
+    		if(strcmp("three_steps", $this->wizardType) == 0) {
+                include $this->layoutsBasePath."/payment_wizard.php";
+    		} else {
+                include $this->layoutsBasePath."/payment_wizard_four_steps.php";
+    		}
+    		?>
     	</div>
 	</div>
 	
@@ -61,4 +64,3 @@ defined('_JEXEC') or die;?>
 	</div>
 </div>
 <div class="clearfix">&nbsp;</div>
-<?php echo $this->version->backlink;?>

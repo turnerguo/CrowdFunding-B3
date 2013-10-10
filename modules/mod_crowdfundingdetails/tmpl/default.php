@@ -12,12 +12,12 @@ defined('_JEXEC') or die;
 ?>
 <div class="cfmdetails<?php echo $moduleclassSfx; ?>">
     <ul class="thumbnails">
-      <?php if(!empty($project->id)) {?>
+      <?php if($project->getId()) {?>
       <li>
         <div class="thumbnail">
-          <img src="<?php echo $imageFolder."/".$project->image;?>" alt="<?php echo $project->title;?>" width="200" height="200">
+          <img src="<?php echo $imageFolder."/".$project->getImage();?>" alt="<?php echo htmlspecialchars($project->getTitle(), ENT_QUOTES, "UTF-8");?>" width="200" height="200">
           <div class="caption">
-            <h3><a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($project->getSlug(), $project->getCatSlug())); ?>"><?php echo htmlspecialchars($project->title, ENT_QUOTES, "UTF-8");?></a></h3>
+            <h3><a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($project->getSlug(), $project->getCatSlug())); ?>"><?php echo htmlspecialchars($project->getTitle(), ENT_QUOTES, "UTF-8");?></a></h3>
             <span class="cf-founder">by 
                 <?php if(!empty($socialProfileLink)){ ?>
                 <a href="<?php echo $socialProfileLink;?>"><?php echo $user->name; ?></a>
@@ -25,8 +25,8 @@ defined('_JEXEC') or die;
                 <?php echo $user->name; ?>
                 <?php }?>
             </span>
-            <p><?php echo htmlspecialchars($project->short_desc, ENT_QUOTES, "UTF-8");?></p>
-            <?php echo JHtml::_("crowdfunding.progressbar", $fundedPercents, $project->getDaysLeft(), $project->funding_type);?>
+            <p><?php echo htmlspecialchars($project->getShortDesc(), ENT_QUOTES, "UTF-8");?></p>
+            <?php echo JHtml::_("crowdfunding.progressbar", $fundedPercents, $project->getDaysLeft(), $project->getFundingType());?>
             
             <div class="row-fluid">
             	<div class="span4">
