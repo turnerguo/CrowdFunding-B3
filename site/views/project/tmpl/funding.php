@@ -72,3 +72,5 @@ defined('_JEXEC') or die;
         </button>
     </form>
 </div>
+<div class="clearfix">&nbsp;</div>
+<?php echo $this->version->backlink;?>

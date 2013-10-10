@@ -44,6 +44,8 @@ class CrowdFundingViewProjects extends JView {
 		
 		JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
 		
+		$this->version = new CrowdFundingVersion();
+		
         $this->prepareDocument();
                 
         parent::display($tpl);

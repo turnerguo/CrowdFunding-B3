@@ -63,6 +63,8 @@ class CrowdFundingViewDetails extends JView {
         // Get the current screen
         $this->screen = $app->input->getCmd("screen", "home");
         
+        $this->version = new CrowdFundingVersion();
+        
         $this->prepareDocument();
         
         switch($this->screen) {

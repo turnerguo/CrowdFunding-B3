@@ -116,6 +116,8 @@ class CrowdFundingViewBacking extends JView {
 	    $this->layoutData->item            = $this->item;
 	    $this->layoutData->paymentProcess  = $paymentProcess;
 	    
+	    $this->version = new CrowdFundingVersion();
+	    
         $this->prepareDebugMode($paymentProcess);
 		$this->prepareDocument();
 		

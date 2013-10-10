@@ -81,3 +81,4 @@ $itemSpan = (!empty($this->numberInRow)) ? round(12/$this->numberInRow) : 4;
     <div class="clearfix">&nbsp;</div>
 </div>
 <div class="clearfix">&nbsp;</div>
+<?php echo $this->version->backlink;?>

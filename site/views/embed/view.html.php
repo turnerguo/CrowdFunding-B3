@@ -83,6 +83,8 @@ class CrowdFundingViewEmbed extends JView {
             
         }
         
+        $this->version = new CrowdFundingVersion();
+        
 		$this->prepareDocument();
 		
         parent::display($tpl);
