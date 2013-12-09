@@ -24,10 +24,13 @@ class CrowdFundingViewBacking extends JViewLegacy {
     protected $wizardType;
     
     public function __construct($config) {
+        
         parent::__construct($config);
+        
         $this->option = JFactory::getApplication()->input->get("option");
         
         $this->layoutsBasePath = JPath::clean(JPATH_COMPONENT_ADMINISTRATOR."/layouts");
+        
     }
     
     public function display($tpl = null) {
@@ -42,7 +45,7 @@ class CrowdFundingViewBacking extends JViewLegacy {
         
         if (!$this->item) {
             $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"), "notice");
-            $app->redirect(JRoute::_('index.php?option=com_crowdfunding&view=discover', false));
+            $app->redirect(JRoute::_(CrowdFundingHelperRoute::getDiscoverRoute(), false));
             return;
         }
         
@@ -50,6 +53,7 @@ class CrowdFundingViewBacking extends JViewLegacy {
         $this->paymentProcessContext = CrowdFundingConstants::PAYMENT_PROCESS_CONTEXT.$this->item->id;
         $paymentProcess              = $app->getUserState($this->paymentProcessContext);
         
+        // Create payment process object.
         if(!$paymentProcess) {
             $paymentProcess         = new JData();
             $paymentProcess->step1  = false;
@@ -57,9 +61,6 @@ class CrowdFundingViewBacking extends JViewLegacy {
         
         // Images
         $this->imageFolder       = $this->params->get("images_directory", "images/crowdfunding");
-        
-        // Include HTML helper
-        JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
         
         // Get currency
 		jimport("crowdfunding.currency");
@@ -75,6 +76,8 @@ class CrowdFundingViewBacking extends JViewLegacy {
         
         // Get params
         $params           = JComponentHelper::getParams("com_crowdfunding");
+        
+        $this->version    = new CrowdFundingVersion();
         
         // Get wizard type
         $this->wizardType = $params->get("backing_wizard_type", "three_steps");
@@ -100,6 +103,13 @@ class CrowdFundingViewBacking extends JViewLegacy {
                 break;
         }
         
+        // Get project type and check for enabled rewards.
+        $type = CrowdFundingHelper::getProjectType($this->item->type_id);
+        $this->rewardsEnabled     = true;
+        if(!is_null($type) AND !$type->isRewardsEnabled()){
+            $this->rewardsEnabled = false;
+        }
+        
         // Check days left. If there is no days, disable the button.
         $this->disabledButton = "";
         if(!$this->item->days_left) {
@@ -114,8 +124,6 @@ class CrowdFundingViewBacking extends JViewLegacy {
             "item"           => $this->item,
             "paymentProcess" => $paymentProcess,
 	    ));
-	    
-	    $this->version = new CrowdFundingVersion();
 	    
         $this->prepareDebugMode($paymentProcess);
 		$this->prepareDocument();
@@ -136,8 +144,8 @@ class CrowdFundingViewBacking extends JViewLegacy {
             
             $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_LOGGED_IN"), "notice");
             
-            $link = CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug, "payment");
-            $app->redirect(JRoute::_("index.php?option=com_crowdfunding&view=backing&id=".(int)$this->item->id, false));
+            $link = CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug);
+            $app->redirect(JRoute::_($link, false));
         }
         
         // Get the form.
@@ -205,7 +213,7 @@ class CrowdFundingViewBacking extends JViewLegacy {
         // If missing the flag"step1", redirect to first step.
         if(!$paymentProcess->step1) {
             $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_INVALID_AMOUNT"), "notice");
-            $app->redirect(JRoute::_("index.php?option=com_crowdfunding&view=backing&id=".(int)$this->item->id, false));
+            $app->redirect(JRoute::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug), false));
         }
         
         // Check for both user states. The user must have only one state, registered or anonymous.
@@ -221,7 +229,7 @@ class CrowdFundingViewBacking extends JViewLegacy {
             $paymentProcess->step1 = false;
             $app->setUserState($this->paymentProcessContext, $paymentProcess);
             
-            $app->redirect(JRoute::_("index.php?option=com_crowdfunding&view=backing&id=".(int)$this->item->id, false));
+            $app->redirect(JRoute::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug), false));
         }
         
         if(!$this->item->days_left) {
@@ -231,7 +239,7 @@ class CrowdFundingViewBacking extends JViewLegacy {
             $app->setUserState($this->paymentProcessContext, $paymentProcess);
             
             $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_PROJECT_COMPLETED"), "notice");
-            $app->redirect(JRoute::_("index.php?option=com_crowdfunding&view=backing&id=".(int)$this->item->id, false));
+            $app->redirect(JRoute::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug), false));
         }
         
         // Validate reward
@@ -251,7 +259,8 @@ class CrowdFundingViewBacking extends JViewLegacy {
                 $app->setUserState($this->paymentProcessContext, $paymentProcess);
             
                 $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_REWARD_NOT_AVAILABLE"), "notice");
-                $app->redirect(JRoute::_("index.php?option=com_crowdfunding&view=backing&id=".(int)$this->item->id, false));
+                $app->redirect(JRoute::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug), false));
+                
             }
         }
         
@@ -264,7 +273,8 @@ class CrowdFundingViewBacking extends JViewLegacy {
             $app->setUserState($this->paymentProcessContext, $paymentProcess);
             
             $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_INVALID_AMOUNT"), "notice");
-            $app->redirect(JRoute::_("index.php?option=com_crowdfunding&view=backing&id=".(int)$this->item->id, false));
+            $app->redirect(JRoute::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug), false));
+            
         }
         
         $item               = new stdClass();
@@ -322,7 +332,8 @@ class CrowdFundingViewBacking extends JViewLegacy {
         // Reset anonymous hash user ID.
         $app->setUserState("auser_id", "");
         
-        // Store the new values of the payment process to the user sesstion.
+        // Initialize the payment process object.
+        $paymentProcess           = new JData();
         $paymentProcess->step1    = false;
         $app->setUserState($this->paymentProcessContext, $paymentProcess);
     }
@@ -400,7 +411,7 @@ class CrowdFundingViewBacking extends JViewLegacy {
         $this->document->addScript('media/'.$this->option.'/js/site/backing.js');
     }
     
-    private function prepearePageHeading() {
+    protected function prepearePageHeading() {
         
         $app = JFactory::getApplication();
         /** @var $app JSite **/
@@ -419,7 +430,7 @@ class CrowdFundingViewBacking extends JViewLegacy {
     
     }
     
-    private function prepearePageTitle() {
+    protected function prepearePageTitle() {
         
         $app = JFactory::getApplication();
         /** @var $app JSite **/
@@ -440,5 +451,5 @@ class CrowdFundingViewBacking extends JViewLegacy {
         $this->document->setTitle($title);
     
     }
-
+    
 }

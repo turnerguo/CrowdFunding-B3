@@ -186,7 +186,7 @@ class CrowdFundingModelDetails extends JModelItem {
             ->where($db->quoteName("id") ."=". (int)$id);
         
         $db->setQuery($query);
-        $db->query();
+        $db->execute();
         
     }
 }

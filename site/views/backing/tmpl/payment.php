@@ -47,6 +47,7 @@ defined('_JEXEC') or die;
 				?></p>
 			</div>
 			
+			<?php if($this->rewardsEnabled) {?>
 			<h2><?php echo JText::_("COM_CROWDFUNDING_SELECTED_REWARD");?></h2>
 			<div class="bs-docs-example">
 			<?php if(!$this->paymentProcess->rewardId) {?>
@@ -56,6 +57,7 @@ defined('_JEXEC') or die;
 				<p><?php echo $this->escape($this->reward->getDescription());?></p>
 			<?php } ?>
 			</div>
+			<?php } ?>
 			
 			<h2><?php echo JText::_("COM_CROWDFUNDING_PAYMENT_METHODS");?></h2>
 			<div class="bs-docs-example">

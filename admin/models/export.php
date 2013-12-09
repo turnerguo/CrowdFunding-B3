@@ -61,6 +61,27 @@ class CrowdFundingModelExport extends JModelLegacy {
         return $output;
     }
     
+    public function getStates() {
+    
+        $db     = $this->getDbo();
+        /** @var $db JDatabaseMySQLi **/
+    
+        // Create a new query object.
+        $query  = $db->getQuery(true);
+    
+        // Select the required fields from the table.
+        $query
+            ->select('a.id, a.name, a.state_code')
+            ->from($db->quoteName('#__crowdf_locations').' AS a');
+    
+        $db->setQuery($query);
+        $results = $db->loadAssocList();
+    
+        $output = $this->prepareXML($results, "states", "state");
+    
+        return $output;
+    }
+    
     public function getCountries() {
     
         $db     = $this->getDbo();
@@ -85,6 +106,7 @@ class CrowdFundingModelExport extends JModelLegacy {
     protected function prepareXML($results, $root, $child) {
         
         $xml = new SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?><'.$root.'/>');
+        $xml->addAttribute("generator", "crowdfunding");
         
         if(!empty($root) AND !empty($child) ) {
             
@@ -98,7 +120,10 @@ class CrowdFundingModelExport extends JModelLegacy {
             }
         }
         
-        return $xml->asXML();
+        $dom = dom_import_simplexml($xml)->ownerDocument;
+        $dom->formatOutput = true;
+        
+        return $dom->saveXML();
 
     } 
 }

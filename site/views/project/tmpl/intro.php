@@ -23,3 +23,4 @@ if(!empty($this->article)) {
     echo JText::_("COM_CROWDFUNDING_INTRO_ARTICLE_INFO");
 }
 ?>
+<?php echo $this->version->backlink;?>

@@ -14,10 +14,9 @@ jimport('itprism.controller.form.backend');
 
 /**
  * CrowdFunding comment controller class.
- *
- * @package		ITPrism Components
- * @subpackage	CrowdFunding
- * @since		1.6
+ * 
+ * @package      CrowdFunding
+ * @subpackage   Components
  */
 class CrowdFundingControllerComment extends ITPrismControllerFormBackend {
     
@@ -34,7 +33,7 @@ class CrowdFundingControllerComment extends ITPrismControllerFormBackend {
         $data    = $app->input->post->get('jform', array(), 'array');
         $itemId  = JArrayHelper::getValue($data, "id");
         
-        $redirectData = array(
+        $redirectOptions = array(
             "task"  => $this->getTask(),
             "id"    => $itemId
         );
@@ -54,18 +53,22 @@ class CrowdFundingControllerComment extends ITPrismControllerFormBackend {
         
         // Check for errors
         if($validData === false){
-            $this->displayNotice($form->getErrors(), $redirectData);
+            $this->displayNotice($form->getErrors(), $redirectOptions);
             return;
         }
             
         try {
+            
             $itemId = $model->save($validData);
+            
+            $redirectOptions["id"] = $itemId;
+            
         } catch (Exception $e) {
             JLog::add($e->getMessage());
             throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }
         
-        $this->displayMessage(JText::_('COM_CROWDFUNDING_COMMENT_SAVED'), $redirectData);
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_COMMENT_SAVED'), $redirectOptions);
     
     }
     

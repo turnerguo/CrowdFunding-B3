@@ -15,12 +15,6 @@ jimport('joomla.application.component.modeladmin');
 class CrowdFundingModelProject extends JModelAdmin {
     
     /**
-     * @var     string  The prefix to use with controller messages.
-     * @since   1.6
-     */
-    protected $text_prefix = 'COM_CROWDFUNDING';
-    
-    /**
      * Returns a reference to the a Table object, always creating it.
      *
      * @param   type    The table type to instantiate
@@ -79,15 +73,18 @@ class CrowdFundingModelProject extends JModelAdmin {
         $id           = JArrayHelper::getValue($data, "id");
         $title        = JArrayHelper::getValue($data, "title");
         $alias        = JArrayHelper::getValue($data, "alias");
-        $goal         = JArrayHelper::getValue($data, "goal");
-        $funded       = JArrayHelper::getValue($data, "funded");
-        $fundingType  = JArrayHelper::getValue($data, "funding_type");
-        $pitchVideo   = JArrayHelper::getValue($data, "pitch_video");
-        $shortDesc    = JArrayHelper::getValue($data, "short_desc");
-        $description  = JArrayHelper::getValue($data, "description");
         $catId        = JArrayHelper::getValue($data, "catid");
         $published    = JArrayHelper::getValue($data, "published");
         $approved     = JArrayHelper::getValue($data, "approved");
+        $shortDesc    = JArrayHelper::getValue($data, "short_desc");
+        
+        $goal         = JArrayHelper::getValue($data, "goal");
+        $funded       = JArrayHelper::getValue($data, "funded");
+        $fundingType  = JArrayHelper::getValue($data, "funding_type");
+        
+        $pitchVideo   = JArrayHelper::getValue($data, "pitch_video");
+        $pitchImage   = JArrayHelper::getValue($data, "pitch_image");
+        $description  = JArrayHelper::getValue($data, "description");
         
         // Load a record from the database
         $row = $this->getTable();
@@ -95,20 +92,137 @@ class CrowdFundingModelProject extends JModelAdmin {
         
         $row->set("title",          $title);
         $row->set("alias",          $alias);
-        $row->set("goal",           $goal);
-        $row->set("funded",         $funded);
-        $row->set("funding_type",   $fundingType);
-        $row->set("pitch_video",    $pitchVideo);
         $row->set("catid",          $catId);
         $row->set("published",      $published);
         $row->set("approved",       $approved);
         $row->set("short_desc",     $shortDesc);
+        
+        $row->set("goal",           $goal);
+        $row->set("funded",         $funded);
+        $row->set("funding_type",   $fundingType);
+        
+        $row->set("pitch_video",    $pitchVideo);
         $row->set("description",    $description);
+        
+        $this->prepareTable($row, $data);
         
         $row->store();
         
         return $row->id;
     
+    }
+    
+    /**
+     * Prepare and sanitise the table prior to saving.
+     *
+     * @param   object $table
+     * @param   array  $data
+     *
+     * @since	1.6
+     */
+    protected function prepareTable(&$table, $data) {
+         
+        // Prepare image.
+        if(!empty($data["image"])){
+    
+            // Delete old image if I upload a new one
+            if(!empty($table->image)){
+    
+                $params       = JComponentHelper::getParams($this->option);
+                $imagesFolder = $params->get("images_directory", "images/crowdfunding");
+    
+                // Remove an image from the filesystem
+                $fileImage  = JPath::clean(JPATH_ROOT.DIRECTORY_SEPARATOR.$imagesFolder .DIRECTORY_SEPARATOR. $table->image);
+                $fileSmall  = JPath::clean(JPATH_ROOT.DIRECTORY_SEPARATOR.$imagesFolder .DIRECTORY_SEPARATOR. $table->image_small);
+                $fileSquare = JPath::clean(JPATH_ROOT.DIRECTORY_SEPARATOR.$imagesFolder .DIRECTORY_SEPARATOR. $table->image_square);
+                 
+                if(is_file($fileImage)) {
+                    JFile::delete($fileImage);
+                }
+    
+                if(is_file($fileSmall)) {
+                    JFile::delete($fileSmall);
+                }
+    
+                if(is_file($fileSquare)) {
+                    JFile::delete($fileSquare);
+                }
+    
+            }
+            $table->set("image",         $data["image"]);
+            $table->set("image_small",   $data["image_small"]);
+            $table->set("image_square",  $data["image_square"]);
+        }
+    
+    
+        // Prepare pitch image.
+        if(!empty($data["pitch_image"])){
+        
+            // Delete old image if I upload a new one
+            if(!empty($table->pitch_image)){
+        
+                $params       = JComponentHelper::getParams($this->option);
+                $imagesFolder = $params->get("images_directory", "images/crowdfunding");
+        
+                // Remove an image from the filesystem
+                $pitchImage  = JPath::clean(JPATH_ROOT.DIRECTORY_SEPARATOR.$imagesFolder .DIRECTORY_SEPARATOR. $table->pitch_image);
+        
+                if(is_file($pitchImage)) {
+                    JFile::delete($pitchImage);
+                }
+            }
+        
+            $table->set("pitch_image", $data["pitch_image"]);
+        
+        }
+        
+        // If an alias does not exist, I will generate the new one using the title.
+        if(!$table->alias) {
+            $table->alias = $table->title;
+        }
+        $table->alias = JApplication::stringURLSafe($table->alias);
+        
+        // Prepare funding duration
+        
+        $durationType = JArrayHelper::getValue($data, "duration_type");
+        $fundingEnd   = JArrayHelper::getValue($data, "funding_end");
+        $fundingDays  = JArrayHelper::getValue($data, "funding_days");
+         
+        switch($durationType) {
+        
+            case "days":
+        
+                $table->funding_days = $fundingDays;
+        
+                // Clacluate end date
+                if(!empty($table->funding_start)) {
+                    $table->funding_end   = CrowdFundingHelper::calcualteEndDate($table->funding_start, $table->funding_days);
+                } else {
+                    $table->funding_end = "0000-00-00";
+                }
+        
+                break;
+        
+            case "date":
+        
+                if(!CrowdFundingHelper::isValidDate($fundingEnd)) {
+                    throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_DATE"), ITPrismErrors::CODE_WARNING);
+                }
+        
+                jimport('joomla.utilities.date');
+                $date = new JDate($fundingEnd);
+        
+                $table->funding_days = 0;
+                $table->funding_end  = $date->toSql();
+        
+                break;
+                 
+            default:
+                $table->funding_days = 0;
+                $table->funding_end  = "0000-00-00";
+                break;
+        }
+        
     }
     
 	/**
@@ -131,7 +245,7 @@ class CrowdFundingModelProject extends JModelAdmin {
 		    ->where("id IN (".implode(",", $pks).")");
 
 	    $db->setQuery($query);
-	    $db->query();
+	    $db->execute();
 	    
 	    // Trigger change state event
 	    
@@ -172,7 +286,7 @@ class CrowdFundingModelProject extends JModelAdmin {
 		    ->where("id IN (".implode(",", $pks).")");
 
 	    $db->setQuery($query);
-	    $db->query();
+	    $db->execute();
 	    
 		// Clear the component's cache
 		$this->cleanCache();
@@ -242,7 +356,7 @@ class CrowdFundingModelProject extends JModelAdmin {
 	                $table->store();
 	                
 	            } else { // Set other states - unpublished, trash,...
-	                $table->publish(null, $value);
+	                $table->publish(array($pk), $value);
 	            }
 	        }
 	    }
@@ -280,5 +394,482 @@ class CrowdFundingModelProject extends JModelAdmin {
 	    $condition   = array();
 	    $condition[] = 'catid = '.(int) $table->catid;
 	    return $condition;
+	}
+	
+	/**
+	 * Method to delete one or more records.
+	 *
+	 * @param   array  &$pks  An array of record primary keys.
+	 *
+	 * @return  boolean  True if successful, false if an error occurs.
+	 *
+	 * @since   12.2
+	 */
+	public function delete(&$pks) {
+	    
+	    $params       = JComponentHelper::getParams($this->option);
+	    $folderImages = $params->get("images_directory", "images/crowdfunding");
+	     
+	    jimport("joomla.filesystem.path");
+	    jimport("joomla.filesystem.file");
+	    jimport("crowdfunding.project");
+	    
+	    foreach($pks as $id) {
+	        
+	        $project = new CrowdFundingProject($id);
+	        
+	        $this->deleteProjectImages($project, $folderImages);
+	        $this->deleteAdditionalImages($project, $folderImages);
+	        $this->removeIntentions($project);
+	        $this->removeComments($project);
+	        $this->removeUpdates($project);
+	        $this->removeRewards($project);
+	        $this->removeTransactions($project);
+	        
+	    }
+	    
+	    return parent::delete($pks);
+	}
+	
+	protected function deleteAdditionalImages(CrowdFundingProject $project, $folderImages) {
+	    
+	    $db    = $this->getDbo();
+	    
+	    $projectId = $project->getId();
+	    
+	    // Get the extra image
+	    $query = $db->getQuery(true);
+	    $query
+	       ->select("a.image, a.thumb")
+	       ->from($db->quoteName("#__crowdf_images", "a"))
+	       ->where("a.project_id =".(int)$projectId);
+	    
+	    $db->setQuery($query);
+	    $results = $db->loadObjectList();
+	    if(!$results) {
+	        $results = array();
+	    }
+	    
+	    // Remove 
+	    foreach($results as $images) {
+	        
+	        $image = JPath::clean(JPATH_ROOT.DIRECTORY_SEPARATOR.$folderImages.DIRECTORY_SEPARATOR."user".$project->getUserId().DIRECTORY_SEPARATOR.$images->image);
+	        if(JFile::exists($image)) {
+	            JFile::delete($image);
+	        }
+	        
+	        $thumb = JPath::clean(JPATH_ROOT.DIRECTORY_SEPARATOR.$folderImages.DIRECTORY_SEPARATOR."user".$project->getUserId().DIRECTORY_SEPARATOR.$images->thumb);
+	        if(JFile::exists($thumb)) {
+	            JFile::delete($thumb);
+	        }
+	    }
+	    
+	    // Delete records of the images
+	    $query = $db->getQuery(true);
+	    $query
+    	    ->delete($db->quoteName("#__crowdf_images"))
+    	    ->where($db->quoteName("project_id") ."=".(int)$projectId);
+	     
+	    $db->setQuery($query);
+	    $db->execute();
+	}
+	
+	protected function deleteProjectImages(CrowdFundingProject $project, $folderImages) {
+	     
+	    $db    = $this->getDbo();
+	     
+	    $images = array(
+            "image"         => $project->getImage(),
+            "image_square"  => $project->getSquareImage(),
+            "image_small"   => $project->getSmallImage()
+	    );
+	     
+	    // Remove
+	    foreach($images as $image) {
+	         
+	        $imageFile = JPath::clean(JPATH_ROOT.DIRECTORY_SEPARATOR.$folderImages.DIRECTORY_SEPARATOR.$image);
+	        if(JFile::exists($imageFile)) {
+	            JFile::delete($imageFile);
+	        }
+	        
+	    }
+	    
+	}
+	
+	protected function removeIntentions(CrowdFundingProject $project) {
+	     
+	    // Create query object
+	    $db    = $this->getDbo();
+	    $query = $db->getQuery(true);
+	     
+	    $query
+    	    ->delete($db->quoteName("#__crowdf_intentions"))
+    	    ->where($db->quoteName("project_id") ."=".(int)$project->getId());
+	
+	    $db->setQuery($query);
+	    $db->execute();
+	}
+	
+	protected function removeComments(CrowdFundingProject $project) {
+	
+	    // Create query object
+	    $db    = $this->getDbo();
+	    $query = $db->getQuery(true);
+	
+	    $query
+    	    ->delete($db->quoteName("#__crowdf_comments"))
+    	    ->where($db->quoteName("project_id") ."=".(int)$project->getId());
+	
+	    $db->setQuery($query);
+	    $db->execute();
+	}
+	
+	protected function removeUpdates(CrowdFundingProject $project) {
+	
+	    // Create query object
+	    $db    = $this->getDbo();
+	    $query = $db->getQuery(true);
+	
+	    $query
+    	    ->delete($db->quoteName("#__crowdf_updates"))
+    	    ->where($db->quoteName("project_id") ."=".(int)$project->getId());
+	
+	    $db->setQuery($query);
+	    $db->execute();
+	}
+	
+	protected function removeRewards(CrowdFundingProject $project) {
+	
+	    // Create query object
+	    $db    = $this->getDbo();
+	    $query = $db->getQuery(true);
+	
+	    $query
+    	    ->delete($db->quoteName("#__crowdf_rewards"))
+    	    ->where($db->quoteName("project_id") ."=".(int)$project->getId());
+	
+	    $db->setQuery($query);
+        $db->execute();
+	}
+	
+	protected function removeTransactions(CrowdFundingProject $project) {
+	
+	    // Create query object
+	    $db    = $this->getDbo();
+	    $query = $db->getQuery(true);
+	
+	    $query
+    	    ->delete($db->quoteName("#__crowdf_transactions"))
+    	    ->where($db->quoteName("project_id") ."=".(int)$project->getId());
+	
+	    $db->setQuery($query);
+	    $db->execute();
+	}
+	
+	/**
+	 * Upload and resize the image
+	 *
+	 * @param array $image
+	 * @return array
+	 */
+	public function uploadImage($image){
+	
+	    $app = JFactory::getApplication();
+	    /** @var $app JAdministrator **/
+	
+	    $names         = array("image", "small", "square");
+	
+	    $uploadedFile  = JArrayHelper::getValue($image, 'tmp_name');
+	    $uploadedName  = JArrayHelper::getValue($image, 'name');
+	
+	    // Load parameters.
+	    $params          = JComponentHelper::getParams($this->option);
+	    $destFolder      = JPath::clean(JPATH_ROOT.DIRECTORY_SEPARATOR.$params->get("images_directory", "images/crowdfunding"));
+	
+	    $tmpFolder       = $app->getCfg("tmp_path");
+	
+	    // Joomla! media extension parameters
+	    $mediaParams     = JComponentHelper::getParams("com_media");
+	
+	    $upload          = new ITPrismFileUploadImage($image);
+	
+	    // Get allowed mime types from media manager options
+	    $mimeTypes = explode(",", $mediaParams->get("upload_mime"));
+	    $upload->setMimeTypes($mimeTypes);
+	
+	    // Get allowed image extensions from media manager options
+	    $imageExtensions = explode(",", $mediaParams->get("image_extensions"));
+	    $upload->setImageExtensions($imageExtensions);
+	
+	    $uploadMaxSize   = $mediaParams->get("upload_maxsize");
+	    $KB              = 1024 * 1024;
+	    $upload->setMaxFileSize( round($uploadMaxSize * $KB, 0) );
+	
+	    // Validate the file
+	    $upload->validate();
+	
+	    // Generate temporary file name
+	    $seed  = substr(md5(uniqid(time() * rand(), true)), 0, 10);
+	    $ext   = JFile::makeSafe(JFile::getExt($image['name']));
+	
+	    $generatedName = JString::substr(JApplication::getHash($seed), 0, 32);
+	    $tmpDestFile   = $tmpFolder.DIRECTORY_SEPARATOR.$generatedName.".".$ext;
+	
+	    // Upload temporary file
+	    $upload->upload($tmpDestFile);
+	
+	    if(!is_file($tmpDestFile)){
+	        throw new Exception('COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED');
+	    }
+	
+	    // Resize image
+	    $image = new JImage();
+	    $image->loadFile($tmpDestFile);
+	    if (!$image->isLoaded()) {
+	        throw new Exception(JText::sprintf('COM_CROWDFUNDING_ERROR_FILE_NOT_FOUND', $tmpDestFile), ITPrismErrors::CODE_HIDDEN_WARNING);
+	    }
+	
+	    $imageName     = $generatedName . "_image.png";
+	    $smallName     = $generatedName . "_small.png";
+	    $squareName    = $generatedName . "_square.png";
+	
+	    $imageFile     = $destFolder.DIRECTORY_SEPARATOR.$imageName;
+	    $smallFile     = $destFolder.DIRECTORY_SEPARATOR.$smallName;
+	    $squareFile    = $destFolder.DIRECTORY_SEPARATOR.$squareName;
+	
+	    // Create main image
+	    $width         = $params->get("image_width", 200);
+	    $height        = $params->get("image_height", 200);
+	    $image->resize($width, $height, false);
+	    $image->toFile($imageFile, IMAGETYPE_PNG);
+	
+	    // Create small image
+	    $width       = $params->get("image_small_width", 100);
+	    $height      = $params->get("image_small_height", 100);
+	    $image->resize($width, $height, false);
+	    $image->toFile($smallFile, IMAGETYPE_PNG);
+	
+	    // Create square image
+	    $width       = $params->get("image_square_width", 50);
+	    $height      = $params->get("image_square_height", 50);
+	    $image->resize($width, $height, false);
+	    $image->toFile($squareFile, IMAGETYPE_PNG);
+	
+	    $names = array(
+            "image"        => $imageName,
+            "image_small"  => $smallName,
+            "image_square" => $squareName
+	    );
+	
+	    // Remove the temporary
+	    if(is_file($tmpDestFile)){
+	        JFile::delete($tmpDestFile);
+	    }
+	
+	    return $names;
+	}
+	
+	/**
+	 * Upload a pitch image.
+	 *
+	 * @param  array $image
+	 * 
+	 * @return array
+	 */
+	public function uploadPitchImage($image) {
+	
+	    $app = JFactory::getApplication();
+	    /** @var $app JSite **/
+	
+	    $app = JFactory::getApplication();
+	    /** @var $app JSite **/
+	
+	    $uploadedFile  = JArrayHelper::getValue($image, 'tmp_name');
+	    $uploadedName  = JArrayHelper::getValue($image, 'name');
+	
+	    // Load parameters.
+	    $params          = JComponentHelper::getParams($this->option);
+	    $destFolder      = JPath::clean(JPATH_ROOT.DIRECTORY_SEPARATOR.$params->get("images_directory", "images/crowdfunding")); 
+	
+	    $tmpFolder       = $app->getCfg("tmp_path");
+	
+	    // Joomla! media extension parameters
+	    $mediaParams     = JComponentHelper::getParams("com_media");
+	
+	    $upload          = new ITPrismFileUploadImage($image);
+	
+	    // Get allowed mime types from media manager options
+	    $mimeTypes = explode(",", $mediaParams->get("upload_mime"));
+	    $upload->setMimeTypes($mimeTypes);
+	
+	    // Get allowed image extensions from media manager options
+	    $imageExtensions = explode(",", $mediaParams->get("image_extensions"));
+	    $upload->setImageExtensions($imageExtensions);
+	
+	    $uploadMaxSize   = $mediaParams->get("upload_maxsize");
+	    $KB              = 1024 * 1024;
+	    $upload->setMaxFileSize( round($uploadMaxSize * $KB, 0) );
+	
+	    // Validate the file
+	    $upload->validate();
+	
+	    // Generate temporary file name
+	    $seed  = substr(md5(uniqid(time() * rand(), true)), 0, 10);
+	    $ext   = JFile::makeSafe(JFile::getExt($image['name']));
+	
+	    $generatedName = JString::substr(JApplication::getHash($seed), 0, 32);
+	    $tmpDestFile   = $tmpFolder.DIRECTORY_SEPARATOR.$generatedName.".".$ext;
+	
+	    // Upload temporary file
+	    $upload->upload($tmpDestFile);
+	
+	    if(!is_file($tmpDestFile)){
+	        throw new Exception('COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED');
+	    }
+	
+	    // Resize image
+	    $image = new JImage();
+	    $image->loadFile($tmpDestFile);
+	    if (!$image->isLoaded()) {
+	        throw new Exception(JText::sprintf('COM_CROWDFUNDING_ERROR_FILE_NOT_FOUND', $tmpDestFile), ITPrismErrors::CODE_HIDDEN_WARNING);
+	    }
+	
+	    $imageName     = $generatedName . "_pimage.png";
+	    $imageFile     = JPath::clean($destFolder.DIRECTORY_SEPARATOR.$imageName);
+	
+	    // Create main image
+	    $width         = $params->get("pitch_image_width", 600);
+	    $height        = $params->get("pitch_image_height", 400);
+	    $image->resize($width, $height, false);
+	    $image->toFile($imageFile, IMAGETYPE_PNG);
+	
+	    // Remove the temporary
+	    if(is_file($tmpDestFile)){
+	        JFile::delete($tmpDestFile);
+	    }
+	
+	    return $imageName;
+	}
+	
+	/**
+	 * Delete image only.
+	 *
+	 * @param integer Item id
+	 */
+	public function removeImage($id){
+	
+	    // Load category data
+	    $row = $this->getTable();
+	    $row->load($id);
+	
+	    // Delete old image if I upload the new one
+	    if(!empty($row->image)){
+	        
+	        $params       = JComponentHelper::getParams($this->option);
+	        $imagesFolder = JPath::clean(JPATH_ROOT.DIRECTORY_SEPARATOR.$params->get("images_directory", "images/crowdfunding"));
+	
+	        // Remove an image from the filesystem
+	        $fileImage  = $imagesFolder.DIRECTORY_SEPARATOR.$row->image;
+	        $fileSmall  = $imagesFolder.DIRECTORY_SEPARATOR.$row->image_small;
+	        $fileSquare = $imagesFolder.DIRECTORY_SEPARATOR.$row->image_square;
+	
+	        if(is_file($fileImage)) {
+	            JFile::delete($fileImage);
+	        }
+	
+	        if(is_file($fileSmall)) {
+	            JFile::delete($fileSmall);
+	        }
+	
+	        if(is_file($fileSquare)) {
+	            JFile::delete($fileSquare);
+	        }
+	
+	    }
+	
+	    $row->set("image", "");
+	    $row->set("image_small", "");
+	    $row->set("image_square", "");
+	    $row->store();
+	
+	}
+	
+	/**
+	 * Delete pitch image.
+	 *
+	 * @param integer Item id
+	 */
+	public function removePitchImage($id){
+	
+	    // Load category data
+	    $row = $this->getTable();
+	    $row->load($id);
+	
+	    // Delete old image if I upload the new one
+	    if(!empty($row->pitch_image)){
+	
+	        $params       = JComponentHelper::getParams($this->option);
+	        $imagesFolder = JPath::clean(JPATH_ROOT.DIRECTORY_SEPARATOR.$params->get("images_directory", "images/crowdfunding"));
+	
+	        // Remove an image from the filesystem
+	        $pitchImage   = $imagesFolder.DIRECTORY_SEPARATOR.$row->pitch_image;
+	
+	        if(is_file($pitchImage)) {
+	            JFile::delete($pitchImage);
+	        }
+	
+	    }
+	
+	    $row->set("pitch_image", "");
+	    $row->store();
+	
+	}
+	
+	/**
+	 * Only delete an additionl image
+	 *
+	 * @param integer Image ID
+	 * @param string  A path to the images folder.
+	 */
+	public function removeExtraImage($id, $imagesFolder){
+	
+	    $db = JFactory::getDbo();
+	    /** @var $db JDatabaseMySQLi **/
+	
+	    // Get the image
+	    $query = $db->getQuery(true);
+	    $query
+    	    ->select("a.image, a.thumb")
+    	    ->from($db->quoteName("#__crowdf_images", "a"))
+    	    ->where("a.id = " . (int)$id );
+	
+	    $db->setQuery($query);
+	    $row = $db->loadObject();
+	     
+	    if(!empty($row)){
+	
+	        // Remove the image from the filesystem
+	        $file = JPath::clean($imagesFolder.DIRECTORY_SEPARATOR.$row->image);
+	
+	        if(is_file($file)) {
+	            JFile::delete($file);
+	        }
+	
+	        // Remove the thumbnail from the filesystem
+	        $file = JPath::clean($imagesFolder.DIRECTORY_SEPARATOR. $row->thumb);
+	        if(is_file($file)) {
+	            JFile::delete($file);
+	        }
+	
+	        // Delete the record
+	        $query = $db->getQuery(true);
+	        $query
+    	        ->delete($db->quoteName("#__crowdf_images"))
+    	        ->where($db->quoteName("id") ." = ". (int)$id );
+	
+	        $db->setQuery($query);
+	        $db->execute();
+	    }
+	
 	}
 }

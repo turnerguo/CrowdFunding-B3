@@ -49,6 +49,7 @@ defined('_JEXEC') or die;
 				?></p>
 			</div>
 			
+			<?php if($this->rewardsEnabled) {?>
 			<h3><?php echo JText::_("COM_CROWDFUNDING_SELECTED_REWARD");?></h3>
 			<div class="bs-docs-example">
 			<?php if(!$this->reward) {?>
@@ -58,6 +59,7 @@ defined('_JEXEC') or die;
 				<p><?php echo $this->escape($this->reward->getDescription());?></p>
 			<?php } ?>
 			</div>
+			<?php }?>
 			
 			<?php echo $this->item->event->afterDisplayContent; ?>
 			

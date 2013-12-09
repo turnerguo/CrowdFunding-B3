@@ -15,29 +15,19 @@ jimport('joomla.application.component.controller');
 /**
  * Default controller
  *
- * @package		ITPrism Components
- * @subpackage	CrowdFunding
+ * @package		CrowdFunding
+ * @subpackage	Components
   */
 class CrowdFundingController extends JControllerLegacy {
     
 	public function display($cachable = false, $urlparams = array()) {
 
-	    $app = JFactory::getApplication();
-        /** @var $app JAdministrator **/
-        
-        $option   = $app->input->getCmd("option");
-        
-        $document = JFactory::getDocument();
-		/** @var $document JDocumentHtml **/
-        
-        // Add component style
-        $document->addStyleSheet('../media/'.$option.'/css/admin/style.css');
-        
-        $viewName      = $app->input->getCmd('view', 'dashboard');
-        $app->input->set("view", $viewName);
+        $viewName      = $this->input->getCmd('view', 'dashboard');
+        $this->input->set("view", $viewName);
 
         parent::display($cachable, $urlparams);
         return $this;
+        
 	}
 
 }

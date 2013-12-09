@@ -123,7 +123,7 @@ class CrowdFundingViewCountries extends JViewLegacy {
 		
 		JHtml::_('formbehavior.chosen', 'select');
 		
-		$this->document->addScript('../media/'.$this->option.'/js/admin/list.js');
+		JHtml::_('itprism.ui.joomla_list');
 		
 	}
 

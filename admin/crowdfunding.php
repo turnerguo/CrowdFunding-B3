@@ -10,6 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
+jimport("itprism.init");
 jimport("crowdfunding.init");
 
 // Include dependencies

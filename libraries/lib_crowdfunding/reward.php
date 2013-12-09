@@ -30,7 +30,7 @@ class CrowdFundingReward implements CrowdFundingInterfaceTable {
         
     }
 
-    public function load($keys = null, $reset = true) {
+    public function load($keys, $reset = true) {
         $this->table->load($keys, $reset);
     }
     
@@ -108,7 +108,7 @@ class CrowdFundingReward implements CrowdFundingInterfaceTable {
         return $this->available;
     }
     
-    public function getProperties() {
-        return $this->table->getProperties();
+    public function getProperties($public = true) {
+        return $this->table->getProperties($public);
     }
 }

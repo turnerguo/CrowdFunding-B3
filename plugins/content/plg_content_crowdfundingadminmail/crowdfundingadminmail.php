@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 jimport('joomla.plugin.plugin');
+jimport('crowdfunding.init');
 
 /**
  * This plugin send notification mails to the administrator. 
@@ -19,6 +20,24 @@ jimport('joomla.plugin.plugin');
  * @subpackage	Plugins
  */
 class plgContentCrowdFundingAdminMail extends JPlugin {
+    
+    protected   $log;
+    protected   $logFile = "plg_content_adminmail.php";
+    
+    public function __construct(&$subject, $config = array()) {
+    
+        parent::__construct($subject, $config);
+        
+        // Create log object
+        $file = JPath::clean(JFactory::getApplication()->getCfg("log_path") .DIRECTORY_SEPARATOR. $this->logFile);
+    
+        $this->log = new CrowdFundingLog();
+        $this->log->addWriter(new CrowdFundingLogWriterDatabase(JFactory::getDbo()));
+        $this->log->addWriter(new CrowdFundingLogWriterFile($file));
+    
+        // Load language
+        $this->loadLanguage();
+    }
     
     public function onContentChangeState($context, $ids, $state) {
         
@@ -35,22 +54,14 @@ class plgContentCrowdFundingAdminMail extends JPlugin {
         
         // Check for enabled option for sending mail 
         // when user publish a project.
-        if(!$this->params->get("send_when_published")) {
+        $emailId = $this->params->get("send_when_published", 0);
+        if(!$emailId) {
             return true;
         }
 
-        jimport("crowdfunding.constants");
-        
         JArrayHelper::toInteger($ids);
         
         if(!empty($ids) AND $state == CrowdFundingConstants::PUBLISHED) {
-            
-            $this->loadLanguage();
-            
-            $app      = JFactory::getApplication();
-            
-            $siteName = $app->getCfg("sitename");
-            $mailer   = JFactory::getMailer();
             
             $projects = $this->getProjectsData($ids);
             
@@ -58,18 +69,21 @@ class plgContentCrowdFundingAdminMail extends JPlugin {
                 return false;
             }
             
+            // Load class CrowdFundingEmail.
+            jimport("crowdfunding.email");
+            
             foreach($projects as $project) {
                 
-                // Send email to user
-                $subject = JText::sprintf("PLG_CONTENT_CROWDFUNDINGADMINMAIL_MAIL_MSG_PROJECT_INFORMATION", $project->title);
-                $body    = JText::sprintf("PLG_CONTENT_CROWDFUNDINGADMINMAIL_MAIL_MSG_PROJECT_PUBLISHED", $app->getCfg("fromname"), $project->title, JUri::root(), $siteName);
+                // Send email to the administrator.
+                $return = $this->sendMails($project, $emailId);
                 
-                $return  = $mailer->sendMail($app->getCfg("mailfrom"), $app->getCfg("fromname"), $app->getCfg("mailfrom"), $subject, $body, CrowdFundingConstants::MAIL_MODE_HTML);
-                
-                // Check for an error.
+                // Check for error.
                 if ($return !== true) {
-                    $error = JText::_("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_MAIL_SENDING_USER");
-                    JLog::add($error);
+                    
+                    $this->log->add(
+                        JText::_("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_MAIL_SENDING_USER"),
+                        "PLG_CONTENT_ADMIN_EMAIL_ERROR"
+                    );
                     return false;
                 }
                 
@@ -104,35 +118,30 @@ class plgContentCrowdFundingAdminMail extends JPlugin {
         
         // Check for enabled option for sending mail 
         // when user create a project.
-        if(!$this->params->get("send_when_create")) {
+        $emailId = $this->params->get("send_when_create", 0);
+        if(!$emailId) {
             return true;
         }
         
-        jimport("crowdfunding.constants");
-        
         if(!empty($project->id) AND $isNew) {
             
-            $this->loadLanguage();
-            
-            $app      = JFactory::getApplication();
             $user     = JFactory::getUser();
             
-            $siteName = $app->getCfg("sitename");
-            $mailer   = JFactory::getMailer();
-                
-            // Send email to administrator
-            $subject = JText::sprintf("PLG_CONTENT_CROWDFUNDINGADMINMAIL_MAIL_MSG_PROJECT_INFORMATION", $project->title);
-            $body    = JText::sprintf("PLG_CONTENT_CROWDFUNDINGADMINMAIL_MAIL_MSG_PROJECT_CREATED", $app->getCfg("fromname"), $user->name, $project->title, JUri::root(), $siteName);
+            // Load class CrowdFundingEmail.
+            jimport("crowdfunding.email");
             
-            $return  = $mailer->sendMail($app->getCfg("mailfrom"), $app->getCfg("fromname"), $app->getCfg("mailfrom"), $subject, $body, CrowdFundingConstants::MAIL_MODE_HTML);
+            // Send email to the administrator.
+            $return = $this->sendMails($project, $emailId);
             
-            // Check for an error.
+            // Check for error.
             if ($return !== true) {
-                $error = JText::_("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_MAIL_SENDING_USER");
-                JLog::add($error);
+                
+                $this->log->add(
+                    JText::_("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_MAIL_SENDING_USER"),
+                    "PLG_CONTENT_ADMIN_EMAIL_ERROR"
+                );
                 return false;
             }
-                
             
         }
         
@@ -151,9 +160,13 @@ class plgContentCrowdFundingAdminMail extends JPlugin {
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
         
+        $query->select("a.title");
+        $query->select($query->concatenate(array("a.id", "a.alias"), "-") . " AS slug");
+        $query->select($query->concatenate(array("b.id", "b.alias"), "-") . " AS catslug");
+        
         $query
-            ->select("a.title")
-            ->from($db->quoteName("#__crowdf_projects") . " AS a")
+            ->from($db->quoteName("#__crowdf_projects", "a"))
+            ->leftJoin($db->quoteName("#__categories", "b") . " ON a.catid = b.id")
             ->where("a.id IN (". implode(",", $ids). ")");
         
         $db->setQuery($query);
@@ -163,5 +176,69 @@ class plgContentCrowdFundingAdminMail extends JPlugin {
             $results = array();
         }
         return $results;
+    }
+    
+    protected function sendMails($project, $emailId) {
+    
+        $app = JFactory::getApplication();
+        /** @var $app JSite **/
+    
+        // Get website
+        $uri     = JUri::getInstance();
+        $website = $uri->toString(array("scheme", "host"));
+    
+        $emailMode  = $this->params->get("email_mode", "plain");
+    
+        // Prepare data for parsing
+        $data = array(
+            "site_name"         => $app->getCfg("sitename"),
+            "site_url"          => JUri::root(),
+            "item_title"        => $project->title,
+            "item_url"          => $website.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($project->slug, $project->catslug)),
+        );
+    
+        // Send mail to the administrator
+        if(!empty($emailId)) {
+    
+            $table    = new CrowdFundingTableEmail(JFactory::getDbo());
+            $email    = new CrowdFundingEmail();
+            $email->setTable($table);
+            $email->load($emailId);
+    
+            if(!$email->getSenderName()) {
+                $email->setSenderName($app->getCfg("fromname"));
+            }
+            if(!$email->getSenderEmail()) {
+                $email->setSenderEmail($app->getCfg("mailfrom"));
+            }
+    
+            $recipientName = $email->getSenderName();
+            $recipientMail = $email->getSenderEmail();
+    
+            // Prepare data for parsing
+            $data["sender_name"]     =  $email->getSenderName();
+            $data["sender_email"]    =  $email->getSenderEmail();
+            $data["recipient_name"]  =  $recipientName;
+            $data["recipient_email"] =  $recipientMail;
+    
+            $email->parse($data);
+            $subject    = $email->getSubject();
+            $body       = $email->getBody($emailMode);
+    
+            $mailer  = JFactory::getMailer();
+            if(strcmp("html", $emailMode) == 0) { // Send as HTML message
+                
+                $result  = $mailer->sendMail($email->getSenderEmail(), $email->getSenderName(), $recipientMail, $subject, $body, CrowdFundingEmail::MAIL_MODE_HTML);
+    
+            } else { // Send as plain text.
+                
+                $result  = $mailer->sendMail($email->getSenderEmail(), $email->getSenderName(), $recipientMail, $subject, $body, CrowdFundingEmail::MAIL_MODE_PLAIN);
+    
+            }
+    
+            return $result;
+    
+        }
+    
     }
 }

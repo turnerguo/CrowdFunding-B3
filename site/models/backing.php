@@ -101,7 +101,7 @@ class CrowdFundingModelBacking extends JModelLegacy {
                 	"a.id, a.title, a.short_desc, a.image, " . 
                 	"a.funded, a.goal, a.pitch_video, a.pitch_image, " . 
                 	"a.funding_start, a.funding_end, a.funding_days, " .  
-                	"a.funding_type, a.user_id, " . 
+                	"a.funding_type, a.user_id,  a.type_id, " . 
                 	"b.name AS user_name, " .
                 	$query->concatenate(array("a.id", "a.alias"), "-") . ' AS slug, ' .
                 	$query->concatenate(array("c.id", "c.alias"), "-") . ' AS catslug' 

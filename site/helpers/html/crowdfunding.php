@@ -13,8 +13,8 @@ defined('_JEXEC') or die;
 /**
  * CrowdFunding Html Helper
  *
- * @package		ITPrism Components
- * @subpackage	CrowdFunding
+ * @package		CrowdFunding
+ * @subpackage	Components
  * @since		1.6
  */
 abstract class JHtmlCrowdFunding {

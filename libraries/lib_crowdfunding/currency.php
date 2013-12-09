@@ -30,8 +30,9 @@ class CrowdFundingCurrency implements CrowdFundingInterfaceTable {
     
     public function __construct($id = 0) {
         
+        $this->table = new CrowdFundingTableCurrency(JFactory::getDbo());
+        
         if(!empty($id)) {
-            $this->table = new CrowdFundingTableCurrency(JFactory::getDbo());
             $this->table->load($id);
         }
     }
@@ -46,7 +47,7 @@ class CrowdFundingCurrency implements CrowdFundingInterfaceTable {
         return self::$instances[$id];
     }
     
-    public function load($keys = null, $reset = true) {
+    public function load($keys, $reset = true) {
         $this->table->load($keys, $reset);
     }
     

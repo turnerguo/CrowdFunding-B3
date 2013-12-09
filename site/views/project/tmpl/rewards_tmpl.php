@@ -32,7 +32,7 @@ defined('_JEXEC') or die;
         <input name="rewards[][number]" id="reward_number_d" type="text" class="input-xlarge" value="" />
         
         <label for="reward_delivery_d" id="reward_delivery_title_d"><?php echo JText::_("COM_CROWDFUNDING_REWARDS_ESTIMATED_DELIVERY");?></label>
-        <?php echo JHtml::_('calendar', "", "rewards[][delivery]", "reward_delivery_d");?>
+        <?php echo JHtml::_('calendar', "", "rewards[][delivery]", "reward_delivery_d", $this->dateFormatCalendar);?>
         
         <input name="rewards[][id]" type="hidden" value="" id="reward_id_d" />
         <?php if(!$this->debugMode) {?>

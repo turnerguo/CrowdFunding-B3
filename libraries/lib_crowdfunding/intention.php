@@ -33,7 +33,7 @@ class CrowdFundingIntention implements CrowdFundingInterfaceTable {
         $this->table->bind($src, $ignore);
     }
     
-    public function load($keys = null, $reset = true) {
+    public function load($keys, $reset = true) {
         $this->table->load($keys, $reset);
     }
 
@@ -81,7 +81,8 @@ class CrowdFundingIntention implements CrowdFundingInterfaceTable {
         return (!$this->table->auser_id) ? false : true;
     }
     
-    public function getProperties() {
-        return $this->table->getProperties();
+    public function getProperties($public = true) {
+        return $this->table->getProperties($public);
     }
+    
 }

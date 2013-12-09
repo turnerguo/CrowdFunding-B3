@@ -17,7 +17,7 @@ class CrowdFundingRewards implements Iterator, Countable, ArrayAccess {
     public $rewards = array();
     
     /**
-     * Database driver
+     * Database driver.
      * 
      * @var JDatabaseMySQLi
      */
@@ -38,7 +38,7 @@ class CrowdFundingRewards implements Iterator, Countable, ArrayAccess {
         $this->db = JFactory::getDbo();
         
         if(!empty($id)) {
-            $this->rewards = $this->load($id, $options);
+            $this->load($id, $options);
         }
     }
 
@@ -75,7 +75,7 @@ class CrowdFundingRewards implements Iterator, Countable, ArrayAccess {
             $results = array();
         }
         
-        return $results;
+        $this->rewards = $results;
     }
     
     public function rewind() {

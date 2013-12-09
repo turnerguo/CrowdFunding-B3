@@ -55,6 +55,11 @@ class CrowdFundingControllerExport extends JControllerLegacy {
                     $fileName    = "countries.xml";
                     break;
                     
+                case "states":
+                    $output      = $model->getStates();
+                    $fileName    = "states.xml";
+                    break;
+                    
                 default: // Error
                     $output      = "";
                     $fileName    = "error.xml";

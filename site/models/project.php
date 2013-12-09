@@ -167,6 +167,7 @@ class CrowdFundingModelProject extends JModelForm {
         $shortDesc   = JArrayHelper::getValue($data, "short_desc");
         $catId       = JArrayHelper::getValue($data, "catid");
         $location    = JArrayHelper::getValue($data, "location");
+        $typeId      = JArrayHelper::getValue($data, "type_id");
         
         // Load a record from the database
         $row = $this->getTable();
@@ -182,28 +183,38 @@ class CrowdFundingModelProject extends JModelForm {
         $row->set("short_desc",        $shortDesc);
         $row->set("catid",             $catId);
         $row->set("location",          $location);
+        $row->set("type_id",           $typeId);
         
         $this->prepareTable($row, $data);
         
         $row->store();
         
+        // Load the data and initialzie some parameters.
+        if($isNew) {
+            $row->load();
+        }
+        
         // Trigger the event
         
+        // Get properties
+        $project = $row->getProperties();
+        $project = JArrayHelper::toObject($project);
         
-        $context = $this->option.'.'.$this->name;
+        // Generate context
+        $context = $this->option.'.'.$this->getName();
         
         // Include the content plugins for the change of state event.
         $dispatcher = JEventDispatcher::getInstance();
         JPluginHelper::importPlugin('content');
          
         // Trigger the onContentAfterSave event.
-        $results    = $dispatcher->trigger("onContentAfterSave", array($context, &$row, $isNew));
+        $results    = $dispatcher->trigger("onContentAfterSave", array($context, &$project, $isNew));
         
         if (in_array(false, $results, true)) {
             throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_DURING_PROJECT_CREATING_PROCESS"), ITPrismErrors::CODE_WARNING);
         }
         
-        return $row->id;
+        return $project->id;
         
     }
     
@@ -301,15 +312,12 @@ class CrowdFundingModelProject extends JModelForm {
         
         $names         = array("image", "small", "square");
         
-        $app = JFactory::getApplication();
-        /** @var $app JSite **/
-        
         $uploadedFile  = JArrayHelper::getValue($image, 'tmp_name');
         $uploadedName  = JArrayHelper::getValue($image, 'name');
         
         // Load parameters.
-        $params        = JComponentHelper::getParams($this->option);
-        $destFolder    = $params->get("images_directory", "images/crowdfunding");
+        $params          = JComponentHelper::getParams($this->option);
+        $destFolder      = JPath::clean(JPATH_ROOT.DIRECTORY_SEPARATOR.$params->get("images_directory", "images/crowdfunding"));
         
         $tmpFolder       = $app->getCfg("tmp_path");
         
@@ -685,7 +693,7 @@ class CrowdFundingModelProject extends JModelForm {
                 ->set( $db->quoteName("project_id") ."=". (int)$projectId);
     
             $db->setQuery($query);
-            $db->query();
+            $db->execute();
     
             $lastId = $db->insertid();
     
@@ -739,7 +747,7 @@ class CrowdFundingModelProject extends JModelForm {
         $query = $db->getQuery(true);
         $query
             ->select("a.image, a.thumb")
-            ->from($db->quoteName("#__crowdf_images") .' AS a')
+            ->from($db->quoteName("#__crowdf_images", "a"))
             ->where("a.id = " . (int)$id );
     
         $db->setQuery($query);
@@ -748,14 +756,14 @@ class CrowdFundingModelProject extends JModelForm {
         if(!empty($row)){
     
             // Remove the image from the filesystem
-            $file = $imagesFolder.DIRECTORY_SEPARATOR.$row->image;
+            $file = JPath::clean($imagesFolder.DIRECTORY_SEPARATOR.$row->image);
             
             if(is_file($file)) {
                 JFile::delete($file);
             }
     
             // Remove the thumbnail from the filesystem
-            $file = $imagesFolder.DIRECTORY_SEPARATOR. $row->thumb;
+            $file = JPath::clean($imagesFolder.DIRECTORY_SEPARATOR. $row->thumb);
             if(is_file($file)) {
                 JFile::delete($file);
             }
@@ -767,7 +775,7 @@ class CrowdFundingModelProject extends JModelForm {
                 ->where($db->quoteName("id") ." = ". (int)$id );
     
             $db->setQuery($query);
-            $db->query();
+            $db->execute();
         }
     
     }

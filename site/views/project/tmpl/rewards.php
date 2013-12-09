@@ -43,6 +43,10 @@ defined('_JEXEC') or die;
         <button class="btn btn-large btn-block" type="button" id="cf_add_new_reward"><?php echo JText::_("COM_CROWDFUNDING_REWARDS_ADD_REWARD");?></button>
         <?php }?>
         
+        <?php if(!$this->rewardsEnabled) {?>
+            <p class="sticky"><?php echo JText::_("COM_CROWDFUNDING_NOTE_REWARDS_CREATING_NOT_ALLOWED");?></p>
+        <?php }?>
+        
         <div class="btn-group cf-rewards-submit-btn">
             <button class="btn" <?php echo $this->disabledButton;?>>
                 <i class="icon-ok icon-white"></i>
@@ -66,7 +70,6 @@ defined('_JEXEC') or die;
     </form>
 </div>
 <?php echo $this->loadTemplate("tmpl");?>
-<div class="clearfix">&nbsp;</div>
 <?php echo $this->version->backlink;?>
 
 <?php if(empty($this->item->published)) {?>

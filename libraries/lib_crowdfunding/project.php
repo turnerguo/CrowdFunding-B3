@@ -21,6 +21,7 @@ JLoader::register("CrowdFundingInterfaceTable", JPATH_LIBRARIES .DIRECTORY_SEPAR
 class CrowdFundingProject implements CrowdFundingInterfaceTable {
     
     protected $rewards = null;
+    protected $type    = null;
     
     protected static $instances = array();
     
@@ -43,7 +44,7 @@ class CrowdFundingProject implements CrowdFundingInterfaceTable {
         return self::$instances[$id];
     }
     
-    public function load($keys = null, $reset = true) {
+    public function load($keys, $reset = true) {
         $this->table->load($keys, $reset);
     }
     
@@ -140,15 +141,46 @@ class CrowdFundingProject implements CrowdFundingInterfaceTable {
     public function getImage() {
         return $this->table->image;
     }
+    
+    public function getSquareImage() {
+        return $this->table->image_square;
+    }
+    
+    public function getSmallImage() {
+        return $this->table->image_small;
+    }
+    
     public function getShortDesc() {
         return $this->table->short_desc;
     }
     
-    public function getProperties() {
-        return $this->table->getProperties();
+    public function getProperties($public = true) {
+        return $this->table->getProperties($public);
     }
     
     public function isPublished() {
         return (!$this->table->published) ? false : true;
+    }
+    
+    /**
+     * Load and return project type.
+     * 
+     * @return CrowdFundingType
+     */
+    public function getType() {
+    
+        if(is_null($this->type) AND !empty($this->table->type_id)) {
+            
+            jimport("crowdfunding.type");
+            $this->type = new CrowdFundingType($this->table->type_id);
+            $this->type->setTable(new CrowdFundingTableType(JFactory::getDbo()));
+            $this->type->load($this->table->type_id);
+            
+            if(!$this->type->getId()) { 
+                $this->type = null;
+            }
+        }
+    
+        return $this->type;
     }
 }

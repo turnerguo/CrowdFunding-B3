@@ -73,5 +73,4 @@ defined('_JEXEC') or die;?>
         <?php echo JHtml::_('form.token'); ?>
     </form>
 </div>
-<div class="clearfix">&nbsp;</div>
 <?php echo $this->version->backlink;?>

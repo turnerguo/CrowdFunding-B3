@@ -47,7 +47,7 @@ defined('_JEXEC') or die;
 	<th width="10%" class="center hidden-phone">
 	     <?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_END_DATE', 'a.funding_end', $this->listDirn, $this->listOrder); ?>
 	</th>
-	<th width="5%" class="center hidden-phone"><?php echo JText::_("COM_CROWDFUNDING_REWARDS");?></th>
+	<th width="10%" class="center hidden-phone"><?php echo JText::_("COM_CROWDFUNDING_TYPE");?></th>
     <th width="3%" class="center nowrap hidden-phone"><?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ID', 'a.id', $this->listDirn, $this->listOrder); ?></th>
 </tr>
 	  

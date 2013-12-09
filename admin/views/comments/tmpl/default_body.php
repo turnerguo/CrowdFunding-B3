@@ -19,15 +19,15 @@ defined('_JEXEC') or die;
             <?php echo JHtml::_('jgrid.published', $item->published, $i, "comments."); ?>
         </td>
 		<td>
-    		<a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=comment&layout=edit&id=".$item->id);?>" >
-    		<?php echo JHTML::_('string.truncate', $item->comment, 128);?>
+    		<a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=comment&layout=edit&id=".(int)$item->id);?>" >
+    		<?php echo JHtml::_('string.truncate', $this->escape($item->comment), 128);?>
     		</a>
 		</td>
 		<td class="center hidden-phone">
-		    <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=project&layout=edit&id=".$item->project_id);?>"><?php echo $item->project; ?></a>
+		    <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=project&layout=edit&id=".(int)$item->project_id);?>"><?php echo $this->escape($item->project); ?></a>
 	    </td>
         <td class="center hidden-phone">
-            <?php echo JHTML::_('date', $item->record_date, JText::_('DATE_FORMAT_LC3')); ?>
+            <?php echo JHtml::_('date', $item->record_date, JText::_('DATE_FORMAT_LC3')); ?>
         </td>
         <td class="center hidden-phone">
             <?php echo $item->id;?>

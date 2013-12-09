@@ -55,9 +55,6 @@ class CrowdFundingViewProjects extends JViewLegacy {
         $this->addSidebar();
         $this->setDocument();
         
-        // Include HTML helper
-        JHtml::addIncludePath(JPATH_COMPONENT_SITE.'/helpers/html');
-        
         parent::display($tpl);
     }
     
@@ -136,6 +133,16 @@ class CrowdFundingViewProjects extends JViewLegacy {
             JHtml::_('select.options', JHtml::_('category.options', 'com_crowdfunding'), 'value', 'text', $this->state->get('filter.category_id'))
         );
     
+        jimport("crowdfunding.types");
+        $types        = new CrowdFundingTypes(JFactory::getDbo());
+        $typesOptions = $types->getTypesAsOptions();
+        
+        JHtmlSidebar::addFilter(
+            JText::_('COM_CROWDFUNDING_SELECT_TYPE'),
+            'filter_type_id',
+            JHtml::_('select.options', $typesOptions, 'value', 'text', $this->state->get('filter.type_id'))
+        );
+        
         $this->sidebar = JHtmlSidebar::render();
     
     }
@@ -156,7 +163,13 @@ class CrowdFundingViewProjects extends JViewLegacy {
         JToolbarHelper::custom('projects.disapprove', "ban-circle", "", JText::_("COM_CROWDFUNDING_DISAPPROVE"), false);
         
         JToolbarHelper::divider();
-        JToolbarHelper::trash("projects.trash");
+        
+        if ($this->state->get('filter.state') == -2) {
+            JToolbarHelper::deleteList('', 'projects.delete', 'JTOOLBAR_EMPTY_TRASH');
+        } else {
+            JToolbarHelper::trash('projects.trash');
+        }
+        
         JToolbarHelper::divider();
         JToolbarHelper::custom('projects.backToDashboard', "dashboard", "", JText::_("COM_CROWDFUNDING_DASHBOARD"), false);
         
@@ -177,7 +190,7 @@ class CrowdFundingViewProjects extends JViewLegacy {
 		
 		JHtml::_('formbehavior.chosen', 'select');
 		
-		$this->document->addScript('../media/'.$this->option.'/js/admin/list.js');
+		JHtml::_('itprism.ui.joomla_list');
 		
 	}
     

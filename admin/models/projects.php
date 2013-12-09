@@ -76,6 +76,10 @@ class CrowdFundingModelProjects extends JModelList {
         // Load filter category.
         $value = $this->getUserStateFromRequest($this->context.'.filter.category_id', 'filter_category_id', 0, 'int');
         $this->setState('filter.category_id', $value);
+        
+        // Load filter type.
+        $value = $this->getUserStateFromRequest($this->context.'.filter.type_id', 'filter_type_id', 0, 'int');
+        $this->setState('filter.type_id', $value);
 
         // List state information.
         parent::populateState('a.created', 'asc');
@@ -125,11 +129,13 @@ class CrowdFundingModelProjects extends JModelList {
                 'a.id, a.title, a.goal, a.funded, a.funding_start, a.funding_end, '. 
                 'a.funding_days, a.ordering, a.created, a.catid, ROUND( (a.funded/a.goal) * 100, 1 ) AS funded_percents, '.
                 'a.featured, a.published, a.approved, '.
-                'b.title AS category'
+                'b.title AS category, ' .
+                'c.title AS type'
             )
         );
         $query->from($db->quoteName('#__crowdf_projects').' AS a');
-        $query->innerJoin($db->quoteName('#__categories').' AS b ON a.catid = b.id');
+        $query->leftJoin($db->quoteName('#__categories', 'b').' ON a.catid = b.id');
+        $query->leftJoin($db->quoteName('#__crowdf_types', 'c').' ON a.type_id = c.id');
 
         // Filter by category
         $categoryId = $this->getState('filter.category_id');
@@ -161,6 +167,12 @@ class CrowdFundingModelProjects extends JModelList {
             $query->where('(a.featured IN (0, 1))');
         }
 
+        // Filter by type
+        $typeId = $this->getState('filter.type_id');
+        if (!empty($typeId)) {
+            $query->where('a.type_id = '.(int) $typeId);
+        }
+        
         // Filter by search in title
         $search = $this->getState('filter.search');
         if (!empty($search)) {

@@ -10,8 +10,8 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_comments` (
 
 CREATE TABLE IF NOT EXISTS `#__crowdf_countries` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(128) CHARACTER SET utf8 NOT NULL,
-  `code` char(2) CHARACTER SET utf8 NOT NULL,
+  `name` varchar(128) NOT NULL,
+  `code` char(2) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
@@ -23,6 +23,15 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_currencies` (
   `position` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_crowdf_ccode` (`abbr`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `#__crowdf_emails` (
+  `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+  `subject` varchar(255) NOT NULL,
+  `body` text NOT NULL,
+  `sender_name` varchar(255) DEFAULT NULL,
+  `sender_email` varchar(64) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__crowdf_images` (
@@ -45,7 +54,7 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_intentions` (
   `auser_id` varchar(32) NOT NULL DEFAULT '' COMMENT 'It is a hash ID of an anonymous user.',
   PRIMARY KEY (`id`),
   KEY `idx_cfints_usr_proj` (`user_id`,`project_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__crowdf_locations` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -56,6 +65,15 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_locations` (
   `state_code` char(4) NOT NULL DEFAULT '',
   `timezone` varchar(40) NOT NULL,
   `published` tinyint(3) unsigned NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `#__crowdf_logs` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `data` text,
+  `type` varchar(64) NOT NULL,
+  `record_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
@@ -84,6 +102,7 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_projects` (
   `approved` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `ordering` tinyint(4) unsigned NOT NULL DEFAULT '0',
   `catid` int(11) unsigned NOT NULL DEFAULT '0',
+  `type_id` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `user_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `catid` (`catid`),
@@ -112,7 +131,7 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_transactions` (
   `txn_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `txn_amount` decimal(11,2) unsigned NOT NULL DEFAULT '0.00',
   `txn_currency` varchar(64) NOT NULL DEFAULT '',
-  `txn_status` enum('pending','completed','canceled','refunded') NOT NULL DEFAULT 'pending',
+  `txn_status` enum('pending','completed','canceled','refunded','failed') NOT NULL DEFAULT 'pending',
   `txn_id` varchar(128) DEFAULT NULL,
   `extra_data` varchar(2048) DEFAULT NULL COMMENT 'Additional information about transaction.',
   `project_id` int(10) unsigned NOT NULL,
@@ -121,6 +140,14 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_transactions` (
   `receiver_id` int(10) unsigned NOT NULL COMMENT 'The owner of the project.',
   `service_provider` varchar(32) NOT NULL,
   `reward_state` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `#__crowdf_types` (
+  `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(128) NOT NULL,
+  `description` varchar(512) DEFAULT NULL,
+  `params` text,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 

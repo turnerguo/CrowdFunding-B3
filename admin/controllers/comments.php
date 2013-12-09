@@ -17,7 +17,7 @@ jimport('itprism.controller.admin');
  *
  * @package      CrowdFunding
  * @subpackage   Components
-  */
+ */
 class CrowdFundingControllerComments extends ITPrismControllerAdmin {
     
     /**

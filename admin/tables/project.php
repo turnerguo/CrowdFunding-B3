@@ -17,7 +17,7 @@ class CrowdFundingTableProject extends JTable {
     protected $catslug        = "";
     
 	public function __construct( $db ) {
-        parent::__construct( '#__crowdf_projects', 'id', $db );
+        parent::__construct('#__crowdf_projects', 'id', $db);
     }
     
     /**

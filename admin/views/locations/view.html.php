@@ -112,7 +112,10 @@ class CrowdFundingViewLocations extends JViewLegacy {
 		
 		// Export
 		$link = JRoute::_('index.php?option=com_crowdfunding&task=export.download&format=raw&type=locations');
-		$bar->appendButton('Link', 'download', JText::_("COM_CROWDFUNDING_EXPORT"), $link);
+		$bar->appendButton('Link', 'download', JText::_("COM_CROWDFUNDING_EXPORT_LOCATIONS"), $link);
+		
+		$link = JRoute::_('index.php?option=com_crowdfunding&task=export.download&format=raw&type=states');
+		$bar->appendButton('Link', 'download', JText::_("COM_CROWDFUNDING_EXPORT_STATES"), $link);
 		
         JToolbarHelper::divider();
         JToolbarHelper::publishList("locations.publish");
@@ -139,8 +142,7 @@ class CrowdFundingViewLocations extends JViewLegacy {
 		
 		JHtml::_('formbehavior.chosen', 'select');
 		
-		$this->document->addScript('../media/'.$this->option.'/js/admin/list.js');
-		
+		JHtml::_('itprism.ui.joomla_list');
 	}
 
 }

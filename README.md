@@ -1,6 +1,6 @@
 CrowdFunding for Joomla! 
 ==========================
-( Version 1.4.3 )
+( Version 1.5 )
 - - -
 
 CrowdFunding is a platform that provides functionality for creating collective funding websites, powered by Joomla!
@@ -8,21 +8,39 @@ CrowdFunding is a platform that provides functionality for creating collective f
 Changelog
 -----------
 
+###v1.5
+
+* Added section where the administrator will be able to prepare emails for sending in specific cases.
+* Added new options
+    * date format
+    * display creator
+* Added functionality for downloading log files.
+* Added CSS classes "cf-project-active" and "cf-project-completed" on views Discover and Featured. They are based on current state (days left) of the project. Designers can use them to customize projects easily, on those pages.
+* Added project types.  
+* Integrated with EasySocial.
+* Improved
+
+###v1.4.4
+
+* Added Logs Manager.
+* Added functionality for deleting projects if they have not been funded.
+* Improved Locations. Now, you can export states.
+* Fixed some issues.
+
 ###v1.4.3
 
 * Added wizard type for the payment process - "Three Steps" and "Four Steps".
 * Fixed an issue when a project is saved without category. 
-* Improved some language strings
+* Improved some language strings.
 
 ###v1.4.2
 
-* Fixed SQL issue.
+* Fixed collation of some columns in table "countries". 
 
 ###v1.4.1
 
 * Fixed some issues.
-* Improved.
-
+* Improved
 
 ###v1.4
 

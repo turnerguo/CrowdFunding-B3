@@ -58,7 +58,7 @@ class CrowdFundingModelDiscover extends JModelList {
         $this->setState('params', $params);
         
         // Filter by country
-        $value      = $app->input->get("filter_country");
+        $value      = $app->input->get("filter_country", "", "cmd");
         $this->setState($this->context.'.filter_country', $value);
         
         // Filter by phrase
@@ -66,8 +66,12 @@ class CrowdFundingModelDiscover extends JModelList {
         $this->setState($this->context.'.filter_phrase', $value);
         
         // Filter by filter type
-        $value      = $app->input->get("filter_fundingtype");
+        $value      = $app->input->get("filter_fundingtype", "", "cmd");
         $this->setState($this->context.'.filter_fundingtype', $value);
+        
+        // Filter by filter type
+        $value      = $app->input->get("filter_projecttype", 0, "uint");
+        $this->setState($this->context.'.filter_projecttype', $value);
         
         // Set category id
         $catId      = $app->input->get("id", 0, "uint");
@@ -108,6 +112,10 @@ class CrowdFundingModelDiscover extends JModelList {
         
         // Compile the store id.
         $id.= ':' . $this->getState($this->context.'.category_id');
+        $id.= ':' . $this->getState($this->context.'.filter_country');
+        $id.= ':' . $this->getState($this->context.'.filter_fundingtype');
+        $id.= ':' . $this->getState($this->context.'.filter_projecttype');
+        $id.= ':' . $this->getState($this->context.'.filter_phrase');
 
         return parent::getStoreId($id);
     }
@@ -145,6 +153,12 @@ class CrowdFundingModelDiscover extends JModelList {
         $categoryId = $this->getState($this->context.".category_id", 0);
         if(!empty($categoryId)) {
             $query->where('a.catid = '.(int)$categoryId);
+        }
+        
+        // Filter by project type
+        $projectTypeId = $this->getState($this->context.".filter_projecttype", 0);
+        if(!empty($projectTypeId)) {
+            $query->where('a.type_id = '.(int)$projectTypeId);
         }
         
         // Filter by country

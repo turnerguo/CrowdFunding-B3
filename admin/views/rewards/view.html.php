@@ -49,9 +49,6 @@ class CrowdFundingViewRewards extends JViewLegacy {
         $this->addSidebar();
         $this->setDocument();
         
-        // Include HTML helper
-        JHtml::addIncludePath(JPATH_COMPONENT_SITE.'/helpers/html');
-        
         parent::display($tpl);
     }
     
@@ -138,8 +135,7 @@ class CrowdFundingViewRewards extends JViewLegacy {
 		
 		JHtml::_('formbehavior.chosen', 'select');
 		
-		$this->document->addScript('../media/'.$this->option.'/js/admin/list.js');
-		
+		JHtml::_('itprism.ui.joomla_list');
 	}
     
 }

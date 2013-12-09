@@ -50,10 +50,6 @@ class CrowdFundingViewDetails extends JViewLegacy {
         // Get rewards of the project
         $this->imageFolder    = $this->params->get("images_directory", "images/crowdfunding");
         
-        // Include HTML helper
-        JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
-        JHtml::addIncludePath(ITPRISM_PATH_LIBRARY.'/ui/helpers');
-        
         // Prepare the link that points to project page
         $host  = JUri::getInstance()->toString(array("scheme", "host"));
         $this->item->link        = $host.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug));
@@ -64,7 +60,7 @@ class CrowdFundingViewDetails extends JViewLegacy {
         // Get the current screen
         $this->screen = $app->input->getCmd("screen", "home");
         
-        $this->version = new CrowdFundingVersion();
+        $this->version    = new CrowdFundingVersion();
         
         $this->prepareDocument();
         
@@ -213,6 +209,12 @@ class CrowdFundingViewDetails extends JViewLegacy {
         $pathway->addItem($currentBreadcrumb, '');
         
         // Add styles
+        
+        // Load bootstrap media styles
+        if($this->params->get("bootstrap_mediacomponent", false)) {
+            JHtml::_("itprism.ui.bootstrap_mediacomponent");
+        }
+        
         $this->document->addStyleSheet( 'media/'.$this->option.'/css/site/style.css');
         
         // Add scripts

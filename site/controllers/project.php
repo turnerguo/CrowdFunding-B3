@@ -43,10 +43,10 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
  
         $userId = JFactory::getUser()->id;
         if(!$userId) {
-            $redirectData = array(
+            $redirectOptions = array(
                 "force_direction" => "index.php?option=com_users&view=login"
             );
-            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), $redirectData);
+            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), $redirectOptions);
             return;
         }
         
@@ -58,13 +58,16 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
         $itemId  = JArrayHelper::getValue($data, "id");
         $terms   = JArrayHelper::getValue($data, "terms", false, "bool");
         
-        $redirectData = array(
+        $redirectOptions = array(
             "view"   => "project",
             "id"     => $itemId
         );
         
         $model   = $this->getModel();
         /** @var $model CrowdFundingModelProject **/
+        
+        // Get component parameters
+        $params  = JComponentHelper::getParams($this->option);
         
         $form    = $model->getForm($data, false);
         /** @var $form JForm **/
@@ -78,7 +81,7 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
         
         // Check for errors.
         if($validData === false){
-            $this->displayNotice($form->getErrors(), $redirectData);
+            $this->displayNotice($form->getErrors(), $redirectOptions);
             return;
         }
         
@@ -87,8 +90,8 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
             $userId = JFactory::getUser()->id;
         
             if(!$model->isOwner($itemId, $userId)){
-                $redirectData = array("view" => "discover");
-                $this->displayWarning(JText::_('COM_CROWDFUNDING_INVALID_ITEM'), $redirectData);
+                $redirectOptions = array("view" => "discover");
+                $this->displayWarning(JText::_('COM_CROWDFUNDING_INVALID_ITEM'), $redirectOptions);
                 return;
             }
             
@@ -96,14 +99,29 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
         
         } else { // Verify terms of use during the process of creating a project.
         
-            $params = JComponentHelper::getParams($this->option);
-            
             if($params->get("project_terms", 0) AND !$terms) {
-                $redirectData = array("view" => "project");
-                $this->displayWarning(JText::_("COM_CROWDFUNDING_ERROR_TERMS_NOT_ACCEPTED"), $redirectData);
+                $redirectOptions = array("view" => "project");
+                $this->displayWarning(JText::_("COM_CROWDFUNDING_ERROR_TERMS_NOT_ACCEPTED"), $redirectOptions);
                 return;
             }
         
+        }
+        
+        // Include the content plugins for validate content.
+        $dispatcher = JEventDispatcher::getInstance();
+        JPluginHelper::importPlugin('content');
+        
+        // Trigger the onContentValidate event.
+        $context    = $this->option.".basic.validate";
+        $results    = $dispatcher->trigger("onContentValidate", array($context, &$validData, $params));
+        
+        foreach($results as $result) {
+            
+            if ($result["success"] == false) {
+                $this->displayWarning(JArrayHelper::getValue($result, "message"), $redirectOptions);
+                return;
+            }
+            
         }
         
         try {
@@ -130,7 +148,7 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
             
             $itemId = $model->save($validData);
             
-            $redirectData["id"] = $itemId;
+            $redirectOptions["id"] = $itemId;
             
         } catch (Exception $e) {
             
@@ -139,12 +157,12 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
             switch($code) {
                 
                 case ITPrismErrors::CODE_WARNING:
-                    $this->displayWarning($e->getMessage(), $redirectData);
+                    $this->displayWarning($e->getMessage(), $redirectOptions);
                     return;
                 break;
                 
                 case ITPrismErrors::CODE_HIDDEN_WARNING:
-                    $this->displayWarning(JText::_("COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED"), $redirectData);
+                    $this->displayWarning(JText::_("COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED"), $redirectOptions);
                     return;
                 break;
                 
@@ -158,13 +176,13 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
         }
         
         // Redirect to next page
-        $redirectData = array(
+        $redirectOptions = array(
             "view"   => "project",
             "layout" => "funding",
             "id"     => $itemId
         );
         
-        $this->displayMessage(JText::_("COM_CROWDFUNDING_PROJECT_SUCCESSFULY_SAVED"), $redirectData);
+        $this->displayMessage(JText::_("COM_CROWDFUNDING_PROJECT_SUCCESSFULY_SAVED"), $redirectOptions);
 			
     }
     
@@ -183,22 +201,22 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
         
         // Check for registered user
         if(!$userId) {
-            $redirectData = array(
+            $redirectOptions = array(
                 "force_direction" => "index.php?option=com_users&view=login"
             );
-            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), $redirectData);
+            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), $redirectOptions);
             return;
         }
         
         // Get item id
         $itemId  = $app->input->get->getInt("id");
-        $redirectData = array(
+        $redirectOptions = array(
             "view" => "project"
         );
         
         // Check for registered user
         if(!$itemId) {
-            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_INVALID_IMAGE'), $redirectData);
+            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_INVALID_IMAGE'), $redirectOptions);
             return;
         }
         
@@ -212,8 +230,8 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
             throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }
         
-        $redirectData["id"] = $itemId;
-        $this->displayMessage(JText::_('COM_CROWDFUNDING_IMAGE_DELETED'), $redirectData);
+        $redirectOptions["id"] = $itemId;
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_IMAGE_DELETED'), $redirectOptions);
         
     }
     

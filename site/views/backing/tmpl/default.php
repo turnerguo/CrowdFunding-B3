@@ -8,7 +8,8 @@
  */
 
 // no direct access
-defined('_JEXEC') or die;?>
+defined('_JEXEC') or die;
+?>
 <div class="cfbacking<?php echo $this->params->get("pageclass_sfx"); ?>">
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
     <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
@@ -51,6 +52,7 @@ defined('_JEXEC') or die;?>
                 </fieldset>
             </form>
 			
+			<?php if($this->rewardsEnabled) {?>
 			<div class="cfrewards">
 			    <div class="reward_title pull-center"><?php echo JText::_("COM_CROWDFUNDING_REWARDS");?></div>
 			
@@ -78,6 +80,7 @@ defined('_JEXEC') or die;?>
             	</div>
             	<?php }?>
             </div>
+            <?php } ?>
     	</div>
     	
 	</div>

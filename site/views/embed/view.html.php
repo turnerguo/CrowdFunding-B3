@@ -43,9 +43,6 @@ class CrowdFundingViewEmbed extends JViewLegacy {
             return;
         }
         
-        // Include HTML helper
-        JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
-        
         // Get currency
         jimport("crowdfunding.currency");
         $currencyId           = $this->params->get("project_currency");
@@ -61,6 +58,8 @@ class CrowdFundingViewEmbed extends JViewLegacy {
         
         // Set a link to image
         $this->item->link_image  = $host."/".$this->imageFolder."/".$this->item->image;
+        
+        $this->version    = new CrowdFundingVersion();
         
         $layout = $this->getLayout();
         switch($layout) {
@@ -82,8 +81,6 @@ class CrowdFundingViewEmbed extends JViewLegacy {
                 break;
             
         }
-        
-        $this->version = new CrowdFundingVersion();
         
 		$this->prepareDocument();
 		
