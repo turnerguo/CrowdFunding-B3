@@ -61,6 +61,9 @@ class CrowdFundingViewProjects extends JView {
             JHtml::_("select.option", 0, JText::_("COM_CROWDFUNDING_NOT_FEATURED")),
         );
         
+        jimport("crowdfunding.types");
+        $types              = new CrowdFundingTypes(JFactory::getDbo());
+        $this->typesOptions = $types->getTypesAsOptions();
         
         // Add submenu
         CrowdFundingHelper::addSubmenu($this->getName());
@@ -68,9 +71,6 @@ class CrowdFundingViewProjects extends JView {
         // Prepare actions
         $this->addToolbar();
         $this->setDocument();
-        
-        // Include HTML helper
-        JHtml::addIncludePath(JPATH_COMPONENT_SITE.'/helpers/html');
         
         parent::display($tpl);
     }

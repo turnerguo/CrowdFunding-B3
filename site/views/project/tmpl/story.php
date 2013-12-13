@@ -16,9 +16,11 @@ defined('_JEXEC') or die;
         
         <div class="span12">
         
-            <?php echo $this->form->getLabel('pitch_video'); ?>
-            <?php echo $this->form->getInput('pitch_video'); ?>
-            <span class="help-block"><?php echo JText::_("COM_CROWDFUNDING_FIELD_FUNDING_VIDEO_HELP_BLOCK");?></span>
+            <div class="control-group">
+                <div class="control-label"><?php echo $this->form->getLabel('pitch_video'); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('pitch_video'); ?></div>
+				<span class="help-block"><?php echo JText::_("COM_CROWDFUNDING_FIELD_FUNDING_VIDEO_HELP_BLOCK");?></span>
+            </div>
             
             <?php echo $this->form->getLabel('pitch_image'); ?>
             <div class="fileupload fileupload-new" data-provides="fileupload">
@@ -67,5 +69,4 @@ defined('_JEXEC') or die;
         </div>
     </form>
 </div>
-<div class="clearfix">&nbsp;</div>
 <?php echo $this->version->backlink;?>

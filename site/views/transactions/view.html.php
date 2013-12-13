@@ -48,10 +48,9 @@ class CrowdFundingViewTransactions extends JView {
         $this->userId     = JFactory::getUser()->id;
         
         // Helpers
-		JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
 		JLoader::register('JHtmlString', JPATH_LIBRARIES.'/joomla/html/html/string.php');
 		
-		$this->version = new CrowdFundingVersion();
+		$this->version    = new CrowdFundingVersion();
 		
         $this->prepareDocument();
                 

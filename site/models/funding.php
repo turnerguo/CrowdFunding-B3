@@ -26,11 +26,18 @@ class CrowdFundingModelFunding extends CrowdFundingModelProject {
      * @since	1.6
      */
     public function getForm($data = array(), $loadData = true) {
+
         // Get the form.
         $form = $this->loadForm($this->option.'.funding', 'funding', array('control' => 'jform', 'load_data' => $loadData));
+        /** @var $form JForm **/
+        
         if (empty($form)) {
             return false;
         }
+        
+        // Prepare date format for the calendar.
+        $dateFormat = CrowdFundingHelper::getDateFormat(true);
+        $form->setFieldAttribute("funding_end", "format", $dateFormat);
         
         return $form;
     }
@@ -53,6 +60,25 @@ class CrowdFundingModelFunding extends CrowdFundingModelProject {
 		    $userId = JFactory::getUser()->id;
 		    
 		    $data   = $this->getItem($itemId, $userId);
+		    
+		    // Prepare date format.
+		    $dateFormat        = CrowdFundingHelper::getDateFormat();
+		    
+		    // Validate end date. If the date is not valid, generate a valid one.
+		    if(!CrowdFundingHelper::isValidDate($data->funding_end)) {
+		    
+		        $today  = new JDate();
+		    
+		        // Get minimum days.
+		        $params = $this->getState("params");
+		        $minDays = $params->get("project_days_minimum", 30);
+		    
+		        // Generate end date.
+		        $data->funding_end = CrowdFundingHelper::calcualteEndDate($today->format("Y-m-d"), $minDays);
+		    }
+		    
+		    $date              = new JDate($data->funding_end);
+		    $data->funding_end = $date->format($dateFormat);
 		    
 		}
 

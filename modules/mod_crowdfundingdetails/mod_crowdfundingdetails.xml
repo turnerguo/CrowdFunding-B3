@@ -1,31 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="module" version="3.1" client="site" method="upgrade">
+<extension type="module" version="3.2" client="site" method="upgrade">
 	<name>MOD_CROWDFUNDINGDETAILS</name>
 	<author>Todor Iliev</author>
 	<copyright>Copyright (C) 2013 Todor Iliev ( ITPrism.com )</copyright>
 	<license>http://www.gnu.org/copyleft/gpl.html</license>
 	<authorEmail>todor@itprism.com</authorEmail>
 	<authorUrl>http://itprism.com</authorUrl>
-	<version>1.4.3</version>
-	<creationDate>08 October, 2013</creationDate>
-	<description>
-<![CDATA[
-<p>CrowdFunding Details is a module that displays short information about project.</p>
-<p><a href="http://itprism.com/" target="_blank">Subscribe for the newsletter</a> to receive <strong>gifts</strong>, <strong>discount codes</strong>, information about <strong>updates</strong> and information about <strong>new ITPrism extensions</strong>.</p>
-<p>Please, <a href="http://extensions.joomla.org/extensions/e-commerce/donations/23876" target="_blank">vote for the extension</a> on Joomla! Extensions Directory</p>
-]]>
-</description>
+	<version>1.5</version>
+	<creationDate>08 December, 2013</creationDate>
+	<description><![CDATA[
+    <p>CrowdFunding Details is a module that displays short information about project.</p>
+    <p><a href="http://itprism.com/" target="_blank">Subscribe for the newsletter</a> to receive <strong>gifts</strong>, <strong>discount codes</strong>, information about <strong>updates</strong> and information about <strong>new ITPrism extensions</strong>.</p>
+    <p>Please, <a href="http://extensions.joomla.org/extensions/e-commerce/donations/23876" target="_blank">vote for the extension</a> on Joomla! Extensions Directory</p>
+    ]]></description>
 	
-	<languages folder="language">
-        <language tag="en-GB">en-GB/en-GB.mod_crowdfundingdetails.ini</language>
-        <language tag="en-GB">en-GB/en-GB.mod_crowdfundingdetails.sys.ini</language>
-    </languages> 
-
     <help url="MOD_CROWDFUNDINGDETAILS_HELP_URL"/>
 
 	<files>
 	   <filename module="mod_crowdfundingdetails">mod_crowdfundingdetails.php</filename>
 		<filename>index.html</filename>
+        
+        <folder>language</folder>
 		<folder>tmpl</folder>
 	</files>
 	

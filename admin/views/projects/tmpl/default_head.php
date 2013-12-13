@@ -49,7 +49,7 @@ defined('_JEXEC') or die;
     </th>
     <th width="5%"><?php echo JHtml::_('grid.sort',  'JSTATUS', 'a.published', $this->listDirn, $this->listOrder); ?></th>
     <th width="5%"><?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_APPROVED', 'a.approved', $this->listDirn, $this->listOrder); ?></th>
-    <th width="5%"><?php echo JText::_("COM_CROWDFUNDING_REWARDS");?></th>
+    <th width="5%"><?php echo JText::_("COM_CROWDFUNDING_TYPE");?></th>
     <th width="3%" class="nowrap"><?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ID', 'a.id', $this->listDirn, $this->listOrder); ?></th>
 </tr>
 	  

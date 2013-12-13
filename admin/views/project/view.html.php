@@ -35,11 +35,66 @@ class CrowdFundingViewProject extends JView {
         $this->item = $this->get('Item');
         $this->form = $this->get('Form');
         
+        $this->params = $this->state->get("params");
+        
+        $imagesFolder      = $this->params->get("images_directory", "images/crowdfunding");
+        $this->imagesUrl   = JUri::root().$imagesFolder;
+        
+        // Set minimum values - days, amount,...
+        $this->minAmount   = $this->params->get("project_amount_minimum", 100);
+        $this->maxAmount   = $this->params->get("project_amount_maximum");
+        
+        $this->minDays     = $this->params->get("project_days_minimum", 30);
+        $this->maxDays     = $this->params->get("project_days_maximum");
+        
+        $this->prepareFundingDurationType();
+        
+        jimport("crowdfunding.images");
+        $this->extraImages = new CrowdFundingImages($this->item->id);
+        
+        $this->extraImagesUri = "../".CrowdFundingHelper::getImagesFolderUri($this->item->user_id);
+        
         // Prepare actions, behaviors, scritps and document
         $this->addToolbar();
         $this->setDocument();
         
         parent::display($tpl);
+    }
+    
+    protected function prepareFundingDurationType() {
+    
+        $this->fundingDuration     = $this->params->get("project_funding_duration");
+    
+        switch($this->fundingDuration) {
+    
+            case "days": // Only days type is enabled
+                $this->checkedDays = 'checked="checked"';
+                break;
+    
+            case "date": // Only date type is enabled
+                $this->checkedDate = 'checked="checked"';
+                break;
+    
+            default: // Both ( days and date ) types are enabled
+    
+                $this->checkedDays = 0;
+                $this->checkedDate = "";
+    
+                if(!empty($this->item->funding_days)) {
+                    $this->checkedDays = 'checked="checked"';
+                    $this->checkedDate = '';
+                } else if (CrowdFundingHelper::isValidDate($this->item->funding_end)) {
+                    $this->checkedDays = '';
+                    $this->checkedDate = 'checked="checked"';
+                }
+    
+                // If missing both, select days
+                if(!$this->checkedDays AND !$this->checkedDate) {
+                    $this->checkedDays = 'checked="checked"';
+                }
+                break;
+    
+        }
     }
     
     /**
@@ -85,6 +140,8 @@ class CrowdFundingViewProject extends JView {
 		JHtml::_('behavior.keepalive');
 		JHtml::_('behavior.formvalidation');
         JHtml::_('behavior.tooltip');
+        
+        jimport('joomla.html.html.tabs');
         
 		// Add scripts
 		$this->document->addScript('../media/'.$this->option.'/js/admin/'.JString::strtolower($this->getName()).'.js');

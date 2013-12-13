@@ -170,7 +170,7 @@ class CrowdFundingModelRewards extends JModel {
             ->where("(#__crowdf_projects.user_id = ". (int)$userId .")");
         
         $db->setQuery($query);
-        $db->query();
+        $db->execute();
     
     }
     
@@ -210,7 +210,7 @@ class CrowdFundingModelRewards extends JModel {
                 ->where($db->quoteName("id") ."=". (int)$rewardId );
             
             $db->setQuery($query);
-            $db->query();
+            $db->execute();
             
         }
     
@@ -263,7 +263,7 @@ class CrowdFundingModelRewards extends JModel {
             ->where("receiver_id = " .(int)$userId);
     
         $db->setQuery($query);
-        $db->query();
+        $db->execute();
     
     }
     

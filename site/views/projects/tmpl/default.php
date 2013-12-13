@@ -8,8 +8,7 @@
  */
 
 // no direct access
-defined('_JEXEC') or die;
-?>
+defined('_JEXEC') or die;?>
 <div class="cfunding<?php echo $this->pageclass_sfx;?>">
     <?php if ($this->params->get('show_page_heading', 1)) { ?>
     <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
@@ -73,5 +72,4 @@ defined('_JEXEC') or die;
         <?php echo JHtml::_('form.token'); ?>
     </form>
 </div>
-<div class="clearfix">&nbsp;</div>
 <?php echo $this->version->backlink;?>

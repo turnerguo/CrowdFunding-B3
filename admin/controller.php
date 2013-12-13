@@ -15,8 +15,8 @@ jimport('joomla.application.component.controller');
 /**
  * Default controller
  *
- * @package		ITPrism Components
- * @subpackage	CrowdFunding
+ * @package		CrowdFunding
+ * @subpackage	Components
   */
 class CrowdFundingController extends JController {
     

@@ -86,8 +86,8 @@ class JFormFieldFundingType extends JFormFieldRadio {
 	    // Initialize some option attributes.
 	    $checked   = ($this->value == "FLEXIBLE") ? ' checked="checked"' : '';
 	
-	    $html[] = '<input type="radio" id="' . $this->id .'_fixed" name="' . $this->name . '"' . ' value="FLEXIBLE"' . $checked . '/>';
-	    $html[] = '<label for="' . $this->id .'_fixed">'. JText::_("COM_CROWDFUNDING_FIELD_FUNDING_TYPE_FLEXIBLE") . '</label>';
+	    $html[] = '<input type="radio" id="' . $this->id .'_flexible" name="' . $this->name . '"' . ' value="FLEXIBLE"' . $checked . '/>';
+	    $html[] = '<label for="' . $this->id .'_flexible">'. JText::_("COM_CROWDFUNDING_FIELD_FUNDING_TYPE_FLEXIBLE") . '</label>';
 	    $html[] = JText::_(JString::trim("COM_CROWDFUNDING_FIELD_FUNDING_TYPE_HELP_FLEXIBLE"));
 	     
 	}

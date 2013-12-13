@@ -1,31 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="3.1" type="plugin" group="system" method="upgrade">
+<extension version="3.2" type="plugin" group="system" method="upgrade">
     <name>PLG_SYSTEM_CROWDFUNDINGMODULES</name>
     <author>Todor Iliev</author>
     <copyright>Copyright (C) 2013 Todor Iliev ( ITPrism.com ). All rights reserved.</copyright>
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <authorEmail>todor@itprism.com</authorEmail>
     <authorUrl>http://itprism.com</authorUrl>
-    <version>1.4.3</version>
-    <creationDate>08 October, 2013</creationDate>
-	<description>
-<![CDATA[
-<p>CrowdFunding Modules manages the loading of some modules.</p>
-<p><a href="http://itprism.com/" target="_blank">Subscribe for the newsletter</a> to receive information about updates and new ITPrism extensions.</p>
-<p>Please, <a href="http://extensions.joomla.org/extensions/site-management/seo-a-metadata/meta-data/15861" target="_blank">vote for the extension</a> on Joomla! Extensions Directory</p>
-]]></description>
+    <version>1.5</version>
+    <creationDate>08 December, 2013</creationDate>
+	<description><![CDATA[
+    <p>CrowdFunding Modules manages the loading of some modules.</p>
+    <p><a href="http://itprism.com/" target="_blank">Subscribe for the newsletter</a> to receive information about updates and new ITPrism extensions.</p>
+    <p>Please, <a href="http://extensions.joomla.org/extensions/site-management/seo-a-metadata/meta-data/15861" target="_blank">vote for the extension</a> on Joomla! Extensions Directory</p>
+    ]]></description>
 	
-	<languages folder="language">
-        <language tag="en-GB">en-GB/en-GB.plg_system_crowdfundingmodules.ini</language>
-        <language tag="en-GB">en-GB/en-GB.plg_system_crowdfundingmodules.sys.ini</language>
-    </languages> 
-	
+    <help url="PLG_SYSTEM_CROWDFUNDINGMODULES_HELP_URL" />
+    
 	<files>
 		<filename plugin="crowdfundingmodules">crowdfundingmodules.php</filename>
 		<filename>index.html</filename>
+        
+        <folder>language</folder>
 	</files>
-	
-	<help url="PLG_SYSTEM_CROWDFUNDINGMODULES_HELP_URL" />
 	
 	<config>
         <fields name="params">
@@ -46,6 +42,11 @@
                 </field>
                 
                 <field name="module_details_embed_page" type="radio" default="1" label="PLG_SYSTEM_CROWDFUNDINGMODULES_DETAILS_ONLY_EMBED" description="PLG_SYSTEM_CROWDFUNDINGMODULES_DETAILS_ONLY_EMBED_DESC" class="btn-group">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                
+                <field name="module_profile_details_page" type="radio" default="1" label="PLG_SYSTEM_CROWDFUNDINGMODULES_PROFILE_ONLY_DETAILS" description="PLG_SYSTEM_CROWDFUNDINGMODULES_PROFILE_ONLY_DETAILS_DESC" class="btn-group">
                     <option value="0">JNO</option>
                     <option value="1">JYES</option>
                 </field>

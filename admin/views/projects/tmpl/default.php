@@ -38,6 +38,11 @@ defined('_JEXEC') or die;
 				<option value=""><?php echo JText::_('JOPTION_SELECT_CATEGORY');?></option>
 				<?php echo JHtml::_('select.options', JHtml::_('category.options', 'com_crowdfunding'), 'value', 'text', $this->state->get('filter.category_id'));?>
 			</select>
+			
+            <select name="filter_type_id" class="inputbox" onchange="this.form.submit()">
+				<option value=""><?php echo JText::_('COM_CROWDFUNDING_SELECT_TYPE');?></option>
+				<?php echo JHtml::_('select.options', $this->typesOptions, 'value', 'text', $this->state->get('filter.type_id'));?>
+			</select>
         </div>
     </fieldset>
     

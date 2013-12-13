@@ -74,7 +74,8 @@ class CrowdFundingStatisticsProjects implements Iterator, Countable, ArrayAccess
         
         $query
             ->select(
-                "a.title, a.short_desc, a.image_square, a.goal, a.funded, a.funding_start, a.funding_end, a.funding_days, " .
+                "a.title, a.short_desc, a.image, a.image_small, a.image_square, a.goal, " .
+                "a.funded, a.funding_start, a.funding_end, a.funding_days, " .
                 $query->concatenate(array("a.id", "a.alias"), ":") . " AS slug, " .
                 $query->concatenate(array("b.id", "b.alias"), ":") . " AS catslug"
             )
@@ -105,7 +106,8 @@ class CrowdFundingStatisticsProjects implements Iterator, Countable, ArrayAccess
         
         $query
         ->select(
-            "a.title, a.short_desc, a.image_square, a.goal, a.funded, a.funding_start, a.funding_end, a.funding_days, " .
+            "a.title, a.short_desc, a.image, a.image_small, a.image_square, " .
+            "a.goal, a.funded, a.funding_start, a.funding_end, a.funding_days, " .
             $query->concatenate(array("a.id", "a.alias"), ":") . " AS slug, " .
             $query->concatenate(array("b.id", "b.alias"), ":") . " AS catslug"
         )
@@ -135,12 +137,16 @@ class CrowdFundingStatisticsProjects implements Iterator, Countable, ArrayAccess
         
         $query
         ->select(
-            "a.title, a.short_desc, a.image_square, a.goal, a.funded, a.funding_start, a.funding_end, a.funding_days, " .
+            "a.title, a.short_desc, a.image, a.image_small, a.image_square, " . 
+            "a.goal, a.funded, a.funding_start, a.funding_end, a.funding_days, " .
+            "a.user_id, a.funding_type, " .
             $query->concatenate(array("a.id", "a.alias"), ":") . " AS slug, " .
-            $query->concatenate(array("b.id", "b.alias"), ":") . " AS catslug"
+            $query->concatenate(array("b.id", "b.alias"), ":") . " AS catslug, " .
+            "c.name AS user_name"
         )
-        ->from($this->db->quoteName("#__crowdf_projects") . " AS a")
-        ->innerJoin($this->db->quoteName("#__categories") . " AS b ON a.catid = b.id")
+        ->from($this->db->quoteName("#__crowdf_projects", "a"))
+        ->innerJoin($this->db->quoteName("#__categories", "b") . " ON a.catid = b.id")
+        ->leftjoin($this->db->quoteName("#__users", "c") . " ON a.user_id = c.id")
         ->where("a.published = 1")
         ->where("a.approved = 1")
         ->order("a.funding_start DESC");

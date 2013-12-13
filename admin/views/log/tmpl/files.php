@@ -1,0 +1,60 @@
+<?php
+/**
+ * @package      CrowdFunding
+ * @subpackage   Components
+ * @author       Todor Iliev
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ */
+
+// no direct access
+defined('_JEXEC') or die;
+?>
+<div id="js-log-files">
+    <div class="width-20 fltlft">
+        <table class="table table-condensed">
+              <thead>
+                <tr>
+                  <th class="center nowrap hidden-phone">#</th>
+                  <th><?php echo JText::_("COM_CROWDFUNDING_FILENAME");?></th>
+                  <th class="center nowrap hidden-phone"><?php echo JText::_("COM_CROWDFUNDING_ACTION");?></th>
+                </tr>
+              </thead>
+              <tbody>
+              <?php for($i = 0; $i < count($this->files); $i++) {
+                  $file = str_replace(JPATH_ROOT, "", $this->files[$i]);
+              ?>
+                <tr id="js-file-row<?php echo $i;?>">
+                  <td class="center nowrap hidden-phone"><?php echo $i+1;?></td>
+                  <td><a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=log&layout=file&format=raw&file=".rawurlencode($file));?>" class="js-log-file" data-row-id="<?php echo $i;?>" >
+                  <?php echo basename($this->files[$i]);?>
+                  </a>
+                  <img src="../media/com_crowdfunding/images/ajax-loader.gif" style="display: none;" id="js-ajaxload-icon<?php echo $i;?>" /></td>
+                  <td class="center nowrap hidden-phone">
+                      <a href="javascript: void(0);" class="btn btn-small hasTip" title="<?php echo JText::sprintf("COM_CROWDFUNDING_FILE_IS", $this->escape($this->files[$i]));?>::">
+                      <img src="../media/com_crowdfunding/images/question_mark.png" />
+                      </a>
+                      <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=log.remove");?>" data-row-id="js-file-row<?php echo $i;?>" data-filename="<?php echo $this->escape($file);?>" class="btn btn-small hasTip js-log-file-remove-btn" title="<?php echo JText::_("JACTION_DELETE");?>::">
+                        <img src="../media/com_crowdfunding/images/delete.png" />
+                      </a>
+                      <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=log.download&format=raw&file=".rawurlencode($file));?>" class="btn btn-small hasTip" title="<?php echo JText::_("COM_CROWDFUNDING_DOWNLOAD");?>::">
+                        <i class="icon-download"></i>
+                        <img src="../media/com_crowdfunding/images/box_download.png" />
+                      </a>
+                  </td>
+                </tr>
+              <?php }?>
+              </tbody>
+        </table>
+    </div>
+    
+    <div class="width-80 fltlft">
+        <h2 id="js-file-title"></h2>
+        <pre id="js-file-preview" style="height: 100%; ovrflow: hidden;"></pre>
+    </div>
+    
+    <form action="<?php echo JRoute::_('index.php?option=com_crowdfunding'); ?>" method="post" name="adminForm" id="adminForm">
+        <input type="hidden" name="task" value="" />
+        <?php echo JHtml::_('form.token'); ?>
+    </form>
+</div>

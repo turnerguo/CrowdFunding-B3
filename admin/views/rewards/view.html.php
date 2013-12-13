@@ -43,9 +43,6 @@ class CrowdFundingViewRewards extends JView {
         $this->addToolbar();
         $this->setDocument();
         
-        // Include HTML helper
-        JHtml::addIncludePath(JPATH_COMPONENT_SITE.'/helpers/html');
-        
         parent::display($tpl);
     }
     

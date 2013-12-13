@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="3.1" type="plugin" group="content" method="upgrade">
+<extension version="3.2" type="plugin" group="content" method="upgrade">
     <name>PLG_CONTENT_CROWDFUNDINGUSERMAIL</name>
     <author>Todor Iliev</author>
     <copyright>Copyright (C) 2013 Todor Iliev ( ITPrism.com ). All rights reserved.</copyright>
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <authorEmail>todor@itprism.com</authorEmail>
     <authorUrl>http://itprism.com</authorUrl>
-    <version>1.4.3</version>
-    <creationDate>08 October, 2013</creationDate>
-    <description>
-<![CDATA[
-<p>CrowdFunding - User Mail is a plugin that sends confirmation mails to users.</p>
-<p><a href="http://itprism.com/" target="_blank">Subscribe for the newsletter</a> to receive information about updates and new ITPrism extensions.</p>
-<p>Please, <a href="http://extensions.joomla.org/extensions/e-commerce/donations/23876" target="_blank">vote for the extension</a> on Joomla! Extensions Directory</p>
-]]></description>
+    <version>1.5</version>
+    <creationDate>08 December, 2013</creationDate>
+    <description><![CDATA[
+    <p>CrowdFunding - User Mail is a plugin that sends confirmation mails to users.</p>
+    <p><a href="http://itprism.com/" target="_blank">Subscribe for the newsletter</a> to receive information about updates and new ITPrism extensions.</p>
+    <p>Please, <a href="http://extensions.joomla.org/extensions/e-commerce/donations/23876" target="_blank">vote for the extension</a> on Joomla! Extensions Directory</p>
+    ]]></description>
     
-    <languages folder="language">
-        <language tag="en-GB">en-GB/en-GB.plg_content_crowdfundingusermail.ini</language>
-        <language tag="en-GB">en-GB/en-GB.plg_content_crowdfundingusermail.sys.ini</language>
-    </languages> 
+    <help url="PLG_CONTENT_CROWDFUNDINGUSERMAIL_HELP_URL"/>
     
     <files>
         <filename plugin="crowdfundingusermail">crowdfundingusermail.php</filename>
         <filename>index.html</filename>
+        
+        <folder>language</folder>
     </files>
-    
-    <help url="PLG_CONTENT_CROWDFUNDINGUSERMAIL_HELP_URL"/>
     
     <config>
 		<fields name="params">
-			<fieldset name="basic">
-                <field name="send_when_approved" type="radio" default="1" label="PLG_CONTENT_CROWDFUNDINGUSERMAIL_SEND_WHEN_APPROVED" description="PLG_CONTENT_CROWDFUNDINGUSERMAIL_SEND_WHEN_APPROVED_DESC" class="btn-group">
-                   <option value="0">JNO</option>
-                   <option value="1">JYES</option>
+			<fieldset name="basic" addfieldpath="/administrator/components/com_crowdfunding/models/fields">
+                
+                <field name="send_when_approved" type="cfemails" default="0" label="PLG_CONTENT_CROWDFUNDINGUSERMAIL_SEND_WHEN_APPROVED" description="PLG_CONTENT_CROWDFUNDINGUSERMAIL_SEND_WHEN_APPROVED_DESC"  />
+                
+                <field name="email_mode" type="list" default="html" label="PLG_CONTENT_CROWDFUNDINGUSERMAIL_EMAIL_MODE" description="PLG_CONTENT_CROWDFUNDINGUSERMAIL_EMAIL_MODE_DESC" >
+                   <option value="plain">PLG_CONTENT_CROWDFUNDINGUSERMAIL_PLAIN</option>
+                   <option value="html">PLG_CONTENT_CROWDFUNDINGUSERMAIL_HTML</option>
                 </field>
+                
 			</fieldset>
 	            
         </fields>

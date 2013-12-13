@@ -13,10 +13,15 @@ defined('_JEXEC') or die;
 ?>
 <?php foreach ($this->items as $i => $item) {
 	    $ordering  = ($this->listOrder == 'a.ordering');
+	    
+	    $numberOfRewards = (isset($this->rewards[$item->id])) ? $this->rewards[$item->id]->number : 0;
 	?>
 	<tr class="row<?php echo $i % 2; ?>">
         <td ><?php echo JHtml::_('grid.id', $i, $item->id); ?></td>
-		<td><a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=project&layout=edit&id=".$item->id);?>" ><?php echo $item->title; ?></a></td>
+		<td>
+		    <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=project&layout=edit&id=".$item->id);?>" ><?php echo $item->title; ?></a>
+		    <div class="small"><a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=rewards&pid=".$item->id);?>" ><?php echo JText::sprintf("COM_CROWDFUNDING_REWARDS_N", $numberOfRewards); ?></a></div>
+		</td>
 		<td class="center">
 			<?php echo JHtml::_('crowdfundingbackend.featured', $item->featured, $i); ?>
 		</td>
@@ -50,7 +55,7 @@ defined('_JEXEC') or die;
         <td class="center"><?php echo JHtml::_('jgrid.published', $item->published, $i, "projects."); ?></td>
         <td class="center"><?php echo JHtml::_('crowdfundingbackend.approved', $i, $item->approved, "projects."); ?></td>
         <td class="center">
-            <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=rewards&pid=".$item->id);?>">(<?php echo (isset($this->rewards[$item->id])) ? $this->rewards[$item->id]->number : 0;?>)</a>
+            <?php echo $this->escape($item->type); ?>
         </td>
         <td class="center"><?php echo $item->id;?></td>
 	</tr>

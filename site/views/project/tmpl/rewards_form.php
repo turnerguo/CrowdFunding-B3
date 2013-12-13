@@ -18,12 +18,13 @@ if(!$availability) {
 
 // Prepare delivery date
 $deliveryDate = JArrayHelper::getValue($this->formItem,  "delivery", null);
-if($deliveryDate) {
-    $date = new JDate($deliveryDate);
-    $date = $date->toUnix();
-    if($date < 0) {
+if(!empty($deliveryDate)) {
+    if(!CrowdFundingHelper::isValidDate($deliveryDate)) {
         $deliveryDate = null;
-    } 
+    } else { // Formating date
+        $date = new JDate($deliveryDate);
+        $deliveryDate = $date->format($this->dateFormat);
+    }
 }
 ?>
 <div class="row-fluid reward-form" id="reward_box_<?php echo $this->formIndex;?>">
@@ -48,7 +49,7 @@ if($deliveryDate) {
         <input name="rewards[<?php echo $this->formIndex;?>][number]" id="reward_number_<?php echo $this->formIndex;?>" type="text" class="input-xlarge" value="<?php echo $availability; ?>" />
         
         <label class="hasTip" for="reward_delivery_<?php echo $this->formIndex;?>" title="<?php echo JText::_("COM_CROWDFUNDING_REWARDS_ESTIMATED_DELIVERY_DESC");?>"><?php echo JText::_("COM_CROWDFUNDING_REWARDS_ESTIMATED_DELIVERY");?></label>
-        <?php echo JHtml::_('calendar', $deliveryDate, "rewards[".$this->formIndex."][delivery]", "reward_delivery_".$this->formIndex);?>
+        <?php echo JHtml::_('calendar', $deliveryDate, "rewards[".$this->formIndex."][delivery]", "reward_delivery_".$this->formIndex, $this->dateFormatCalendar);?>
         
         <input name="rewards[<?php echo $this->formIndex;?>][id]" type="hidden" value="<?php echo JArrayHelper::getValue($this->formItem,  "id", 0)?>" />
         

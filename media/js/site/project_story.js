@@ -14,6 +14,12 @@ jQuery(document).ready(function() {
 			dataType: 'text json',
 			formData: {id: projectId},
 			singleFileUploads: true,
+			send: function() {
+				jQuery("#js-extra-images-loader").show();
+			},
+			fail: function() {
+				jQuery("#js-extra-images-loader").hide();
+			},
 	        done: function (event, response) {
 	            
 	        	if(!response.result.success) {
@@ -38,6 +44,9 @@ jQuery(document).ready(function() {
 	        		
 	        		jQuery("#js-extra-images-rows").prepend(extraImage);
 	        	}
+	        	
+	        	// Hide ajax loader.
+	        	jQuery("#js-extra-images-loader").hide();
 	        }
 		});
 		

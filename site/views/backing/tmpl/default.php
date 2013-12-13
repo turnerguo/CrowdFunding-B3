@@ -51,8 +51,9 @@ defined('_JEXEC') or die;
                 </fieldset>
             </form>
 			
+			<?php if($this->rewardsEnabled) {?>
 			<div class="cfrewards">
-			<div class="reward_title pull-center"><?php echo JText::_("COM_CROWDFUNDING_REWARDS");?></div>
+			    <div class="reward_title pull-center"><?php echo JText::_("COM_CROWDFUNDING_REWARDS");?></div>
 			
             	<div class="reward">
             		<a href="javascript: void(0);" class="reward-amount" >
@@ -78,6 +79,7 @@ defined('_JEXEC') or die;
             	</div>
             	<?php }?>
             </div>
+            <?php } ?>
     	</div>
 	</div>
 </div>

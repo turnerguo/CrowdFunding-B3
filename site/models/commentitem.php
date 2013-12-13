@@ -94,7 +94,7 @@ class CrowdFundingModelCommentItem extends JModelItem {
         }
         
         $db->setQuery($query);
-        $db->query();
+        $db->execute();
             
     }
     

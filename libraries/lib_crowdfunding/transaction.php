@@ -18,7 +18,7 @@ JLoader::register("CrowdFundingInterfaceTable", JPATH_LIBRARIES .DIRECTORY_SEPAR
  * @package      CrowdFunding
  * @subpackage   Libraries
  */
-class CrowdFundingTransaction extends CrowdFundingTableTransaction {
+class CrowdFundingTransaction implements CrowdFundingInterfaceTable {
     
     /**
      * This is CrowdFunding Transaction table object.
@@ -37,7 +37,7 @@ class CrowdFundingTransaction extends CrowdFundingTableTransaction {
         
     }
     
-    public function load($keys = null, $reset = true) {
+    public function load($keys, $reset = true) {
         $this->table->load($keys, $reset);
     }
     
@@ -54,19 +54,13 @@ class CrowdFundingTransaction extends CrowdFundingTableTransaction {
     }
     
     public function isCompleted() {
-        
         $result = (strcmp("completed", $this->table->txn_status) == 0);
-        
         return (bool)$result;
-        
     }
     
     public function isPending() {
-    
         $result = (strcmp("pending", $this->table->txn_status) == 0);
-    
         return (bool)$result;
-    
     }
     
     public function getStatus() {
@@ -79,5 +73,21 @@ class CrowdFundingTransaction extends CrowdFundingTableTransaction {
     
     public function getCurrency() {
         return $this->table->txn_currency;
+    }
+    
+    public function getProperties($public = true) {
+        return $this->table->getProperties($public);
+    }
+    
+    public function getTransactionId() {
+        return $this->table->txn_id;
+    }
+    
+    public function getInvestorId() {
+        return $this->table->investor_id;
+    }
+    
+    public function getReceiverId() {
+        return $this->table->receiver_id;
     }
 }

@@ -34,6 +34,12 @@
            />
            
          <field
+            name="type_id"
+            type="cftypes"
+            label="COM_CROWDFUNDING_FIELD_PROJECT_TYPE"
+         />
+         
+         <field
             name="image"
             type="file"
             label="COM_CROWDFUNDING_FIELD_IMAGE"

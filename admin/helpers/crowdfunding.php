@@ -86,6 +86,24 @@ abstract class CrowdFundingHelper {
 		);
 		
 		JSubMenuHelper::addEntry(
+    		JText::_('COM_CROWDFUNDING_TYPES'),
+    		'index.php?option='.self::$extension.'&view=types',
+    		$vName == 'types'
+        );
+		
+		JSubMenuHelper::addEntry(
+        	JText::_('COM_CROWDFUNDING_EMAILS'),
+        	'index.php?option='.self::$extension.'&view=emails',
+        	$vName == 'emails'
+        );
+		
+		JSubMenuHelper::addEntry(
+    		JText::_('COM_CROWDFUNDING_LOGS'),
+    		'index.php?option='.self::$extension.'&view=logs',
+    		$vName == 'logs'
+        );
+		
+		JSubMenuHelper::addEntry(
     		JText::_('COM_CROWDFUNDING_PLUGINS'),
     		'index.php?option=com_plugins&view=plugins&filter_search='.rawurlencode("crowdfunding"),
     		$vName == 'plugins'
@@ -163,6 +181,27 @@ abstract class CrowdFundingHelper {
         
         return self::$currencies;
         
+    }
+    
+    public static function getLogTypes() {
+    
+        $db     = JFactory::getDbo();
+        $query  = $db->getQuery(true);
+    
+        $query
+            ->select("type AS value, type AS text")
+            ->from("#__crowdf_logs")
+            ->group("type");
+    
+        $db->setQuery($query);
+        $types = $db->loadAssocList();
+    
+        if(!$types) {
+            $types = array();
+        }
+    
+        return $types;
+    
     }
     
     public static function getProject($projectId, $fields = array("id")) {
@@ -418,6 +457,13 @@ abstract class CrowdFundingHelper {
                 $profile = ITPrismIntegrateProfileJomSocial::getInstance($userId);
     
                 break;
+                
+            case "easysocial":
+            
+                jimport("itprism.integrate.profile.easysocial");
+                $profile = ITPrismIntegrateProfileEasySocial::getInstance($userId);
+            
+                break;
     
             default:
     
@@ -521,4 +567,89 @@ abstract class CrowdFundingHelper {
     
         return $result;
     }
+    
+    public static function getLogFiles() {
+    
+        jimport("joomla.filesystem.file");
+        jimport("joomla.filesystem.path");
+        jimport("joomla.filesystem.folder");
+    
+        // Read files in folder /logs
+        $config    = JFactory::getConfig();
+        $logFolder = $config->get("log_path");
+    
+        $files     = JFolder::files($logFolder);
+        if(!is_array($files)) {
+            $files = array();
+        }
+    
+        foreach($files as $key => $file) {
+            if(strcmp("index.html", $file) == 0) {
+                unset($files[$key]);
+            } else {
+                $files[$key] = JPath::clean($logFolder.DIRECTORY_SEPARATOR.$files[$key]);
+            }
+        }
+    
+        // Check for file "error_log" in the main folder
+        $errorLogFile = JPATH_ROOT.DIRECTORY_SEPARATOR."error_log";
+        if(JFile::exists($errorLogFile)) {
+            $files[] = JPath::clean($errorLogFile);
+        }
+    
+        // Check for file "error_log" in admin folder
+        $errorLogFile = JPATH_BASE.DIRECTORY_SEPARATOR."error_log";
+        if(JFile::exists($errorLogFile)) {
+            $files[] = JPath::clean($errorLogFile);
+        }
+    
+        sort($files);
+    
+        return $files;
+    }
+    
+    /**
+     * Prepare date format.
+     *
+     * @param string $calendar
+     * @return string
+     */
+    public static function getDateFormat($calendar = false) {
+    
+        $params     = JComponentHelper::getParams("com_crowdfunding");
+        $dateFormat = $params->get("project_date_format", "%Y-%m-%d");
+    
+        if(!$calendar) {
+            $dateFormat = str_replace("%", "", $dateFormat);
+        }
+    
+        return $dateFormat;
+    
+    }
+    
+    /**
+     * Create a project type object.
+     *
+     * @param integer $typeId
+     * @return NULL|CrowdFundingType
+     */
+    public static function getProjectType($typeId) {
+    
+        if(!$typeId) {
+            return null;
+        }
+    
+        jimport("crowdfunding.type");
+         
+        $type   = new CrowdFundingType();
+        $type->setTable( new CrowdFundingTableType(JFactory::getDbo()) );
+        $type->load($typeId);
+    
+        if(!$type->getId()) {
+            return null;
+        }
+    
+        return $type;
+    }
+    
 }

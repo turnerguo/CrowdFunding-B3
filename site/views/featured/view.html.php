@@ -51,19 +51,14 @@ class CrowdFundingViewFeatured extends JViewLegacy {
         $currencyId           = $this->params->get("project_currency");
         $this->currency       = CrowdFundingCurrency::getInstance($currencyId);
 		
-		// Get users IDs
-        $usersIds = array();
-        foreach($this->items as $item) {
-            $usersIds[] = $item->user_id;
-        }
-        
+        $this->displayCreator     = $this->params->get("integration_display_creator", true);
+
         // Prepare integration. Load avatars and profiles.
-        $this->prepareIntegration($usersIds, $this->params);
+        if(!empty($this->displayCreator)) {
+            $this->prepareIntegration($this->items, $this->params);
+        }
 		
-		// Include HTML helper
-        JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
-        
-        $this->version = new CrowdFundingVersion();
+        $this->version    = new CrowdFundingVersion();
         
         $this->prepareDocument();
         
@@ -95,6 +90,12 @@ class CrowdFundingViewFeatured extends JViewLegacy {
         }
         
         // Styles
+        
+        // Load bootstrap thumbnails styles
+        if($this->params->get("bootstrap_thumbnails", false)) {
+            JHtml::_("itprism.ui.bootstrap_thumbnails");
+        }
+        
         $this->document->addStyleSheet( 'media/'.$this->option.'/css/site/style.css');
         
         // Script
@@ -150,10 +151,16 @@ class CrowdFundingViewFeatured extends JViewLegacy {
      *
      * @todo Move it to a trait when traits become mass.
      */
-    protected function prepareIntegration($usersIds, $params) {
+    protected function prepareIntegration($items, $params) {
     
+        // Get users IDs
+        $usersIds = array();
+        foreach($items as $item) {
+            $usersIds[] = $item->user_id;
+        }
+        
         $this->socialProfiles        = null;
-    
+        
         // If there is now users, do not continue.
         if(!$usersIds) {
             return;
@@ -161,7 +168,7 @@ class CrowdFundingViewFeatured extends JViewLegacy {
     
         // Get a social platform for integration
         $socialPlatform        = $params->get("integration_social_platform");
-    
+        
         // Load the class
         if(!empty($socialPlatform)) {
             jimport("itprism.integrate.profiles");

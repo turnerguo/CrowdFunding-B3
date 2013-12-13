@@ -43,9 +43,6 @@ class CrowdFundingViewEmbed extends JView {
             return;
         }
         
-        // Include HTML helper
-        JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
-        
         // Get currency
         jimport("crowdfunding.currency");
         $currencyId           = $this->params->get("project_currency");
@@ -83,7 +80,7 @@ class CrowdFundingViewEmbed extends JView {
             
         }
         
-        $this->version = new CrowdFundingVersion();
+        $this->version    = new CrowdFundingVersion();
         
 		$this->prepareDocument();
 		

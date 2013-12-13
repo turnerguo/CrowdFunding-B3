@@ -23,6 +23,8 @@ class CrowdFundingControllerProject extends ITPrismControllerFormBackend {
     
     /**
      * Save an item
+     * 
+     * @todo fix funded duration type 
      */
     public function save(){
         
@@ -34,7 +36,7 @@ class CrowdFundingControllerProject extends ITPrismControllerFormBackend {
         $data    = $app->input->post->get('jform', array(), 'array');
         $itemId  = JArrayHelper::getValue($data, "id");
         
-        $redirectData = array(
+        $redirectOptions = array(
             "task"  => $this->getTask(),
             "id"    => $itemId
         );
@@ -52,14 +54,51 @@ class CrowdFundingControllerProject extends ITPrismControllerFormBackend {
         // Validate the form
         $validData = $model->validate($form, $data);
         
+        // @todo fix this
+        $validData["duration_type"] = JArrayHelper::getValue($data, "funding_duration_type");
+        
         // Check for errors.
         if($validData === false){
-            $this->displayNotice($form->getErrors(), $redirectData);
+            $this->displayNotice($form->getErrors(), $redirectOptions);
             return;
         }
-            
+        
         try {
-            $itemId = $model->save($validData);
+            
+            // Get image
+            $files      = $app->input->files->get('jform', array(), 'array');
+            $image      = JArrayHelper::getValue($files, "image");
+            
+            $pitchImage = JArrayHelper::getValue($files, "pitch_image");
+            
+            jimport('joomla.filesystem.folder');
+            jimport('joomla.filesystem.file');
+            jimport('joomla.filesystem.path');
+            jimport('joomla.image.image');
+            jimport('itprism.file.upload.image');
+            
+            // Upload image
+            if(!empty($image['name'])) {
+            
+                $imageNames    = $model->uploadImage($image);
+                if(!empty($imageNames["image"])) {
+                    $validData = array_merge($validData, $imageNames);
+                }
+            
+            }
+            
+            // Upload pitch image
+            if(!empty($pitchImage['name'])) {
+            
+                $pitchImageName    = $model->uploadPitchImage($pitchImage);
+                if(!empty($pitchImageName)) {
+                    $validData["pitch_image"] = $pitchImageName;
+                }
+            
+            }
+            
+            $model->save($validData);
+            
         } catch (Exception $e) {
             
             JLog::add($e->getMessage());
@@ -67,8 +106,68 @@ class CrowdFundingControllerProject extends ITPrismControllerFormBackend {
         
         }
         
-        $this->displayMessage(JText::_('COM_CROWDFUNDING_PROJECT_SAVED'), $redirectData);
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_PROJECT_SAVED'), $redirectOptions);
     
     }
+    
+    /**
+     * Delete image
+     */
+    public function removeImage() {
+    
+        // Check for request forgeries.
+        JSession::checkToken("get") or jexit(JText::_('JINVALID_TOKEN'));
+    
+        $app = JFactory::getApplication();
+        /** @var $app JAdministrator **/
+    
+        // Get item id
+        $itemId    = $app->input->get->getInt("id");
+        $imageType = $app->input->get->getCmd("image_type");
+        
+        $redirectOptions = array(
+            "view"   => "projects",
+        );
+    
+        // Check for registered user
+        if(!$itemId) {
+            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_INVALID_IMAGE'), $redirectOptions);
+            return;
+        }
+    
+        try {
+    
+            jimport('joomla.filesystem.folder');
+            jimport('joomla.filesystem.file');
+            jimport('joomla.filesystem.path');
+            
+            $model = $this->getModel();
+            
+            switch($imageType) {
+                
+                case "main":
+                    $model->removeImage($itemId);
+                    break;
+                
+                case "pitch":
+                    $model->removePitchImage($itemId);
+                    break;
+            }
+    
+        } catch (Exception $e) {
+            JLog::add($e->getMessage());
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
+        }
+        
+        $redirectOptions = array(
+            "view"   => "project",
+            "layout" => "edit",
+            "id"     => $itemId
+        );
+        
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_IMAGE_DELETED'), $redirectOptions);
+    
+    }
+    
     
 }

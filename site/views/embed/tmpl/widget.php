@@ -8,8 +8,7 @@
  */
 
 // no direct access
-defined('_JEXEC') or die;
-?>
+defined('_JEXEC') or die;?>
 <div class="row-fluid">
     <ul class="thumbnails">
       <?php if(isset($this->item)) {

@@ -49,7 +49,6 @@ class CrowdFundingViewTransactions extends JView {
         $this->setDocument();
         
         // Include HTML helper
-        JHtml::addIncludePath(JPATH_COMPONENT_SITE.'/helpers/html');
         JLoader::register('JHtmlString', JPATH_LIBRARIES.'/joomla/html/html/string.php');
         
         parent::display($tpl);

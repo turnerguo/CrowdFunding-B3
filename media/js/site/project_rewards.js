@@ -65,7 +65,7 @@ jQuery(document).ready(function() {
 			// Id of the input field
 			inputField: "reward_delivery_"+itemsNumber,
 			// Format of the input field
-			ifFormat: "%Y-%m-%d",
+			ifFormat: projectWizard.dateFormat,
 			// Trigger for the calendar (button ID)
 			button: "reward_delivery_"+itemsNumber+"_img",
 			// Alignment (defaults to "Bl")

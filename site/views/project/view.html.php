@@ -40,9 +40,7 @@ class CrowdFundingViewProject extends JView {
             $this->setLayout("intro");
         }
         
-        // HTML Helpers
-        JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
-        JHtml::addIncludePath(ITPRISM_PATH_LIBRARY.'/ui/helpers');
+        $this->disabledButton = "";
         
         $this->layout = $this->getLayout();
         
@@ -69,7 +67,7 @@ class CrowdFundingViewProject extends JView {
                 break;
         }
         
-        $this->version = new CrowdFundingVersion();
+        $this->version    = new CrowdFundingVersion();
         
         $this->prepareDebugMode();
         $this->prepareDocument();
@@ -85,8 +83,6 @@ class CrowdFundingViewProject extends JView {
         $app = JFactory::getApplication();
         /** @var $app JSite **/
 
-        $this->disabledButton = "";
-        
         // Check for maintenance (debug) state
         $params = $this->state->get("params");
         $this->debugMode = $params->get("debug_project_adding_disabled", 0);
@@ -100,6 +96,21 @@ class CrowdFundingViewProject extends JView {
             $this->disabledButton = 'disabled="disabled"';
         }
         
+    }
+    
+    /**
+     * Check the system for debug mode
+     */
+    protected function prepareProjectType() {
+    
+        // Get project type and check for enabled rewards.
+        $type = CrowdFundingHelper::getProjectType($this->item->type_id);
+        $this->rewardsEnabled     = true;
+        if(!is_null($type) AND !$type->isRewardsEnabled()){
+            $this->rewardsEnabled = false;
+            $this->disabledButton = 'disabled="disabled"';
+        }
+    
     }
     
     /**
@@ -140,6 +151,12 @@ class CrowdFundingViewProject extends JView {
         
         $this->form        = $model->getForm();
             
+        // Get types
+        jimport("crowdfunding.types");
+        $types             = CrowdFundingTypes::getInstance(JFactory::getDbo());
+        $this->numberOfTypes = count($types);
+        
+        // Prepare images
         $this->imageFolder = $this->params->get("images_directory", "images/crowdfunding");
         $this->imageSmall  = $this->item->get("image_small");
         
@@ -180,7 +197,7 @@ class CrowdFundingViewProject extends JView {
         
     } 
     
-    private function prepareFundingDurationType() {
+    protected function prepareFundingDurationType() {
     
         $this->fundingDuration     = $this->params->get("project_funding_duration");
     
@@ -287,6 +304,19 @@ class CrowdFundingViewProject extends JView {
         $currencyId        = $this->params->get("project_currency");
 		$this->currency    = CrowdFundingCurrency::getInstance($currencyId);
 		
+		// Get date format
+		$this->dateFormat          = CrowdFundingHelper::getDateFormat();
+		$this->dateFormatCalendar  = CrowdFundingHelper::getDateFormat(true);
+		$js = '
+	        // Rewards calendar date format.
+            var projectWizard = {
+                dateFormat: "'.$this->dateFormatCalendar.'"
+            };
+        ';
+		$this->document->addScriptDeclaration($js);
+		
+		$this->prepareProjectType();
+		
         $this->pathwayName = JText::_("COM_CROWDFUNDING_STEP_REWARDS");
         
     } 
@@ -318,8 +348,12 @@ class CrowdFundingViewProject extends JView {
         $title = $menu->title;
         if(!$title){
             $title = $app->getCfg('sitename');
-        }elseif($app->getCfg('sitename_pagetitles', 0)){ // Set site name if it is necessary ( the option 'sitename' = 1 )
+        } elseif ($app->getCfg('sitename_pagetitles', 0)){ // Set site name if it is necessary ( the option 'sitename' = 1 )
             $title = JText::sprintf('JPAGETITLE', $app->getCfg('sitename'), $title);
+        } else { // Item title to the browser title.
+            if(!empty($this->item)) {
+                $title .= " | ". $this->escape($this->item->title);
+            }
         }
             
         $this->document->setTitle($title);
@@ -335,6 +369,13 @@ class CrowdFundingViewProject extends JView {
         $pathway->addItem($this->pathwayName);
         
         // Styles
+        
+        // Load bootstrap navbar styles
+        if($this->params->get("bootstrap_navbar", false)) {
+            JHtml::_("itprism.ui.bootstrap_navbar");
+        }
+        
+        
         $this->document->addStyleSheet('media/'.$this->option.'/css/site/style.css');
         
         // Scripts
@@ -349,6 +390,12 @@ class CrowdFundingViewProject extends JView {
             case "rewards":
                 
                 // Scripts
+
+                // Load bootstrap modal styles and JS library
+                if($this->params->get("bootstrap_modal", false)) {
+                    JHtml::_("itprism.ui.bootstrap_modal");
+                }
+                
 		        JHtml::_('itprism.ui.pnotify');
 		        $this->document->addScript('media/'.$this->option.'/js/helper.js');
 		        $this->document->addScript('media/'.$this->option.'/js/site/project_rewards.js');

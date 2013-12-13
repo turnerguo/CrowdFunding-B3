@@ -6,7 +6,14 @@
 .icon-48-itp-countries       { background-image: url(../../images/countries_48.png); }
 .icon-48-itp-country-new    { background-image: url(../../images/country_add_48.png); }
 .icon-48-itp-country-edit   { background-image: url(../../images/country_edit_48.png); }
-
+.icon-48-itp-types       { background-image: url(../../images/types_48.png); }
+.icon-48-itp-new-type    { background-image: url(../../images/type_add_48.png); }
+.icon-48-itp-edit-type   { background-image: url(../../images/type_edit_48.png); }
+.icon-48-itp-emails       { background-image: url(../../images/emails_48.png); }
+.icon-48-itp-new-email    { background-image: url(../../images/email_add_48.png); }
+.icon-48-itp-edit-email   { background-image: url(../../images/email_edit_48.png); }
+.icon-48-itp-logs       { background-image: url(../../images/logs_48.png); }
+.icon-48-itp-logs-view    { background-image: url(../../images/logs_view_48.png); }
 .icon-48-itp-updates 	    { background-image: url(../../images/updates_48.png); }
 .icon-48-itp-edit-update	{ background-image: url(../../images/update_edit_48.png); }
 .icon-48-itp-comments 	    { background-image: url(../../images/comments_48.png); }
@@ -31,7 +38,7 @@
 .icon-32-itp-projects-back { background-image: url(../../images/projects_back_32.png); }
 .icon-32-itp-approve 	    { background-image: url(../../images/approve_32.png); }
 .icon-32-itp-disapprove	 { background-image: url(../../images/disapprove_32.png); }
-
+.icon-32-eye-open	 { background-image: url(../../images/eye_open_32.png); }
 
 .crowdf-tools-form label {
 	display: block;
@@ -43,4 +50,38 @@
 
 .jgrid span.disapprove {
     background-image: url("../../images/disapprove_16.png");
+}
+
+.small{
+	font-size: xx-small;
+	margin-top: 3px;
+}
+
+#jform_funding_days-lbl, #jform_funding_end-lbl{
+	clear: none !important;
+	width: 100px !important;
+	margin: 0 0 5px 5px !important;;
+}
+
+/***** Extra images *****/
+
+#js-extra-images-rows {
+	margin-top: 50px;
+}
+
+.extra-image-row {
+	border: thin solid #dcdcdc;
+	margin: 20px 0px;
+}
+
+.extra-image-row img, .extra-image-row a {
+	margin: 10px;
+}
+
+.extra-image-row:hover {
+	background: #eaeaea;
+}
+
+.cf-log pre, #js-file-preview {
+	font-size: medium !important;
 }

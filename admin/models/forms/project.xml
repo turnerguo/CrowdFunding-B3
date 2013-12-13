@@ -16,38 +16,20 @@
 	        size="40" 
 	    />
 	    
-        <field name="goal" type="text" class="inputbox" 
-	        label="COM_CROWDFUNDING_GOAL"
-	        description="COM_CROWDFUNDING_FIELD_GOAL_DESC"
-	    />
-	    
-        <field name="funded" type="text" class="inputbox" 
-	        label="COM_CROWDFUNDING_FUNDED"
-	        description="COM_CROWDFUNDING_FIELD_FUNDED_DESC"
-	    />
-            
-        <field name="funding_type" type="list" class="inputbox" 
-            label="COM_CROWDFUNDING_FUNDING_TYPE" 
-            description="COM_CROWDFUNDING_FUNDING_TYPE_DESC" 
-            size="1" 
-            default="FIXED"
-        >
-            <option value="FIXED">FIXED</option>
-            <option value="FLEXIBLE">FLEXIBLE</option>
-        </field>
-        
-        <field name="pitch_video" type="text" class="inputbox" 
-            label="COM_CROWDFUNDING_PITCH_VIDEO"
-            description="COM_CROWDFUNDING_PITCH_VIDEO_DESC"
-            size="60"  
-        />
-        
         <field name="catid" type="category" class="inputbox"
             label="JCATEGORY"
             description="JFIELD_CATEGORY_DESC"
             extension="com_crowdfunding" 
          />
         
+        <field name="type_id" type="cftypes"
+            label="COM_CROWDFUNDING_TYPE"
+            size="1" 
+            filter="int"
+         >
+            <option value="0">COM_CROWDFUNDING_NONE</option>
+         </field>
+         
 		<field name="published" type="list" class="inputbox" 
 		    label="JSTATUS" 
             description="JFIELD_PUBLISHED_DESC" 
@@ -75,7 +57,6 @@
             description="JGLOBAL_FIELD_ID_DESC" 
             readonly="true"  
             default="0" />
-
         
         <field name="short_desc" type="textarea" class="inputbox"
             label="COM_CROWDFUNDING_SHORT_DESCRIPTION" 
@@ -83,13 +64,68 @@
             rows="10" 
         />
         
+        <field name="image" type="file" class="inputbox" 
+            label="COM_CROWDFUNDING_IMAGE"
+            description="COM_CROWDFUNDING_PROJECT_IMAGE_DESC"
+        />
+            
+	</fieldset>
+    
+    <fieldset addfieldpath="/administrator/components/com_categories/models/fields" name="funding">
+    
+        <field name="goal" type="text" class="inputbox" 
+            label="COM_CROWDFUNDING_GOAL"
+            description="COM_CROWDFUNDING_FIELD_GOAL_DESC"
+        />
+        
+        <field name="funded" type="text" class="inputbox" 
+            label="COM_CROWDFUNDING_FUNDED"
+            description="COM_CROWDFUNDING_FIELD_FUNDED_DESC"
+        />
+            
+        <field name="funding_type" type="list" class="inputbox" 
+            label="COM_CROWDFUNDING_FUNDING_TYPE" 
+            description="COM_CROWDFUNDING_FUNDING_TYPE_DESC" 
+            size="1" 
+            default="FIXED"
+        >
+            <option value="FIXED">FIXED</option>
+            <option value="FLEXIBLE">FLEXIBLE</option>
+        </field>
+        
+        <field name="funding_days" type="text"
+            label="COM_CROWDFUNDING_FIELD_FUNDING_DAYS" 
+            filter="trim"
+        />
+
+        <field name="funding_end" type="calendar"
+            label="COM_CROWDFUNDING_FIELD_FUNDING_END" 
+            filter="trim"
+            default="NOW"
+        />
+        
+    </fieldset>
+    
+    <fieldset addfieldpath="/administrator/components/com_categories/models/fields" name="story">
+    
+        <field name="pitch_video" type="text" class="inputbox" 
+            label="COM_CROWDFUNDING_PITCH_VIDEO"
+            description="COM_CROWDFUNDING_PITCH_VIDEO_DESC"
+            size="100"  
+        />
+        
+        <field name="pitch_image" type="file" class="inputbox" 
+            label="COM_CROWDFUNDING_PITCH_IMAGE"
+            description="COM_CROWDFUNDING_PITCH_IMAGE_DESC"
+        />
+        
         <field name="description" type="editor" buttons="false" show="toggle" 
             label="JGLOBAL_DESCRIPTION" 
             description="COM_CROWDFUNDING_FIELD_PROJECT_DESCRIPTION" 
             filter="safehtml"
-            width="500"
+            width="700"
+            height="500"
         />
-            
-            
-	</fieldset>
+        
+    </fieldset>
 </form>
