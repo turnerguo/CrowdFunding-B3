@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -35,6 +35,14 @@ class CrowdFundingViewReward extends JViewLegacy {
         $this->item = $this->get('Item');
         $this->form = $this->get('Form');
         
+        if(!empty($this->item->id)) {
+            $userId = CrowdFundingHelper::getUserIdByRewardId($this->item->id);
+            
+            $uri = JUri::getInstance();
+            
+            $this->rewardsImagesUri = $uri->toString(array("scheme", "host"))."/".CrowdFundingHelper::getImagesFolderUri($userId, JPATH_BASE);
+        } 
+            
         // Prepare actions, behaviors, scritps and document
         $this->addToolbar();
         $this->setDocument();
@@ -61,9 +69,9 @@ class CrowdFundingViewReward extends JViewLegacy {
         JToolbarHelper::save('reward.save');
     
         if(!$isNew){
-            JToolbarHelper::cancel('project.cancel', 'JTOOLBAR_CANCEL');
+            JToolbarHelper::cancel('reward.cancel', 'JTOOLBAR_CANCEL');
         } else {
-            JToolbarHelper::cancel('project.cancel', 'JTOOLBAR_CLOSE');
+            JToolbarHelper::cancel('reward.cancel', 'JTOOLBAR_CLOSE');
         }
         
     }

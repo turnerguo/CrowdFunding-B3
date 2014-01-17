@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -19,9 +19,9 @@ defined('_JEXEC') or die;
             <div class="span10">
                 <?php echo $this->form->getInput('goal'); ?>
                 <?php if(!empty($this->maxAmount)) {?>
-                <span class="help-block"><?php echo JText::sprintf("COM_CROWDFUNDING_MINIMUM_MAXIMUM_AMOUNT", $this->currency->getAmountString($this->minAmount), $this->currency->getAmountString($this->maxAmount));?></span>
+                <span class="help-block"><?php echo JText::sprintf("COM_CROWDFUNDING_MINIMUM_MAXIMUM_AMOUNT", $this->currency->getAmountString($this->minAmount, $this->params->get("locale_intl", 0)), $this->currency->getAmountString($this->maxAmount, $this->params->get("locale_intl", 0)));?></span>
                 <?php } else {?>
-                <span class="help-block"><?php echo JText::sprintf("COM_CROWDFUNDING_MINIMUM_AMOUNT", $this->currency->getAmountString($this->minAmount));?></span>
+                <span class="help-block"><?php echo JText::sprintf("COM_CROWDFUNDING_MINIMUM_AMOUNT", $this->currency->getAmountString($this->minAmount, $this->params->get("locale_intl", 0)));?></span>
                 <?php }?>
             </div>
         </div>

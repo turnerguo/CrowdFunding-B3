@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -12,6 +12,9 @@ defined('_JEXEC') or die;
 
 jimport('itprism.controller.admin');
 
+// Load observers
+// JLoader::register("CrowdFundingObserverReward", CROWDFUNDING_PATH_COMPONENT_ADMINISTRATOR .DIRECTORY_SEPARATOR. "tables" .DIRECTORY_SEPARATOR. "observers" .DIRECTORY_SEPARATOR. "reward.php");
+
 /**
  * CrowdFunding rewards controller class
  *
@@ -19,6 +22,15 @@ jimport('itprism.controller.admin');
  * @subpackage   Components
   */
 class CrowdFundingControllerRewards extends ITPrismControllerAdmin {
+    
+    public function __construct($config) {
+        
+        parent::__construct($config);
+        
+        // Register Observers
+//         JObserverMapper::addObserverClassToClass('CrowdFundingObserverReward', 'CrowdFundingTableReward', array('typeAlias' => 'com_crowdfunding.reward'));
+        
+    }
     
     /**
      * Proxy for getModel.

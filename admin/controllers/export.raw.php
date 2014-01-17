@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -78,7 +78,10 @@ class CrowdFundingControllerExport extends JControllerLegacy {
         
         $tmpFolder   = JPath::clean( $app->getCfg("tmp_path") );
         
-        $archiveName = JFile::stripExt(JFile::getName($fileName))."_".substr(JApplication::getHash(time()), 0, 4);
+        $date = new JDate();
+        $date = $date->format("d_m_Y_H_i_s");
+        
+        $archiveName = JFile::stripExt(basename($fileName))."_".$date;
         $archiveFile = $archiveName.".zip";
         $destination = $tmpFolder.DIRECTORY_SEPARATOR.$archiveFile;
         

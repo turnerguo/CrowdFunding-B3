@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -25,7 +25,7 @@ class CrowdFundingModelExport extends JModelLegacy {
         // Select the required fields from the table.
         $query
             ->select('a.id, a.title, a.abbr, a.symbol, a.position')
-            ->from($db->quoteName('#__crowdf_currencies').' AS a');
+            ->from($db->quoteName('#__crowdf_currencies', 'a'));
         
         
         $db->setQuery($query);
@@ -50,7 +50,7 @@ class CrowdFundingModelExport extends JModelLegacy {
             'a.id, a.name, a.latitude, a.longitude, a.country_code, ' .
             'a.timezone, a.state_code, a.published'
             )
-            ->from($db->quoteName('#__crowdf_locations').' AS a');
+            ->from($db->quoteName('#__crowdf_locations', 'a'));
         
         
         $db->setQuery($query);
@@ -72,7 +72,7 @@ class CrowdFundingModelExport extends JModelLegacy {
         // Select the required fields from the table.
         $query
             ->select('a.id, a.name, a.state_code')
-            ->from($db->quoteName('#__crowdf_locations').' AS a');
+            ->from($db->quoteName('#__crowdf_locations', 'a'));
     
         $db->setQuery($query);
         $results = $db->loadAssocList();
@@ -92,8 +92,8 @@ class CrowdFundingModelExport extends JModelLegacy {
     
         // Select the required fields from the table.
         $query
-            ->select('a.id, a.name, a.code')
-            ->from($db->quoteName('#__crowdf_countries').' AS a');
+            ->select('a.id, a.name, a.code, a.code4, a.latitude, a.longitude, a.timezone')
+            ->from($db->quoteName('#__crowdf_countries', 'a'));
         
         $db->setQuery($query);
         $results = $db->loadAssocList();
@@ -106,7 +106,7 @@ class CrowdFundingModelExport extends JModelLegacy {
     protected function prepareXML($results, $root, $child) {
         
         $xml = new SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?><'.$root.'/>');
-        $xml->addAttribute("generator", "crowdfunding");
+        $xml->addAttribute("generator", "com_crowdfunding");
         
         if(!empty($root) AND !empty($child) ) {
             

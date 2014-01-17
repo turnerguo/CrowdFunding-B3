@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -23,19 +23,39 @@ jimport('joomla.application.component.controller');
 class CrowdFundingControllerPayments extends JControllerLegacy {
    
     protected   $log;
-    protected   $logFile = "controller_payments_raw.php";
+    
+    protected   $paymentProcessContext;
+    protected   $paymentProcess;
+    
+    protected   $projectId;
     
     public function __construct($config = array()) {
     
         parent::__construct($config);
         
-        $file = JPath::clean(JFactory::getApplication()->getCfg("log_path") .DIRECTORY_SEPARATOR. $this->logFile);
+        $app = JFactory::getApplication();
+        /** @var $app JSite **/
         
-        $this->log = new CrowdFundingLog();
-        $this->log->addWriter(new CrowdFundingLogWriterDatabase(JFactory::getDbo()));
-        $this->log->addWriter(new CrowdFundingLogWriterFile($file));
+        // Get project id.
+        $this->projectId = $app->input->getUint("pid");
         
+        // Prepare log object
+        $registry = JRegistry::getInstance("com_crowdfunding");
+        
+        $fileName  = $registry->get("logger.file");
+        $tableName = $registry->get("logger.table");
+        
+        $file      = JPath::clean(JFactory::getApplication()->getCfg("log_path") .DIRECTORY_SEPARATOR. $fileName);
+        
+        $this->log = new ITPrismLog();
+        $this->log->addWriter(new ITPrismLogWriterDatabase(JFactory::getDbo(), $tableName));
+        $this->log->addWriter(new ITPrismLogWriterFile($file));
+        
+        // Create an object that contains a data used during the payment process.
+        $this->paymentProcessContext     = CrowdFundingConstants::PAYMENT_PROCESS_CONTEXT.$this->projectId;
+        $this->paymentProcess            = $app->getUserState($this->paymentProcessContext);
     }
+    
 	/**
      * Method to get a model object, loading it if required.
      *
@@ -82,14 +102,19 @@ class CrowdFundingControllerPayments extends JControllerLegacy {
         // Trigger the event
         try {
             
-            $context = 'com_crowdfunding.preparepayment.'.JString::strtolower($paymentService);
+            $item = $this->prepareItem($this->projectId, $params);
+            
+            $uri         = JURI::getInstance();
+            $redirectUrl = $uri->toString(array("scheme", "host")).JRoute::_(CrowdFundingHelperRoute::getBackingRoute($item->id, $item->catid));
+            
+            $context = 'com_crowdfunding.payments.preparepayment.'.JString::strtolower($paymentService);
             
             // Import CrowdFunding Payment Plugins
             $dispatcher = JEventDispatcher::getInstance();
             JPluginHelper::importPlugin('crowdfundingpayment');
 
             // Trigger onContentPreparePayment event.
-            $results    = $dispatcher->trigger("onContentPreparePayment", array($context, $params));
+            $results    = $dispatcher->trigger("onPaymentsPreparePayment", array($context, $params));
             
             // Get the result, that comes from the plugin.
             if(!empty($results)) {
@@ -101,12 +126,24 @@ class CrowdFundingControllerPayments extends JControllerLegacy {
                 }
             }
             
+        } catch (UnexpectedValueException $e) {
+        
+            // Send response to the browser
+            $response
+                ->failure()
+                ->setTitle(JText::_("COM_CROWDFUNDING_FAIL"))
+                ->setText($e->getMessage())
+                ->setRedirectUrl($redirectUrl);
+            
+            echo $response;
+            JFactory::getApplication()->close();
+            
         } catch (Exception $e) {
         
             // Store log data in the database
             $this->log->add(
                 JText::_("COM_CROWDFUNDING_ERROR_SYSTEM"),
-                "BANKTRANSFER_PAYMENT_PLUGIN_ERROR",
+                "CONTROLLER_PAYMENTS_RAW_ERROR",
                 $e->getMessage()
             );
         
@@ -114,22 +151,78 @@ class CrowdFundingControllerPayments extends JControllerLegacy {
             $response
                 ->failure()
                 ->setTitle(JText::_("COM_CROWDFUNDING_FAIL"))
-                ->setText(JText::_("COM_CROWDFUNDING_ERROR_SYSTEM"));
+                ->setText(JText::_("COM_CROWDFUNDING_ERROR_SYSTEM"))
+                ->setRedirectUrl($redirectUrl);
             
             echo $response;
             JFactory::getApplication()->close();
             
         }
         
-        // Send response to the browser
-        $response
-            ->success()
-            ->setTitle(JArrayHelper::getValue($output, "title"))
-            ->setText(JArrayHelper::getValue($output, "text"))
-            ->setData(JArrayHelper::getValue($output, "data"));
+        // Check the response
+        $success = JArrayHelper::getValue($output, "success");
+        if(!$success) { // If there is an error...
+            
+            // Initialize the payment process object.
+            $paymentProcess           = new JData();
+            $paymentProcess->step1    = false;
+            $app->setUserState($this->paymentProcessContext, $paymentProcess);
+            
+            $uri         = JURI::getInstance();
+            $redirectUrl = $uri->toString(array("scheme", "host")).JRoute::_(CrowdFundingHelperRoute::getBackingRoute($item->id, $item->catid));
+            
+            // Send response to the browser
+            $response
+                ->failure()
+                ->setTitle(JArrayHelper::getValue($output, "title"))
+                ->setText(JArrayHelper::getValue($output, "text"))
+                ->setData(JArrayHelper::getValue($output, "data"))
+                ->setRedirectUrl($redirectUrl);
+            
+        } else { // If all is OK...
+            
+            // Send response to the browser
+            $response
+                ->success()
+                ->setTitle(JArrayHelper::getValue($output, "title"))
+                ->setText(JArrayHelper::getValue($output, "text"))
+                ->setData(JArrayHelper::getValue($output, "data"));
+            
+        }
         
         echo $response;
         JFactory::getApplication()->close();
+    }
+    
+    protected function prepareItem($projectId, $params) {
+    
+        jimport("crowdfunding.project");
+        $project    = new CrowdFundingProject($projectId);
+        if(!$project->getId()) {
+            throw new UnexpectedValueException(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"));
+        }
+    
+        if($project->isCompleted()) {
+            throw new UnexpectedValueException(JText::_("COM_CROWDFUNDING_ERROR_COMPLETED_PROJECT"));
+        }
+    
+        // Get currency
+        jimport("crowdfunding.currency");
+        $currencyId         = $params->get("project_currency");
+        $this->currency     = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId);
+    
+        $item               = new stdClass();
+    
+        $item->id           = $project->getId();
+        $item->catid        = $project->getCategoryId();
+        $item->title        = $project->getTitle();
+        $item->slug         = $project->getSlug();
+        $item->catslug      = $project->getCatSlug();
+        $item->rewardId     = $this->paymentProcess->rewardId;
+        $item->amount       = $this->paymentProcess->amount;
+        $item->currency     = $this->currency->getAbbr();
+    
+        return $item;
     }
     
 }

@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -36,7 +36,7 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
         return $model;
     }
     
-    public function save() {
+    public function save($key = NULL, $urlVar = NULL) {
         
         // Check for request forgeries.
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -133,12 +133,6 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
             // Upload image
             if(!empty($image['name'])) {
             
-                jimport('joomla.filesystem.folder');
-                jimport('joomla.filesystem.file');
-                jimport('joomla.filesystem.path');
-                jimport('joomla.image.image');
-                jimport('itprism.file.upload.image');
-            
                 $imageNames    = $model->uploadImage($image);
                 if(!empty($imageNames["image"])) {
                     $validData = array_merge($validData, $imageNames);
@@ -150,29 +144,15 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend {
             
             $redirectOptions["id"] = $itemId;
             
+        } catch (RuntimeException $e) {
+            $this->displayWarning($e->getMessage(), $redirectOptions);
+            return;
+        } catch (InvalidArgumentException $e) {
+            $this->displayWarning(JText::_("COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED"), $redirectOptions);
+            return;
         } catch (Exception $e) {
-            
-            // Problem with uploading, so set a message and redirect to pages
-            $code = $e->getCode();
-            switch($code) {
-                
-                case ITPrismErrors::CODE_WARNING:
-                    $this->displayWarning($e->getMessage(), $redirectOptions);
-                    return;
-                break;
-                
-                case ITPrismErrors::CODE_HIDDEN_WARNING:
-                    $this->displayWarning(JText::_("COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED"), $redirectOptions);
-                    return;
-                break;
-                
-                default:
-                    JLog::add($e->getMessage());
-                    throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'), ITPrismErrors::CODE_ERROR);
-                break;
-                
-            }
-            
+            JLog::add($e->getMessage());
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }
         
         // Redirect to next page

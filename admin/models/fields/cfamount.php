@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -43,7 +43,7 @@ class JFormFieldCfAmount extends JFormField {
 		$currencyId  = $params->get("project_currency");
 		
 		jimport("crowdfunding.currency");
-		$currency    = CrowdFundingCurrency::getInstance($currencyId);
+		$currency    = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId);
 		
 		if($currency->getSymbol()) { // Prepended
 		    $html = '<div class="input-prepend input-append"><span class="add-on">'.$currency->getSymbol().'</span>';

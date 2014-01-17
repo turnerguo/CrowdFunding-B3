@@ -438,3 +438,22 @@ form.bs-docs-example {
 #jform_pitch_video-lbl:after, #jform_pitch_image-lbl:after {
 	content: " *";
 }
+
+.js-reward-image-wrapper {
+	position: absolute;
+	top: 0;
+	right: 0;
+	margin: 10px 10px 0 0;
+}
+
+.js-reward-image-wrapper .thumbnail {
+	margin-bottom: 10px;
+}
+
+.js-reward-image-wrapper .input-large {
+	display: block;
+}
+
+.js-reward-image-wrapper .js-btn-remove-reward-image {
+	margin-top: 10px;
+}

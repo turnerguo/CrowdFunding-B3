@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -70,12 +70,6 @@ class CrowdFundingControllerProject extends ITPrismControllerFormBackend {
             $image      = JArrayHelper::getValue($files, "image");
             
             $pitchImage = JArrayHelper::getValue($files, "pitch_image");
-            
-            jimport('joomla.filesystem.folder');
-            jimport('joomla.filesystem.file');
-            jimport('joomla.filesystem.path');
-            jimport('joomla.image.image');
-            jimport('itprism.file.upload.image');
             
             // Upload image
             if(!empty($image['name'])) {

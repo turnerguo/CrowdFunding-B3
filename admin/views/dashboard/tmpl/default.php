@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -19,7 +19,139 @@ defined('_JEXEC') or die;
     <div id="j-main-container">
     <?php endif;?>
     <div class="span8">
-        
+    
+        <!--  Row 1 -->
+        <div class="row-fluid dashboard-stats">
+            <?php if(0 < count($this->latestStarted)) {?>
+            <div class="span6">
+                <h3 class="latest-started">
+                    <?php echo JText::_("COM_CROWDFUNDING_LATEST_STARTED");?>
+                </h3>
+                <table class="table table-condensed">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th><?php echo JText::_("COM_CROWDFUNDING_PROJECT");?></th>
+                            <th class="center nowrap" style="max-width: 50px;"><?php echo JText::_("COM_CROWDFUNDING_STARTED_ON");?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php for($i = 0, $max = count($this->latestStarted); $i < $max; $i++) {?>
+                        <tr>
+                            <td><?php echo $i + 1;?></td>
+                            <td>
+                                <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=projects&filter_search=id:".(int)$this->latestStarted[$i]["id"]);?>" >
+                                    <?php echo JHtmlString::truncate(strip_tags($this->latestStarted[$i]["title"]), 53); ?>
+                                </a>
+                            </td>
+                            <td class="center">
+                                <?php echo JHtml::_('date', $this->latestStarted[$i]["funding_start"], JText::_('DATE_FORMAT_LC3'));?>
+                            </td>
+                        </tr>
+                        <?php }?>
+                    </tbody>
+                </table>
+            </div>
+            <?php }?>
+            <?php if(0 < count($this->popular)) {?>
+            <div class="span6">
+                <h3 class="popular">
+                    <?php echo JText::_("COM_CROWDFUNDING_POPULAR");?>
+                </h3>
+                <table class="table table-condensed">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th><?php echo JText::_("COM_CROWDFUNDING_PROJECT");?></th>
+                            <th class="center nowrap" style="max-width: 50px;"><?php echo JText::_("COM_CROWDFUNDING_HITS");?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php for($i = 0, $max = count($this->popular); $i < $max; $i++) {?>
+                        <tr>
+                            <td><?php echo $i + 1;?></td>
+                            <td>
+                                <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=projects&filter_search=id:".(int)$this->popular[$i]["id"]);?>" >
+                                    <?php echo JHtmlString::truncate(strip_tags($this->popular[$i]["title"]), 53); ?>
+                                </a>
+                            </td>
+                            <td class="center">
+                                <?php echo (int)$this->popular[$i]["hits"];?>
+                            </td>
+                        </tr>
+                        <?php }?>
+                    </tbody>
+                </table>
+            </div>
+            <?php }?>
+        </div>
+        <!-- /Row 1 -->
+        <!--  Row 2 -->
+        <div class="row-fluid dashboard-stats">
+            <?php if(0 < count($this->latestCreated)) {?>
+            <div class="span6">
+                <h3 class="latest-created">
+                    <?php echo JText::_("COM_CROWDFUNDING_LATEST_CREATED");?>
+                </h3>
+                <table class="table table-condensed">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th><?php echo JText::_("COM_CROWDFUNDING_PROJECT");?></th>
+                            <th class="center nowrap" style="max-width: 50px;"><?php echo JText::_("COM_CROWDFUNDING_CREATED_ON");?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php for($i = 0, $max = count($this->latestCreated); $i < $max; $i++) {?>
+                        <tr>
+                            <td><?php echo $i + 1;?></td>
+                            <td>
+                                <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=projects&filter_search=id:".(int)$this->latestCreated[$i]["id"]);?>" >
+                                    <?php echo JHtmlString::truncate(strip_tags($this->latestCreated[$i]["title"]), 53); ?>
+                                </a>
+                            </td>
+                            <td class="center">
+                                <?php echo JHtml::_('date', $this->latestCreated[$i]["created"], JText::_('DATE_FORMAT_LC3'));?>
+                            </td>
+                        </tr>
+                        <?php }?>
+                    </tbody>
+                </table>
+            </div>
+            <?php }?>
+            <?php if(0 < count($this->mostFunded)) {?>
+            <div class="span6">
+                <h3 class="mostfunded">
+                    <?php echo JText::_("COM_CROWDFUNDING_MOST_FUNDED");?>
+                </h3>
+                <table class="table table-condensed">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th><?php echo JText::_("COM_CROWDFUNDING_PROJECT");?></th>
+                            <th class="center nowrap" style="max-width: 50px;"><?php echo JText::_("COM_CROWDFUNDING_FUNDS");?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php for($i = 0, $max = count($this->mostFunded); $i < $max; $i++) {?>
+                        <tr>
+                            <td><?php echo $i + 1;?></td>
+                            <td>
+                                <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=projects&filter_search=id:".(int)$this->mostFunded[$i]["id"]);?>" >
+                                    <?php echo JHtmlString::truncate(strip_tags($this->mostFunded[$i]["title"]), 53); ?>
+                                </a>
+                            </td>
+                            <td class="center">
+                                <?php echo (!$this->currency->getId()) ? (float)$this->mostFunded[$i]["funded"] : $this->currency->getAmountString($this->mostFunded[$i]["funded"]);?>
+                            </td>
+                        </tr>
+                        <?php }?>
+                    </tbody>
+                </table>
+            </div>
+            <?php }?>
+        </div>
+        <!-- /Row 2 -->
 	</div>
 	
 	<div class="span4">

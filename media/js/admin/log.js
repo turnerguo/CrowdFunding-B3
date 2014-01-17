@@ -39,6 +39,8 @@ jQuery(document).ready(function() {
 			});
 		});
 	    
+		
+		jQuery.pnotify.defaults.history = false;
 		jQuery(".js-log-file-remove-btn").on("click", function(event) {
 			
 			event.preventDefault();
@@ -54,6 +56,9 @@ jQuery(document).ready(function() {
 					format: "raw",
 				}
 			
+				// Destroy the tooltip from this element.
+				jQuery(this).tooltip('destroy');
+				
 				jQuery.ajax({
 					url: url,
 					type: "POST",

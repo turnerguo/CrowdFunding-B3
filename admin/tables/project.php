@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -140,4 +140,12 @@ class CrowdFundingTableProject extends JTable {
         return $this->catslug;
     }
     
+    public function isCompleted() {
+        
+        $today      = strtotime("today");
+        $fundingEnd = strtotime($this->funding_end);
+        
+        return ($today <= $fundingEnd) ? false : true;
+         
+    }
 }

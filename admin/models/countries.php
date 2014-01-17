@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -31,6 +31,10 @@ class CrowdFundingModelCountries extends JModelList {
                 'id', 'a.id',
                 'name', 'a.name',
                 'code', 'a.code',
+                'code4', 'a.code4',
+                'latitude', 'a.latitude',
+                'longitude', 'a.longitude',
+                'timezone', 'a.timezone',
             );
         }
 
@@ -95,7 +99,7 @@ class CrowdFundingModelCountries extends JModelList {
         $query->select(
             $this->getState(
                 'list.select',
-                'a.id, a.name, a.code'
+                'a.id, a.name, a.code, a.code4, a.latitude, a.longitude, a.timezone'
             )
         );
         $query->from($db->quoteName('#__crowdf_countries').' AS a');

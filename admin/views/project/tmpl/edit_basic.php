@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -22,6 +22,10 @@ defined('_JEXEC') or die;
 <div class="control-group">
     <div class="control-label"><?php echo $this->form->getLabel('catid'); ?></div>
 	<div class="controls"><?php echo $this->form->getInput('catid'); ?></div>
+</div>
+<div class="control-group">
+    <div class="control-label"><?php echo $this->form->getLabel('type_id'); ?></div>
+	<div class="controls"><?php echo $this->form->getInput('type_id'); ?></div>
 </div>
 <div class="control-group">
     <div class="control-label"><?php echo $this->form->getLabel('image'); ?></div>

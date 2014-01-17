@@ -29,8 +29,6 @@ jQuery(document).ready(function() {
 		},
 		onSelect: function(item) {
 			
-			console.log(item);
-			
 			jQuery("#jform_location").attr("value", item.value);
 			
 		}

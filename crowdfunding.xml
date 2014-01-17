@@ -4,12 +4,13 @@
 	<author>Todor Iliev</author>
 	<authorEmail>todor@itprism.com</authorEmail>
 	<authorUrl>http://itprism.com</authorUrl>
-	<copyright>Copyright (C) 2013 Todor Iliev ( ITPrism.com )</copyright>
+	<copyright>Copyright (C) 2014 Todor Iliev ( ITPrism.com )</copyright>
 	<license>http://www.gnu.org/copyleft/gpl.html</license>
-	<version>1.5</version>
-	<creationDate>08 December, 2013</creationDate>
+	<version>1.6</version>
+	<creationDate>17 January, 2014</creationDate>
 	<description><![CDATA[
     <p><a href="http://itprism.com/free-joomla-extensions/ecommerce-gamification/crowdfunding-collective-raising-capital" target="_blank">CrowdFunding</a> is a platform powered by Joomla, that provides functionality for creating and managing websites for collective funding.</p>
+    <p>Invest in the extension and help for its improvement. You can <a href="http://itprism.com/sponsorship" target="_blank">sponsor the extension via SMS, PayPal or Bitcoin</a>.</p>
     <p><a href="http://itprism.com/" target="_blank">Subscribe for the newsletter</a> to receive <strong>gifts</strong>, <strong>discount codes</strong>, information about <strong>updates</strong> and information about <strong>new ITPrism extensions</strong>.</p>
     <p>Please, <a href="http://extensions.joomla.org/extensions/e-commerce/donations/23876" target="_blank">vote for the extension</a> on Joomla! Extensions Directory</p>
     ]]></description>
@@ -33,40 +34,41 @@
 	</update>
 	
 	<media destination="com_crowdfunding" folder="media">
-		<filename>index.html</filename>
 		<folder>css</folder>	
 		<folder>images</folder>
-		<folder>js</folder>		
+		<folder>js</folder>
+        
+        <filename>index.html</filename>		
 	</media>
 	
 	<!-- Site Main File Copy Section -->
 	<files folder="site">
 	    <folder>controllers</folder>
 	    <folder>helpers</folder>
+	    <folder>language</folder>
         <folder>models</folder>
         <folder>views</folder>
+        
 		<filename>controller.php</filename>
 		<filename>crowdfunding.php</filename>
 		<filename>index.html</filename>
 		<filename>router.php</filename>
 	</files>
 
-	<languages folder="site">
-		<language tag="en-GB">language/en-GB/en-GB.com_crowdfunding.ini</language>
-	</languages>
-	
 	<administration>
 		<menu link="option=com_crowdfunding">COM_CROWDFUNDING</menu>
 	
 		<files folder="admin">		    		
 			<folder>controllers</folder>
 			<folder>helpers</folder>
+			<folder>language</folder>
 			<folder>layouts</folder>
 			<folder>libraries</folder>
 			<folder>models</folder>
 			<folder>sql</folder>
 			<folder>tables</folder>
-			<folder>views</folder>		
+			<folder>views</folder>	
+            	
 			<filename>controller.php</filename>
 			<filename>index.html</filename>
 			<filename>config.xml</filename>
@@ -74,10 +76,5 @@
 			<filename>crowdfunding.php</filename>
 		</files>
 		
-		<languages folder="admin">
-			<language tag="en-GB">language/en-GB/en-GB.com_crowdfunding.ini</language>
-			<language tag="en-GB">language/en-GB/en-GB.com_crowdfunding.sys.ini</language>
-		</languages>
-			
 	</administration>
 </extension>

@@ -3,40 +3,27 @@
  * @package      CrowdFunding
  * @subpackage   Plugins
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.plugin.plugin');
+jimport('crowdfunding.payment.plugin');
 
 /**
- * CrowdFunding PayPal Payment Plugin
+ * CrowdFunding PayPal payment plugin.
  *
  * @package      CrowdFunding
  * @subpackage   Plugins
  */
-class plgCrowdFundingPaymentPayPal extends JPlugin {
+class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin {
     
-    protected   $log;
-    protected   $logFile = "plg_crowdfunding_paypal.php";
+    protected $paymentService = "paypal";
     
-    public function __construct(&$subject, $config = array()) {
-    
-        parent::__construct($subject, $config);
-    
-        // Create log object
-        $file = JPath::clean(JFactory::getApplication()->getCfg("log_path") .DIRECTORY_SEPARATOR. $this->logFile);
-    
-        $this->log = new CrowdFundingLog();
-        $this->log->addWriter(new CrowdFundingLogWriterDatabase(JFactory::getDbo()));
-        $this->log->addWriter(new CrowdFundingLogWriterFile($file));
-    
-        // Load language
-        $this->loadLanguage();
-    }
+    protected $textPrefix     = "PLG_CROWDFUNDINGPAYMENT_PAYPAL";
+    protected $debugType      = "PAYPAL_PAYMENT_PLUGIN_DEBUG";
     
     /**
      * This method prepares a payment gateway - buttons, forms,...
@@ -47,6 +34,10 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
      * @param JRegistry $params	    The parameters of the component
      */
     public function onProjectPayment($context, $item, $params) {
+        
+        if(strcmp("com_crowdfunding.payment", $context) != 0){
+            return;
+        }
         
         $app = JFactory::getApplication();
         /** @var $app JSite **/
@@ -64,13 +55,6 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
             return;
         }
        
-        if(strcmp("com_crowdfunding.payment", $context) != 0){
-            return;
-        }
-        
-        // Load language
-        $this->loadLanguage();
-        
         // This is a URI path to the plugin folder
         $pluginURI = "plugins/crowdfundingpayment/paypal";
         
@@ -78,36 +62,40 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
         $returnUrl = $this->getReturnUrl($item->slug, $item->catslug);
         $cancelUrl = $this->getCancelUrl($item->slug, $item->catslug);
         
-        $html  =  "";
-        $html .= '<h4><img src="'.$pluginURI.'/images/paypal_icon.png" width="36" height="32" alt="PayPal" />'.JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_TITLE").'</h4>';
-        $html .= '<p>'.JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_INFO").'</p>';
+        $html   =  array();
+        $html[] = '<h4><img src="'.$pluginURI.'/images/paypal_icon.png" width="36" height="32" alt="PayPal" />'.JText::_($this->textPrefix."_TITLE").'</h4>';
+        $html[] = '<p>'.JText::_($this->textPrefix."_INFO").'</p>';
         
         if(!$this->params->get('paypal_sandbox', 1)) {
-            $html .= '<form action="'.JString::trim($this->params->get('paypal_url')).'" method="post">';
-            $html .= '<input type="hidden" name="business" value="'.JString::trim($this->params->get('paypal_business_name')).'" />';
+            $html[] = '<form action="'.JString::trim($this->params->get('paypal_url')).'" method="post">';
+            $html[] = '<input type="hidden" name="business" value="'.JString::trim($this->params->get('paypal_business_name')).'" />';
         }  else {
-            $html .= '<form action="'.JString::trim($this->params->get('paypal_sandbox_url')).'" method="post">';
-            $html .= '<input type="hidden" name="business" value="'.JString::trim($this->params->get('paypal_sandbox_business_name')).'" />';
+            $html[] = '<form action="'.JString::trim($this->params->get('paypal_sandbox_url')).'" method="post">';
+            $html[] = '<input type="hidden" name="business" value="'.JString::trim($this->params->get('paypal_sandbox_business_name')).'" />';
         }
         
-        $html .= '<input type="hidden" name="cmd" value="_xclick" />';
-        $html .= '<input type="hidden" name="charset" value="utf-8" />';
-        $html .= '<input type="hidden" name="currency_code" value="'.$item->currencyCode.'" />';
-        $html .= '<input type="hidden" name="amount" value="'.$item->amount.'" />';
-        $html .= '<input type="hidden" name="quantity" value="1" />';
-        $html .= '<input type="hidden" name="no_shipping" value="1" />';
-        $html .= '<input type="hidden" name="no_note" value="1" />';
-        $html .= '<input type="hidden" name="tax" value="0" />';
+        $html[] = '<input type="hidden" name="cmd" value="_xclick" />';
+        $html[] = '<input type="hidden" name="charset" value="utf-8" />';
+        $html[] = '<input type="hidden" name="currency_code" value="'.$item->currencyCode.'" />';
+        $html[] = '<input type="hidden" name="amount" value="'.$item->amount.'" />';
+        $html[] = '<input type="hidden" name="quantity" value="1" />';
+        $html[] = '<input type="hidden" name="no_shipping" value="1" />';
+        $html[] = '<input type="hidden" name="no_note" value="1" />';
+        $html[] = '<input type="hidden" name="tax" value="0" />';
         
         // Title
-        $title = JText::sprintf("PLG_CROWDFUNDINGPAYMENT_PAYPAL_INVESTING_IN_S", htmlentities($item->title, ENT_QUOTES, "UTF-8"));
-        $html .= '<input type="hidden" name="item_name" value="'.$title.'" />';
+        $title = JText::sprintf($this->textPrefix."_INVESTING_IN_S", htmlentities($item->title, ENT_QUOTES, "UTF-8"));
+        $html[] = '<input type="hidden" name="item_name" value="'.$title.'" />';
         
         // Get intention
         $userId        = JFactory::getUser()->id;
         $aUserId       = $app->getUserState("auser_id");
         
-        $intention = CrowdFundingHelper::getIntention($userId, $aUserId, $item->id);
+        $intention     = $this->getIntention(array(
+            "user_id"       => $userId,
+            "auser_id"      => $aUserId,
+            "project_id"    => $item->id
+        ));
         
         // Prepare custom data
         $custom = array(
@@ -116,29 +104,30 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
         );
         
         $custom = base64_encode(json_encode($custom));
-        
-        $html .= '<input type="hidden" name="custom" value="'.$custom.'" />';
+        $html[] = '<input type="hidden" name="custom" value="'.$custom.'" />';
         
         // Set a link to logo
         $imageUrl = JString::trim($this->params->get('paypal_image_url'));
         if($imageUrl) {
-            $html .= '<input type="hidden" name="image_url" value="'.$imageUrl.'" />';
+            $html[] = '<input type="hidden" name="image_url" value="'.$imageUrl.'" />';
         }
         
-        $html .= '<input type="hidden" name="cancel_return" value="'.$cancelUrl.'" />';
+        $html[] = '<input type="hidden" name="cancel_return" value="'.$cancelUrl.'" />';
         
-        $html .= '<input type="hidden" name="return" value="'.$returnUrl.'" />';
+        $html[] = '<input type="hidden" name="return" value="'.$returnUrl.'" />';
         
-        $html .= '<input type="hidden" name="notify_url" value="'.$notifyUrl.'" />';
-        $html .= '<input type="image" name="submit" border="0" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_LG.gif" alt="'.JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_BUTTON_ALT").'">
-        <img alt="" border="0" width="1" height="1" src="https://www.paypal.com/en_US/i/scr/pixel.gif" >  
-    	</form>';
+        $html[] = '<input type="hidden" name="notify_url" value="'.$notifyUrl.'" />';
+        
+        $this->prepareLocale($html);
+        
+        $html[] = '<img alt="" border="0" width="1" height="1" src="https://www.paypal.com/en_US/i/scr/pixel.gif" >';
+        $html[] = '</form>';
         
         if($this->params->get('paypal_sandbox', 1)) {
-            $html .= '<p class="sticky">'.JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_WORKS_SANDBOX").'</p>';
+            $html[] = '<p class="sticky">'.JText::_($this->textPrefix."_WORKS_SANDBOX").'</p>';
         }
         
-        return $html;
+        return implode("\n", $html);
         
     }
     
@@ -151,6 +140,10 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
      * @return null|array
      */
     public function onPaymenNotify($context, $params) {
+        
+        if(strcmp("com_crowdfunding.notify.paypal", $context) != 0){
+            return null;
+        }
         
         $app = JFactory::getApplication();
         /** @var $app JSite **/
@@ -168,39 +161,32 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
             return null;
         }
        
-        if(strcmp("com_crowdfunding.notify", $context) != 0){
-            return null;
-        }
-        
-        // Load language
-        $this->loadLanguage();
-        
         // Validate request method
         $requestMethod = $app->input->getMethod();
         if(strcmp("POST", $requestMethod) != 0) {
             $this->log->add(
-                JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_ERROR_INVALID_REQUEST_METHOD"), 
-                "PAYPAL_PAYMENT_PLUGIN_ERROR", 
-                JText::sprintf("PLG_CROWDFUNDINGPAYMENT_PAYPAL_ERROR_INVALID_TRANSACTION_REQUEST_METHOD", $requestMethod)
+                JText::_($this->textPrefix."_ERROR_INVALID_REQUEST_METHOD"), 
+                $this->debugType, 
+                JText::sprintf($this->textPrefix."_ERROR_INVALID_TRANSACTION_REQUEST_METHOD", $requestMethod)
             );
             return null;
         }
         
         // DEBUG DATA
-        JDEBUG ? $this->log->add(JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_DEBUG_RESPONSE"), "PAYPAL_PAYMENT_PLUGIN_DEBUG", $_POST) : null;
+        JDEBUG ? $this->log->add(JText::_($this->textPrefix."_DEBUG_RESPONSE"), $this->debugType, $_POST) : null;
         
         // Decode custom data
         $custom    = JArrayHelper::getValue($_POST, "custom");
         $custom    = json_decode(base64_decode($custom), true);
         
         // DEBUG DATA
-        JDEBUG ? $this->log->add(JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_DEBUG_CUSTOM"), "PAYPAL_PAYMENT_PLUGIN_DEBUG", $custom) : null;
+        JDEBUG ? $this->log->add(JText::_($this->textPrefix."_DEBUG_CUSTOM"), $this->debugType, $custom) : null;
         
         // Verify gateway. Is it PayPal? 
         if(!$this->isPayPalGateway($custom)) {
             $this->log->add(
-                JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_ERROR_INVALID_PAYMENT_GATEWAY"), 
-                "PAYPAL_PAYMENT_PLUGIN_ERROR", 
+                JText::_($this->textPrefix."_ERROR_INVALID_PAYMENT_GATEWAY"), 
+                $this->debugType, 
                 array("custom" => $custom, "_POST" => $_POST) 
             );
             return null;
@@ -214,12 +200,13 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
             $url = JString::trim($this->params->get('paypal_sandbox_url', "https://www.sandbox.paypal.com/cgi-bin/webscr"));
         }
         
-        jimport("itprism.payment.paypal.verify");
-        $paypalVerify = new ITPrismPayPalVerify($url, $_POST);
-        $paypalVerify->verify();
+        jimport("itprism.payment.paypal.ipn");
+        $paypalIpn = new ITPrismPayPalIpn($url, $_POST);
+        $loadCertificate = (bool)$this->params->get("paypal_load_certificate", 0);
+        $paypalIpn->verify($loadCertificate);
         
         // DEBUG DATA
-        JDEBUG ? $this->log->add(JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_DEBUG_VERIFY_OBJECT"), "PAYPAL_PAYMENT_PLUGIN_DEBUG", $paypalVerify) : null;
+        JDEBUG ? $this->log->add(JText::_($this->textPrefix."_DEBUG_VERIFY_OBJECT"), $this->debugType, $paypalIpn) : null;
         
         // Prepare the array that will be returned by this method
         $result = array(
@@ -229,12 +216,12 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
             "payment_service"  => "PayPal"
         );
         
-        if($paypalVerify->isVerified()) {
+        if($paypalIpn->isVerified()) {
             
             // Get currency
             jimport("crowdfunding.currency");
             $currencyId      = $params->get("project_currency");
-            $currency        = CrowdFundingCurrency::getInstance($currencyId);
+            $currency        = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId);
             
             // Get intention data
             $intentionId     = JArrayHelper::getValue($custom, "intention_id", 0, "int");
@@ -243,7 +230,7 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
             $intention       = new CrowdFundingIntention($intentionId);
             
             // DEBUG DATA
-            JDEBUG ? $this->log->add(JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_DEBUG_INTENTION"), "PAYPAL_PAYMENT_PLUGIN_DEBUG", $intention->getProperties()) : null;
+            JDEBUG ? $this->log->add(JText::_($this->textPrefix."_DEBUG_INTENTION"), $this->debugType, $intention->getProperties()) : null;
             
             // Validate transaction data
             $validData = $this->validateData($_POST, $currency->getAbbr(), $intention);
@@ -252,7 +239,7 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
             }
             
             // DEBUG DATA
-            JDEBUG ? $this->log->add(JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_DEBUG_VALID_DATA"), "PAYPAL_PAYMENT_PLUGIN_DEBUG", $validData) : null;
+            JDEBUG ? $this->log->add(JText::_($this->textPrefix."_DEBUG_VALID_DATA"), $this->debugType, $validData) : null;
             
             // Get project.
             jimport("crowdfunding.project");
@@ -260,15 +247,15 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
             $project   = CrowdFundingProject::getInstance($projectId);
             
             // DEBUG DATA
-            JDEBUG ? $this->log->add(JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_DEBUG_PROJECT_OBJECT"), "PAYPAL_PAYMENT_PLUGIN_DEBUG", $project->getProperties()) : null;
+            JDEBUG ? $this->log->add(JText::_($this->textPrefix."_DEBUG_PROJECT_OBJECT"), $this->debugType, $project->getProperties()) : null;
             
             // Check for valid project
             if(!$project->getId()) {
                 
                 // Log data in the database
                 $this->log->add(
-                    JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_ERROR_INVALID_PROJECT"),
-                    "PAYPAL_PAYMENT_PLUGIN_ERROR",
+                    JText::_($this->textPrefix."_ERROR_INVALID_PROJECT"),
+                    $this->debugType,
                     $validData
                 );
                 
@@ -308,7 +295,7 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
             }
             
             // DEBUG DATA
-            JDEBUG ? $this->log->add(JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_DEBUG_RESULT_DATA"), "PAYPAL_PAYMENT_PLUGIN_DEBUG", $result) : null;
+            JDEBUG ? $this->log->add(JText::_($this->textPrefix."_DEBUG_RESULT_DATA"), $this->debugType, $result) : null;
             
             // Remove intention
             $intention->delete();
@@ -318,9 +305,9 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
             
             // Log error
             $this->log->add(
-                JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_ERROR_INVALID_TRANSACTION_DATA"), 
-                "PAYPAL_PAYMENT_PLUGIN_ERROR", 
-                array("error message" => $paypalVerify->getError(), "paypalVerify" => $paypalVerify, "_POST" => $_POST)
+                JText::_($this->textPrefix."_ERROR_INVALID_TRANSACTION_DATA"), 
+                $this->debugType, 
+                array("error message" => $paypalIpn->getError(), "paypalVerify" => $paypalIpn, "_POST" => $_POST)
             );
             
         }
@@ -340,6 +327,10 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
      */
     public function onAfterPayment($context, &$transaction, $params, $project, $reward) {
         
+        if(strcmp("com_crowdfunding.notify.paypal", $context) != 0){
+            return;
+        }
+        
         $app = JFactory::getApplication();
         /** @var $app JSite **/
         
@@ -356,10 +347,6 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
             return;
         }
        
-        if(strcmp("com_crowdfunding.notify.paypal", $context) != 0){
-            return;
-        }
-        
         // Send mails
         $this->sendMails($project, $transaction);
     }
@@ -395,8 +382,8 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
             
             // Log data in the database
             $this->log->add(
-                JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_ERROR_INVALID_TRANSACTION_DATA"),
-                "PAYPAL_PAYMENT_PLUGIN_ERROR",
+                JText::_($this->textPrefix."_ERROR_INVALID_TRANSACTION_DATA"),
+                $this->debugType,
                 $transaction
             );
             
@@ -409,8 +396,8 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
             
             // Log data in the database
             $this->log->add(
-                JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_ERROR_INVALID_TRANSACTION_CURRENCY"),
-                "PAYPAL_PAYMENT_PLUGIN_ERROR",
+                JText::_($this->textPrefix."_ERROR_INVALID_TRANSACTION_CURRENCY"),
+                $this->debugType,
                 array("TRANSACTION DATA" => $transaction, "CURRENCY" => $currency)
             );
             
@@ -435,8 +422,8 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
             
             // Log data in the database
             $this->log->add(
-                JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_ERROR_INVALID_RECEIVER"),
-                "PAYPAL_PAYMENT_PLUGIN_ERROR",
+                JText::_($this->textPrefix."_ERROR_INVALID_RECEIVER"),
+                $this->debugType,
                 array("TRANSACTION DATA" => $transaction, "RECEIVER DATA" => $allowedReceivers)
             );
             
@@ -444,72 +431,6 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
         }
         
         return $transaction;
-    }
-    
-    protected function updateReward(&$data) {
-        
-        // Get reward.
-        jimport("crowdfunding.reward");
-        $keys   = array(
-        	"id"         => $data["reward_id"], 
-        	"project_id" => $data["project_id"]
-        );
-        $reward = new CrowdFundingReward($keys);
-        
-        // DEBUG DATA
-        JDEBUG ? $this->log->add(JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_DEBUG_REWARD_OBJECT"), "PAYPAL_PAYMENT_PLUGIN_DEBUG", $reward->getProperties()) : null;
-        
-        // Check for valid reward.
-        if(!$reward->getId()) {
-            
-            // Log data in the database
-            $this->log->add(
-                JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_ERROR_INVALID_REWARD"),
-                "PAYPAL_PAYMENT_PLUGIN_ERROR",
-                array("data" => $data, "reward object" => $reward->getProperties())
-            );
-            
-			$data["reward_id"] = 0;
-			return null;
-        }
-        
-        // Check for valida amount between reward value and payed by user
-        $txnAmount = JArrayHelper::getValue($data, "txn_amount");
-        if($txnAmount < $reward->getAmount()) {
-            
-            // Log data in the database
-            $this->log->add(
-                JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_ERROR_INVALID_REWARD_AMOUNT"),
-                "PAYPAL_PAYMENT_PLUGIN_ERROR",
-                array("data" => $data, "reward object" => $reward->getProperties())
-            );
-            
-			$data["reward_id"] = 0;
-			return null;
-        }
-        
-        // Verify the availability of rewards
-        if($reward->isLimited() AND !$reward->getAvailable()) {
-            
-            // Log data in the database
-            $this->log->add(
-                JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_ERROR_REWARD_NOT_AVAILABLE"),
-                "PAYPAL_PAYMENT_PLUGIN_ERROR",
-                array("data" => $data, "reward object" => $reward->getProperties())
-            );
-            
-			$data["reward_id"] = 0;
-			return null;
-        }
-        
-        // Increase the number of distributed rewards 
-        // if there is a limit.
-        if($reward->isLimited()) {
-            $reward->increaseDistributed();
-            $reward->store();
-        }
-        
-        return $reward;
     }
     
     /**
@@ -530,7 +451,7 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
         $transaction = new CrowdFundingTransaction($keys);
         
         // DEBUG DATA
-        JDEBUG ? $this->log->add(JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_DEBUG_TRANSACTION_OBJECT"), "PAYPAL_PAYMENT_PLUGIN_DEBUG", $transaction->getProperties()) : null;
+        JDEBUG ? $this->log->add(JText::_($this->textPrefix."_DEBUG_TRANSACTION_OBJECT"), $this->debugType, $transaction->getProperties()) : null;
         
         // Check for existed transaction
         if($transaction->getId()) {
@@ -565,49 +486,53 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
     
     protected function getNotifyUrl() {
         
-        $notifyPage = JString::trim($this->params->get('paypal_notify_url'));
+        $page = JString::trim($this->params->get('paypal_notify_url'));
         
         $uri        = JURI::getInstance();
         $domain     = $uri->toString(array("host"));
         
-        if( false == strpos($notifyPage, $domain) ) {
-            $notifyPage = JURI::root().str_replace("&", "&amp;", $notifyPage);
+        if( false == strpos($page, $domain) ) {
+            $page = JURI::root().str_replace("&", "&amp;", $page);
+        }
+        
+        if(false === strpos($page, "payment_service=PayPal")) {
+            $page .= "&amp;payment_service=PayPal";
         }
         
         // DEBUG DATA
-        JDEBUG ? $this->log->add(JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_DEBUG_NOTIFY_URL"), "PAYPAL_PAYMENT_PLUGIN_DEBUG", $notifyPage) : null;
+        JDEBUG ? $this->log->add(JText::_($this->textPrefix."_DEBUG_NOTIFY_URL"), $this->debugType, $page) : null;
         
-        return $notifyPage;
+        return $page;
         
     }
     
     protected function getReturnUrl($slug, $catslug) {
         
-        $returnPage = JString::trim($this->params->get('paypal_return_url'));
-        if(!$returnPage) {
+        $page = JString::trim($this->params->get('paypal_return_url'));
+        if(!$page) {
             $uri        = JURI::getInstance();
-            $returnPage = $uri->toString(array("scheme", "host")).JRoute::_(CrowdFundingHelperRoute::getBackingRoute($slug, $catslug, "share"), false);
+            $page = $uri->toString(array("scheme", "host")).JRoute::_(CrowdFundingHelperRoute::getBackingRoute($slug, $catslug, "share"), false);
         } 
         
         // DEBUG DATA
-        JDEBUG ? $this->log->add(JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_DEBUG_RETURN_URL"), "PAYPAL_PAYMENT_PLUGIN_DEBUG", $returnPage) : null;
+        JDEBUG ? $this->log->add(JText::_($this->textPrefix."_DEBUG_RETURN_URL"), $this->debugType, $page) : null;
         
-        return $returnPage;
+        return $page;
         
     }
     
     protected function getCancelUrl($slug, $catslug) {
         
-        $cancelPage = JString::trim($this->params->get('paypal_cancel_url'));
-        if(!$cancelPage) {
-            $uri        = JURI::getInstance();
-            $cancelPage = $uri->toString(array("scheme", "host")).JRoute::_(CrowdFundingHelperRoute::getBackingRoute($slug, $catslug, "default"), false);
+        $page = JString::trim($this->params->get('paypal_cancel_url'));
+        if(!$page) {
+            $uri  = JURI::getInstance();
+            $page = $uri->toString(array("scheme", "host")).JRoute::_(CrowdFundingHelperRoute::getBackingRoute($slug, $catslug, "default"), false);
         } 
         
         // DEBUG DATA
-        JDEBUG ? $this->log->add(JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_DEBUG_CANCEL_URL"), "PAYPAL_PAYMENT_PLUGIN_DEBUG", $cancelPage) : null;
+        JDEBUG ? $this->log->add(JText::_($this->textPrefix."_DEBUG_CANCEL_URL"), $this->debugType, $page) : null;
         
-        return $cancelPage;
+        return $page;
     }
     
     protected function isPayPalGateway($custom) {
@@ -621,184 +546,33 @@ class plgCrowdFundingPaymentPayPal extends JPlugin {
         return true;
     }
     
-    protected function sendMails($project, $transaction) {
+    protected function prepareLocale(&$html) {
     
-        $app = JFactory::getApplication();
-        /** @var $app JSite **/
+        // Get country
+        jimport("crowdfunding.country");
+        $countryId = $this->params->get("paypal_country");
+        $country   = new CrowdFundingCountry(JFactory::getDbo());
+        $country->load($countryId);
     
-        // Get website
-        $uri     = JUri::getInstance();
-        $website = $uri->toString(array("scheme", "host"));
+        $code   = $country->getCode();
+        $code4  = $country->getCode4();
     
-        jimport("itprism.string");
-        jimport("crowdfunding.email");
+        $button     = $this->params->get("paypal_button_type", "btn_buynow_LG");
+        $buttonUrl  = $this->params->get("paypal_button_url");
     
-        $emailMode  = $this->params->get("email_mode", "plain");
+        if(!$buttonUrl) {
     
-        // Prepare data for parsing
-        $data = array(
-            "site_name"         => $app->getCfg("sitename"),
-            "site_url"          => JUri::root(),
-            "item_title"        => $project->title,
-            "item_url"          => $website.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($project->slug, $project->catslug)),
-            "amount"            => ITPrismString::getAmount($transaction->txn_amount, $transaction->txn_currency),
-            "transaction_id"    => $transaction->txn_id
-        );
-    
-        // Send mail to the administrator
-        $emailId = $this->params->get("admin_mail_id", 0);
-        if(!empty($emailId)) {
-    
-            $table    = new CrowdFundingTableEmail(JFactory::getDbo());
-            $email    = new CrowdFundingEmail();
-            $email->setTable($table);
-            $email->load($emailId);
-    
-            if(!$email->getSenderName()) {
-                $email->setSenderName($app->getCfg("fromname"));
-            }
-            if(!$email->getSenderEmail()) {
-                $email->setSenderEmail($app->getCfg("mailfrom"));
+            if(strcmp("US", $code) == 0) {
+                $html[] = '<input type="image" name="submit" border="0" src="https://www.paypalobjects.com/'.$code4.'/i/btn/'.$button.'.gif" alt="'.JText::_($this->textPrefix."_BUTTON_ALT").'">';
+            } else {
+                $html[] = '<input type="image" name="submit" border="0" src="https://www.paypalobjects.com/'.$code4.'/'.$code.'/i/btn/'.$button.'.gif" alt="'.JText::_($this->textPrefix."_BUTTON_ALT").'">';
             }
     
-            $recipientName = $email->getSenderName();
-            $recipientMail = $email->getSenderEmail();
-    
-            // Prepare data for parsing
-            $data["sender_name"]     =  $email->getSenderName();
-            $data["sender_email"]    =  $email->getSenderEmail();
-            $data["recipient_name"]  =  $recipientName;
-            $data["recipient_email"] =  $recipientMail;
-    
-            $email->parse($data);
-            $subject    = $email->getSubject();
-            $body       = $email->getBody($emailMode);
-    
-            $mailer  = JFactory::getMailer();
-            if(strcmp("html", $emailMode) == 0) { // Send as HTML message
-                $return  = $mailer->sendMail($email->getSenderEmail(), $email->getSenderName(), $recipientMail, $subject, $body, CrowdFundingEmail::MAIL_MODE_HTML);
-    
-            } else { // Send as plain text.
-                $return  = $mailer->sendMail($email->getSenderEmail(), $email->getSenderName(), $recipientMail, $subject, $body, CrowdFundingEmail::MAIL_MODE_PLAIN);
-    
-            }
-    
-            // Check for an error.
-            if ($return !== true) {
-    
-                // Log error
-                $this->log->add(
-                    JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_ERROR_MAIL_SENDING_ADMIN"),
-                    "PAYPAL_PAYMENT_PLUGIN_ERROR"
-                );
-    
-            }
-    
+        } else {
+            $html[] = '<input type="image" name="submit" border="0" src="'.$buttonUrl.'" alt="'.JText::_($this->textPrefix."_BUTTON_ALT").'">';
         }
     
-        // Send mail to project owner
-        $emailId = $this->params->get("creator_mail_id", 0);
-        if(!empty($emailId)) {
-    
-            $table    = new CrowdFundingTableEmail(JFactory::getDbo());
-            $email    = new CrowdFundingEmail();
-            $email->setTable($table);
-            $email->load($emailId);
-    
-            if(!$email->getSenderName()) {
-                $email->setSenderName($app->getCfg("fromname"));
-            }
-            if(!$email->getSenderEmail()) {
-                $email->setSenderEmail($app->getCfg("mailfrom"));
-            }
-    
-            $user          = JFactory::getUser($transaction->receiver_id);
-            $recipientName = $user->get("name");
-            $recipientMail = $user->get("email");
-    
-            // Prepare data for parsing
-            $data["sender_name"]     =  $email->getSenderName();
-            $data["sender_email"]    =  $email->getSenderEmail();
-            $data["recipient_name"]  =  $recipientName;
-            $data["recipient_email"] =  $recipientMail;
-    
-            $email->parse($data);
-            $subject    = $email->getSubject();
-            $body       = $email->getBody($emailMode);
-    
-            $mailer  = JFactory::getMailer();
-            if(strcmp("html", $emailMode) == 0) { // Send as HTML message
-                $return  = $mailer->sendMail($email->getSenderEmail(), $email->getSenderName(), $recipientMail, $subject, $body, CrowdFundingEmail::MAIL_MODE_HTML);
-    
-            } else { // Send as plain text.
-                $return  = $mailer->sendMail($email->getSenderEmail(), $email->getSenderName(), $recipientMail, $subject, $body, CrowdFundingEmail::MAIL_MODE_PLAIN);
-    
-            }
-    
-            // Check for an error.
-            if ($return !== true) {
-    
-                // Log error
-                $this->log->add(
-                    JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_ERROR_MAIL_SENDING_PROJECT_OWNER"),
-                    "PAYPAL_PAYMENT_PLUGIN_ERROR"
-                );
-    
-            }
-        }
-    
-        // Send mail to backer
-        $emailId    = $this->params->get("user_mail_id", 0);
-        $investorId = $transaction->investor_id;
-        if(!empty($emailId) AND !empty($investorId)) {
-    
-            $table    = new CrowdFundingTableEmail(JFactory::getDbo());
-            $email    = new CrowdFundingEmail();
-            $email->setTable($table);
-            $email->load($emailId);
-    
-            if(!$email->getSenderName()) {
-                $email->setSenderName($app->getCfg("fromname"));
-            }
-            if(!$email->getSenderEmail()) {
-                $email->setSenderEmail($app->getCfg("mailfrom"));
-            }
-    
-            $user          = JFactory::getUser($investorId);
-            $recipientName = $user->get("name");
-            $recipientMail = $user->get("email");
-    
-            // Prepare data for parsing
-            $data["sender_name"]     =  $email->getSenderName();
-            $data["sender_email"]    =  $email->getSenderEmail();
-            $data["recipient_name"]  =  $recipientName;
-            $data["recipient_email"] =  $recipientMail;
-    
-            $email->parse($data);
-            $subject    = $email->getSubject();
-            $body       = $email->getBody($emailMode);
-    
-            $mailer  = JFactory::getMailer();
-            if(strcmp("html", $emailMode) == 0) { // Send as HTML message
-                $return  = $mailer->sendMail($email->getSenderEmail(), $email->getSenderName(), $recipientMail, $subject, $body, CrowdFundingEmail::MAIL_MODE_HTML);
-    
-            } else { // Send as plain text.
-                $return  = $mailer->sendMail($email->getSenderEmail(), $email->getSenderName(), $recipientMail, $subject, $body, CrowdFundingEmail::MAIL_MODE_PLAIN);
-    
-            }
-    
-            // Check for an error.
-            if ($return !== true) {
-    
-                // Log error
-                $this->log->add(
-                    JText::_("PLG_CROWDFUNDINGPAYMENT_PAYPAL_ERROR_MAIL_SENDING_USER"),
-                    "PAYPAL_PAYMENT_PLUGIN_ERROR"
-                );
-    
-            }
-    
-        }
+        $html[] = '<input type="hidden" name="lc" value="'.$code.'" />';
     
     }
     

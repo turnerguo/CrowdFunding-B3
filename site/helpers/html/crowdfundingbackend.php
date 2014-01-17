@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -26,30 +26,25 @@ abstract class JHtmlCrowdFundingBackend {
 	    if(!$value) { // Disapproved
 		    $task   = $prefix."approve";
 		    $title  = "COM_CROWDFUNDING_APPROVE_ITEM";
-		    $text   = "COM_CROWDFUNDING_DISAPPROVED";
 		    $class  = "ban-circle";
 	    } else {
 	        $task   = $prefix."disapprove";
 	        $title  = "COM_CROWDFUNDING_DISAPPROVE_ITEM";
-	        $text   = "COM_CROWDFUNDING_APPROVED";
 	        $class  = "ok";
 	    }
 		
-		$html[] = '<a class="btn btn-micro hasTooltip" ';
-		$html[] = ' href="javascript:void(0);" onclick="return listItemTask(\'' . $checkbox . $i . '\',\'' . $task . '\')"';
-		$html[] = ' title="' . addslashes(htmlspecialchars(JText::_($title), ENT_COMPAT, 'UTF-8')) . '">';
+		$html[] = '<a class="btn btn-micro hasTooltip" href="javascript:void(0);" onclick="return listItemTask(\'' . $checkbox . $i . '\',\'' . $task . '\')" title="' . addslashes(htmlspecialchars(JText::_($title), ENT_COMPAT, 'UTF-8')) . '">';
 		$html[] = '<i class="icon-' . $class . '"></i>';
 		$html[] = '</a>';
 		
-		return implode($html);
+		return implode("\n", $html);
 	}
 	
-    
     /**
      * @param   int $value	The state value
      * @param   int $i
      */
-    public static function featured($value = 0, $i, $canChange = true) {
+    public static function featured($i, $value = 0, $canChange = true) {
         
         JHtml::_('bootstrap.tooltip');
     
@@ -84,7 +79,7 @@ abstract class JHtmlCrowdFundingBackend {
      * @see     JHtmlJGrid::state
      * @since   11.1
      */
-    public static function published($value, $i, $prefix = '', $enabled = true, $checkbox = 'cb') {
+    public static function published($i, $value, $prefix = '', $enabled = true, $checkbox = 'cb') {
         
         if (is_array($prefix)) {
             $options  = $prefix;
@@ -123,10 +118,16 @@ abstract class JHtmlCrowdFundingBackend {
             
             if(!$sent) {
                 $icon  = "../media/com_crowdfunding/images/reward_16.png";
-                $title = 'title="' . htmlspecialchars($reward, ENT_QUOTES, "UTF-8") . '"';
+                $title = 'title="';
+                $title .= htmlspecialchars($reward, ENT_QUOTES, "UTF-8") . "<br />";
+                $title .= JText::_("COM_CROWDFUNDING_REWARD_NOT_SENT");
+                $title .= '"';
             } else {
                 $icon  = "../media/com_crowdfunding/images/reward_sent_16.png";
-                $title = 'title="' . htmlspecialchars($reward, ENT_QUOTES, "UTF-8") . '"';
+                $title = 'title="';
+                $title .= htmlspecialchars($reward, ENT_QUOTES, "UTF-8"). "<br />";
+                $title .= JText::_("COM_CROWDFUNDING_REWARD_SENT");
+                $title .= '"';
             }
     
         }
@@ -136,6 +137,23 @@ abstract class JHtmlCrowdFundingBackend {
         $html[] = '</a>';
     
         return implode(" ", $html);
+    }
+
+    public static function reason($value) {
+         
+        if(!$value) { 
+            return "";   
+        }
+        
+        JHtml::_('bootstrap.tooltip');
+        
+        $title  = JText::sprintf("COM_CROWDFUNDING_STATUS_REASON", htmlspecialchars($value, ENT_COMPAT, 'UTF-8'));
+    
+        $html[] = '<a class="btn btn-micro hasTooltip" href="javascript:void(0);" title="' . addslashes($title) . '">';
+        $html[] = '<i class="icon-question"></i>';
+        $html[] = '</a>';
+    
+        return implode("\n", $html);
     }
     
 }

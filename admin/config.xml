@@ -1,23 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
-    <fieldset name="basic" label="COM_CROWDFUNDING_BASIC">
-        <field name="bootstrap_modal" type="radio" default="0" label="COM_CROWDFUNDING_INCLUDE_BOOTSTRAP_MODAL" description="COM_CROWDFUNDING_INCLUDE_BOOTSTRAP_MODAL_DESC" class="btn-group">
-            <option value="0">JNO</option>
-            <option value="1">JYES</option>
-        </field>
-        <field name="bootstrap_navbar" type="radio" default="0" label="COM_CROWDFUNDING_INCLUDE_BOOTSTRAP_NAVBAR" description="COM_CROWDFUNDING_INCLUDE_BOOTSTRAP_NAVBAR_DESC" class="btn-group">
-            <option value="0">JNO</option>
-            <option value="1">JYES</option>
-        </field>
-        <field name="bootstrap_thumbnails" type="radio" default="0" label="COM_CROWDFUNDING_INCLUDE_BOOTSTRAP_THUMBNAILS" description="COM_CROWDFUNDING_INCLUDE_BOOTSTRAP_MODAL_DESC" class="btn-group">
-            <option value="0">JNO</option>
-            <option value="1">JYES</option>
-        </field>
-        <field name="bootstrap_mediacomponent" type="radio" default="0" label="COM_CROWDFUNDING_INCLUDE_BOOTSTRAP_MEDIACOMPONENT" description="COM_CROWDFUNDING_INCLUDE_BOOTSTRAP_MODAL_DESC" class="btn-group">
-            <option value="0">JNO</option>
-            <option value="1">JYES</option>
-        </field>
-    </fieldset>
     <fieldset name="discover" label="COM_CROWDFUNDING_DISCOVER" description="COM_CROWDFUNDING_DISCOVER_PARAMS">
         <field name="integration_display_creator" type="radio" default="1" label="COM_CROWDFUNDING_DISPLAY_CREATOR" description="COM_CROWDFUNDING_INTEGRATION_DISPLAY_CREATOR_DESC" class="btn-group">
             <option value="0">JNO</option>
@@ -70,6 +52,15 @@
             <option value="2">COM_CROWDFUNDING_INSIDE</option>
             <option value="3">COM_CROWDFUNDING_OUTSIDE</option>
         </field>
+        <field name="spacer2" type="spacer" label="COM_CROWDFUNDING_REWARDS_IMAGES_OPTIONS" />
+        <field name="rewards_images" type="radio" default="0" label="COM_CROWDFUNDING_REWARDS_IMAGES" description="COM_CROWDFUNDING_REWARDS_IMAGES_DESC" class="btn-group">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        <field name="rewards_image_thumb_width" type="text" default="200" label="COM_CROWDFUNDING_REWARD_IMAGE_THUMB_WIDTH" description="COM_CROWDFUNDING_REWARD_IMAGE_THUMB_WIDTH_DESC" />
+        <field name="rewards_image_thumb_height" type="text" default="200"  label="COM_CROWDFUNDING_REWARD_IMAGE_THUMB_HEIGHT" description="COM_CROWDFUNDING_REWARD_IMAGE_THUMB_HEIGHT_DESC" />
+        <field name="rewards_image_square_width" type="text" default="50" label="COM_CROWDFUNDING_REWARD_IMAGE_SQUARE_WIDTH" description="COM_CROWDFUNDING_REWARD_IMAGE_SQUARE_WIDTH_DESC" />
+        <field name="rewards_image_square_height" type="text" default="50"  label="COM_CROWDFUNDING_REWARD_IMAGE_SQUARE_HEIGHT" description="COM_CROWDFUNDING_REWARD_IMAGE_SQUARE_HEIGHT_DESC" />
     </fieldset>
     
     <fieldset name="project" label="COM_CROWDFUNDING_PROJECT" description="COM_CROWDFUNDING_PROJECTS_PARAMS" addfieldpath="/administrator/components/com_crowdfunding/models/fields">
@@ -187,17 +178,33 @@
         <field name="debug_disabled_functionality_msg" type="text" default="" size="60" label="COM_CROWDFUNDING_MESSAGE" description="COM_CROWDFUNDING_DEBUG_DISABLED_FUNCTIONALITY_MSG_DESC" />
      </fieldset>
      
-     <fieldset name="permissions"
-        description="JCONFIG_PERMISSIONS_DESC"
-        label="JCONFIG_PERMISSIONS_LABEL"
-     >
-
-     <field name="rules" type="rules"
-            component="com_crowdfunding"
-            filter="rules"
-            validate="rules"
-            label="JCONFIG_PERMISSIONS_LABEL"
-            section="component" />
+     <fieldset name="advanced" label="COM_CROWDFUNDING_ADVANCED">
+        <field name="bootstrap_modal" type="radio" default="1" label="COM_CROWDFUNDING_INCLUDE_BOOTSTRAP_MODAL" description="COM_CROWDFUNDING_INCLUDE_BOOTSTRAP_MODAL_DESC" class="btn-group">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        <field name="bootstrap_navbar" type="radio" default="0" label="COM_CROWDFUNDING_INCLUDE_BOOTSTRAP_NAVBAR" description="COM_CROWDFUNDING_INCLUDE_BOOTSTRAP_NAVBAR_DESC" class="btn-group">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        <field name="bootstrap_thumbnails" type="radio" default="0" label="COM_CROWDFUNDING_INCLUDE_BOOTSTRAP_THUMBNAILS" description="COM_CROWDFUNDING_INCLUDE_BOOTSTRAP_MODAL_DESC" class="btn-group">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        <field name="bootstrap_mediacomponent" type="radio" default="0" label="COM_CROWDFUNDING_INCLUDE_BOOTSTRAP_MEDIACOMPONENT" description="COM_CROWDFUNDING_INCLUDE_BOOTSTRAP_MODAL_DESC" class="btn-group">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        
+        <field name="locale_intl" type="radio" default="0" label="COM_CROWDFUNDING_USE_PHP_INTL" description="COM_CROWDFUNDING_USE_PHP_INTL_DESC" class="btn-group">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        
+    </fieldset>
+    
+     <fieldset name="permissions" description="JCONFIG_PERMISSIONS_DESC" label="JCONFIG_PERMISSIONS_LABEL" >
+        <field name="rules" type="rules" component="com_crowdfunding" filter="rules" validate="rules" label="JCONFIG_PERMISSIONS_LABEL" section="component" />
     </fieldset>
     
 </config>

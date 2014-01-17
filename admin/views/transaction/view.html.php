@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -20,10 +20,15 @@ class CrowdFundingViewTransaction extends JViewLegacy {
     
     protected $documentTitle;
     protected $option;
+    protected $layoutsBasePath;
     
     public function __construct($config) {
+        
         parent::__construct($config);
         $this->option = JFactory::getApplication()->input->get("option");
+
+        $this->layoutsBasePath = JPath::clean(JPATH_COMPONENT_ADMINISTRATOR.DIRECTORY_SEPARATOR."layouts");
+        
     }
     
     /**
@@ -34,6 +39,11 @@ class CrowdFundingViewTransaction extends JViewLegacy {
         $this->state = $this->get('State');
         $this->item  = $this->get('Item');
         $this->form  = $this->get('Form');
+        
+        $this->extraData = $this->item->extra_data;
+        if(!empty($this->extraData)) {
+            $this->extraData = json_decode($this->extraData, true);
+        }
         
         // Prepare actions, behaviors, scritps and document
         $this->addToolbar();

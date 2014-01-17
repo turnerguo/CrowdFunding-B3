@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -15,16 +15,31 @@ jimport('itprism.controller.form.backend');
 /**
  * CrowdFunding transaction controller class.
  *
- * @package		ITPrism Components
- * @subpackage	CrowdFunding
+ * @package		CrowdFunding
+ * @subpackage	Components
  * @since		1.6
  */
 class CrowdFundingControllerTransaction extends ITPrismControllerFormBackend {
     
     /**
+     * Method to get a model object, loading it if required.
+     *
+     * @param	string	$name	The model name. Optional.
+     * @param	string	$prefix	The class prefix. Optional.
+     * @param	array	$config	Configuration array for model. Optional.
+     *
+     * @return	object	The model.
+     * @since	1.5
+     */
+    public function getModel($name = 'Transaction', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true)) {
+        $model = parent::getModel($name, $prefix, $config);
+        return $model;
+    }
+    
+    /**
      * Save an item
      */
-    public function save(){
+    public function save($key = NULL, $urlVar = NULL){
         
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
         
@@ -34,7 +49,7 @@ class CrowdFundingControllerTransaction extends ITPrismControllerFormBackend {
         $data    = $app->input->post->get('jform', array(), 'array');
         $itemId  = JArrayHelper::getValue($data, "id");
         
-        $redirectData = array(
+        $redirectOptions = array(
             "task"  => $this->getTask(),
             "id"    => $itemId
         );
@@ -54,7 +69,7 @@ class CrowdFundingControllerTransaction extends ITPrismControllerFormBackend {
         
         // Check for errors
         if($validData === false){
-            $this->displayNotice($form->getErrors(), $redirectData);
+            $this->displayNotice($form->getErrors(), $redirectOptions);
             return;
         }
             
@@ -62,10 +77,10 @@ class CrowdFundingControllerTransaction extends ITPrismControllerFormBackend {
             $itemId = $model->save($validData);
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
+            throw new Exception(JText::_($this->text_prefix.'_ERROR_SYSTEM'));
         }
         
-        $this->displayMessage(JText::_('COM_CROWDFUNDING_TRANSACTION_SAVED'), $redirectData);
+        $this->displayMessage(JText::_($this->text_prefix.'_TRANSACTION_SAVED'), $redirectOptions);
         
     }
     

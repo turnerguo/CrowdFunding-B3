@@ -22,6 +22,14 @@
             extension="com_crowdfunding" 
          />
         
+        <field name="type_id" type="cftypes"
+            label="COM_CROWDFUNDING_TYPE"
+            size="1" 
+            filter="int"
+         >
+            <option value="0">COM_CROWDFUNDING_NONE</option>
+         </field>
+         
 		<field name="published" type="radio" class="btn-group" 
 		    label="JSTATUS" 
             description="JFIELD_PUBLISHED_DESC" 
@@ -99,12 +107,6 @@
     </fieldset>
     
     <fieldset addfieldpath="/administrator/components/com_categories/models/fields" name="story">
-        <field name="description" type="editor" buttons="false" show="toggle" 
-            label="JGLOBAL_DESCRIPTION" 
-            description="COM_CROWDFUNDING_FIELD_PROJECT_DESCRIPTION" 
-            filter="safehtml"
-            class="span12" 
-        />
         
         <field name="pitch_video" type="text" class="span12" 
             label="COM_CROWDFUNDING_PITCH_VIDEO"
@@ -117,6 +119,12 @@
             description="COM_CROWDFUNDING_PITCH_IMAGE_DESC"
         />
         
+        <field name="description" type="editor" buttons="false" show="toggle" 
+            label="JGLOBAL_DESCRIPTION" 
+            description="COM_CROWDFUNDING_FIELD_PROJECT_DESCRIPTION" 
+            filter="safehtml"
+            class="span12" 
+        />
     </fieldset>
     
 </form>

@@ -17,7 +17,6 @@
 
         this.init();
         
-//        this.displayNumber();
     }
 
     CrowdfundingRewards.prototype = {
@@ -30,7 +29,6 @@
         		event.preventDefault();
         		
         		var txnId = $(this).data("txn-id");
-        		console.log(txnId);
         		
         		var fields = {
     				txn_id: txnId
@@ -43,36 +41,13 @@
     				dataType: "text json"
     			}).done(function(response){
     				
-    				console.log(response);
-    				
     			});
         		
         		
         	});
         	
         },
-
-        /*displayNumber: function(element, options) {
-        	
-        	var self = this;
-        	
-        	$.ajax({
-        		type: "GET",
-        		url: "index.php?option=com_gamification&format=raw&task=notifications.getNumber",
-        		dataType: "text json"
-        	}).done(function(response){
-        		
-        		var results = parseInt(response.data.results);
-        		
-        		if(results > 0) {
-        			$(self._numberContainer).text(results).show();
-        			var title = $(document).attr("title");
-        			
-        			$(document).attr("title", "("+ results + ") "+ title) ;
-        		}
-        	});
-        	
-        }*/
+        
     };
 
     // A really lightweight plugin wrapper around the constructor,

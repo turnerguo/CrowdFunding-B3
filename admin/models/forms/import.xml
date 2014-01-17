@@ -16,5 +16,13 @@
             filter="int" 
         />
         
+        <field name="remove_old" type="checkbox"
+            value="1" 
+            class="inputbox" 
+            label="COM_CROWDFUNDING_REMOVE_OLD"
+            description="COM_CROWDFUNDING_REMOVE_OLD_DESC"  
+            filter="int" 
+        />
+        
 	</fieldset>
 </form>

@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -130,15 +130,19 @@ class CrowdFundingControllerBacking extends JControllerLegacy {
         $app->setUserState($projectContext.".rid", $rewardId);
         
         
-        // Store intention
+        // Create an intention.
         
         // Generate hash user ID used for anonymous payment.
         if(!$userId) {
             
             $aUserId       = $app->getUserState("auser_id");
             if(!$aUserId) {
+                // Generate a hash ID for anonymous user.
                 jimport("itprism.string");
-                $aUserId =  ITPrismString::generateRandomString(32);
+                $anonymousUserId   = new ITPrismString();
+                $anonymousUserId->generateRandomString(32);
+                
+                $aUserId =  (string)$anonymousUserId;
                 $app->setUserState("auser_id", $aUserId);
             }
             

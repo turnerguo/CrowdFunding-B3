@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Modules
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
  
@@ -41,7 +41,7 @@ defined('_JEXEC') or die;
         <?php echo JText::_("MOD_CROWDFUNDINGINFO_FUNDING_TYPE_".JString::strtoupper($project->getFundingType())); ?>
     </div>
     
-	<?php if(!$project->getDaysLeft()) {?>
+	<?php if($project->isCompleted()) {?>
 	<div class="well">
 		<div class="cf-fund-result-state pull-center"><?php echo JHtml::_("crowdfunding.resultState", $project->getFundedPercents(), $project->getFundingType());?></div>
 		<div class="cf-frss pull-center"><?php echo JHtml::_("crowdfunding.resultStateText", $project->getFundedPercents(), $project->getFundingType());?></div>

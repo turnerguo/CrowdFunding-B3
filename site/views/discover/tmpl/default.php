@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -15,6 +15,10 @@ $itemSpan = (!empty($this->numberInRow)) ? round(12/$this->numberInRow) : 4;
     <?php if ($this->params->get('show_page_heading', 1)) { ?>
     <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php } ?>
+    
+    <?php if(empty($this->items)) {?>
+    <p class="alert alert-warning"><?php echo JText::_("COM_CROWDFUNDING_NO_ITEMS_MATCHING_QUERY"); ?></p>
+    <?php }?>
     
     <?php if(!empty($this->displayFilters)) {
         echo $this->loadTemplate("filters");    
@@ -31,7 +35,7 @@ $itemSpan = (!empty($this->numberInRow)) ? round(12/$this->numberInRow) : 4;
                 $projectStateCSS = "cf-project-active";
               }
                
-    	      $raised   = $this->currency->getAmountString($item->funded); 
+    	      $raised   = $this->currency->getAmountString($item->funded, $this->params->get("locale_intl", 0)); 
     	      
     	      // Prepare the value that I am going to display
     	      $fundedPercents = JHtml::_("crowdfunding.funded", $item->funded_percents);

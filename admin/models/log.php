@@ -3,22 +3,23 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
 // no direct access
 defined('_JEXEC') or die();
 
-jimport('joomla.application.component.modelitem');
+jimport('joomla.application.component.modeladmin');
 
-class CrowdFundingModelLog extends JModelItem {
+class CrowdFundingModelLog extends JModelAdmin {
 
     protected $item = array();
      
     protected $logFiles = array(
         "/administrator/error_log",            
-        "/error_log",            
+        "/error_log",
+        "/php_errorlog",
     );
     
     /**
@@ -50,66 +51,8 @@ class CrowdFundingModelLog extends JModelItem {
 
     }
     
-    /**
-     * Method to get a single record.
-     *
-     * @param   integer  $pk  The id of the primary key.
-     *
-     * @return  mixed    Object on success, false on failure.
-     *
-     * @since   12.2
-     */
-    public function getItem($pk = null) {
+    public function getForm($data = array(), $loadData = true) {
         
-        $pk = (!empty($pk)) ? $pk : (int)$this->getState($this->getName() . '.id');
-        
-        $storedId = $this->getStoreId($pk);
-        
-        if(!isset($this->item[$storedId])) {
-            
-            $table = $this->getTable();
-            
-            if ($pk > 0) {
-                // Attempt to load the row.
-                $return = $table->load($pk);
-                
-                // Check for a table object error.
-                if ($return === false && $table->getError()) {
-                    $this->setError($table->getError());
-                    return false;
-                }
-            }
-            
-            // Convert to the JObject before adding other data.
-            $properties = $table->getProperties(1);
-            $this->item[$storedId] = JArrayHelper::toObject($properties, 'JObject');
-            
-        }
-        
-        return $this->item[$storedId];
-    }
-    
-    /**
-     * Method to delete one or more records.
-     *
-     * @param   array  &$pks  An array of record primary keys.
-     *
-     * @since   12.2
-     */
-    public function delete(&$pks) {
-        
-        $pks   = (array) $pks;
-        $table = $this->getTable();
-    
-        // Iterate the items to delete each one.
-        foreach ($pks as $i => $pk) {
-            if ($table->load($pk)) {
-                if (!$table->delete($pk)) {
-                    throw new Exception($table->getError());
-                }
-            }
-        }
-    
     }
     
     /**

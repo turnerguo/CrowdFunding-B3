@@ -3,7 +3,7 @@
 * @package      CrowdFunding
 * @subpackage   Libraries
 * @author       Todor Iliev
-* @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+* @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
 * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
 */
 
@@ -36,4 +36,5 @@ class CrowdFundingConstants {
     // Project states
     const APPROVED = 1;
     const NOT_APPROVED = 0;
+    
 }

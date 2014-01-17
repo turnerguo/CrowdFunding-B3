@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -20,8 +20,13 @@ defined('_JEXEC') or die;
 abstract class JHtmlCrowdFunding {
     
     /**
+     * @var   array   array containing information for loaded files
+     */
+    protected static $loaded = array();
+    
+    /**
+     * Display an icon for approved or not approved project.
      * 
-     * Display an icon for approved or not approved project
      * @param integer $value
      */
     public static function approved($value) {
@@ -44,8 +49,8 @@ abstract class JHtmlCrowdFunding {
     }
     
     /**
+     * Display an input field for amount.
      * 
-     * Display an input field for amount
      * @param float $value
      * @param object $currency
      * @param array $options
@@ -94,25 +99,6 @@ abstract class JHtmlCrowdFunding {
         return $html;
         
     }
-    
-    /**
-     * Add symbol or abbreviation to a currency
-     * 
-     * @param float $value
-     * @param array $currency
-     * 
-     * @deprecated 1.1 Use CrowdFundingCurrency::getAmountString()
-     */
-    public static function amount($value, $currency) {
-        
-        if(!empty($currency["symbol"])) { // Prepended
-		    $amount = $currency["symbol"].$value;
-		} else { // Append
-		    $amount = $value.$currency["abbr"];
-		}
-		
-		return $amount;
-    } 
     
     /**
      * Display a progress bar
@@ -519,5 +505,53 @@ abstract class JHtmlCrowdFunding {
         }
     
         return $output;
+    }
+    
+    public static function rewardImage($image, $rewardId, $width = 250, $height = 250) {
+    
+        $html[] = '<img src="'.$image.'" width="'.(int)$width.'" height="'.(int)$height.'" ';
+        if(!empty($rewardId)) {
+            $html[] = ' id="js-reward-image-'. (int)$rewardId.'" ';
+        }
+        $html[] = '/>';
+         
+        return implode("\n", $html);
+    }
+    
+    /**
+     * Load jQuery Fancybox library.
+     */
+    public static function jquery_fancybox() {
+    
+        // Only load once
+        if (!empty(self::$loaded[__METHOD__])) {
+            return;
+        }
+    
+        $document = JFactory::getDocument();
+    
+        $document->addStylesheet(JUri::root().'media/com_crowdfunding/css/jquery.fancybox.css');
+        $document->addScript(JUri::root().'media/com_crowdfunding/js/jquery.fancybox.min.js');
+    
+        self::$loaded[__METHOD__] = true;
+    
+    }
+    
+    /**
+     * Load jQuery Chart library.
+     */
+    public static function jquery_chart() {
+    
+        // Only load once
+        if (!empty(self::$loaded[__METHOD__])) {
+            return;
+        }
+    
+        $document = JFactory::getDocument();
+    
+        $document->addScript(JUri::root().'media/com_crowdfunding/js/chart.min.js');
+    
+        self::$loaded[__METHOD__] = true;
+    
     }
 }

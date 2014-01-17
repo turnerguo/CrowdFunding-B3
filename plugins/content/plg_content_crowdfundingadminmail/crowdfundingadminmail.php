@@ -11,7 +11,6 @@
 defined('_JEXEC') or die;
 
 jimport('joomla.plugin.plugin');
-jimport('crowdfunding.init');
 
 /**
  * This plugin send notification mails to the administrator. 
@@ -22,18 +21,29 @@ jimport('crowdfunding.init');
 class plgContentCrowdFundingAdminMail extends JPlugin {
     
     protected   $log;
-    protected   $logFile = "plg_content_adminmail.php";
     
-    public function __construct(&$subject, $config = array()) {
+    public function init() {
     
-        parent::__construct($subject, $config);
+        jimport('itprism.init');
+        jimport('crowdfunding.init');
+        
+        // Prepare log object
+        $registry  = JRegistry::getInstance("com_crowdfunding");
+        
+        $fileName  = $registry->get("logger.file");
+        $tableName = $registry->get("logger.table");
         
         // Create log object
-        $file = JPath::clean(JFactory::getApplication()->getCfg("log_path") .DIRECTORY_SEPARATOR. $this->logFile);
-    
-        $this->log = new CrowdFundingLog();
-        $this->log->addWriter(new CrowdFundingLogWriterDatabase(JFactory::getDbo()));
-        $this->log->addWriter(new CrowdFundingLogWriterFile($file));
+        $this->log = new ITPrismLog();
+        
+        // Set database writer.
+        $this->log->addWriter(new ITPrismLogWriterDatabase(JFactory::getDbo(), $tableName));
+        
+        // Set file writer.
+        if(!empty($fileName)) {
+            $file = JPath::clean(JFactory::getApplication()->getCfg("log_path") .DIRECTORY_SEPARATOR. $fileName);
+            $this->log->addWriter(new ITPrismLogWriterFile($file));
+        }
     
         // Load language
         $this->loadLanguage();
@@ -51,6 +61,9 @@ class plgContentCrowdFundingAdminMail extends JPlugin {
         if(strcmp("com_crowdfunding.project", $context) != 0){
             return;
         }
+        
+        // Initialize plugin
+        $this->init();
         
         // Check for enabled option for sending mail 
         // when user publish a project.

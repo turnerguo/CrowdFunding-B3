@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -26,12 +26,6 @@ defined('_JEXEC') or die;
 	<th class="title">
 	     <?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_TITLE', 'a.title', $this->listDirn, $this->listOrder); ?>
 	</th>
-	<th width="10%" class="center nowrap hidden-phone">
-	    <?php echo JHtml::_('grid.sort',  'JCATEGORY', 'b.title', $this->listDirn, $this->listOrder); ?>
-	</th>
-	<th width="10%" class="center nowrap hidden-phone">
-	     <?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_CREATED', 'a.created', $this->listDirn, $this->listOrder); ?>
-	</th>
 	<th width="5%" class="center nowrap hidden-phone">
 	     <?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_GOAL', 'a.goal', $this->listDirn, $this->listOrder); ?>
 	</th>
@@ -46,6 +40,12 @@ defined('_JEXEC') or die;
 	</th>
 	<th width="10%" class="center hidden-phone">
 	     <?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_END_DATE', 'a.funding_end', $this->listDirn, $this->listOrder); ?>
+	</th>
+	<th width="10%" class="center nowrap hidden-phone">
+	     <?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_CREATED', 'a.created', $this->listDirn, $this->listOrder); ?>
+	</th>
+	<th width="10%" class="center nowrap hidden-phone">
+	    <?php echo JHtml::_('grid.sort',  'JCATEGORY', 'b.title', $this->listDirn, $this->listOrder); ?>
 	</th>
 	<th width="10%" class="center hidden-phone"><?php echo JText::_("COM_CROWDFUNDING_TYPE");?></th>
     <th width="3%" class="center nowrap hidden-phone"><?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ID', 'a.id', $this->listDirn, $this->listOrder); ?></th>

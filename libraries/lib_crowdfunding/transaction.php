@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Libraries
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -42,6 +42,17 @@ class CrowdFundingTransaction implements CrowdFundingInterfaceTable {
     }
     
     public function bind($src, $ignore = array()) {
+        
+        // Encode extra data to JSON format. 
+        foreach($src as $key => $value) {
+            if(strcmp("extra_data", $key) == 0) {
+                if(is_array($value) OR is_object($value)) {
+                    $src[$key] = json_encode($value);
+                }
+                break;
+            }
+        }
+        
         $this->table->bind($src, $ignore);
     }
     
@@ -90,4 +101,18 @@ class CrowdFundingTransaction implements CrowdFundingInterfaceTable {
     public function getReceiverId() {
         return $this->table->receiver_id;
     }
+    
+    public function getExtraData() {
+        
+        if(is_string($this->table->extra_data)) {
+            $extraData = json_decode($this->table->extra_data, true);
+        }
+        
+        if(!$extraData OR !is_array($extraData)) {
+            $extraData = array();
+        }
+        
+        return $extraData;
+    }
+    
 }

@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -14,11 +14,18 @@ jimport('joomla.application.component.modeladmin');
 
 class CrowdFundingModelTransaction extends JModelAdmin {
     
-    /**
-     * @var     string  The prefix to use with controller messages.
-     * @since   1.6
-     */
-    protected $text_prefix = 'COM_CROWDFUNDING';
+    protected $event_transaction_change_state = null;
+    
+    public function __construct($config = array()) {
+        
+        parent::__construct($config);
+    
+        if (isset($config['event_transaction_change_state'])) {
+            $this->event_transaction_change_state = $config['event_transaction_change_state'];
+        } elseif (empty($this->event_transaction_change_state)) {
+            $this->event_transaction_change_state = 'onTransactionChangeState';
+        }
+    }
     
     /**
      * Returns a reference to the a Table object, always creating it.
@@ -74,13 +81,12 @@ class CrowdFundingModelTransaction extends JModelAdmin {
      */
     public function save($data){
         
-        $statusEdited     = false;
-        
         $id               = JArrayHelper::getValue($data, "id");
         $txnAmount        = JArrayHelper::getValue($data, "txn_amount");
         $txnCurrency      = JArrayHelper::getValue($data, "txn_currency");
         $txnStatus        = JArrayHelper::getValue($data, "txn_status");
         $txnId            = JArrayHelper::getValue($data, "txn_id");
+        $parentTxnId      = JArrayHelper::getValue($data, "parent_txn_id");
         $serviceProvider  = JArrayHelper::getValue($data, "service_provider");
         $investorId       = JArrayHelper::getValue($data, "investor_id");
         
@@ -88,25 +94,14 @@ class CrowdFundingModelTransaction extends JModelAdmin {
         $row = $this->getTable();
         $row->load($id);
         
-        // Check for changed transaction status.
-        $oldState = $row->txn_status;
-        $newState = $txnStatus;
-        if((strcmp($oldState, $newState) != 0)) {
-            
-            // Include the content plugins for the on save events.
-            JPluginHelper::importPlugin('crowdfundingpayment');
-        
-            // Trigger the onTransactionChangeStatus event.
-            $dispatcher = JEventDispatcher::getInstance();
-            $dispatcher->trigger("onTransactionChangeStatus", array($this->option . '.' . $this->name, $row, $oldState, $newState));
-            
-        }
+        $this->prepareStatus($row, $txnStatus);
         
         // Store the transaction data.
         $row->set("txn_amount",        $txnAmount);
         $row->set("txn_currency",      $txnCurrency);
         $row->set("txn_status",        $txnStatus);
         $row->set("txn_id",            $txnId);
+        $row->set("parent_txn_id",     $parentTxnId);
         $row->set("service_provider",  $serviceProvider);
         $row->set("investor_id",       $investorId);
         
@@ -114,6 +109,24 @@ class CrowdFundingModelTransaction extends JModelAdmin {
         
         return $row->id;
     
+    }
+    
+    protected function prepareStatus(&$row, $newStatus) {
+        
+        // Check for changed transaction status.
+        $oldStatus = $row->txn_status;
+        
+        if((strcmp($oldStatus, $newStatus) != 0)) {
+        
+            // Include the content plugins for the on save events.
+            JPluginHelper::importPlugin('crowdfundingpayment');
+        
+            // Trigger the onTransactionChangeStatus event.
+            $dispatcher = JEventDispatcher::getInstance();
+            $dispatcher->trigger($this->event_transaction_change_state, array($this->option . '.' . $this->name, &$row, $oldStatus, $newStatus));
+        
+        }
+        
     }
     
 }

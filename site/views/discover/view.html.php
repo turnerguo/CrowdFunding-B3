@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -49,7 +49,7 @@ class CrowdFundingViewDiscover extends JViewLegacy {
         // Get currency
         jimport("crowdfunding.currency");
         $currencyId           = $this->params->get("project_currency");
-        $this->currency       = CrowdFundingCurrency::getInstance($currencyId);
+        $this->currency       = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId);
 		
         $this->displayCreator     = $this->params->get("integration_display_creator", true);
         

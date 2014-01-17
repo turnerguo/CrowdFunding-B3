@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -52,7 +52,7 @@ defined('_JEXEC') or die;
         </div>
         <div class="clearfix"> </div>
         
-            <table class="table table-striped" id="commentsList">
+        <table class="table table-striped" id="commentsList">
            <thead><?php echo $this->loadTemplate('head');?></thead>
     	   <tfoot><?php echo $this->loadTemplate('foot');?></tfoot>
     	   <tbody><?php echo $this->loadTemplate('body');?></tbody>

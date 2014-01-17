@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -71,7 +71,7 @@ defined('_JEXEC') or die;
             			<span class="ramount">
             			<input type="radio" name="reward" value="<?php echo $reward->amount;?>" data-id="<?php echo $reward->id;?>" class="reward-amount-radio" <?php echo ($this->rewardId != $reward->id) ? "" : 'checked="checked"'?>/>
             			<?php 
-            			$amount = $this->currency->getAmountString($reward->amount); 
+            			$amount = $this->currency->getAmountString($reward->amount, $this->params->get("locale_intl", 0)); 
             			echo JText::sprintf("COM_CROWDFUNDING_INVEST_MORE", $amount ); ?>
             			</span>
             			<span class="rtitle"><?php echo $this->escape($reward->title); ?></span>

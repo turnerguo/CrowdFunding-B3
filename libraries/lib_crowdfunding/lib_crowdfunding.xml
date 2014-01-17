@@ -5,31 +5,37 @@
 	<author>Todor Iliev</author>
 	<authorEmail>todor@itprism.com</authorEmail>
     <authorUrl>http://itprism.com</authorUrl>
-	<copyright>Copyright (C) 2013 Todor Iliev ( ITPrism.com ). All rights reserved.</copyright>
+	<copyright>Copyright (C) 2014 Todor Iliev ( ITPrism.com ). All rights reserved.</copyright>
 	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
 	<packager>ITPrism</packager>
 	<packagerurl>http://itprism.com</packagerurl>
-	<version>1.5</version>
-	<creationDate>08 December, 2013</creationDate>
+	<version>1.6</version>
+	<creationDate>17 January, 2014</creationDate>
 	<description>CrowdFunding Library</description>
 	<files>
+	    <folder>image</folder>
 	    <folder>interface</folder>
-	    <folder>logwriter</folder>
-	    <folder>statistics</folder>
 	    <folder>language</folder>
+        <folder>payment</folder>
+	    <folder>statistics</folder>
         
+	    <file>authorizer.php</file>
 	    <file>constants.php</file>
+	    <file>country.php</file>
+	    <file>currencies.php</file>
 	    <file>currency.php</file>
 	    <file>email.php</file>
+	    <file>filters.php</file>
 	    <file>images.php</file>
 		<file>index.html</file>
 		<file>init.php</file>
 		<file>intention.php</file>
-		<file>log.php</file>
 		<file>project.php</file>
+        <file>projects.php</file>
 		<file>reward.php</file>
 		<file>rewards.php</file>
 		<file>transaction.php</file>
+		<file>transactions.php</file>
 		<file>type.php</file>
 		<file>types.php</file>
 		<file>version.php</file>

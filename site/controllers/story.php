@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -11,6 +11,8 @@
 defined('_JEXEC') or die;
 
 jimport('itprism.controller.form.frontend');
+
+JLoader::register("CrowdFundingModelProject", JPATH_COMPONENT.DIRECTORY_SEPARATOR."models".DIRECTORY_SEPARATOR."project.php");
 
 /**
  * CrowdFunding story controller
@@ -31,24 +33,21 @@ class CrowdFundingControllerStory extends ITPrismControllerFormFrontend {
      * @since	1.5
      */
     public function getModel($name = 'Story', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true)) {
-        
-        JLoader::register("CrowdFundingModelProject", JPATH_COMPONENT.DIRECTORY_SEPARATOR."models".DIRECTORY_SEPARATOR."project.php");
         $model = parent::getModel($name, $prefix, $config);
-        
         return $model;
     }
     
-    public function save() {
+    public function save($key = NULL, $urlVar = NULL) {
         
         // Check for request forgeries.
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
  
 		$userId = JFactory::getUser()->id;
         if(!$userId) {
-            $redirectData = array(
+            $redirectOptions = array(
                 "force_direction" => "index.php?option=com_users&view=login"
             );
-            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), $redirectData);
+            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), $redirectOptions);
             return;
         }
         
@@ -59,7 +58,7 @@ class CrowdFundingControllerStory extends ITPrismControllerFormFrontend {
 		$data    = $app->input->post->get('jform', array(), 'array');
         $itemId  = JArrayHelper::getValue($data, "id");
         
-        $redirectData = array(
+        $redirectOptions = array(
             "view"   => "project",
             "layout" => "story",
             "id"     => $itemId
@@ -80,7 +79,7 @@ class CrowdFundingControllerStory extends ITPrismControllerFormFrontend {
         
         // Check for validation errors.
         if($validData === false){
-            $this->displayNotice($form->getErrors(), $redirectData);
+            $this->displayNotice($form->getErrors(), $redirectOptions);
             return;
         }
         
@@ -93,12 +92,6 @@ class CrowdFundingControllerStory extends ITPrismControllerFormFrontend {
             // Upload image
             if(!empty($image['name'])) {
             
-                jimport('joomla.filesystem.folder');
-                jimport('joomla.filesystem.file');
-                jimport('joomla.filesystem.path');
-                jimport('joomla.image.image');
-                jimport('itprism.file.upload.image');
-            
                 $imageName    = $model->uploadImage($image);
                 if(!empty($imageName)) {
                     $validData["pitch_image"] = $imageName;
@@ -108,30 +101,17 @@ class CrowdFundingControllerStory extends ITPrismControllerFormFrontend {
             
             $itemId = $model->save($validData);
             
-            $redirectData["id"] = $itemId;
+            $redirectOptions["id"] = $itemId;
             
+        } catch (RuntimeException $e) {
+            $this->displayWarning($e->getMessage(), $redirectOptions);
+            return;
+        } catch (InvalidArgumentException $e) {
+            $this->displayWarning(JText::_("COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED"), $redirectOptions);
+            return;
         } catch (Exception $e) {
-            
-            // Problem with uploading, so set a message and redirect to pages
-            $code = $e->getCode();
-            switch($code) {
-                
-                case ITPrismErrors::CODE_WARNING:
-                    $this->displayWarning($e->getMessage(), $redirectData);
-                    return;
-                break;
-                
-                case ITPrismErrors::CODE_HIDDEN_WARNING:
-                    $this->displayWarning(JText::_("COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED"), $redirectData);
-                    return;
-                break;
-                
-                default:
-                    JLog::add($e->getMessage());
-                    throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'), ITPrismErrors::CODE_ERROR);
-                break;
-            }
-            
+            JLog::add($e->getMessage());
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }
         
         // Validate pitch image and video URL
@@ -139,23 +119,23 @@ class CrowdFundingControllerStory extends ITPrismControllerFormFrontend {
         if(!$item->pitch_image AND !$item->pitch_video) {
             
             // Redirect to next page
-            $redirectData = array(
+            $redirectOptions = array(
                 "view"   => "project",
                 "layout" => "story",
                 "id"     => $itemId
             );
             
-            $this->displayNotice(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PITCH_IMAGE_OR_VIDEO"), $redirectData);
+            $this->displayNotice(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PITCH_IMAGE_OR_VIDEO"), $redirectOptions);
             return;
         }
         
 		// Redirect to next page
-        $redirectData = array(
+        $redirectOptions = array(
             "view"   => "project",
             "layout" => "rewards",
             "id"     => $itemId
         );
-		$this->displayMessage(JText::_("COM_CROWDFUNDING_STORY_SUCCESSFULY_SAVED"), $redirectData);
+		$this->displayMessage(JText::_("COM_CROWDFUNDING_STORY_SUCCESSFULY_SAVED"), $redirectOptions);
     }
     
 	/**
@@ -172,22 +152,22 @@ class CrowdFundingControllerStory extends ITPrismControllerFormFrontend {
         // Check for registered user
         $userId  = JFactory::getUser()->id;
         if(!$userId) {
-            $redirectData = array(
+            $redirectOptions = array(
                 "force_direction" => "index.php?option=com_users&view=login"
             );
-            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), $redirectData);
+            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), $redirectOptions);
             return;
         }
         
         $itemId  = $app->input->get->getInt("id");
-        $redirectData = array(
+        $redirectOptions = array(
             "view"   => "project",
             "layout" => "story"
         );
         
         // Check for valid item
         if(!$itemId) {
-            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_INVALID_IMAGE'), $redirectData);
+            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_INVALID_IMAGE'), $redirectOptions);
             return;
         }
         
@@ -201,8 +181,8 @@ class CrowdFundingControllerStory extends ITPrismControllerFormFrontend {
             throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }
         
-        $redirectData["id"] = $itemId;
-        $this->displayMessage(JText::_('COM_CROWDFUNDING_IMAGE_DELETED'), $redirectData);
+        $redirectOptions["id"] = $itemId;
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_IMAGE_DELETED'), $redirectOptions);
         
         
     }

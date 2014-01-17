@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Libraries
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -49,6 +49,10 @@ class CrowdFundingIntention implements CrowdFundingInterfaceTable {
         return $this->table->user_id;
     }
     
+    public function getAnonymousUserId() {
+        return $this->table->auser_id;
+    }
+    
     public function getProjectId() {
         return $this->table->project_id;
     }
@@ -75,6 +79,15 @@ class CrowdFundingIntention implements CrowdFundingInterfaceTable {
     
     public function delete($pk = null) {
         $this->table->delete($pk);
+    }
+    
+    public function getToken() {
+        return $this->table->token;
+    }
+    
+    public function setToken($token) {
+        $this->table->token = $token;
+        return $this;
     }
     
     public function isAnonymous() {

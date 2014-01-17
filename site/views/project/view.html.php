@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -40,6 +40,8 @@ class CrowdFundingViewProject extends JViewLegacy {
             $this->setLayout("intro");
         }
         
+        $this->disabledButton = "";
+        
         $this->layout = $this->getLayout();
         
         switch($this->layout) {
@@ -68,7 +70,6 @@ class CrowdFundingViewProject extends JViewLegacy {
         $this->version    = new CrowdFundingVersion();
         
         $this->prepareDebugMode();
-        $this->prepareProjectType();
         $this->prepareDocument();
         
         parent::display($tpl);
@@ -82,8 +83,6 @@ class CrowdFundingViewProject extends JViewLegacy {
         $app = JFactory::getApplication();
         /** @var $app JSite **/
 
-        $this->disabledButton = "";
-        
         // Check for maintenance (debug) state
         $params = $this->state->get("params");
         $this->debugMode = $params->get("debug_project_adding_disabled", 0);
@@ -182,7 +181,7 @@ class CrowdFundingViewProject extends JViewLegacy {
         // Get currency
         jimport("crowdfunding.currency");
         $currencyId        = $this->params->get("project_currency");
-        $this->currency    = CrowdFundingCurrency::getInstance($currencyId);
+        $this->currency    = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId);
         
         // Set minimum values - days, amount,...
         $this->minAmount   = $this->params->get("project_amount_minimum", 100);
@@ -303,7 +302,7 @@ class CrowdFundingViewProject extends JViewLegacy {
         
         jimport("crowdfunding.currency");
         $currencyId        = $this->params->get("project_currency");
-		$this->currency    = CrowdFundingCurrency::getInstance($currencyId);
+		$this->currency    = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId);
 		
 		// Get date format
 		$this->dateFormat          = CrowdFundingHelper::getDateFormat();
@@ -315,6 +314,10 @@ class CrowdFundingViewProject extends JViewLegacy {
             };
         ';
 		$this->document->addScriptDeclaration($js);
+		
+		// Prepare rewards images.
+		$this->rewardsImagesEnabled = $this->params->get("rewards_images", 0);
+		$this->rewardsImagesUri = CrowdFundingHelper::getImagesFolderUri($this->userId);
 		
 		$this->prepareProjectType();
 		
@@ -369,6 +372,12 @@ class CrowdFundingViewProject extends JViewLegacy {
         $pathway->addItem($this->pathwayName);
         
         // Styles
+        
+        // Load bootstrap navbar styles
+        if($this->params->get("bootstrap_navbar", false)) {
+            JHtml::_("itprism.ui.bootstrap_navbar");
+        }
+        
         $this->document->addStyleSheet('media/'.$this->option.'/css/site/style.css');
         
         // Scripts
@@ -379,20 +388,24 @@ class CrowdFundingViewProject extends JViewLegacy {
         JHtml::_('behavior.keepalive');
         JHtml::_('behavior.formvalidation');
         
-        // Load bootstrap navbar styles
-        if($this->params->get("bootstrap_navbar", false)) {
-            JHtml::_("itprism.ui.bootstrap_navbar");
-        }
-        
         switch($this->layout) {
             
             case "rewards":
+                
+                // Load language string in JavaScript
+                JText::script('COM_CROWDFUNDING_QUESTION_REMOVE_REWARD');
+                JText::script('COM_CROWDFUNDING_QUESTION_REMOVE_IMAGE');
+                JText::script('COM_CROWDFUNDING_SELECT_IMAGE');
                 
                 // Scripts
                 
                 // Load bootstrap modal styles and JS library
                 if($this->params->get("bootstrap_modal", false)) {
                     JHtml::_("itprism.ui.bootstrap_modal");
+                }
+                
+                if($this->params->get("rewards_images", 0)) {
+                    JHtml::_('itprism.ui.bootstrap_filestyle');
                 }
                 
                 JHtml::_('itprism.ui.pnotify');

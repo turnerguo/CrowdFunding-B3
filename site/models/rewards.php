@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -57,8 +57,8 @@ class CrowdFundingModelRewards extends JModelLegacy {
         $query = $db->getQuery(true);
         
         $query
-            ->select("a.id, a.amount, a.title, a.description, a.number, a.distributed, a.delivery")
-            ->from($db->quoteName("#__crowdf_rewards") . " AS a")
+            ->select("a.id, a.amount, a.title, a.description, a.number, a.distributed, a.delivery, a.image_thumb")
+            ->from($db->quoteName("#__crowdf_rewards", "a"))
             ->where("a.project_id = ". (int)$projectId)
             ->where("a.published = 1");
         
@@ -67,10 +67,10 @@ class CrowdFundingModelRewards extends JModelLegacy {
         
     }
     
-    public function validate($data, $projectId) {
+    public function validate($data) {
         
-        if(empty($data)) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_REWARDS"), ITPrismErrors::CODE_WARNING);
+        if(empty($data) OR !is_array($data)) {
+            throw new InvalidArgumentException(JText::_("COM_CROWDFUNDING_ERROR_INVALID_REWARDS"));
         }
         
         $filter = JFilterInput::getInstance();
@@ -104,15 +104,15 @@ class CrowdFundingModelRewards extends JModelLegacy {
             }
             
             if(!$item["title"]) {
-                throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_TITLE"), ITPrismErrors::CODE_WARNING);
+                throw new RuntimeException(JText::_("COM_CROWDFUNDING_ERROR_INVALID_TITLE"));
             }
             
             if(!$item["description"]) {
-                throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_DESCRIPTION"), ITPrismErrors::CODE_WARNING);
+                throw new RuntimeException(JText::_("COM_CROWDFUNDING_ERROR_INVALID_DESCRIPTION"));
             }
             
             if(!$item["amount"]) {
-                throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_AMOUNT"), ITPrismErrors::CODE_WARNING);
+                throw new RuntimeException(JText::_("COM_CROWDFUNDING_ERROR_INVALID_AMOUNT"));
             }
             
             $data[$key] = $item;
@@ -129,13 +129,20 @@ class CrowdFundingModelRewards extends JModelLegacy {
      */
     public function save($data, $projectId) {
         
+        $ids = array();
+        
         foreach($data as $item) {
             
             // Load a record from the database
             $row    = $this->getTable();
-            $itemId = JArrayHelper::getValue($item, "id");
-            if($itemId) {
-                $row->load($itemId);
+            $itemId = JArrayHelper::getValue($item, "id", 0, "integer");
+            
+            if(!empty($itemId)) {
+                $keys = array("id" => $itemId, "project_id" => $projectId);
+                $row->load($keys);
+                if(!$row->id) {
+                    throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_REWARD"));
+                }
             }
             
             $amount         = JArrayHelper::getValue($item, "amount");
@@ -153,25 +160,28 @@ class CrowdFundingModelRewards extends JModelLegacy {
             
             $row->store();
             
+            $ids[] = $row->id;
+            
         }
+        
+        return $ids;
         
     }
     
-    public function remove($rewardId, $userId) {
+    public function remove($rewardId, $imagesFolder) {
     
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
-    
-        $query
-            ->delete()
-            ->from("#__crowdf_rewards USING #__crowdf_rewards")
-            ->innerJoin("#__crowdf_projects ON #__crowdf_rewards.project_id = #__crowdf_projects.id")
-            ->where("#__crowdf_rewards.id = ". (int)$rewardId)
-            ->where("(#__crowdf_projects.user_id = ". (int)$userId .")");
+        // Get reward row.
+        $table = $this->getTable();
+        $table->load($rewardId);
         
-        $db->setQuery($query);
-        $db->execute();
-    
+        if(!$table->id) {
+            continue;
+        }
+        
+        // Delete the images from filesystem.
+        $this->deleteImages($table, $imagesFolder);
+        
+        $table->delete();
     }
     
     /**
@@ -184,24 +194,11 @@ class CrowdFundingModelRewards extends JModelLegacy {
      *
      * @todo move it in other model or class. It have to be part of item object.
      */
-    public function trash($rewardId, $userId) {
+    public function trash($rewardId) {
     
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
-    
-        // Validate reward
-        $query
-            ->select("a.id")
-            ->from($db->quoteName("#__crowdf_rewards"). " AS a")
-            ->innerJoin($db->quoteName("#__crowdf_projects"). " AS b ON a.project_id = b.id")
-            ->where("a.id = ". (int)$rewardId)
-            ->where("b.user_id = ".(int)$userId);
-        
-        $db->setQuery($query, 0, 1);
-        $rewardId = $db->loadResult();
-        
         if(!empty($rewardId)) {
             
+            $db    = JFactory::getDbo();
             $query = $db->getQuery(true);
             
             $query
@@ -265,6 +262,225 @@ class CrowdFundingModelRewards extends JModelLegacy {
         $db->setQuery($query);
         $db->execute();
     
+    }
+    
+    /**
+     * Upload images.
+     *
+     * @param  array $images
+     * 
+     * @return array
+     */
+    public function uploadImages($files, $destFolder, $userId, $rewardsIds) {
+    
+        $app = JFactory::getApplication();
+        /** @var $app JSite **/
+        
+        // Load parameters.
+        $params          = JComponentHelper::getParams($this->option);
+        
+        // Joomla! media extension parameters
+        $mediaParams     = JComponentHelper::getParams("com_media");
+        
+        jimport("itprism.file");
+        jimport("itprism.file.image");
+        jimport("itprism.file.uploader.local");
+        jimport("itprism.file.validator.size");
+        jimport("itprism.file.validator.image");
+        
+        $KB              = 1024 * 1024;
+        
+        $uploadMaxSize   = $mediaParams->get("upload_maxsize") * $KB;
+        $mimeTypes       = explode(",", $mediaParams->get("upload_mime"));
+        $imageExtensions = explode(",", $mediaParams->get("image_extensions"));
+        
+        $images          = array();
+        
+        foreach($files as $rewardId => $image) {
+            
+            // If the image is set to not valid reward, continue to next one.
+            // It is impossible to store image to invalid reward.
+            if(!in_array($rewardId, $rewardsIds)) {
+                continue;
+            }
+    
+            $uploadedFile  = JArrayHelper::getValue($image, 'tmp_name');
+            $uploadedName  = JString::trim(JArrayHelper::getValue($image, 'name'));
+            
+            $file           = new ITPrismFileImage();
+        
+            if(!empty($uploadedName)) {
+                // Prepare size validator.
+                $fileSize       = (int)JArrayHelper::getValue($image, 'size');;
+                $sizeValidator  = new ITPrismFileValidatorSize($fileSize, $uploadMaxSize);
+        
+                // Prepare image validator.
+                $imageValidator = new ITPrismFileValidatorImage($uploadedFile, $uploadedName);
+        
+                // Get allowed mime types from media manager options
+                $imageValidator->setMimeTypes($mimeTypes);
+        
+                // Get allowed image extensions from media manager options
+                $imageValidator->setImageExtensions($imageExtensions);
+        
+                $file
+                    ->addValidator($sizeValidator)
+                    ->addValidator($imageValidator);
+        
+                // Validate the file
+                try {
+                    $file->validate();
+                } catch (Exception $e) {
+                    continue;
+                }
+            
+                // Generate temporary file name
+                $ext   = JString::strtolower(JFile::makeSafe(JFile::getExt($image['name'])));
+            
+                jimport("itprism.string");
+                $generatedName = new ITPrismString();
+                $generatedName->generateRandomString(12, "reward_");
+            
+                $destFile   = $destFolder.DIRECTORY_SEPARATOR.$generatedName.".".$ext;
+            
+                // Prepare uploader object.
+                $uploader    = new ITPrismFileUploaderLocal($image);
+                $uploader->setDestination($destFile);
+            
+                // Upload temporary file
+                $file->setUploader($uploader);
+            
+                $file->upload();
+            
+                // Get file
+                $imageSource = $file->getFile();
+                if(!is_file($imageSource)){
+                    continue;
+                }
+            
+                // Generate thumbnails.
+            
+                // Create thumbnail.
+                $generatedName->generateRandomString(12, "reward_thumb_");
+                $options = array(
+                    "width"  => $params->get("rewards_image_thumb_width", 200),
+                    "height" => $params->get("rewards_image_thumb_height", 200),
+                    "destination" => $destFolder.DIRECTORY_SEPARATOR.$generatedName.".".$ext
+                ); 
+                $thumbSource = $file->createThumbnail($options);
+                
+                // Create square image.
+                $generatedName->generateRandomString(12, "reward_square_");
+                $options = array(
+                    "width"  => $params->get("rewards_image_square_width", 50),
+                    "height" => $params->get("rewards_image_square_height", 50),
+                    "destination" => $destFolder.DIRECTORY_SEPARATOR.$generatedName.".".$ext
+                );
+                $squareSource = $file->createThumbnail($options);
+                 
+                $names = array("image" => "", "thumb" => "", "square" => "");
+                $names['image']  = basename($imageSource);
+                $names["thumb"]  = basename($thumbSource);
+                $names["square"] = basename($squareSource);
+    
+                $images[$rewardId] = $names;
+            }
+        }
+        
+        return $images;
+    }
+    
+    /**
+     * Save reward images to the reward.
+     *
+     * @param array $images
+     *
+     */
+    public function storeImages($images, $imagesFolder){
+    
+        if(!$images OR !is_array($images)) {
+            throw new InvalidArgumentException(JText::_("COM_CROWDFUNDING_ERROR_INVALID_IMAGES"));
+        }
+        
+        $result = array();
+        
+        jimport("itprism.file");
+        jimport("itprism.file.remover.local");
+    
+        foreach($images as $rewardId => $pictures) {
+    
+            // Get reward row.
+            $table = $this->getTable();
+            $table->load($rewardId);
+            
+            if(!$table->id) {
+                continue;
+            }
+            
+            // Delete the images from filesystem.
+            $this->deleteImages($table, $imagesFolder);
+            
+            $image  = JArrayHelper::getValue($pictures, "image");
+            $thumb  = JArrayHelper::getValue($pictures, "thumb");
+            $square = JArrayHelper::getValue($pictures, "square");
+            
+            $table->set("image", $image);
+            $table->set("image_thumb", $thumb);
+            $table->set("image_square", $square);
+            
+            $table->store();
+    
+        }
+    
+    }
+    
+    public function removeImage($rewardId, $imagesFolder) {
+    
+        // Get reward row.
+        $table = $this->getTable();
+        $table->load($rewardId);
+        
+        if(!$table->id) {
+            throw new RuntimeException(JText::_("COM_CROWDFUNDING_ERROR_INVALID_REWARD"));
+        }
+    
+        // Delete the images from filesystem.
+        $this->deleteImages($table, $imagesFolder);
+        
+        $table->set("image", null);
+        $table->set("image_thumb", null);
+        $table->set("image_square", null);
+        
+        $table->store(true);
+    
+    }
+    
+    protected function deleteImages(&$table, $imagesFolder) {
+        
+        // Remove image.
+        if(!empty($table->image)) {
+            $fileSource = $imagesFolder.DIRECTORY_SEPARATOR.$table->image;
+            if(JFile::exists($fileSource)) {
+                JFile::delete($fileSource);
+            }
+        }
+        
+        // Remove thumbnail.
+        if(!empty($table->image_thumb)) {
+            $fileSource = $imagesFolder.DIRECTORY_SEPARATOR.$table->image_thumb;
+            if(JFile::exists($fileSource)) {
+                JFile::delete($fileSource);
+            }
+        }
+        
+        // Remove square image.
+        if(!empty($table->image_square)) {
+            $fileSource = $imagesFolder.DIRECTORY_SEPARATOR.$table->image_square;
+            if(JFile::exists($fileSource)) {
+                JFile::delete($fileSource);
+            }
+        }
+        
     }
     
 }

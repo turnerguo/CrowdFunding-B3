@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Libraries
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -25,15 +25,18 @@ if(!defined("CROWDFUNDING_PATH_LIBRARY")) {
 JLoader::register("CrowdFundingVersion", CROWDFUNDING_PATH_LIBRARY . DIRECTORY_SEPARATOR . "version.php");
 JLoader::register("CrowdFundingConstants", CROWDFUNDING_PATH_LIBRARY . DIRECTORY_SEPARATOR . "constants.php");
 
-// Register logger
-JLoader::register("CrowdFundingLog", CROWDFUNDING_PATH_LIBRARY . DIRECTORY_SEPARATOR . "log.php");
-JLoader::register("CrowdFundingLogWriterDatabase", CROWDFUNDING_PATH_LIBRARY . DIRECTORY_SEPARATOR . "logwriter".DIRECTORY_SEPARATOR."database.php");
-JLoader::register("CrowdFundingLogWriterFile", CROWDFUNDING_PATH_LIBRARY . DIRECTORY_SEPARATOR . "logwriter".DIRECTORY_SEPARATOR."file.php");
-
 // Register some helpers
 JLoader::register("CrowdFundingCategories", CROWDFUNDING_PATH_COMPONENT_ADMINISTRATOR . DIRECTORY_SEPARATOR . "helpers" . DIRECTORY_SEPARATOR . "category.php");
 JLoader::register("CrowdFundingHelper", CROWDFUNDING_PATH_COMPONENT_ADMINISTRATOR . DIRECTORY_SEPARATOR . "helpers" . DIRECTORY_SEPARATOR . "crowdfunding.php");
 JLoader::register("CrowdFundingHelperRoute", CROWDFUNDING_PATH_COMPONENT_SITE . DIRECTORY_SEPARATOR . "helpers" . DIRECTORY_SEPARATOR . "route.php");
+
+// Register some Joomla! classes
+JLoader::register("JHtmlCategory", JPATH_LIBRARIES.DIRECTORY_SEPARATOR."joomla".DIRECTORY_SEPARATOR."html".DIRECTORY_SEPARATOR."html".DIRECTORY_SEPARATOR."category.php");
+
+// Prepare logger
+$registry = JRegistry::getInstance("com_crowdfunding");
+$registry->set("logger.table", "#__crowdf_logs");
+$registry->set("logger.file",  "com_crowdfunding.php");
 
 // Include HTML helpers path
 JHtml::addIncludePath(CROWDFUNDING_PATH_COMPONENT_SITE.'/helpers/html');

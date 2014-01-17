@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -21,7 +21,7 @@ defined('_JEXEC') or die;
 		<td>
 		    <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=reward&layout=edit&id=".$item->id);?>" ><?php echo $item->title; ?></a>
 	    </td>
-		<td class="center"><?php echo $this->currency->getAmountString($item->amount); ?></td>
+		<td class="center"><?php echo $this->currency->getAmountString($item->amount, $this->params->get("locale_intl", 0)); ?></td>
 		<td class="center hidden-phone"><?php echo $item->number;?></td>
 		<td class="center hidden-phone"><?php echo $item->distributed;?></td>
 		<td class="center hidden-phone"><?php echo $item->available;?></td>

@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -33,8 +33,9 @@ class CrowdFundingViewProjects extends JViewLegacy {
 		$this->params	= $this->state->get('params');
         
 		if(!empty($this->items)) {
+		    jimport("crowdfunding.currency");
             $currencyId        = $this->params->get("project_currency");
-    		$this->currency    = CrowdFundingHelper::getCurrency($currencyId);
+    		$this->currency    = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId);
 		}
 
 		// Prepare filters

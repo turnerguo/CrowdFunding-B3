@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -74,6 +74,7 @@ class CrowdFundingModelProject extends JModelAdmin {
         $title        = JArrayHelper::getValue($data, "title");
         $alias        = JArrayHelper::getValue($data, "alias");
         $catId        = JArrayHelper::getValue($data, "catid");
+        $typeId       = JArrayHelper::getValue($data, "type_id");
         $published    = JArrayHelper::getValue($data, "published");
         $approved     = JArrayHelper::getValue($data, "approved");
         $shortDesc    = JArrayHelper::getValue($data, "short_desc");
@@ -93,6 +94,7 @@ class CrowdFundingModelProject extends JModelAdmin {
         $row->set("title",          $title);
         $row->set("alias",          $alias);
         $row->set("catid",          $catId);
+        $row->set("type_id",        $typeId);
         $row->set("published",      $published);
         $row->set("approved",       $approved);
         $row->set("short_desc",     $shortDesc);
@@ -120,7 +122,7 @@ class CrowdFundingModelProject extends JModelAdmin {
      *
      * @since	1.6
      */
-    protected function prepareTable(&$table, $data) {
+    protected function prepareTable($table, $data) {
          
         // Prepare image.
         if(!empty($data["image"])){
@@ -591,32 +593,59 @@ class CrowdFundingModelProject extends JModelAdmin {
 	    // Joomla! media extension parameters
 	    $mediaParams     = JComponentHelper::getParams("com_media");
 	
-	    $upload          = new ITPrismFileUploadImage($image);
-	
-	    // Get allowed mime types from media manager options
-	    $mimeTypes = explode(",", $mediaParams->get("upload_mime"));
-	    $upload->setMimeTypes($mimeTypes);
-	
-	    // Get allowed image extensions from media manager options
-	    $imageExtensions = explode(",", $mediaParams->get("image_extensions"));
-	    $upload->setImageExtensions($imageExtensions);
-	
-	    $uploadMaxSize   = $mediaParams->get("upload_maxsize");
-	    $KB              = 1024 * 1024;
-	    $upload->setMaxFileSize( round($uploadMaxSize * $KB, 0) );
-	
-	    // Validate the file
-	    $upload->validate();
+	    jimport("itprism.file");
+	    jimport("itprism.file.uploader.local");
+	    jimport("itprism.file.validator.size");
+	    jimport("itprism.file.validator.image");
+	    
+	    $file           = new ITPrismFile();
+        
+        // Prepare size validator.
+        $KB             = 1024 * 1024;
+        $fileSize       = (int)$app->input->server->get('CONTENT_LENGTH');
+        $uploadMaxSize  = $mediaParams->get("upload_maxsize") * $KB;
+        
+        $sizeValidator  = new ITPrismFileValidatorSize($fileSize, $uploadMaxSize);
+        
+        
+        // Prepare image validator.
+        $imageValidator = new ITPrismFileValidatorImage($uploadedFile, $uploadedName);
+        
+        // Get allowed mime types from media manager options
+        $mimeTypes = explode(",", $mediaParams->get("upload_mime"));
+        $imageValidator->setMimeTypes($mimeTypes);
+        
+        // Get allowed image extensions from media manager options
+        $imageExtensions = explode(",", $mediaParams->get("image_extensions"));
+        $imageValidator->setImageExtensions($imageExtensions);
+        
+        $file
+            ->addValidator($sizeValidator)
+            ->addValidator($imageValidator);
+        
+        // Validate the file
+        $file->validate();
 	
 	    // Generate temporary file name
-	    $seed  = substr(md5(uniqid(time() * rand(), true)), 0, 10);
-	    $ext   = JFile::makeSafe(JFile::getExt($image['name']));
-	
-	    $generatedName = JString::substr(JApplication::getHash($seed), 0, 32);
-	    $tmpDestFile   = $tmpFolder.DIRECTORY_SEPARATOR.$generatedName.".".$ext;
-	
-	    // Upload temporary file
-	    $upload->upload($tmpDestFile);
+        $ext   = JFile::makeSafe(JFile::getExt($image['name']));
+        
+        jimport("itprism.string");
+        $generatedName = new ITPrismString();
+        $generatedName->generateRandomString(32);
+        
+        $tmpDestFile   = $tmpFolder.DIRECTORY_SEPARATOR.$generatedName.".".$ext;
+        
+        // Prepare uploader object.
+        $uploader    = new ITPrismFileUploaderLocal($image);
+        $uploader->setDestination($tmpDestFile);
+        
+        // Upload temporary file
+        $file->setUploader($uploader);
+        
+        $file->upload();
+        
+        // Get file
+        $tmpDestFile = $file->getFile();
 	
 	    if(!is_file($tmpDestFile)){
 	        throw new Exception('COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED');
@@ -661,10 +690,10 @@ class CrowdFundingModelProject extends JModelAdmin {
             "image_square" => $squareName
 	    );
 	
-	    // Remove the temporary
+	    // Remove the temporary file.
 	    if(is_file($tmpDestFile)){
-	        JFile::delete($tmpDestFile);
-	    }
+            JFile::delete($tmpDestFile);
+        }
 	
 	    return $names;
 	}
@@ -696,32 +725,59 @@ class CrowdFundingModelProject extends JModelAdmin {
 	    // Joomla! media extension parameters
 	    $mediaParams     = JComponentHelper::getParams("com_media");
 	
-	    $upload          = new ITPrismFileUploadImage($image);
-	
-	    // Get allowed mime types from media manager options
-	    $mimeTypes = explode(",", $mediaParams->get("upload_mime"));
-	    $upload->setMimeTypes($mimeTypes);
-	
-	    // Get allowed image extensions from media manager options
-	    $imageExtensions = explode(",", $mediaParams->get("image_extensions"));
-	    $upload->setImageExtensions($imageExtensions);
-	
-	    $uploadMaxSize   = $mediaParams->get("upload_maxsize");
-	    $KB              = 1024 * 1024;
-	    $upload->setMaxFileSize( round($uploadMaxSize * $KB, 0) );
-	
-	    // Validate the file
-	    $upload->validate();
-	
-	    // Generate temporary file name
-	    $seed  = substr(md5(uniqid(time() * rand(), true)), 0, 10);
-	    $ext   = JFile::makeSafe(JFile::getExt($image['name']));
-	
-	    $generatedName = JString::substr(JApplication::getHash($seed), 0, 32);
-	    $tmpDestFile   = $tmpFolder.DIRECTORY_SEPARATOR.$generatedName.".".$ext;
-	
-	    // Upload temporary file
-	    $upload->upload($tmpDestFile);
+	    jimport("itprism.file");
+        jimport("itprism.file.uploader.local");
+        jimport("itprism.file.validator.size");
+        jimport("itprism.file.validator.image");
+        
+        $file           = new ITPrismFile();
+        
+        // Prepare size validator.
+        $KB             = 1024 * 1024;
+        $fileSize       = (int)$app->input->server->get('CONTENT_LENGTH');
+        $uploadMaxSize  = $mediaParams->get("upload_maxsize") * $KB;
+        
+        $sizeValidator  = new ITPrismFileValidatorSize($fileSize, $uploadMaxSize);
+        
+        
+        // Prepare image validator.
+        $imageValidator = new ITPrismFileValidatorImage($uploadedFile, $uploadedName);
+        
+        // Get allowed mime types from media manager options
+        $mimeTypes = explode(",", $mediaParams->get("upload_mime"));
+        $imageValidator->setMimeTypes($mimeTypes);
+        
+        // Get allowed image extensions from media manager options
+        $imageExtensions = explode(",", $mediaParams->get("image_extensions"));
+        $imageValidator->setImageExtensions($imageExtensions);
+        
+        $file
+            ->addValidator($sizeValidator)
+            ->addValidator($imageValidator);
+        
+        // Validate the file
+        $file->validate();
+
+        // Generate temporary file name
+        $ext   = JString::strtolower(JFile::makeSafe(JFile::getExt($image['name'])));
+        
+        jimport("itprism.string");
+        $generatedName = new ITPrismString();
+        $generatedName->generateRandomString(32);
+        
+        $tmpDestFile   = $tmpFolder.DIRECTORY_SEPARATOR.$generatedName.".".$ext;
+        
+        // Prepare uploader object.
+        $uploader    = new ITPrismFileUploaderLocal($image);
+        $uploader->setDestination($tmpDestFile);
+        
+        // Upload temporary file
+        $file->setUploader($uploader);
+        
+        $file->upload();
+        
+        // Get file
+        $tmpDestFile = $file->getFile();
 	
 	    if(!is_file($tmpDestFile)){
 	        throw new Exception('COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED');

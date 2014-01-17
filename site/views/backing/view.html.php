@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -29,7 +29,7 @@ class CrowdFundingViewBacking extends JViewLegacy {
         
         $this->option = JFactory::getApplication()->input->get("option");
         
-        $this->layoutsBasePath = JPath::clean(JPATH_COMPONENT_ADMINISTRATOR."/layouts");
+        $this->layoutsBasePath = JPath::clean(JPATH_COMPONENT_ADMINISTRATOR.DIRECTORY_SEPARATOR."layouts");
         
     }
     
@@ -65,7 +65,7 @@ class CrowdFundingViewBacking extends JViewLegacy {
         // Get currency
 		jimport("crowdfunding.currency");
         $currencyId              = $this->params->get("project_currency");
-        $this->currency          = CrowdFundingCurrency::getInstance($currencyId);
+        $this->currency          = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId);
 		
         // Set a link that points to project page
         $host  = JUri::getInstance()->toString(array("scheme", "host"));

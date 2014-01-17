@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Modules
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -49,7 +49,7 @@ $imageFolder       = $componentParams->get("images_directory", "images/crowdfund
 // Get currency
 jimport("crowdfunding.currency");
 $currencyId      = $componentParams->get("project_currency");
-$currency        = CrowdFundingCurrency::getInstance($currencyId);
+$currency        = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId);
 
 // Get social platform and a link to the profile
 jimport("itprism.integrate.profile.".JString::strtolower($socialPlatform));

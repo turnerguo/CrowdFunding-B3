@@ -2,12 +2,12 @@
 <extension version="3.2" type="plugin" group="crowdfundingpayment" method="upgrade">
     <name>PLG_CROWDFUNDINGPAYMENT_PAYPAL</name>
     <author>Todor Iliev</author>
-    <copyright>Copyright (C) 2013 Todor Iliev ( ITPrism.com ). All rights reserved.</copyright>
+    <copyright>Copyright (C) 2014 Todor Iliev ( ITPrism.com ). All rights reserved.</copyright>
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <authorEmail>todor@itprism.com</authorEmail>
     <authorUrl>http://itprism.com</authorUrl>
-    <version>1.5</version>
-    <creationDate>08 December, 2013</creationDate>
+    <version>1.6</version>
+    <creationDate>17 January, 2014</creationDate>
     <description><![CDATA[
     <p>CrowdFunding Payment - PayPal is a plugin that provides ability for making payments via PayPal Payments Standard method.</p>
     <p><a href='http://itprism.com/' target='_blank'>Subscribe for the newsletter</a> to receive information about updates and new ITPrism extensions.</p>
@@ -25,24 +25,28 @@
     </files>
     
     <config>
-		<fields name="params">
-			<fieldset name="basic" addfieldpath="/administrator/components/com_crowdfunding/models/fields">
+    
+		<fields name="params" addfieldpath="/administrator/components/com_crowdfunding/models/fields">
 			
+            <fieldset name="basic">
     	        <field name="paypal_business_name" type="text" size="80" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_MERCHANT_ID" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_MERCHANT_ID_DESC" />
-    	        <field name="paypal_url" type="text" size="80" default="https://www.paypal.com/cgi-bin/webscr" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_PAYPAL_URL" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_PAYPAL_URL_DESC" />
-    	        <field name="paypal_return_url" type="text" size="80" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_RETURN_URL" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_RETURN_URL_DESC" />
-    	        <field name="paypal_cancel_url" type="text" size="80" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_CANCEL_URL" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_CANCEL_URL_DESC" />
-    	        <field name="paypal_notify_url" type="text" default="index.php?option=com_crowdfunding&amp;task=notifier.notify&amp;format=raw" size="80" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_NOTIFY_URL" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_NOTIFY_URL_DESC" />
-    	        <field name="paypal_image_url" type="text" default="" size="80" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_IMAGE_URL" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_IMAGE_URL_DESC" />
-    	        <field name="spacer1" type="spacer" hr="true" />
-    	        <field name="paypal_sandbox" type="radio" default="1" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SANDBOX" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SANDBOX_DESC" class="btn-group">
-    	            <option value="0">JNO</option>
-    	            <option value="1">JYES</option>
-    	        </field>
-    	        <field name="paypal_sandbox_business_name" size="80" type="text" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SANDBOX_MERCHANT_ID" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SANDBOX_MERCHANT_ID_DESC" />
-                <field name="paypal_sandbox_url" type="text" size="80" default="https://www.sandbox.paypal.com/cgi-bin/webscr" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SANDBOX_URL" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SANDBOX_URL_DESC" />
-                
-                <field name="spacer2" type="spacer" hr="true" />
+    	        <field name="paypal_url" type="text" size="80" default="https://www.paypal.com/cgi-bin/webscr" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_PAYPAL_URL" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_PAYPAL_URL_DESC" class="span6" />
+    	        <field name="paypal_return_url" type="text" size="80" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_RETURN_URL" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_RETURN_URL_DESC" class="span6" />
+    	        <field name="paypal_cancel_url" type="text" size="80" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_CANCEL_URL" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_CANCEL_URL_DESC" class="span6" />
+    	        <field name="paypal_notify_url" type="text" default="index.php?option=com_crowdfunding&amp;task=notifier.notify&amp;format=raw&amp;payment_service=PayPal" size="80" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_NOTIFY_URL" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_NOTIFY_URL_DESC" class="span6" />
+                <field name="paypal_country" type="cfcountries" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_COUNTRY" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_COUNTRY_DESC" />
+			</fieldset>
+            
+            <fieldset name="sandbox" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SANDBOX">
+                <field name="paypal_sandbox" type="radio" default="1" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_ENABLE_SANDBOX" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SANDBOX_DESC" class="btn-group">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field name="paypal_sandbox_business_name" size="80" type="text" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SANDBOX_MERCHANT_ID" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SANDBOX_MERCHANT_ID_DESC" />
+                <field name="paypal_sandbox_url" type="text" size="80" default="https://www.sandbox.paypal.com/cgi-bin/webscr" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SANDBOX_URL" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SANDBOX_URL_DESC" class="span6" />
+            </fieldset>
+	            
+            <fieldset name="emails" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_NOTIFICATION_EMAILS">
                 <field name="admin_mail_id" type="cfemails" default="0" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SEND_MAIL_ADMIN" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SEND_MAIL_ADMIN_DESC" class="btn-group" />
                 <field name="creator_mail_id" type="cfemails" default="0" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SEND_MAIL_CREATOR" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SEND_MAIL_CREATOR_DESC" class="btn-group" />
                 <field name="user_mail_id" type="cfemails" default="0" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SEND_MAIL_USER" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SEND_MAIL_USER_DESC" class="btn-group" />
@@ -51,9 +55,25 @@
                    <option value="plain">PLG_CROWDFUNDINGPAYMENT_PAYPAL_PLAIN</option>
                    <option value="html">PLG_CROWDFUNDINGPAYMENT_PAYPAL_HTML</option>
                 </field>
-                
-			</fieldset>
-	            
+            </fieldset>
+            
+            <fieldset name="advanced" >
+                <field name="paypal_image_url" type="text" default="" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_IMAGE_URL" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_IMAGE_URL_DESC" size="80" class="span6" />
+                <field name="paypal_button_type" type="list" default="html" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_BUTTON_TYPE" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_BUTTON_TYPE_DESC" >
+                   <option value="btn_buynow_LG">PLG_CROWDFUNDINGPAYMENT_PAYPAL_BUY_NOW</option>
+                   <option value="btn_buynowCC_LG">PLG_CROWDFUNDINGPAYMENT_PAYPAL_BUY_NOW_CC</option>
+                   <option value="btn_paynow_LG">PLG_CROWDFUNDINGPAYMENT_PAYPAL_PAY_NOW</option>
+                   <option value="btn_paynowCC_LG">PLG_CROWDFUNDINGPAYMENT_PAYPAL_PAY_NOW_CC</option>
+                   <option value="btn_donate_LG">PLG_CROWDFUNDINGPAYMENT_PAYPAL_DONATE</option>
+                   <option value="btn_donateCC_LG">PLG_CROWDFUNDINGPAYMENT_PAYPAL_DONATE_CC</option>
+                </field>
+                <field name="paypal_button_url" type="text" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_BUTTON_URL" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_BUTTON_URL_DESC" class="span6" size="80" />
+                <field name="paypal_load_certificate" type="radio" default="0" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_LOAD_CERTIFICATE" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_LOAD_CERTIFICATE_DESC" class="btn-group">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+            </fieldset>
         </fields>
+        
 	</config>
 </extension>

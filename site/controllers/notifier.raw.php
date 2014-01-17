@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -53,6 +53,9 @@ class CrowdFundingControllerNotifier extends JControllerLegacy {
 			return null;
         }
         
+        $paymentService  = JString::trim(JString::strtolower($this->input->getCmd("payment_service")));
+        $context = (!empty($paymentService)) ? 'com_crowdfunding.notify.'.$paymentService : 'com_crowdfunding.notify';
+        
         // Save data
         try {
             
@@ -61,7 +64,7 @@ class CrowdFundingControllerNotifier extends JControllerLegacy {
             
             // Event Notify
             JPluginHelper::importPlugin('crowdfundingpayment');
-            $results     = $dispatcher->trigger('onPaymenNotify', array('com_crowdfunding.notify', $params));
+            $results     = $dispatcher->trigger('onPaymenNotify', array($context, $params));
             
             $transaction = null;
             $project     = null;

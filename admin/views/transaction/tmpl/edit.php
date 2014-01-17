@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -37,6 +37,10 @@ defined('_JEXEC') or die;
     				<div class="controls"><?php echo $this->form->getInput('txn_id'); ?></div>
                 </div>
                 <div class="control-group">
+                    <div class="control-label"><?php echo $this->form->getLabel('parent_txn_id'); ?></div>
+    				<div class="controls"><?php echo $this->form->getInput('parent_txn_id'); ?></div>
+                </div>
+                <div class="control-group">
                     <div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
     				<div class="controls"><?php echo $this->form->getInput('id'); ?></div>
                 </div>
@@ -50,5 +54,14 @@ defined('_JEXEC') or die;
             <input type="hidden" name="task" value="" />
             <?php echo JHtml::_('form.token'); ?>
         </form>
+    </div>
+    
+    <div class="span6" >
+        <?php 
+        if(!empty($this->extraData)) {
+            $layout      = new JLayoutFile('transaction_info', $this->layoutsBasePath);
+            echo $layout->render($this->extraData);
+        }
+        ?>
     </div>
 </div>

@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -23,6 +23,9 @@ class CrowdFundingViewDashboard extends JViewLegacy {
     
     public function display($tpl = null){
         
+        $model         = $this->getModel();
+        $this->params  = $model->getState("params");
+        
         $this->version = new CrowdFundingVersion();
         
         // Load ITPrism library version
@@ -33,6 +36,37 @@ class CrowdFundingViewDashboard extends JViewLegacy {
             $itprismVersion = new ITPrismVersion();
             $this->itprismVersion = $itprismVersion->getShortVersion();
         }
+        
+        // Get popular projects.
+        jimport("crowdfunding.statistics.projects.popular");
+        $this->popular = new CrowdFundingStatisticsProjectsPopular(JFactory::getDbo());
+        $this->popular->load(5);
+        
+        // Get popular most funded.
+        jimport("crowdfunding.statistics.projects.mostfunded");
+        $this->mostFunded = new CrowdFundingStatisticsProjectsMostFunded(JFactory::getDbo());
+        $this->mostFunded->load(5);
+        
+        // Get latest started.
+        jimport("crowdfunding.statistics.projects.latest");
+        $this->latestStarted = new CrowdFundingStatisticsProjectsLatest(JFactory::getDbo());
+        $this->latestStarted->load(5);
+        
+        // Get latest created.
+        $this->latestCreated = new CrowdFundingStatisticsProjectsLatest(JFactory::getDbo());
+        $this->latestCreated->loadByCreated(5);
+        
+        // Get currency.
+        $currencyId = $this->params->get("project_currency");
+        $useIntl    = $this->params->get("locale_intl", 0);
+        
+        jimport("crowdfunding.currency");
+        $this->currency = new CrowdFundingCurrency(JFactory::getDbo(), $currencyId);
+        if(!empty($useIntl)) {
+            $this->currency->enableIntl();
+        }
+        
+        JLoader::register('JHtmlString', JPATH_LIBRARIES.'/joomla/html/html/string.php');
         
         // Add submenu
         CrowdFundingHelper::addSubmenu($this->getName());

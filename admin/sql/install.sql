@@ -12,6 +12,11 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_countries` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(128) NOT NULL,
   `code` char(2) NOT NULL,
+  `code4` varchar(5) NOT NULL DEFAULT '' COMMENT 'A code with 4 letters.',
+  `latitude` float DEFAULT NULL,
+  `longitude` float DEFAULT NULL,
+  `currency` char(3) DEFAULT NULL,
+  `timezone` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
@@ -50,6 +55,7 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_intentions` (
   `reward_id` int(10) unsigned NOT NULL,
   `record_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `txn_id` varchar(64) DEFAULT '' COMMENT 'It is a transaction ID provided by some Payment Gateways.',
+  `token` varchar(64) NOT NULL DEFAULT '' COMMENT 'A token used in the process of payment.',
   `gateway` varchar(32) NOT NULL DEFAULT '' COMMENT 'It is the name of the Payment Service.',
   `auser_id` varchar(32) NOT NULL DEFAULT '' COMMENT 'It is a hash ID of an anonymous user.',
   PRIMARY KEY (`id`),
@@ -77,6 +83,21 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_logs` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `#__crowdf_payment_sessions` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(10) unsigned NOT NULL,
+  `project_id` int(10) unsigned NOT NULL,
+  `reward_id` int(10) unsigned NOT NULL,
+  `record_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `txn_id` varchar(64) DEFAULT '' COMMENT 'It is a transaction ID provided by some Payment Gateways.',
+  `token` varchar(64) NOT NULL DEFAULT '' COMMENT 'A token used in the process of payment.',
+  `gateway` varchar(32) NOT NULL DEFAULT '' COMMENT 'It is the name of the Payment Service.',
+  `auser_id` varchar(32) NOT NULL DEFAULT '' COMMENT 'It is a hash ID of an anonymous user.',
+  `intention_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `intention_id` (`intention_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE IF NOT EXISTS `#__crowdf_projects` (
   `id` smallint(6) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(128) NOT NULL,
@@ -87,8 +108,8 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_projects` (
   `image_square` varchar(64) NOT NULL DEFAULT '',
   `image_small` varchar(64) NOT NULL DEFAULT '',
   `location` int(10) unsigned NOT NULL DEFAULT '0',
-  `goal` decimal(10,0) unsigned NOT NULL DEFAULT '0',
-  `funded` decimal(10,0) unsigned NOT NULL DEFAULT '0',
+  `goal` decimal(10,2) unsigned NOT NULL DEFAULT '0.00',
+  `funded` decimal(10,2) unsigned NOT NULL DEFAULT '0.00',
   `funding_type` enum('FIXED','FLEXIBLE') NOT NULL DEFAULT 'FIXED',
   `funding_start` date NOT NULL DEFAULT '0000-00-00',
   `funding_end` date NOT NULL DEFAULT '0000-00-00',
@@ -120,6 +141,9 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_rewards` (
   `distributed` smallint(5) unsigned NOT NULL DEFAULT '0',
   `delivery` date NOT NULL DEFAULT '0000-00-00' COMMENT 'Estimated delivery',
   `shipping` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `image` varchar(32) DEFAULT NULL,
+  `image_thumb` varchar(32) DEFAULT NULL,
+  `image_square` varchar(32) DEFAULT NULL,
   `published` tinyint(3) NOT NULL DEFAULT '1',
   `project_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
@@ -133,7 +157,9 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_transactions` (
   `txn_currency` varchar(64) NOT NULL DEFAULT '',
   `txn_status` enum('pending','completed','canceled','refunded','failed') NOT NULL DEFAULT 'pending',
   `txn_id` varchar(128) DEFAULT NULL,
+  `parent_txn_id` varchar(64) NOT NULL DEFAULT '' COMMENT 'Transaction id of an pre authorized transaction.',
   `extra_data` varchar(2048) DEFAULT NULL COMMENT 'Additional information about transaction.',
+  `status_reason` varchar(32) NOT NULL DEFAULT '' COMMENT 'This is a reason of the status in few words.',
   `project_id` int(10) unsigned NOT NULL,
   `reward_id` int(10) unsigned NOT NULL DEFAULT '0',
   `investor_id` int(10) unsigned NOT NULL COMMENT 'The backer of the project.',

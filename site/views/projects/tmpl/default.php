@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -34,16 +34,16 @@ defined('_JEXEC') or die;?>
             <tbody>
             	<?php foreach($this->items as $item) {
             	    
-            		$goal           = JHtml::_("crowdfunding.amount", $item->goal, $this->currency);
-            		$funded         = JHtml::_("crowdfunding.amount", $item->funded, $this->currency);
+            		$goal           = $this->currency->getAmountString($item->goal, $this->params->get("locale_intl", 0));
+            		$funded         = $this->currency->getAmountString($item->funded, $this->params->get("locale_intl", 0));
             		$fundedPercent  = JHtml::_("crowdfunding.percents", $item->goal, $item->funded);
             	    
             	    // Reverse state.
-            	    $state = ($item->published) ? 0 : 1;
+            	    $state = (!$item->published) ? 1 : 0;
             	?>
             	<tr>
             		<td>
-            		  <?php echo JHtml::_("crowdfunding.projectTitle", $item->title, $item->catstate, $item->slug, $item->catslug);?>
+            		    <?php echo JHtml::_("crowdfunding.projectTitle", $item->title, $item->catstate, $item->slug, $item->catslug);?>
             		</td>
             		<td class="cf-center hidden-phone"><?php echo $goal; ?></td>
             		<td class="cf-center"><span class="hasTooltip cursor-help" title="<?php echo JText::sprintf("COM_CROWDFUNDING_PERCENTS_FUNDED", $fundedPercent);?>"><?php echo $funded; ?></span></td>

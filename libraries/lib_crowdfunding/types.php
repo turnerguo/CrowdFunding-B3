@@ -3,7 +3,7 @@
 * @package      CrowdFunding
 * @subpackage   Libraries
 * @author       Todor Iliev
-* @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+* @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
 * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
 */
 
@@ -50,7 +50,6 @@ class CrowdFundingTypes implements Iterator, Countable, ArrayAccess {
         
         return self::$instance;
     }
-      
     
     public function load($options = array()) {
         
@@ -139,14 +138,4 @@ class CrowdFundingTypes implements Iterator, Countable, ArrayAccess {
         return isset($this->types[$offset]) ? $this->types[$offset] : null;
     }
     
-    public function getTypesAsOptions() {
-        
-        $options = array();
-        
-        foreach($this->types as $type) {
-            $options[] = array("text" => $type->getTitle(), "value" => $type->getId());
-        }
-        
-        return $options;
-    }
 }

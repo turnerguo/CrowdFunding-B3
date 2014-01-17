@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -12,7 +12,7 @@ defined('_JEXEC') or die;?>
 <div class="row-fluid">
     <ul class="thumbnails">
       <?php if(isset($this->item)) {
-        $raised         = $this->currency->getAmountString($this->item->funded);
+        $raised         = $this->currency->getAmountString($this->item->funded, $this->params->get("locale_intl", 0));
         $fundedPercents = JHtml::_("crowdfunding.funded", $this->item->funded_percents);
     	
         // Get social platform and a link to the profile

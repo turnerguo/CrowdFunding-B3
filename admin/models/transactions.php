@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -33,6 +33,8 @@ class CrowdFundingModelTransactions extends JModelList {
                 'id', 'a.id',
             	'amount', 'a.txn_amount',
                 'service_provider', 'a.service_provider',
+                'reward_state', 'a.reward_state',
+                'txn_status', 'a.txn_status',
             	'name', 'b.name',
                 'title', 'c.title',
                 'sender', 'e.name'
@@ -52,10 +54,22 @@ class CrowdFundingModelTransactions extends JModelList {
      */
     protected function populateState($ordering = null, $direction = null) {
         
-        // Load the filter state.
+        // Prepare filter by search phrase.
         $value = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
         $this->setState('filter.search', $value);
-
+        
+        // Prepare filter by payment service.
+        $value = $this->getUserStateFromRequest($this->context.'.filter.payment_service', 'filter_payment_service');
+        $this->setState('filter.payment_service', $value);
+        
+        // Prepare filter by payment status.
+        $value = $this->getUserStateFromRequest($this->context.'.filter.payment_status', 'filter_payment_status');
+        $this->setState('filter.payment_status', $value);
+        
+        // Prepare filter by reward status.
+        $value = $this->getUserStateFromRequest($this->context.'.filter.reward_state', 'filter_reward_state');
+        $this->setState('filter.reward_state', $value);
+        
         // Load the component parameters.
         $params = JComponentHelper::getParams($this->option);
         $this->setState('params', $params);
@@ -79,7 +93,10 @@ class CrowdFundingModelTransactions extends JModelList {
     protected function getStoreId($id = '') {
         
         // Compile the store id.
-        $id.= ':' . $this->getState('filter.search');
+        $id .= ':' . $this->getState('filter.search');
+        $id .= ':' . $this->getState('filter.payment_service');
+        $id .= ':' . $this->getState('filter.reward_state');
+        $id .= ':' . $this->getState('filter.payment_status');
 
         return parent::getStoreId($id);
     }
@@ -102,23 +119,49 @@ class CrowdFundingModelTransactions extends JModelList {
         $query->select(
             $this->getState(
                 'list.select',
-                'a.id, a.txn_amount, a.txn_date, a.txn_currency, a.txn_id, a.txn_status, ' .
-                'a.project_id, a.reward_id, a.receiver_id, a.service_provider, a.reward_state, '.
+                'a.id, a.txn_amount, a.txn_date, a.txn_currency, a.txn_id, a.txn_status, a.status_reason, ' .
+                'a.parent_txn_id, a.project_id, a.reward_id, a.receiver_id, a.service_provider, a.reward_state, '.
                 'b.name AS beneficiary, '.
                 'c.title AS project, ' .
                 'd.title AS reward, '.
                 'e.name AS sender '
             )
         );
-        $query->from($db->quoteName('#__crowdf_transactions').' AS a');
-        $query->innerJoin($db->quoteName('#__users').' AS b ON a.receiver_id = b.id');
-        $query->innerJoin($db->quoteName('#__crowdf_projects').' AS c ON a.project_id = c.id');
-        $query->leftJoin($db->quoteName('#__crowdf_rewards').' AS d ON a.reward_id = d.id');
+        $query->from($db->quoteName('#__crowdf_transactions', 'a'));
+        $query->innerJoin($db->quoteName('#__users', 'b').' ON a.receiver_id = b.id');
+        $query->innerJoin($db->quoteName('#__crowdf_projects', 'c').' ON a.project_id = c.id');
+        $query->leftJoin($db->quoteName('#__crowdf_rewards', 'd').' ON a.reward_id = d.id');
         
-        $query->leftJoin($db->quoteName('#__users').' AS e ON a.investor_id = e.id');
+        $query->leftJoin($db->quoteName('#__users', 'e').' ON a.investor_id = e.id');
 
-        // Filter by search in title
+        // Filter by payment service.
+        $paymentService = $this->getState('filter.payment_service');
+        if(!empty($paymentService)) {
+            $query->where('a.service_provider = '. $db->quote($paymentService));
+        }
+        
+        // Filter by payment status.
+        $paymentStatus = $this->getState('filter.payment_status');
+        if(!empty($paymentStatus)) {
+            $query->where('a.txn_status = '. $db->quote($paymentStatus));
+        }
+        
+        // Filter by reward distributed state.
+        $rewardState = $this->getState('filter.reward_state');
+        if(is_numeric($rewardState)) {
+            if($rewardState == 0) {
+                $query->where('a.reward_state = 0');
+            } else if ($rewardState == 1) {
+                $query->where('a.reward_state = 1');
+            }
+        } else if ($rewardState == "none") {
+            $query->where('a.reward_id = 0');
+        }
+        
+        
+        // Filter by search phrase.
         $search = $this->getState('filter.search');
+        
         if (!empty($search)) {
             
             if (stripos($search, 'id:') === 0) {
@@ -129,6 +172,9 @@ class CrowdFundingModelTransactions extends JModelList {
                 $query->where('a.investor_id = '.(int) substr($search, 4));
             } else if(stripos($search, 'pid:') === 0) {
                 $query->where('a.project_id = '.(int) substr($search, 4));
+            } else if(stripos($search, 'ptid:') === 0) {
+                $search = substr($search, 5);
+                $query->where('a.parent_txn_id = '. $db->quote($search));
             } else {
                 $escaped = $db->escape($search, true);
                 $quoted  = $db->quote("%" . $escaped . "%", false);

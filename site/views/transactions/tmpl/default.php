@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -50,7 +50,7 @@ defined('_JEXEC') or die;?>
             			<?php echo JHtmlString::truncate(strip_tags($item->project), 64); ?>
             		    </a>
         		    </td>
-            		<td class="cf-center"><?php echo $this->currency->getAmountString($item->txn_amount); ?></td>
+            		<td class="cf-center"><?php echo $this->currency->getAmountString($item->txn_amount, $this->params->get("locale_intl", 0)); ?></td>
             		<td class="cf-center hidden-phone"><?php echo JHtml::_("crowdfunding.name", $item->investor); ?></td>
             		<td class="cf-center hidden-phone"><?php echo $this->escape($item->receiver); ?></td>
             		<td class="cf-center hidden-phone"><?php echo JHtml::_('date', $item->txn_date, JText::_('DATE_FORMAT_LC3')); ?></td>

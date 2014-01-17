@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -16,9 +16,6 @@ defined('_JEXEC') or die;
  */
 abstract class CrowdFundingHelper {
 	
-    static $currency   = null;
-    static $currencies = null;
-    static $countries  = null;
     static $extension  = "com_crowdfunding";
       
     static $statistics    = array();
@@ -125,64 +122,6 @@ abstract class CrowdFundingHelper {
         
     }
     
-    public static function getCurrency($currencyId, $force = false) {
-        
-        if(is_null(self::$currency) OR $force) {
-            
-            $db     = JFactory::getDbo();
-            $query  = $db->getQuery(true);
-            
-            $query
-                ->select("abbr, symbol, position")
-                ->from("#__crowdf_currencies")
-                ->where("id = ". (int)$currencyId);
-            
-            $db->setQuery($query);
-            self::$currency = $db->loadAssoc();
-        }
-        
-        return self::$currency;
-        
-    }
-    
-    public static function getCountries() {
-    
-        if(is_null(self::$countries)) {
-    
-            $db     = JFactory::getDbo();
-            $query  = $db->getQuery(true);
-    
-            $query
-                ->select("a.id, a.name, a.code")
-                ->from($db->quoteName("#__crowdf_countries") . " AS a");
-    
-            $db->setQuery($query);
-            self::$countries = $db->loadObjectList();
-        }
-    
-        return self::$countries;
-    
-    }
-    
-    public static function getCurrencies($index = "id", $force = false) {
-        
-        if(is_null(self::$currencies) OR $force) {
-            
-            $db     = JFactory::getDbo();
-            $query  = $db->getQuery(true);
-            
-            $query
-                ->select("id, title, abbr, symbol, position")
-                ->from("#__crowdf_currencies");
-            
-            $db->setQuery($query);
-            self::$currencies = $db->loadAssocList($index);
-        }
-        
-        return self::$currencies;
-        
-    }
-    
     public static function getLogTypes() {
     
         $db     = JFactory::getDbo();
@@ -224,7 +163,29 @@ abstract class CrowdFundingHelper {
         
     }
 	
+    public static function getUserIdByRewardId($rewardId) {
+    
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+    
+        $query
+            ->select("b.user_id")
+            ->from($db->quoteName("#__crowdf_rewards", "a"))
+            ->innerJoin($db->quoteName("#__crowdf_projects", "b") . " ON a.project_id = b.id")
+            ->where("a.id = ". (int)$rewardId);
+    
+        $db->setQuery($query);
+        $result = $db->loadResult();
+        
+        return (int)$result;
+    
+    }
+    
 	public static function calculatePercent($funded, $goal) {
+	    if(($funded == 0) OR ($goal == 0)) {
+	        return 0;
+	    }
+	    
 	    $value = ($funded/$goal) * 100;
 	    return round($value, 2);
 	}
@@ -473,41 +434,6 @@ abstract class CrowdFundingHelper {
     }
     
     /**
-     * This method returns intention 
-     * basd on user ID or anonymous hash user ID.
-     * 
-     * @param $userId       Registered user ID
-     * @param $aUserId      Anonymous user hash ID
-     * @param $projectId    Project ID
-     * 
-     * @return CrowdFundingIntention
-     */
-    public static function getIntention($userId, $aUserId, $projectId) {
-        
-        // Prepare keys for anonymous user.
-        if(!empty($aUserId)) {
-        
-            $intentionKeys = array(
-                "auser_id"   => $aUserId,
-                "project_id" => $projectId
-            );
-        
-        } else {// Prepare keys for registered user.
-        
-            $intentionKeys = array(
-                "user_id"    => $userId,
-                "project_id" => $projectId
-            );
-        
-        }
-        
-        jimport("crowdfunding.intention");
-        $intention = new CrowdFundingIntention($intentionKeys);
-        
-        return $intention;
-    }
-    
-    /**
      * Generate a path to the folder, where the images are stored. 
      *
      * @param number User Id.
@@ -517,17 +443,18 @@ abstract class CrowdFundingHelper {
      */
     public static function getImagesFolder($userId = 0, $path = JPATH_ROOT) {
         
+        jimport('joomla.filesystem.path');
+        
         $params = JComponentHelper::getParams(self::$extension);
         /** @var $params JRegistry **/
         
-        jimport('joomla.filesystem.path');
-        $folder = JPath::clean($path."/".$params->get("images_directory", "images/crowdfunding"));
+        $folder = $path."/".$params->get("images_directory", "images/crowdfunding");
         
         if(!empty($userId)) {
             $folder .= "/user".(int)$userId;
         }
         
-        return $folder;
+        return JPath::clean($folder);
     }
     
     /**

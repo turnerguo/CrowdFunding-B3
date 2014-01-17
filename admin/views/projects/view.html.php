@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -17,6 +17,7 @@ class CrowdFundingViewProjects extends JViewLegacy {
     protected $state;
     protected $items;
     protected $pagination;
+    protected $params;
     
     protected $option;
     
@@ -31,9 +32,11 @@ class CrowdFundingViewProjects extends JViewLegacy {
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
         
+        $this->params     = $this->state->get("params");
+        
         jimport("crowdfunding.currency");
         $currencyId       = $this->state->params->get("project_currency");
-        $this->currency   = CrowdFundingCurrency::getInstance($currencyId);
+        $this->currency   = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId);
         
         $model = $this->getModel();
         
@@ -96,6 +99,8 @@ class CrowdFundingViewProjects extends JViewLegacy {
      */
     protected function addSidebar() {
     
+        JHtmlSidebar::setAction('index.php?option='.$this->option.'&view='.$this->getName());
+        
         // Prepare options
         $approvedOptions = array(
             JHtml::_("select.option", 1, JText::_("COM_CROWDFUNDING_APPROVED")),
@@ -107,8 +112,6 @@ class CrowdFundingViewProjects extends JViewLegacy {
             JHtml::_("select.option", 0, JText::_("COM_CROWDFUNDING_NOT_FEATURED")),
         );
         
-        JHtmlSidebar::setAction('index.php?option='.$this->option.'&view='.$this->getName());
-    
         JHtmlSidebar::addFilter(
             JText::_('JOPTION_SELECT_PUBLISHED'),
             'filter_state',
@@ -133,9 +136,9 @@ class CrowdFundingViewProjects extends JViewLegacy {
             JHtml::_('select.options', JHtml::_('category.options', 'com_crowdfunding'), 'value', 'text', $this->state->get('filter.category_id'))
         );
     
-        jimport("crowdfunding.types");
-        $types        = new CrowdFundingTypes(JFactory::getDbo());
-        $typesOptions = $types->getTypesAsOptions();
+        jimport("crowdfunding.filters");
+        $filters      = new CrowdFundingFilters(JFactory::getDbo());
+        $typesOptions = $filters->getProjectsTypes();
         
         JHtmlSidebar::addFilter(
             JText::_('COM_CROWDFUNDING_SELECT_TYPE'),

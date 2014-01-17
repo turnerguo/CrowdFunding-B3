@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -87,9 +87,6 @@ class CrowdFundingViewTypes extends JViewLegacy {
         JToolbarHelper::title(JText::_('COM_CROWDFUNDING_TYPES_MANAGER'));
         JToolbarHelper::addNew('type.add');
         JToolbarHelper::editList('type.edit');
-        JToolbarHelper::divider();
-        JToolbarHelper::publishList("types.publish");
-        JToolbarHelper::unpublishList("types.unpublish");
         JToolbarHelper::divider();
         JToolbarHelper::deleteList(JText::_("COM_CROWDFUNDING_DELETE_ITEMS_QUESTION"), "types.delete");
         JToolbarHelper::divider();

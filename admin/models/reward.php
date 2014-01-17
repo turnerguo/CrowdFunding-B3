@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -95,7 +95,7 @@ class CrowdFundingModelReward extends JModelAdmin {
         $row->set("published",      $published);
         $row->set("project_id",     $projectId);
         
-        $row->store();
+        $row->store(true);
         
         return $row->id;
     

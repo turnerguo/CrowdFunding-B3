@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -109,7 +109,6 @@ class CrowdFundingViewLog extends JViewLegacy {
 	        case "files":
 	    
 	            // HTML Helpers
-	            JHtml::addIncludePath(ITPRISM_PATH_LIBRARY.'/ui/helpers');
 	            JHtml::_('itprism.ui.pnotify');
 	    
 	            $this->document->addScript('../media/'.$this->option.'/js/helper.js');

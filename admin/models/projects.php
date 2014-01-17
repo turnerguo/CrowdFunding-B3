@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -36,6 +36,7 @@ class CrowdFundingModelProjects extends JModelList {
                 'published', 'a.published',
                 'approved', 'a.approved',
             	'created', 'a.created',
+                'type_id', 'a.type_id',
                 'category', 'b.title',
             );
         }
@@ -104,6 +105,7 @@ class CrowdFundingModelProjects extends JModelList {
         $id.= ':' . $this->getState('filter.approved');
         $id.= ':' . $this->getState('filter.featured');
         $id.= ':' . $this->getState('filter.category_id');
+        $id.= ':' . $this->getState('filter.type_id');
 
         return parent::getStoreId($id);
     }
@@ -133,7 +135,7 @@ class CrowdFundingModelProjects extends JModelList {
                 'c.title AS type'
             )
         );
-        $query->from($db->quoteName('#__crowdf_projects').' AS a');
+        $query->from($db->quoteName('#__crowdf_projects', 'a'));
         $query->leftJoin($db->quoteName('#__categories', 'b').' ON a.catid = b.id');
         $query->leftJoin($db->quoteName('#__crowdf_types', 'c').' ON a.type_id = c.id');
 

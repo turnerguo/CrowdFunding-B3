@@ -82,7 +82,17 @@ jQuery(document).ready(function() {
 		var index    = jQuery(this).data("index-id");
 		var rewardId = jQuery(this).data("reward-id");
 		
-		if(rewardId) { // Delete element in Database and remove it from UI
+		var rewardTitle = jQuery("#reward_title_"+index).val();
+		var rewardDesc 	= jQuery("#reward_description_"+index).val();
+		
+		// Confirm reward removing.
+		if((rewardId > 0) || (rewardTitle.length > 0) || (rewardDesc.length > 0)) {
+			if(!confirm(Joomla.JText._('COM_CROWDFUNDING_QUESTION_REMOVE_REWARD')) ) {
+				return false;
+			}
+		}
+		
+		if(rewardId) { // Delete the reward in database and remove the element it from UI.
 			
 			var data = "rid[]="+rewardId;
 			
@@ -107,6 +117,7 @@ jQuery(document).ready(function() {
 		} else { // Remove the element 
 			jQuery("#reward_box_"+index).remove();
 		}
+		
 	});
 	
 	// Display modal window and ask a question when publishing project
@@ -136,8 +147,54 @@ jQuery(document).ready(function() {
 		});
 	}
 	
+	
+	// Style file input
+	jQuery(":file").filestyle({buttonText: Joomla.JText._('COM_CROWDFUNDING_SELECT_IMAGE')});
+	
+	jQuery("#rewards_wrapper").on("click", ".js-btn-remove-reward-image", function(event) {
+		event.preventDefault();
+		
+		var rewardId = jQuery(this).data("reward-id");
+		
+		// Confirm reward removing.
+		if(rewardId) {
+			if(!confirm(Joomla.JText._('COM_CROWDFUNDING_QUESTION_REMOVE_IMAGE')) ) {
+				return false;
+			}
+		}
+		
+		var self = this;
+		
+		// Delete the reward image.
+		if(rewardId) { 
+			
+			var data = {
+				rid:rewardId,
+				format: "raw",
+				task: "rewards.removeImage"
+			};
+			
+			jQuery.ajax({
+				url: "index.php?option=com_crowdfunding",
+				type: "POST",
+				data: data,
+				dataType: "text json",
+				success: function(response) {
+					
+					if(response.success) {
+						jQuery("#js-reward-image-"+rewardId).attr("src", "media/com_crowdfunding/images/no_image.png");
+						jQuery(self).remove();
+						
+						CrowdFundingHelper.displayMessageSuccess(response.title, response.text);
+					} else {
+						CrowdFundingHelper.displayMessageFailure(response.title, response.text);
+					}
+					
+				}
+					
+			});
+			
+		}
+		
+	});
 });
-
-
-
-

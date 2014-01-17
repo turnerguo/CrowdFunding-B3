@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -30,7 +30,7 @@ if(!empty($deliveryDate)) {
 ?>
 <div class="row-fluid reward-form" id="reward_box_<?php echo $this->formIndex;?>">
     <div class="span2 reward-form-help"><?php echo JText::_("COM_CROWDFUNDING_REWARDS_REWARD"); ?></div>
-    <div class="span10">
+    <div class="span6">
     	<label class="hasTooltip" data-placement="left" for="reward_amount_<?php echo $this->formIndex;?>" title="<?php echo JText::_("COM_CROWDFUNDING_REWARDS_AMOUNT_DESC");?>"><?php echo JText::_("COM_CROWDFUNDING_AMOUNT"); ?><span class="star">&nbsp;*</span></label>
         <div class="input-prepend input-append">
         	<?php if($this->currency->getSymbol()){?>
@@ -54,10 +54,15 @@ if(!empty($deliveryDate)) {
         
         <input name="rewards[<?php echo $this->formIndex;?>][id]" type="hidden" value="<?php echo JArrayHelper::getValue($this->formItem,  "id", 0)?>" />
         
+        <?php if(!empty($this->rewardsImagesEnabled)) {
+            echo $this->loadTemplate("image");
+        } ?>
+    </div>
+    <div class="span4">
         <?php if(!$this->debugMode) {?>
-        <a href="#" class="btn btn-danger btn_remove_reward" data-reward-id="<?php echo JArrayHelper::getValue($this->formItem,  "id")?>" data-index-id="<?php echo $this->formIndex;?>" >
+        <a href="javascript: void(0);" class="btn btn-danger btn_remove_reward" data-reward-id="<?php echo JArrayHelper::getValue($this->formItem,  "id")?>" data-index-id="<?php echo $this->formIndex;?>" >
         	<i class="icon-trash icon-white"></i> 
-        	<?php echo JText::_("COM_CROWDFUNDING_REMOVE")?>
+        	<?php echo JText::_("COM_CROWDFUNDING_REMOVE_REWARD")?>
     	</a>
     	<?php }?>
     </div>

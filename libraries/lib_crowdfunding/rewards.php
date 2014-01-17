@@ -3,7 +3,7 @@
 * @package      CrowdFunding
 * @subpackage   Libraries
 * @author       Todor Iliev
-* @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+* @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
 * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
 */
 
@@ -58,7 +58,8 @@ class CrowdFundingRewards implements Iterator, Countable, ArrayAccess {
         $query = $this->db->getQuery(true);
         
         $query
-            ->select("a.id, a.title, a.description, a.amount")
+            ->select("a.id, a.title, a.description, a.amount, " .
+                    "a.image, a.image_thumb, a.image_square")
             ->from($this->db->quoteName("#__crowdf_rewards") . " AS a")
             ->where("a.project_id = " .(int)$id);
         

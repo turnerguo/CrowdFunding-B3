@@ -42,6 +42,11 @@
             required="true"
         />
         
+        <field name="parent_txn_id" type="text"
+            label="COM_CROWDFUNDING_PARENT_TXN_ID"
+            filter="trim" 
+        />
+        
         <field name="id" type="text" class="readonly" 
             label="JGLOBAL_FIELD_ID_LABEL" 
             description="JGLOBAL_FIELD_ID_DESC"

@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -56,4 +56,12 @@ defined('_JEXEC') or die;
             <?php echo JHtml::_('form.token'); ?>
     </form>
     </div>
+    
+    <?php if(!empty($this->item->id) AND !empty($this->item->image)) {?>
+    <div class="span6">
+        <div class="thumbnail">
+            <img src="<?php echo $this->rewardsImagesUri."/".$this->item->image; ?>" />
+        </div>
+    </div>
+    <?php }?>
 </div>

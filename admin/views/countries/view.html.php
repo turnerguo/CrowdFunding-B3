@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -63,7 +63,11 @@ class CrowdFundingViewCountries extends JViewLegacy {
         $this->sortFields = array(
             'a.name'    => JText::_('COM_CROWDFUNDING_NAME'),
             'a.code'    => JText::_('COM_CROWDFUNDING_COUNTRY_CODE'),
-            'a.id'      => JText::_('JGRID_HEADING_ID')
+            'a.code4'   => JText::_('COM_CROWDFUNDING_COUNTRY_CODE4'),
+            'a.latitude'    => JText::_('COM_CROWDFUNDING_COUNTRY_LATITUDE'),
+            'a.longitude'   => JText::_('COM_CROWDFUNDING_COUNTRY_LONGITUDE'),
+            'a.timezone'    => JText::_('COM_CROWDFUNDING_COUNTRY_TIMEZONE'),
+            'a.id'          => JText::_('JGRID_HEADING_ID')
         );
     
     }

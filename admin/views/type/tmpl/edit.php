@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -11,12 +11,15 @@
 defined('_JEXEC') or die;
 ?>
 
-<div class="form-horizontal">
-    <form action="<?php echo JRoute::_('index.php?option=com_crowdfunding'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate" >
+<form action="<?php echo JRoute::_('index.php?option=com_crowdfunding'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate" >
         
+    <div class="form-horizontal">
+        <?php echo JHtml::_('bootstrap.startTabSet', 'myTab', array('active' => 'details')); ?>
+        
+        <?php echo JHtml::_('bootstrap.addTab', 'myTab', 'details', JText::_('COM_CROWDFUNDING_CONTENT')); ?>
         <div class="row-fluid">
         
-            <div class="span8">
+            <div class="span6">
                 <div class="control-group">
                     <div class="control-label"><?php echo $this->form->getLabel('title'); ?></div>
     				<div class="controls"><?php echo $this->form->getInput('title'); ?></div>
@@ -31,12 +34,27 @@ defined('_JEXEC') or die;
                 </div>
             </div>
             
-            <div class="span4">
-                <?php echo $this->loadTemplate('params'); ?>
+        </div>
+        <?php echo JHtml::_('bootstrap.endTab'); ?>
+        
+        <?php echo JHtml::_('bootstrap.addTab', 'myTab', 'options', JText::_('COM_CROWDFUNDING_OPTIONS')); ?>
+        <div class="row-fluid">
+            <div class="span6">
+            <?php foreach ($this->form->getFieldset("basic") as $field) { ?>
+            	<div class="control-group">
+            		<div class="control-label"><?php echo $field->label; ?></div>
+            		<div class="controls"><?php echo $field->input; ?></div>
+            	</div>
+            <?php } ?>
             </div>
         </div>
+        <?php echo JHtml::_('bootstrap.endTab'); ?>
+        
+        <?php echo JHtml::_('bootstrap.endTabSet'); ?>
+        
         <input type="hidden" name="task" value="" />
         <?php echo JHtml::_('form.token'); ?>
-    </form>
+        
+    </div>
     
-</div>
+</form>

@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -13,10 +13,10 @@ defined('_JEXEC') or die;
 jimport( 'joomla.application.component.controller' );
 
 /**
- * CrowdFunding project controller
+ * CrowdFunding project controller.
  *
- * @package     ITPrism Components
- * @subpackage  CrowdFunding
+ * @package     CrowdFunding
+ * @subpackage  Components
   */
 class CrowdFundingControllerProject extends JControllerLegacy {
     
@@ -70,172 +70,5 @@ class CrowdFundingControllerProject extends JControllerLegacy {
 		
 	}
     
-	/**
-	 * Deletes Extra Image
-	 *
-	 */
-	public function removeExtraImage() {
-	     
-	    $app = JFactory::getApplication();
-	    /** @var $app JAdministrator **/
-	
-	    $userId      = JFactory::getUser()->id;
-	    if(!$userId) {
-	        $response = array(
-	                "success" => false,
-	                "title"=> JText::_( 'COM_CROWDFUNDING_FAIL' ),
-	                "text" => JText::_( 'COM_CROWDFUNDING_ERROR_NOT_LOG_IN' ),
-	        );
-	         
-	        echo json_encode($response);
-	        JFactory::getApplication()->close();
-	    }
-	     
-	    // Get the model
-	    $model  = $this->getModel();
-	    /** @var $model CrowdFundingModelProject **/
-	     
-	    $imageId   = $app->input->post->get("id");
-	    if(!$model->isImageOwner($imageId, $userId)) {
-	        $response = array(
-                "success" => false,
-                "title"=> JText::_( 'COM_CROWDFUNDING_FAIL' ),
-                "text" => JText::_( 'COM_CROWDFUNDING_ERROR_INVALID_PROJECT' ),
-	        );
-	    
-	        echo json_encode($response);
-	        JFactory::getApplication()->close();
-	    }
-	    
-	    // Get the folder where the images are stored.
-	    $imagesFolder = CrowdFundingHelper::getImagesFolder($userId);
-	    
-	    try {
-	
-	        jimport('joomla.filesystem.file');
-	        
-	        // Get the model
-	        $model = $this->getModel();
-	        $model->removeExtraImage($imageId, $imagesFolder);
-	
-	    } catch ( Exception $e ) {
-	        JLog::add($e->getMessage());
-	        throw new Exception($e->getMessage());
-	    }
-	
-	    $response = array(
-            "success" => true,
-            "title"=> JText::_('COM_CROWDFUNDING_SUCCESS'),
-            "text" => JText::_('COM_CROWDFUNDING_IMAGE_DELETED'),
-            "data" => array("item_id" => $imageId)
-	    );
-	
-	    echo json_encode($response);
-	    JFactory::getApplication()->close();
-	}
-	
-	public function addExtraImage() {
-	     
-	    $app = JFactory::getApplication();
-	    /** @var $app JSite **/
-	
-	    $userId      = JFactory::getUser()->id;
-	    if(!$userId) {
-	        $response = array(
-                "success" => false,
-                "title"=> JText::_( 'COM_CROWDFUNDING_FAIL' ),
-                "text" => JText::_( 'COM_CROWDFUNDING_ERROR_NOT_LOG_IN' ),
-	        );
-	    
-	        echo json_encode($response);
-	        JFactory::getApplication()->close();
-	    }
-	    
-	    // Get the model
-	    $model  = $this->getModel();
-	    /** @var $model CrowdFundingModelProject **/
-	    
-	    $projectId   = $app->input->post->get("id");
-	    if(!$model->isOwner($projectId, $userId)) {
-	        $response = array(
-                "success" => false,
-                "title"=> JText::_( 'COM_CROWDFUNDING_FAIL' ),
-                "text" => JText::_( 'COM_CROWDFUNDING_ERROR_INVALID_PROJECT' ),
-	        );
-	         
-	        echo json_encode($response);
-	        JFactory::getApplication()->close();
-	    }
-	    
-	    $files     = $app->input->files->get("files");
-	    if(!$files) {
-	        $response = array(
-                "success" => false,
-                "title"=> JText::_( 'COM_CROWDFUNDING_FAIL' ),
-                "text" => JText::_( 'COM_CROWDFUNDING_ERROR_FILE_UPLOAD' ),
-	        );
-	
-	        echo json_encode($response);
-	        JFactory::getApplication()->close();
-	    }
-	
-	    // Get component parameters
-	    $params      = $app->getParams("com_crowdfunding");
-	     
-	    // Prepare the size of additional thumbnails
-	    $thumbWidth  = $params->get("extre_image_thumb_width", 100);
-	    $thumbHeight = $params->get("extre_image_thumb_height", 100);
-	    if($thumbWidth < 25 OR $thumbHeight < 25 ) {
-	        $thumbWidth  = 50;
-	        $thumbHeight = 50;
-	    }
-	    
-	    $scale     = $app->input->post->get("extra_images_thumb_scale", JImage::SCALE_INSIDE);
-	    
-	    try {
-	         
-	        jimport('joomla.filesystem.folder');
-	        jimport('joomla.filesystem.file');
-	        jimport('joomla.filesystem.path');
-	        jimport('joomla.image.image');
-	        jimport('itprism.file.upload.image');
-	
-	        // Get the folder where the images will be stored
-	        $destination = CrowdFundingHelper::getImagesFolder($userId);
-	        
-	        $options = array(
-                "thumb_width"  => $thumbWidth,
-                "thumb_height" => $thumbHeight,
-                "thumb_scale"  => $scale,
-                "destination"  => $destination
-	        );
-	        
-	        // Get the folder where the images will be stored
-	        $imagesUri = CrowdFundingHelper::getImagesFolderUri($userId);
-	        
-	        $images = $model->uploadExtraImages($files, $options);
-	        $images = $model->storeExtraImage($images, $projectId, $imagesUri);
-	
-	    } catch (Exception $e) {
-	        $response = array(
-                "success" => false,
-                "title"=> JText::_('COM_CROWDFUNDING_FAIL'),
-                "text" => JText::_('COM_CROWDFUNDING_ERROR_INVALID_FILE'),
-	        );
-	        
-	        echo json_encode($response);
-	        JFactory::getApplication()->close();
-	    }
-	
-	    $response = array(
-            "success" => true,
-            "title"=> JText::_( 'COM_CROWDFUNDING_SUCCESS' ),
-            "text" => JText::_( 'COM_CROWDFUNDING_IMAGE_SAVED' ),
-            "data" => $images
-	    );
-	
-	    echo json_encode($response);
-	    JFactory::getApplication()->close();
-	}
 	
 }

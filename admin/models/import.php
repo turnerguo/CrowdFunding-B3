@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -64,7 +64,7 @@ class CrowdFundingModelImport extends JModelForm {
         
         $dir          = new DirectoryIterator($destFolder);
         
-        $fileName     = JFile::stripExt(JFile::getName($file));
+        $fileName     = JFile::stripExt(basename($file));
         
         foreach ($dir as $fileinfo) {
             
@@ -94,37 +94,96 @@ class CrowdFundingModelImport extends JModelForm {
         $content = new SimpleXMLElement($xmlstr);
         
         if(!empty($content)) {
-            $items = array();
+            
+            // Check for existed currencies.
             $db    = JFactory::getDbo();
-            
-            foreach($content as $item) {
-                
-                // Check for missing ascii characters title
-                $title        = JString::trim($item->title);
-                if(!$title) {
-                    continue;
-                }
-                
-                // Reset ID
-                $id =  (!empty($item->id) AND !$resetId) ? JString::trim($item->id) : "null";
-                
-                $items[] = $id.",".$db->quote($title).",".$db->quote(JString::trim($item->abbr)).",".$db->quote(JString::trim($item->symbol));
-            }
-            
-            unset($content);
-           
             $query = $db->getQuery(true);
-                
             $query
-                ->insert("#__crowdf_currencies")
-                ->columns('id, title, abbr, symbol')
-                ->values($items);
-                
+                ->select("COUNT(*)")
+                ->from($db->quoteName("#__crowdf_currencies", "a"));
+            
             $db->setQuery($query);
-            $db->execute();
+            $result = $db->loadResult();
+            
+            if(!empty($result)) { // Update current currencies and insert newest.
+                $this->updateCurrenices($content, $resetId);
+            } else { // Insert new ones
+                $this->insertCurrencies($content, $resetId);
+            }
             
         }
     }
+    
+    protected function insertCurrencies($content, $resetId) {
+        
+        $items = array();
+        
+        $db    = JFactory::getDbo();
+        
+        // Generate data for importing.
+        foreach($content as $item) {
+        
+            $title = JString::trim($item->title);
+            $code  = JString::trim($item->abbr);
+            if(!$title OR !$code) {
+                continue;
+            }
+        
+            $id =  (!$resetId) ? (int)$item->id : "null";
+        
+            $items[] = $id.",".$db->quote($title).",".$db->quote($code).",".$db->quote(JString::trim($item->symbol)).",".(int)$item->position;
+        }
+        
+        unset($content);
+         
+        $query = $db->getQuery(true);
+        
+        $query
+            ->insert("#__crowdf_currencies")
+            ->columns('id, title, abbr, symbol, position')
+            ->values($items);
+        
+        $db->setQuery($query);
+        $db->execute();
+        
+    }
+    
+    /**
+     * Update the currencies with new columns,
+     *
+     * @param SimpleXMLElement $content
+     * @param boolean $resetId
+     */
+    protected function updateCurrenices($content, $resetId) {
+    
+        $db = JFactory::getDbo();
+        JLoader::register("CrowdFundingTableCurrency", JPATH_ADMINISTRATOR .DIRECTORY_SEPARATOR. "components" .DIRECTORY_SEPARATOR. "com_crowdfunding" .DIRECTORY_SEPARATOR. "tables" .DIRECTORY_SEPARATOR. "currency.php");
+    
+        foreach($content as $item) {
+    
+            $abbr = JString::trim($item->abbr);
+    
+            $keys = array("abbr" => $abbr);
+    
+            $table = new CrowdFundingTableCurrency($db);
+            $table->load($keys);
+    
+            if(!$table->id) {
+                $table->title     = JString::trim($item->title);
+                $table->abbr      = $abbr;
+                $table->position  = 0;
+            }
+    
+            // Update the symbol if missing.
+            if(!$table->symbol AND !empty($item->symbol)) {
+                $table->symbol    = JString::trim($item->symbol);
+            }
+    
+            $table->store();
+        }
+    
+    }
+    
     
     /**
      * 
@@ -270,39 +329,97 @@ class CrowdFundingModelImport extends JModelForm {
     
         $xmlstr  = file_get_contents($file);
         $content = new SimpleXMLElement($xmlstr);
-    
+        
         if(!empty($content)) {
-            $items = array();
+            
+            // Check for existed countries.
             $db    = JFactory::getDbo();
-    
-            foreach($content->country as $item) {
-    
-                // Check for missing ascii characters title
-                $name        = JString::trim($item->name);
-                if(!$name) { continue;}
-                
-                $code = JString::trim($item->code);
-    
-                // Reset ID
-                $id =  (!empty($item->id) AND !$resetId) ? JString::trim($item->id) : "null";
-    
-                $items[] = $id.",".$db->quote($name).",".$db->quote($code);
-                
-            }
-    
-            unset($content);
-             
             $query = $db->getQuery(true);
-    
             $query
-                ->insert("#__crowdf_countries")
-                ->columns($db->quoteName(array("id", "name", "code")))
-                ->values($items);
-    
+                ->select("COUNT(*)")
+                ->from($db->quoteName("#__crowdf_countries", "a"));
+            
             $db->setQuery($query);
-            $db->execute();
-    
+            $result = $db->loadResult();
+            
+            if(!empty($result)) { // Update current countires and insert newest.
+                $this->updateCountries($content, $resetId);
+            } else { // Insert new ones
+                $this->insertCountries($content, $resetId);
+            }
+            
         }
+        
+    }
+    
+    protected function insertCountries($content, $resetId) {
+        
+        $items = array();
+        
+        $db    = JFactory::getDbo();
+        
+        foreach($content->country as $item) {
+        
+            $name = JString::trim($item->name);
+            $code = JString::trim($item->code);
+            if(!$name OR !$code) { continue; }
+        
+            $id =  (!$resetId) ? (int)$item->id : "null";
+        
+            $items[] = $id.",".$db->quote($name).",".$db->quote($code).",".$db->quote($item->code4).",".$db->quote($item->latitude).",".$db->quote($item->longitude).",".$db->quote($item->currency).",".$db->quote($item->timezone);
+        
+        }
+        
+        unset($content);
+        
+        $columns = array("id", "name", "code", "code4", "latitude", "longitude", "currency", "timezone");
+         
+        $query = $db->getQuery(true);
+        
+        $query
+            ->insert($db->quoteName("#__crowdf_countries"))
+            ->columns($db->quoteName($columns))
+            ->values($items);
+        
+        $db->setQuery($query);
+        $db->execute();
+        
+    }
+    
+    /**
+     * Update the countries with new columns,
+     * 
+     * @param SimpleXMLElement $content
+     * @param boolean $resetId
+     */
+    protected function updateCountries($content, $resetId) {
+    
+        $db = JFactory::getDbo();
+        JLoader::register("CrowdFundingTableCountry", JPATH_ADMINISTRATOR .DIRECTORY_SEPARATOR. "components" .DIRECTORY_SEPARATOR. "com_crowdfunding" .DIRECTORY_SEPARATOR. "tables" .DIRECTORY_SEPARATOR. "country.php");
+        
+        foreach($content->country as $item) {
+    
+            $code = JString::trim($item->code);
+            
+            $keys = array("code" => $code);
+            
+            $table = new CrowdFundingTableCountry($db);
+            $table->load($keys);
+            
+            if(!$table->id) {
+                $table->name      = JString::trim($item->name);
+                $table->code      = $code;
+            }
+            
+            $table->code4     = JString::trim($item->code4);
+            $table->latitude  = JString::trim($item->latitude);
+            $table->longitude = JString::trim($item->longitude);
+            $table->currency  = JString::trim($item->currency);
+            $table->timezone  = JString::trim($item->timezone);
+    
+            $table->store();
+        }
+    
     }
     
     /**
@@ -422,6 +539,32 @@ class CrowdFundingModelImport extends JModelForm {
             unset($states);
             unset($content);
         
+        }
+        
+    }
+    
+    public function removeAll($resource) {
+        
+        if(!$resource) {
+            throw new InvalidArgumentException("COM_CROWDFUNDING_ERROR_INVALID_RESOURCE_TYPE");
+        }
+        
+        $db     = JFactory::getDbo();
+        
+        switch($resource) {
+            
+            case "countries":
+                $db->truncateTable("#__crowdf_countries");
+                break;
+                
+            case "currencies":
+                $db->truncateTable("#__crowdf_currencies");
+                break;
+            
+            case "locations":
+                $db->truncateTable("#__crowdf_locations");
+                break;
+                
         }
         
     }

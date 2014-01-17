@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -46,7 +46,7 @@ class CrowdFundingViewEmbed extends JViewLegacy {
         // Get currency
         jimport("crowdfunding.currency");
         $currencyId           = $this->params->get("project_currency");
-		$this->currency       = CrowdFundingCurrency::getInstance($currencyId);
+		$this->currency       = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId);
 		
 		// Get a social platform for integration
 		$this->socialPlatform = $this->params->get("integration_social_platform");
@@ -58,8 +58,6 @@ class CrowdFundingViewEmbed extends JViewLegacy {
         
         // Set a link to image
         $this->item->link_image  = $host."/".$this->imageFolder."/".$this->item->image;
-        
-        $this->version    = new CrowdFundingVersion();
         
         $layout = $this->getLayout();
         switch($layout) {
@@ -81,6 +79,8 @@ class CrowdFundingViewEmbed extends JViewLegacy {
                 break;
             
         }
+        
+        $this->version    = new CrowdFundingVersion();
         
 		$this->prepareDocument();
 		

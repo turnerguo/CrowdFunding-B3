@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Libraries
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -114,6 +114,10 @@ class CrowdFundingProject implements CrowdFundingInterfaceTable {
         return $this->table->id;
     }
     
+    public function getCategoryId() {
+        return $this->table->catid;
+    }
+    
     public function getUserId() {
         return $this->table->user_id;
     }
@@ -182,5 +186,9 @@ class CrowdFundingProject implements CrowdFundingInterfaceTable {
         }
     
         return $this->type;
+    }
+    
+    public function isCompleted() {
+        return $this->table->isCompleted();
     }
 }

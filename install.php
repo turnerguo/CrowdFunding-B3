@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -140,6 +140,16 @@ class pkg_crowdFundingInstallerScript {
             $result = array("type" => "important", "text" => JText::_("JOFF"));
         } else {
             $result = array("type" => "success", "text" => JText::_("JON"));
+        }
+        CrowdFundingInstallHelper::addRow($title, $result, $info);
+        
+        // Display result about verification FileInfo
+        $title  = JText::_("COM_CROWDFUNDING_PHP_VERSION");
+        $info   = "";
+        if (version_compare(PHP_VERSION, '5.3.0') < 0) {
+            $result = array("type" => "important", "text" => JText::_("COM_CROWDFUNDING_WARNING"));
+        } else {
+            $result = array("type" => "success", "text" => JText::_("JYES"));
         }
         CrowdFundingInstallHelper::addRow($title, $result, $info);
         

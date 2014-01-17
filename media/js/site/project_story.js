@@ -59,7 +59,7 @@ jQuery(document).ready(function() {
 			var _self   = this;
 			
 			jQuery.ajax({
-				url: "index.php?option=com_crowdfunding&task=project.removeExtraImage",
+				url: "index.php?option=com_crowdfunding&task=story.removeExtraImage",
 				type: "POST",
 				data: { format: "raw", id: imageId },
 				dataType: "text json"

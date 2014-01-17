@@ -2,12 +2,12 @@
 <extension type="module" version="3.2" client="site" method="upgrade">
 	<name>MOD_CROWDFUNDINGINFO</name>
 	<author>Todor Iliev</author>
-	<copyright>Copyright (C) 2013 Todor Iliev ( ITPrism.com )</copyright>
+	<copyright>Copyright (C) 2014 Todor Iliev ( ITPrism.com )</copyright>
 	<license>http://www.gnu.org/copyleft/gpl.html</license>
 	<authorEmail>todor@itprism.com</authorEmail>
 	<authorUrl>http://itprism.com</authorUrl>
-	<version>1.5</version>
-	<creationDate>08 December, 2013</creationDate>
+	<version>1.6</version>
+	<creationDate>17 January, 2014</creationDate>
 	<description><![CDATA[
     <p>CrowdFunding Info is a module that displays information about current state of a project.</p>
     <p><a href='http://itprism.com/' target='_blank'>Subscribe for the newsletter</a> to receive <strong>gifts</strong>, <strong>discount codes</strong>, information about <strong>updates</strong> and information about <strong>new ITPrism extensions</strong>.</p>
@@ -36,24 +36,12 @@
                 <field
                     name="cache"
                     type="list"
-                    default="1"
+                    default="0"
                     label="COM_MODULES_FIELD_CACHING_LABEL"
                     description="COM_MODULES_FIELD_CACHING_DESC">
-                    <option
-                        value="1">JGLOBAL_USE_GLOBAL</option>
-                    <option
-                        value="0">COM_MODULES_FIELD_VALUE_NOCACHING</option>
+                    <option value="0">COM_MODULES_FIELD_VALUE_NOCACHING</option>
                 </field>
-                <field
-                    name="cache_time"
-                    type="text"
-                    default="900"
-                    label="COM_MODULES_FIELD_CACHE_TIME_LABEL"
-                    description="COM_MODULES_FIELD_CACHE_TIME_DESC" />
                 
-                <field name="cachemode" type="hidden" default="static">
-                    <option value="static"></option>
-                </field>
             </fieldset>
             
 		</fields>

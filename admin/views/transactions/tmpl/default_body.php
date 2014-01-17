@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -19,6 +19,11 @@ defined('_JEXEC') or die;
         </td>
         <td>
             <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=transaction&layout=edit&id=".$item->id);?>"><?php echo $item->txn_id; ?></a>
+            <?php if(!empty($item->parent_txn_id)) {?>
+            <div class="small">
+                <?php echo $this->escape($item->parent_txn_id); ?>
+            </div>
+            <?php } ?>
         </td>
 		<td class="center hidden-phone"><?php echo JHtml::_("crowdfunding.name", $item->sender); ?></td>
 		<td class="center hidden-phone"><?php echo $this->escape($item->beneficiary); ?></td>
@@ -28,18 +33,21 @@ defined('_JEXEC') or die;
 		    </a>
 	    </td>
 		<td class="center"><?php 
-		$currency = JArrayHelper::getValue($this->currencies, $item->txn_currency);
+		$currency = $this->currencies->getCurrencyByAbbr($item->txn_currency); 
 		if(!empty($currency)) {
-		    echo JHtml::_("crowdfunding.amount", $item->txn_amount, $currency);
+		    echo $currency->getAmountString($item->txn_amount, $this->params->get("locale_intl", 0));
 		} else {
 		    echo $item->txn_amount;
 		}
 		?></td>
 		<td class="center hidden-phone"><?php echo $item->txn_date; ?></td>
 		<td class="center hidden-phone"><?php echo $item->service_provider; ?></td>
-		<td class="center hidden-phone"><?php echo $item->txn_status; ?></td>
 		<td class="center hidden-phone">
-		<?php echo JHtml::_('crowdfundingbackend.reward', $item->reward_id, $item->reward, $item->project_id, $item->reward_state ); ?>
+            <?php echo $item->txn_status; ?>
+            <?php echo JHtml::_('crowdfundingbackend.reason', $item->status_reason); ?>
+		</td>
+		<td class="center hidden-phone">
+		    <?php echo JHtml::_('crowdfundingbackend.reward', $item->reward_id, $item->reward, $item->project_id, $item->reward_state ); ?>
 		</td>
         <td class="center hidden-phone"><?php echo $item->id;?></td>
 	</tr>

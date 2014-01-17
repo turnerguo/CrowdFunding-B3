@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -42,10 +42,10 @@ class CrowdFundingControllerRewards extends ITPrismControllerAdmin {
  
         $userId = JFactory::getUser()->id;
         if(!$userId) {
-            $redirectData = array(
+            $redirectOptions = array(
                 "force_direction"   => "index.php?option=com_users&view=login"
             );
-            $this->displayNotice(JText::_("COM_CROWDFUNDING_ERROR_NOT_LOG_IN"), $redirectData);
+            $this->displayNotice(JText::_("COM_CROWDFUNDING_ERROR_NOT_LOG_IN"), $redirectOptions);
             return;
         }
         
@@ -53,44 +53,68 @@ class CrowdFundingControllerRewards extends ITPrismControllerAdmin {
         /** @var $app JAdministrator **/
         
 		// Get the data from the form POST
-		$data    = $app->input->post->get('rewards', array(), 'array');
-        $itemId  = $app->input->post->get('id', 0, 'int');
+		$data       = $app->input->post->get('rewards', array(), 'array');
+        $projectId  = $app->input->post->get('id', 0, 'int');
         
-        $redirectData = array(
+        $images     = $app->input->files->get('images', array(), 'array');
+        
+        $userId     = JFactory::getUser()->id;
+        
+        $redirectOptions = array(
             "view"   => "project",
             "layout" => "rewards",
-            "id"     => $itemId
+            "id"     => $projectId
         );
+        
+        jimport("crowdfunding.authorizer");
+        $auth = new CrowdFundingAuthorizer(JFactory::getDbo(), $userId);
+        if(!$auth->authorizeProject($projectId)) {
+            $this->displayError(JText::_("COM_CROWDFUNDING_INVALID_PROJECT"), $redirectOptions);
+            return;
+        }
         
         $model     = $this->getModel();
         /** @var $model CrowdFundingModelRewards **/
             
         try {
             
-            $validData  = $model->validate($data, $itemId);
-            $model->save($validData, $itemId);
+            $validData  = $model->validate($data);
+            $rawardsIds = $model->save($validData, $projectId);
             
-        } catch (Exception $e) {
+            $params        = JComponentHelper::getParams("com_crowdfunding");
+            $imagesAllowed = $params->get("rewards_images", 0);
             
-            // Problem with uploading, so set a message and redirect to pages
-            $code = $e->getCode();
-            switch($code) {
+            // Upload images.
+            if($imagesAllowed AND !empty($images) AND !empty($rawardsIds)) {
                 
-                case ITPrismErrors::CODE_WARNING:
-                    $this->displayWarning($e->getMessage(), $redirectData);
-                    return;
-                break;
+                // Get the folder where the images will be stored
+                $imagesFolder    = CrowdFundingHelper::getImagesFolder($userId);
                 
-                default:
-                    JLog::add($e->getMessage());
-                    throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'), ITPrismErrors::CODE_ERROR);
-                break;
+                jimport("joomla.filesystem.folder");
+                if(!JFolder::exists($imagesFolder)) {
+                    JFolder::create($imagesFolder);
+                }
+                
+                $images = $model->uploadImages($images, $imagesFolder, $userId, $rawardsIds);
+                
+                if(!empty($images)) {
+                    $model->storeImages($images, $imagesFolder);
+                }
             }
             
+        } catch (InvalidArgumentException $e) {
+            $this->displayWarning($e->getMessage(), $redirectOptions);
+            return;
+        } catch (RuntimeException $e) {
+            $this->displayWarning($e->getMessage(), $redirectOptions);
+            return;
+        } catch (Exception $e) {
+            JLog::add($e->getMessage());
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }
         
         // Redirect to next page
-        $this->displayMessage(JText::_("COM_CROWDFUNDING_REWARDS_SUCCESSFULY_SAVED"), $redirectData);
+        $this->displayMessage(JText::_("COM_CROWDFUNDING_REWARDS_SUCCESSFULY_SAVED"), $redirectOptions);
     }
 
     
@@ -105,14 +129,14 @@ class CrowdFundingControllerRewards extends ITPrismControllerAdmin {
     
         $userId = JFactory::getUser()->id;
         if(!$userId) {
-            $redirectData = array(
+            $redirectOptions = array(
                 "force_direction"   => JRoute::_("index.php?option=com_users&view=login", false)
             );
-            $this->displayNotice(JText::_("COM_CROWDFUNDING_ERROR_NOT_LOG_IN"), $redirectData);
+            $this->displayNotice(JText::_("COM_CROWDFUNDING_ERROR_NOT_LOG_IN"), $redirectOptions);
             return;
         }
     
-        $redirectData = array(
+        $redirectOptions = array(
             "view"   => "transactions"
         );
         
@@ -125,7 +149,7 @@ class CrowdFundingControllerRewards extends ITPrismControllerAdmin {
         $state   = (!$state) ? 0 : 1;
         
         if(!$txnId) {
-            $this->displayWarning(JText::_("COM_CROWDFUNDING_ERROR_INVALID_TRANSACTION"), $redirectData);
+            $this->displayWarning(JText::_("COM_CROWDFUNDING_ERROR_INVALID_TRANSACTION"), $redirectOptions);
             return;
         }
         
@@ -143,7 +167,7 @@ class CrowdFundingControllerRewards extends ITPrismControllerAdmin {
             switch($code) {
     
                 case ITPrismErrors::CODE_WARNING:
-                    $this->displayWarning($e->getMessage(), $redirectData);
+                    $this->displayWarning($e->getMessage(), $redirectOptions);
                     return;
                     break;
     
@@ -161,7 +185,7 @@ class CrowdFundingControllerRewards extends ITPrismControllerAdmin {
             $msg = JText::_("COM_CROWDFUNDING_REWARD_HAS_BEEN_SET_AS_SENT");
         }
     
-        $this->displayMessage($msg, $redirectData);
+        $this->displayMessage($msg, $redirectOptions);
         	
     }
     
