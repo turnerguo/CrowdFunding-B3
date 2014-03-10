@@ -45,4 +45,12 @@ jQuery(document).ready(function() {
 		jQuery("#jform_funding_end_img").show();
 	}
 	
+	
+	// Initialize form validation using Parslay
+	jQuery('#js-cf-funding-form').parsley({
+		uiEnabled: false,
+		messages: {
+			required: Joomla.JText._('COM_CROWDFUNDING_THIS_VALUE_IS_REQUIRED')
+		}
+	});
 });

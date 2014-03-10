@@ -14,10 +14,11 @@
             filter="trim" 
         />
         
-        <field name="sender_email" type="text" class="span6" 
+        <field name="sender_email" type="email" class="span6" 
             label="COM_CROWDFUNDING_SENDER_EMAIL" 
             description="COM_CROWDFUNDING_SENDER_EMAIL_DESC" 
             filter="trim" 
+            validate="email"
         />
         
         <field name="body" type="editor" class="span12"

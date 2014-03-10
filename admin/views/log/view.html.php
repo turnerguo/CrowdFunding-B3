@@ -41,7 +41,11 @@ class CrowdFundingViewLog extends JViewLegacy {
                 break;
                 
             case "files":
-                $this->files = CrowdFundingHelper::getLogFiles();
+                jimport("crowdfunding.log.files");
+                $include = array("error_log");
+                
+                $this->files = new CrowdFundingLogFiles($include);
+                $this->files->load();
                 break;
             
         }

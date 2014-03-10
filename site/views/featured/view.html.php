@@ -57,9 +57,9 @@ class CrowdFundingViewFeatured extends JViewLegacy {
         if(!empty($this->displayCreator)) {
             $this->prepareIntegration($this->items, $this->params);
         }
-        
-        $this->version    = new CrowdFundingVersion();
 		
+        $this->version    = new CrowdFundingVersion();
+        
         $this->prepareDocument();
         
         parent::display($tpl);

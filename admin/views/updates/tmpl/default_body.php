@@ -19,7 +19,7 @@ defined('_JEXEC') or die;
 		    <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=update&layout=edit&id=".$item->id);?>" ><?php echo $item->title; ?></a>
 	    </td>
 		<td class="center hidden-phone">
-		    <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=project&layout=edit&id=".$item->project_id);?>"><?php echo $item->project; ?></a>
+		    <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=projects&filter_search:id=".$item->project_id);?>"><?php echo $item->project; ?></a>
 	    </td>
         <td class="center hidden-phone">
             <?php echo JHTML::_('date', $item->record_date, JText::_('DATE_FORMAT_LC3')); ?>

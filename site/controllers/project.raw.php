@@ -48,6 +48,9 @@ class CrowdFundingControllerProject extends JControllerLegacy {
 		$app     = JFactory::getApplication();
 		$query   = $app->input->get->get('query', "", 'string');
 
+		jimport('itprism.response.json');
+		$response = new ITPrismResponseJson();
+		
 		// Get the model
 		$model = $this->getModel();
 		/** @var $model CrowdFundingModelProject **/
@@ -59,12 +62,11 @@ class CrowdFundingControllerProject extends JControllerLegacy {
             throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }
         
-        $response = array(
-        	"success" => true,
-            "data"    => $locationData
-        );
-            
-        echo json_encode($response);
+        $response
+            ->setData($locationData)
+            ->success();
+        
+        echo $response;
         
         JFactory::getApplication()->close();
 		

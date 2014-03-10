@@ -36,7 +36,8 @@ jQuery(document).ready(function() {
 	});
 	
 	// Validation plugin
-	jQuery('#crowdf-project-form').parsley({
+	jQuery('#js-cf-project-form').parsley({
+		uiEnabled: false,
 		messages: {
 			required: Joomla.JText._('COM_CROWDFUNDING_THIS_VALUE_IS_REQUIRED')
 		}

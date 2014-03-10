@@ -194,7 +194,7 @@ class CrowdFundingModelImport extends JModelForm {
      * @param string    $file 	 	A path to file
      * @param bool  	$resetId	Reset existing IDs with new ones.
      */
-    public function importLocations($file, $resetId = false) {
+    public function importLocations($file, $resetId = false, $minPopulation = 0) {
         
         $ext      = JString::strtolower( JFile::getExt($file) );
         
@@ -203,12 +203,12 @@ class CrowdFundingModelImport extends JModelForm {
                 $this->importLocationsXml($file, $resetId);
                 break;
             default: // TXT
-                $this->importLocationsTxt($file, $resetId);
+                $this->importLocationsTxt($file, $resetId, $minPopulation);
                 break;
         }
     }
     
-    protected function importLocationsTxt($file, $resetId) {
+    protected function importLocationsTxt($file, $resetId, $minPopulation) {
         
         $content   = file($file);
         
@@ -232,9 +232,9 @@ class CrowdFundingModelImport extends JModelForm {
                 }
                 
                 // If missing name, skip the record
-                if(!$name) {
-                    continue;
-                }
+                if(!$name) { continue; }
+                
+                if($minPopulation > (int)$item[14]) { continue; }
                 
                 $id =  (!$resetId) ? JString::trim($item[0]) : "null";
                 

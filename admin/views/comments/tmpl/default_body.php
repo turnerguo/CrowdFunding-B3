@@ -24,7 +24,7 @@ defined('_JEXEC') or die;
     		</a>
 		</td>
 		<td class="center hidden-phone">
-		    <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=project&layout=edit&id=".(int)$item->project_id);?>"><?php echo $this->escape($item->project); ?></a>
+		    <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=projects&filter_search=id:".(int)$item->project_id);?>"><?php echo $this->escape($item->project); ?></a>
 	    </td>
         <td class="center hidden-phone">
             <?php echo JHtml::_('date', $item->record_date, JText::_('DATE_FORMAT_LC3')); ?>

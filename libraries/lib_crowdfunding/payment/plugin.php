@@ -202,13 +202,16 @@ class CrowdFundingPaymentPlugin extends JPlugin {
     
         $emailMode  = $this->params->get("email_mode", "plain");
     
+        jimport("crowdfunding.string");
+        $string = new ITPrismString($transaction->txn_amount);
+        
         // Prepare data for parsing
         $data = array(
             "site_name"         => $app->getCfg("sitename"),
             "site_url"          => JUri::root(),
             "item_title"        => $project->title,
             "item_url"          => $website.JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($project->slug, $project->catslug)),
-            "amount"            => ITPrismString::getAmount($transaction->txn_amount, $transaction->txn_currency),
+            "amount"            => $string->getAmount($transaction->txn_currency),
             "transaction_id"    => $transaction->txn_id
         );
     

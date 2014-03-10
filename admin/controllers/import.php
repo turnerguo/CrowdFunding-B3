@@ -227,12 +227,14 @@ class CrowdFundingControllerImport extends ITPrismControllerFormBackend {
                 $filePath  = $destination;
             }
             
-            $resetId    = JArrayHelper::getValue($data, "reset_id", false, "bool");
-            $removeOld  = JArrayHelper::getValue($data, "remove_old", false, "bool");
+            $resetId        = JArrayHelper::getValue($data, "reset_id", false, "bool");
+            $minPopulation  = JArrayHelper::getValue($data, "minimum_population", 0, "int");
+            
+            $removeOld      = JArrayHelper::getValue($data, "remove_old", false, "bool");
             if(!empty($removeOld)) {
                 $model->removeAll("locations");
             }
-            $model->importLocations($filePath, $resetId);
+            $model->importLocations($filePath, $resetId, $minPopulation);
             
         } catch (Exception $e) {
             JLog::add($e->getMessage());

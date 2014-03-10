@@ -71,16 +71,24 @@ class CrowdFundingModelCountry extends JModelAdmin {
      */
     public function save($data){
         
-        $id    = JArrayHelper::getValue($data, "id");
-        $name  = JArrayHelper::getValue($data, "name");
-        $code  = JArrayHelper::getValue($data, "code");
+        $id         = JArrayHelper::getValue($data, "id");
+        $name       = JArrayHelper::getValue($data, "name");
+        $code       = JArrayHelper::getValue($data, "code");
+        $code4      = JArrayHelper::getValue($data, "code4");
+        $latitude   = JArrayHelper::getValue($data, "latitude");
+        $longitude  = JArrayHelper::getValue($data, "longitude");
+        $timezone   = JArrayHelper::getValue($data, "timezone");
         
         // Load a record from the database
         $row = $this->getTable();
         $row->load($id);
         
-        $row->set("name", $name);
-        $row->set("code", $code);
+        $row->set("name",      $name);
+        $row->set("code",      $code);
+        $row->set("code4",     $code4);
+        $row->set("latitude",  $latitude);
+        $row->set("longitude", $longitude);
+        $row->set("timezone",  $timezone);
         
         $row->store();
         

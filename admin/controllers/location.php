@@ -34,7 +34,7 @@ class CrowdFundingControllerLocation extends ITPrismControllerFormBackend {
         $data    = $app->input->post->get('jform', array(), 'array');
         $itemId  = JArrayHelper::getValue($data, "id");
         
-        $redirectData = array(
+        $redirectOptions = array(
             "task"  => $this->getTask(),
             "id"    => $itemId
         );
@@ -54,12 +54,16 @@ class CrowdFundingControllerLocation extends ITPrismControllerFormBackend {
         
         // Check for errors
         if($validData === false){
-            $this->displayNotice($form->getErrors(), $redirectData);
+            $this->displayNotice($form->getErrors(), $redirectOptions);
             return;
         }
             
         try {
+            
             $itemId = $model->save($validData);
+            
+            $redirectOptions["id"] = $itemId;
+            
         } catch (Exception $e) {
             
             JLog::add($e->getMessage());
@@ -67,7 +71,7 @@ class CrowdFundingControllerLocation extends ITPrismControllerFormBackend {
         
         }
         
-        $this->displayMessage(JText::_('COM_CROWDFUNDING_LOCATION_SAVED'), $redirectData);
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_LOCATION_SAVED'), $redirectOptions);
     
     }
     

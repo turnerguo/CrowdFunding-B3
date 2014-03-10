@@ -35,10 +35,9 @@ class JFormFieldGoal extends JFormField {
 		$readonly  = ((string) $this->element['readonly'] == 'true') ? ' readonly="readonly"' : '';
 		$disabled  = ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
 		$class     = (!empty($this->element['class'])) ? ' class="'. (string) $this->element['class'] .'"' : "";
+		$required  = $this->required ? ' required aria-required="true"' : '';
 		
-		// Initialize JavaScript field attributes.
-		$onchange    = $this->element['onchange'] ? ' onchange="' . (string) $this->element['onchange'] . '"' : '';
-
+		// Get currency
 		$params      = JComponentHelper::getParams("com_crowdfunding");
 		$currencyId  = $params->get("project_currency");
 		
@@ -51,7 +50,7 @@ class JFormFieldGoal extends JFormField {
 		    $html = '<div class="input-append">';
 		}
 		
-		$html .= '<input type="text" name="' . $this->name . '" id="' . $this->id . '"' . ' value="'. htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '"' . $class . $size . $disabled . $readonly . $onchange . $maxLength . '/>';
+		$html .= '<input type="text" name="' . $this->name . '" id="' . $this->id . '"' . ' value="'. htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '"' . $class . $size . $disabled . $readonly . $maxLength . $required . '/>';
 			
 		// Appended
 		$html .= '<span class="add-on">'.$currency->getAbbr().'</span></div>';

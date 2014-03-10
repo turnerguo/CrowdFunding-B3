@@ -2,10 +2,9 @@
 <form>
     <fieldset name="funding" label="COM_CROWDFUNDING_FUNDING_DEFAULT_LABEL" addfieldpath="/administrator/components/com_crowdfunding/models/fields">
 
-        <field name="goal" type="Goal" class="span3"
+        <field name="goal" type="Goal" class="span6"
             label="COM_CROWDFUNDING_FIELD_FUNDING_GOAL" 
             description="COM_CROWDFUNDING_FIELD_FUNDING_GOAL_DESC"
-            size="40" 
             filter="float"
             required="true"
          />
@@ -16,10 +15,9 @@
             required="true"
         />
            
-        <field type="FundingLabel" name="funding_duration_type"
+        <field name="funding_duration_type" type="FundingLabel" 
             label="COM_CROWDFUNDING_FIELD_FUNDING_DURATION" 
             description="COM_CROWDFUNDING_FIELD_FUNDING_DURATION_DESC" 
-            required="true"
          />
          
         <field name="funding_days" type="text"

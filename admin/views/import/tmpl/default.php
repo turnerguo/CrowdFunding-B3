@@ -44,6 +44,13 @@ defined('_JEXEC') or die;
                 </div>
                 <?php }?>
                 
+                <?php if(strcmp($this->importType, "locations") == 0) {?>
+                <div class="control-group">
+                    <div class="control-label"><?php echo $this->form->getLabel('minimum_population'); ?></div>
+    				<div class="controls"><?php echo $this->form->getInput('minimum_population'); ?></div>
+                </div>
+                <?php }?>
+                
     		</fieldset>
             
             <input type="hidden" name="task" value="" id="task"/>

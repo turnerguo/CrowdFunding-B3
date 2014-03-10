@@ -157,4 +157,24 @@ class CrowdFundingFilters {
         return $results;
     
     }
+    
+    public function getLogTypes() {
+    
+        $query  = $this->db->getQuery(true);
+    
+        $query
+        ->select("type AS value, type AS text")
+        ->from("#__crowdf_logs")
+        ->group("type");
+    
+        $this->db->setQuery($query);
+        $types = $this->db->loadAssocList();
+    
+        if(!$types) {
+            $types = array();
+        }
+    
+        return $types;
+    
+    }
 }

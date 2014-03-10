@@ -31,7 +31,11 @@ class CrowdFundingViewLogs extends JViewLegacy {
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
         
-        $logFiles         = CrowdFundingHelper::getLogFiles();
+        // Get log files and count them.
+        jimport("crowdfunding.log.files");
+        $include = array("error_log");
+        $logFiles = new CrowdFundingLogFiles($include);
+        $logFiles->load();
         
         $this->numberLogFilse = count($logFiles);
         
@@ -80,7 +84,9 @@ class CrowdFundingViewLogs extends JViewLegacy {
     
         JHtmlSidebar::setAction('index.php?option='.$this->option.'&view='.$this->getName());
         
-        $types = CrowdFundingHelper::getLogTypes();
+        jimport("crowdfunding.filters");
+        $filters = new CrowdFundingFilters(JFactory::getDbo());
+        $types   = $filters->getLogTypes();
         
         JHtmlSidebar::addFilter(
             JText::_('COM_CROWDFUNDING_SELECT_TYPE'),

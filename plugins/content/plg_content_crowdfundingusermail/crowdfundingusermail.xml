@@ -6,8 +6,8 @@
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <authorEmail>todor@itprism.com</authorEmail>
     <authorUrl>http://itprism.com</authorUrl>
-    <version>1.6</version>
-    <creationDate>17 January, 2014</creationDate>
+    <version>1.6.1</version>
+    <creationDate>10 March, 2014</creationDate>
     <description><![CDATA[
     <p>CrowdFunding - User Mail is a plugin that sends confirmation mails to users.</p>
     <p><a href="http://itprism.com/" target="_blank">Subscribe for the newsletter</a> to receive information about updates and new ITPrism extensions.</p>

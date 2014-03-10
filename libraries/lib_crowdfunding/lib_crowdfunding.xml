@@ -9,13 +9,14 @@
 	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
 	<packager>ITPrism</packager>
 	<packagerurl>http://itprism.com</packagerurl>
-	<version>1.6</version>
-	<creationDate>17 January, 2014</creationDate>
+	<version>1.6.1</version>
+	<creationDate>10 March, 2014</creationDate>
 	<description>CrowdFunding Library</description>
 	<files>
 	    <folder>image</folder>
 	    <folder>interface</folder>
 	    <folder>language</folder>
+	    <folder>log</folder>
         <folder>payment</folder>
 	    <folder>statistics</folder>
         

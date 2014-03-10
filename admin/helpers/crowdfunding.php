@@ -122,27 +122,6 @@ abstract class CrowdFundingHelper {
         
     }
     
-    public static function getLogTypes() {
-    
-        $db     = JFactory::getDbo();
-        $query  = $db->getQuery(true);
-
-        $query
-            ->select("type AS value, type AS text")
-            ->from("#__crowdf_logs")
-            ->group("type");
-
-        $db->setQuery($query);
-        $types = $db->loadAssocList();
-        
-        if(!$types) {
-            $types = array();
-        }
-    
-        return $types;
-    
-    }
-    
     public static function getProject($projectId, $fields = array("id")) {
         
         $db = JFactory::getDbo();
@@ -191,8 +170,8 @@ abstract class CrowdFundingHelper {
 	}
 	
 	/**
+	 * Calculate days left.
 	 * 
-	 * Calculate days left
 	 * @param int $fundingDays
 	 * @param string $fundingStart
 	 * @param string $fundingEnd
@@ -492,46 +471,6 @@ abstract class CrowdFundingHelper {
         }
         
         return $result;
-    }
-    
-    public static function getLogFiles() {
-    
-        jimport("joomla.filesystem.file");
-        jimport("joomla.filesystem.path");
-        jimport("joomla.filesystem.folder");
-    
-        // Read files in folder /logs
-        $config    = JFactory::getConfig();
-        $logFolder = $config->get("log_path");
-    
-        $files     = JFolder::files($logFolder);
-        if(!is_array($files)) {
-            $files = array();
-        }
-    
-        foreach($files as $key => $file) {
-            if(strcmp("index.html", $file) == 0) {
-                unset($files[$key]);
-            } else {
-                $files[$key] = JPath::clean($logFolder.DIRECTORY_SEPARATOR.$files[$key]);
-            }
-        }
-    
-        // Check for file "error_log" in the main folder
-        $errorLogFile = JPATH_ROOT.DIRECTORY_SEPARATOR."error_log";
-        if(JFile::exists($errorLogFile)) {
-            $files[] = JPath::clean($errorLogFile);
-        }
-        
-        // Check for file "error_log" in admin folder
-        $errorLogFile = JPATH_BASE.DIRECTORY_SEPARATOR."error_log";
-        if(JFile::exists($errorLogFile)) {
-            $files[] = JPath::clean($errorLogFile);
-        }
-    
-        sort($files);
-        
-        return $files;
     }
     
     /**

@@ -38,8 +38,8 @@ defined('_JEXEC') or die;
             continue;
         }
         
-        $socialProfile  = (!$this->socialProfiles) ? null : $this->socialProfiles->getLink($this->item->user_id);
-        $socialAvatar   = (!$this->socialProfilesAvatars) ? $this->defaultAvatar : $this->socialProfilesAvatars->getAvatar($this->item->user_id, $this->avatarsSize);
+        $socialProfile  = (!$this->socialProfiles) ? null : $this->socialProfiles->getLink($item->user_id);
+        $socialAvatar   = (!$this->socialProfilesAvatars) ? $this->defaultAvatar : $this->socialProfilesAvatars->getAvatar($item->user_id, $this->avatarsSize);
         
 ?>
     <div class="row-fluid cf-comment-item" id="comment<?php echo $item->id;?>">

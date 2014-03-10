@@ -9,16 +9,14 @@
             required="true"
         />
 
-        <field name="published" type="list" 
+        <field name="published" type="radio" class="btn-group" 
             label="JSTATUS" 
             description="JFIELD_PUBLISHED_DESC" 
-            class="inputbox" 
             filter="intval" 
-            size="1" 
             default="1"
         >
-            <option value="1">JPUBLISHED</option>
             <option value="0">JUNPUBLISHED</option>
+            <option value="1">JPUBLISHED</option>
         </field>
         
         <field name="id" type="text" class="readonly" 

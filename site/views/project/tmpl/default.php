@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 <?php echo $this->loadTemplate("nav");?>
 <div class="row-fluid">
     <div class="span6">
-        <form action="<?php echo JRoute::_('index.php?option=com_crowdfunding'); ?>" method="post" name="projectForm" id="crowdf-project-form" novalidate autocomplete="off" enctype="multipart/form-data" >
+        <form action="<?php echo JRoute::_('index.php?option=com_crowdfunding'); ?>" method="post" name="projectForm" id="js-cf-project-form" novalidate="novalidate" autocomplete="off" enctype="multipart/form-data" >
             
             <?php echo $this->form->getLabel('title'); ?>
             <?php echo $this->form->getInput('title'); ?>

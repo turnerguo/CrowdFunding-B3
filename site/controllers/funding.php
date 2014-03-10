@@ -53,7 +53,7 @@ class CrowdFundingControllerFunding extends ITPrismControllerFormFrontend {
         }
         
         $app = JFactory::getApplication();
-        /** @var $app JAdministrator **/
+        /** @var $app JSite **/
         
 		// Get the data from the form POST
 		$data    = $app->input->post->get('jform', array(), 'array');

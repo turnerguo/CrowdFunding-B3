@@ -95,7 +95,7 @@ class CrowdFundingModelEmail extends JModelAdmin {
      * Prepare and sanitise the table prior to saving.
      * @since	1.6
      */
-    protected function prepareTable(&$table) {
+    protected function prepareTable($table) {
          
         // Fix magic qutoes
         if(get_magic_quotes_gpc()) {

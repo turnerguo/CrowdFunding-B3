@@ -107,7 +107,10 @@ class CrowdFundingControllerExport extends JControllerLegacy {
         $doc = JFactory::getDocument();
         $doc->setMimeEncoding('application/octet-stream');
 
-        echo JFile::read($destination);
+        JResponse::sendHeaders();
+        
+        echo file_get_contents($destination);
+        JFactory::getApplication()->close();
         
     }
     

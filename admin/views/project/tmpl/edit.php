@@ -74,6 +74,8 @@ defined('_JEXEC') or die;
         </div>
         <?php echo JHtml::_('bootstrap.endTab'); ?>
         
+        <?php echo JHtml::_('bootstrap.endTabSet');?>
+        
         <input type="hidden" name="task" value="" />
         <?php echo JHtml::_('form.token'); ?>
     </div>

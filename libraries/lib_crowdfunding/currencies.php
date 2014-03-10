@@ -31,7 +31,6 @@ class CrowdFundingCurrencies implements Iterator, Countable, ArrayAccess {
      * Initialize the object.
      * 
      * @param JDatabase Database object.
-     * @param array     Projects IDs
      */
     public function __construct(JDatabase $db) {
         $this->db = $db;
@@ -52,7 +51,7 @@ class CrowdFundingCurrencies implements Iterator, Countable, ArrayAccess {
         }
         
         $this->db->setQuery($query);
-        $results = $this->db->loadObjectList();
+        $results = $this->db->loadAssocList();
         
         if(!$results) {
             $results = array();

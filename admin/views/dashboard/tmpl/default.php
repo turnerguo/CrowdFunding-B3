@@ -22,12 +22,11 @@ defined('_JEXEC') or die;
     
         <!--  Row 1 -->
         <div class="row-fluid dashboard-stats">
-            <?php if(0 < count($this->latestStarted)) {?>
             <div class="span6">
                 <h3 class="latest-started">
                     <?php echo JText::_("COM_CROWDFUNDING_LATEST_STARTED");?>
                 </h3>
-                <table class="table table-condensed">
+                <table class="table">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -44,7 +43,7 @@ defined('_JEXEC') or die;
                                     <?php echo JHtmlString::truncate(strip_tags($this->latestStarted[$i]["title"]), 53); ?>
                                 </a>
                             </td>
-                            <td class="center">
+                            <td class="center" style="min-width: 100px;">
                                 <?php echo JHtml::_('date', $this->latestStarted[$i]["funding_start"], JText::_('DATE_FORMAT_LC3'));?>
                             </td>
                         </tr>
@@ -52,13 +51,11 @@ defined('_JEXEC') or die;
                     </tbody>
                 </table>
             </div>
-            <?php }?>
-            <?php if(0 < count($this->popular)) {?>
             <div class="span6">
                 <h3 class="popular">
                     <?php echo JText::_("COM_CROWDFUNDING_POPULAR");?>
                 </h3>
-                <table class="table table-condensed">
+                <table class="table">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -83,17 +80,15 @@ defined('_JEXEC') or die;
                     </tbody>
                 </table>
             </div>
-            <?php }?>
         </div>
         <!-- /Row 1 -->
         <!--  Row 2 -->
         <div class="row-fluid dashboard-stats">
-            <?php if(0 < count($this->latestCreated)) {?>
             <div class="span6">
                 <h3 class="latest-created">
                     <?php echo JText::_("COM_CROWDFUNDING_LATEST_CREATED");?>
                 </h3>
-                <table class="table table-condensed">
+                <table class="table">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -110,7 +105,7 @@ defined('_JEXEC') or die;
                                     <?php echo JHtmlString::truncate(strip_tags($this->latestCreated[$i]["title"]), 53); ?>
                                 </a>
                             </td>
-                            <td class="center">
+                            <td class="center" style="min-width: 100px;">
                                 <?php echo JHtml::_('date', $this->latestCreated[$i]["created"], JText::_('DATE_FORMAT_LC3'));?>
                             </td>
                         </tr>
@@ -118,13 +113,11 @@ defined('_JEXEC') or die;
                     </tbody>
                 </table>
             </div>
-            <?php }?>
-            <?php if(0 < count($this->mostFunded)) {?>
             <div class="span6">
                 <h3 class="mostfunded">
                     <?php echo JText::_("COM_CROWDFUNDING_MOST_FUNDED");?>
                 </h3>
-                <table class="table table-condensed">
+                <table class="table">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -149,7 +142,6 @@ defined('_JEXEC') or die;
                     </tbody>
                 </table>
             </div>
-            <?php }?>
         </div>
         <!-- /Row 2 -->
 	</div>

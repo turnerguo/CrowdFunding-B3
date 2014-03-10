@@ -3,7 +3,7 @@
  * @package		 CrowdFunding
  * @subpackage	 Plugins
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -129,6 +129,9 @@ class plgContentCrowdFundingAdminMail extends JPlugin {
             return;
         }
         
+        // Initialize plugin
+        $this->init();
+        
         // Check for enabled option for sending mail 
         // when user create a project.
         $emailId = $this->params->get("send_when_create", 0);
@@ -249,7 +252,7 @@ class plgContentCrowdFundingAdminMail extends JPlugin {
     
             }
     
-            return $result;
+            return ($result !== true) ? false : true;
     
         }
     

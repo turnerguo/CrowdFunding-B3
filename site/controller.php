@@ -14,6 +14,8 @@ jimport('joomla.application.component.controller');
 
 class CrowdFundingController extends JControllerLegacy {
     
+    protected $cacheableViews = array("details", "discover", "featured", "projects", "transactions");
+    
     /**
      * Method to display a view.
      *
@@ -25,15 +27,17 @@ class CrowdFundingController extends JControllerLegacy {
      */
     public function display($cachable = false, $urlparams = false) {
 
-        $app = JFactory::getApplication();
-        /** @var $app JSite **/
-        
         // Set the default view name and format from the Request.
         // Note we are using catid to avoid collisions with the router and the return page.
         // Frontend is a bit messier than the backend.
-        $viewName  = $app->input->getCmd('view', 'discover');
-        $app->input->set('view', $viewName);
+        $viewName  = $this->input->getCmd('view', 'discover');
+        $this->input->set('view', $viewName);
 
+        // Cache some views.
+        if(in_array($viewName, $this->cacheableViews)) {
+            $cachable   = true;
+        }
+        
         $safeurlparams = array(
             'id'                => 'INT',
             'limit'             => 'INT',

@@ -229,6 +229,15 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin {
             jimport("crowdfunding.intention");
             $intention       = new CrowdFundingIntention($intentionId);
             
+            // Get payment session as intention.
+            if(!$intention->getId()) {
+                jimport("crowdfunding.payment.session");
+                $keys = array(
+                    "intention_id" => $intentionId
+                );
+                $intention       = new CrowdFundingPaymentSession(JFactory::getDbo(), $keys);
+            }
+            
             // DEBUG DATA
             JDEBUG ? $this->log->add(JText::_($this->textPrefix."_DEBUG_INTENTION"), $this->debugType, $intention->getProperties()) : null;
             
@@ -298,7 +307,8 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin {
             JDEBUG ? $this->log->add(JText::_($this->textPrefix."_DEBUG_RESULT_DATA"), $this->debugType, $result) : null;
             
             // Remove intention
-            $intention->delete();
+            $txnStatus = (isset($result["transaction"]->txn_status)) ? $result["transaction"]->txn_status : null;
+            $this->removeIntention($intention, $txnStatus);
             unset($intention);
             
         } else {
@@ -556,24 +566,82 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin {
     
         $code   = $country->getCode();
         $code4  = $country->getCode4();
-    
+        
         $button     = $this->params->get("paypal_button_type", "btn_buynow_LG");
         $buttonUrl  = $this->params->get("paypal_button_url");
-    
-        if(!$buttonUrl) {
-    
-            if(strcmp("US", $code) == 0) {
-                $html[] = '<input type="image" name="submit" border="0" src="https://www.paypalobjects.com/'.$code4.'/i/btn/'.$button.'.gif" alt="'.JText::_($this->textPrefix."_BUTTON_ALT").'">';
+        
+        // Generate a button
+        if(!$this->params->get("paypal_button_default", 0)) {
+            
+            if(!$buttonUrl) {
+        
+                if(strcmp("US", $code) == 0) {
+                    $html[] = '<input type="image" name="submit" border="0" src="https://www.paypalobjects.com/'.$code4.'/i/btn/'.$button.'.gif" alt="'.JText::_($this->textPrefix."_BUTTON_ALT").'">';
+                } else {
+                    $html[] = '<input type="image" name="submit" border="0" src="https://www.paypalobjects.com/'.$code4.'/'.$code.'/i/btn/'.$button.'.gif" alt="'.JText::_($this->textPrefix."_BUTTON_ALT").'">';
+                }
+        
             } else {
-                $html[] = '<input type="image" name="submit" border="0" src="https://www.paypalobjects.com/'.$code4.'/'.$code.'/i/btn/'.$button.'.gif" alt="'.JText::_($this->textPrefix."_BUTTON_ALT").'">';
+                $html[] = '<input type="image" name="submit" border="0" src="'.$buttonUrl.'" alt="'.JText::_($this->textPrefix."_BUTTON_ALT").'">';
             }
-    
-        } else {
-            $html[] = '<input type="image" name="submit" border="0" src="'.$buttonUrl.'" alt="'.JText::_($this->textPrefix."_BUTTON_ALT").'">';
+            
+        } else { // Default button
+            
+            $html[] = '<input type="image" name="submit" border="0" src="https://www.paypalobjects.com/en_US/i/btn/'.$button.'.gif" alt="'.JText::_($this->textPrefix."_BUTTON_ALT").'">';
+            
         }
-    
+        
+        // Set locale
         $html[] = '<input type="hidden" name="lc" value="'.$code.'" />';
     
     }
+    
+    /**
+     * Remove an intention record or create a payment session record.
+     *
+     * @param CrowdFundingIntention|CrowdFundingPaymentSession $intention
+     * @param string $txnStatus
+     */
+    protected function removeIntention($intention, $txnStatus) {
+    
+        // If status is NOT completed create a payment session.
+        if(strcmp("completed", $txnStatus) != 0) {
+    
+            // If intention object is instance of CrowdFundingIntention,
+            // create a payment session record and remove intention record.
+            // If it is NOT instance of CrowdFundingIntention, do NOT remove the recrod,
+            // because it will be used again when PayPal sends a response with status "completed".
+            if($intention instanceof CrowdFundingIntention) {
+    
+                jimport("crowdfunding.payment.session");
+                $paymentSession = new CrowdFundingPaymentSession(JFactory::getDbo());
+                $paymentSession
+                ->setUserId($intention->getUserId())
+                ->setAnonymousUserId($intention->getAnonymousUserId())
+                ->setProjectId($intention->getProjectId())
+                ->setRewardId($intention->getRewardId())
+                ->setRecordDate($intention->getRecordDate())
+                ->setTransactionId($intention->getTransactionId())
+                ->setGateway($intention->getGateway())
+                ->setIntentionId($intention->getId())
+                ->setToken($intention->getToken());
+    
+                $paymentSession->store();
+    
+                // DEBUG DATA
+                JDEBUG ? $this->log->add(JText::_($this->textPrefix."_DEBUG_PAYMENT_SESSION"), $this->debugType, $paymentSession->getProperties()) : null;
+    
+                // Remove intention object.
+                $intention->delete();
+            }
+    
+    
+            // If transaction status is completed, remove intention record.
+        } else if(strcmp("completed", $txnStatus) == 0) {
+            $intention->delete();
+        }
+    
+    }
+    
     
 }

@@ -1,12 +1,23 @@
 CrowdFunding for Joomla! 
 ==========================
-( Version 1.6 )
+( Version 1.6.1 )
 - - -
 
 CrowdFunding is a platform that provides functionality for creating collective funding websites, powered by Joomla!
 
 Changelog
 -----------
+
+###v1.6.1
+
+* Fixed countries.
+* Fixed locations.
+* Fixed export resources functionality.
+* Fixed many strict error notifications.
+* Fixed funding duration validation.
+* Added option to be displayed default English PayPal button.
+* Added option for importing locations based on minimum population.
+* Improved.
 
 ###v1.6
 

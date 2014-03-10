@@ -114,7 +114,7 @@ class CrowdFundingViewRewards extends JViewLegacy {
         // Add custom buttons
         $bar = JToolbar::getInstance('toolbar');
         
-        // Import
+        // Back to projects
         $link = JRoute::_('index.php?option=com_crowdfunding&view=projects');
         $bar->appendButton('Link', 'arrow-left-3', JText::_("COM_CROWDFUNDING_BACK_TO_PROJECTS"), $link);
         

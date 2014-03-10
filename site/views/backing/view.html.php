@@ -77,8 +77,6 @@ class CrowdFundingViewBacking extends JViewLegacy {
         // Get params
         $params           = JComponentHelper::getParams("com_crowdfunding");
         
-        $this->version    = new CrowdFundingVersion();
-        
         // Get wizard type
         $this->wizardType = $params->get("backing_wizard_type", "three_steps");
         
@@ -124,6 +122,8 @@ class CrowdFundingViewBacking extends JViewLegacy {
             "item"           => $this->item,
             "paymentProcess" => $paymentProcess,
 	    ));
+	    
+	    $this->version    = new CrowdFundingVersion();
 	    
         $this->prepareDebugMode($paymentProcess);
 		$this->prepareDocument();

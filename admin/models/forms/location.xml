@@ -35,15 +35,15 @@
             description="COM_CROWDFUNDING_LOCATION_STATE_DESC"
         />
         
-        <field name="published" type="list" 
+        <field name="published" type="radio" class="btn-group"
             label="JSTATUS" 
             description="JFIELD_PUBLISHED_DESC" 
             filter="intval" 
             size="1" 
             default="1"
         >
-            <option value="1">JPUBLISHED</option>
             <option value="0">JUNPUBLISHED</option>
+            <option value="1">JPUBLISHED</option>
         </field>
         
 		<field name="id" type="text" default="0" label="JGLOBAL_FIELD_ID_LABEL" 

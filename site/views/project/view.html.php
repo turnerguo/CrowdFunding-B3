@@ -386,7 +386,7 @@ class CrowdFundingViewProject extends JViewLegacy {
         JHtml::_('formbehavior.chosen', 'select');
         
         JHtml::_('behavior.keepalive');
-        JHtml::_('behavior.formvalidation');
+//         JHtml::_('behavior.formvalidation');
         
         switch($this->layout) {
             
@@ -415,7 +415,12 @@ class CrowdFundingViewProject extends JViewLegacy {
                 break;
                 
             case "funding":
+                JHtml::_('itprism.ui.parsley');
 		        $this->document->addScript('media/'.$this->option.'/js/site/project_funding.js');
+		        
+		        // Load language string in JavaScript
+		        JText::script('COM_CROWDFUNDING_THIS_VALUE_IS_REQUIRED');
+		        
                 break;
 
             case "story":

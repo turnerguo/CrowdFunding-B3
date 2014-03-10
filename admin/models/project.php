@@ -106,7 +106,7 @@ class CrowdFundingModelProject extends JModelAdmin {
         $row->set("pitch_video",    $pitchVideo);
         $row->set("description",    $description);
         
-        $this->prepareTable($row, $data);
+        $this->prepareTableData($row, $data);
         
         $row->store();
         
@@ -115,14 +115,14 @@ class CrowdFundingModelProject extends JModelAdmin {
     }
     
     /**
-     * Prepare and sanitise the table prior to saving.
+     * Prepare project images before saving.
      *
      * @param   object $table
      * @param   array  $data
      *
      * @since	1.6
      */
-    protected function prepareTable($table, $data) {
+    protected function prepareTableData($table, $data) {
          
         // Prepare image.
         if(!empty($data["image"])){
