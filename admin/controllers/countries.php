@@ -15,19 +15,20 @@ jimport('itprism.controller.admin');
 /**
  * CrowdFunding countries controller class.
  *
- * @package		CrowdFunding
- * @subpackage	Components 
- * @since		1.6
+ * @package        CrowdFunding
+ * @subpackage     Components
+ * @since          1.6
  */
-class CrowdFundingControllerCountries extends ITPrismControllerAdmin {
-    
+class CrowdFundingControllerCountries extends ITPrismControllerAdmin
+{
     /**
      * Proxy for getModel.
      * @since   1.6
      */
-    public function getModel($name = 'Country', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true)) {
+    public function getModel($name = 'Country', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    {
         $model = parent::getModel($name, $prefix, $config);
+
         return $model;
     }
-    
 }

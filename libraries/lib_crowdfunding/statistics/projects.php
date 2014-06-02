@@ -1,39 +1,47 @@
 <?php
 /**
-* @package      CrowdFunding
-* @subpackage   Libraries
-* @author       Todor Iliev
-* @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
-* @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
-*/
+ * @package      CrowdFunding
+ * @subpackage   Statistics
+ * @author       Todor Iliev
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ */
 
 defined('JPATH_PLATFORM') or die;
 
 /**
  * This is a base class for projects statistics.
+ *
+ * @package      CrowdFunding
+ * @subpackage   Statistics
  */
-abstract class CrowdFundingStatisticsProjects {
-    
+abstract class CrowdFundingStatisticsProjects
+{
     /**
-     * Database driver
-     * 
-     * @var JDatabaseMySQLi
+     * Database driver.
+     *
+     * @var JDatabaseDriver
      */
     protected $db;
-    
+
     /**
      * Initialize the object.
-     * 
-     * @param JDatabase   Database Driver
+     *
+     * <code>
+     * $statistics   = new CrowdFundingStatisticsProjects(JFactory::getDbo());
+     * </code>
+     *
+     * @param JDatabaseDriver $db  Database Driver
      */
-    public function __construct(JDatabase $db) {
+    public function __construct(JDatabaseDriver $db)
+    {
         $this->db = $db;
     }
 
-    protected function getQuery() {
-        
+    protected function getQuery()
+    {
         $query = $this->db->getQuery(true);
-        
+
         $query
             ->select(
                 "a.id, a.title, a.short_desc, a.image, a.image_small, a.image_square, a.hits, " .
@@ -43,9 +51,7 @@ abstract class CrowdFundingStatisticsProjects {
             )
             ->from($this->db->quoteName("#__crowdf_projects", "a"))
             ->leftJoin($this->db->quoteName("#__categories", "b") . " ON a.catid = b.id");
-        
+
         return $query;
-        
     }
-    
 }

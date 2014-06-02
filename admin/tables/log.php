@@ -8,10 +8,14 @@
  */
 
 defined('_JEXEC') or die;
-class CrowdFundingTableLog extends JTable {
-    
-    public function __construct($db) {
+
+class CrowdFundingTableLog extends JTable
+{
+    /**
+     * @param JDatabaseDriver $db
+     */
+    public function __construct($db)
+    {
         parent::__construct('#__crowdf_logs', 'id', $db);
     }
-    
 }

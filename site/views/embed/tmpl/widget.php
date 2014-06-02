@@ -12,7 +12,7 @@ defined('_JEXEC') or die;?>
 <div class="row-fluid">
     <ul class="thumbnails">
       <?php if(isset($this->item)) {
-        $raised         = $this->currency->getAmountString($this->item->funded, $this->params->get("locale_intl", 0));
+        $raised         = $this->currency->getAmountString($this->item->funded);
         $fundedPercents = JHtml::_("crowdfunding.funded", $this->item->funded_percents);
     	
         // Get social platform and a link to the profile

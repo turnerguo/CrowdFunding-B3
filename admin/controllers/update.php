@@ -15,58 +15,54 @@ jimport('itprism.controller.form.backend');
 /**
  * CrowdFunding update controller class.
  *
- * @package		ITPrism Components
- * @subpackage	CrowdFunding
- * @since		1.6
+ * @package        CrowdFunding
+ * @subpackage     Components
+ * @since          1.6
  */
-class CrowdFundingControllerUpdate extends ITPrismControllerFormBackend {
-    
+class CrowdFundingControllerUpdate extends ITPrismControllerFormBackend
+{
     /**
      * Save an item
      */
-    public function save(){
-        
+    public function save($key = null, $urlVar = null)
+    {
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-        
-        $app = JFactory::getApplication();
-        /** @var $app JAdministrator **/
-        
-        $data    = $app->input->post->get('jform', array(), 'array');
-        $itemId  = JArrayHelper::getValue($data, "id");
-        
-        $redirectData = array(
-            "task"  => $this->getTask(),
-            "id"    => $itemId
+
+        $data   = $this->input->post->get('jform', array(), 'array');
+        $itemId = JArrayHelper::getValue($data, "id");
+
+        $redirectOptions = array(
+            "task" => $this->getTask(),
+            "id"   => $itemId
         );
-        
-        $model   = $this->getModel();
-        /** @var $model CrowdFundingModelUpdate **/
-        
-        $form    = $model->getForm($data, false);
-        /** @var $form JForm **/
-        
-        if(!$form){
-            throw new Exception($model->getError(), 500);
+
+        $model = $this->getModel();
+        /** @var $model CrowdFundingModelUpdate */
+
+        $form = $model->getForm($data, false);
+        /** @var $form JForm */
+
+        if (!$form) {
+            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"), 500);
         }
-            
+
         // Validate the form data
         $validData = $model->validate($form, $data);
-        
+
         // Check for errors
-        if($validData === false){
-            $this->displayNotice($form->getErrors(), $redirectData);
+        if ($validData === false) {
+            $this->displayNotice($form->getErrors(), $redirectOptions);
+
             return;
         }
-            
+
         try {
-            $itemId = $model->save($validData);
+            $model->save($validData);
         } catch (Exception $e) {
             JLog::add($e->getMessage());
             throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }
-        
-        $this->displayMessage(JText::_('COM_CROWDFUNDING_UPDATE_SAVED'), $redirectData);
-        
+
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_UPDATE_SAVED'), $redirectOptions);
     }
-    
 }

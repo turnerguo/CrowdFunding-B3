@@ -1,7 +1,7 @@
 <?php
 /**
  * @package      CrowdFunding
- * @subpackage   Libraries
+ * @subpackage   Payments
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -10,13 +10,14 @@
 defined('JPATH_PLATFORM') or die;
 
 /**
- * This class provieds functionality that manage payment session.
- * 
+ * This class provides functionality that manage payment session.
+ * The session is used for storing data in the process of requests between application and payment services.
+ *
  * @package      CrowdFunding
- * @subpackage   Libraries
+ * @subpackage   Payments
  */
-class CrowdFundingPaymentSession {
-
+class CrowdFundingPaymentSession
+{
     protected $id;
     protected $user_id;
     protected $project_id;
@@ -26,239 +27,698 @@ class CrowdFundingPaymentSession {
     protected $token;
     protected $gateway;
     protected $auser_id;
-    
+
     protected $intention_id;
-    
+
     /**
-     * 
-     * @var JDatabase
+     * Database object.
+     *
+     * @var JDatabaseDriver
      */
     protected $db;
-    
-    public function __construct(JDatabase $db, $id = 0) {
 
+    /**
+     * Initialize the object.
+     *
+     * <code>
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * </code>
+     *
+     * @param JDatabaseDriver $db
+     */
+    public function __construct(JDatabaseDriver $db = null)
+    {
         $this->db = $db;
-        if(!empty($id)) {
-            $this->load($id);
-        }
-        
     }
-    
-    public function load($keys) {
-        
-        $query = $this->db->getQuery(true);
-        $query
-            ->select("
-                a.id, a.user_id, a.project_id, a.reward_id, a.record_date,  
-                a.txn_id, a.token, a.gateway, a.auser_id, a.intention_id")
-            ->from($this->db->quoteName("#__crowdf_payment_sessions", "a"));
-        
-        if(is_numeric($keys)) {
-            $query->where("a.id = ".(int)$keys);
-        } else if(is_array($keys)){
-            foreach($keys as $key => $value) {
-                $query->where($this->db->quoteName("a.".$key) ."=". $this->db->quote($value));
-            }
-        } else {
+
+    /**
+     * Set the database object.
+     *
+     * <code>
+     * $paymentSession    = new CrowdFundingPaymentSession();
+     * $paymentSession->setDb(JFactory::getDbo());
+     * </code>
+     *
+     * @param JDatabaseDriver $db
+     *
+     * @return self
+     */
+    public function setDb(JDatabaseDriver $db)
+    {
+        $this->db = $db;
+
+        return $this;
+    }
+
+    /**
+     * Load country data from database.
+     *
+     * <code>
+     * $keys = array(
+     *  "project_id" = 1,
+     *  "intention_id" = 2
+     * );
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->load($keys);
+     * </code>
+     *
+     * @param array $keys
+     *
+     * @throws UnexpectedValueException
+     */
+    public function load($keys)
+    {
+        if (!$keys) {
             throw new UnexpectedValueException(JText::_("LIB_CROWDFUNDING_INVALID_PAYMENTSESSION_KEYS"));
         }
-        
+
+        $query = $this->db->getQuery(true);
+        $query
+            ->select(
+                "a.id, a.user_id, a.project_id, a.reward_id, a.record_date, " .
+                "a.txn_id, a.token, a.gateway, a.auser_id, a.intention_id"
+            )
+            ->from($this->db->quoteName("#__crowdf_payment_sessions", "a"));
+
+        if (!is_array($keys)) {
+            $query->where("a.id = " . (int)$keys);
+        } else {
+            foreach ($keys as $key => $value) {
+                $query->where($this->db->quoteName("a." . $key) . "=" . $this->db->quote($value));
+            }
+        }
+
         $this->db->setQuery($query);
         $result = $this->db->loadAssoc();
-        
-        if(!$result) {
+
+        if (!$result) {
             $result = array();
         }
-        
+
         $this->bind($result);
-        
     }
 
-    public function bind($data, $ignore = array()) {
-        
-        foreach($data as $key => $value) {
-            if(!in_array($key, $ignore)) {
+    /**
+     * Set data to object properties.
+     *
+     * <code>
+     * $data = (
+     *  "user_id"  => 2,
+     *  "intention_id" => 3
+     * );
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->bind($data);
+     * </code>
+     *
+     * @param array $data
+     * @param array $ignored This is a name of an index, that will be ignored and will not be set as object parameter.
+     */
+    public function bind($data, $ignored = array())
+    {
+        foreach ($data as $key => $value) {
+            if (!in_array($key, $ignored)) {
                 $this->$key = $value;
             }
         }
     }
-    
-    public function store() {
-        
-        if(!$this->id) {
+
+    /**
+     * Store the data in database.
+     *
+     * <code>
+     * $data = (
+     *  "user_id"  => 2,
+     *  "intention_id" => 3
+     * );
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->bind($data);
+     * $paymentSession->store();
+     * </code>
+     */
+    public function store()
+    {
+        if (!$this->id) { // Insert
             $this->insertObject();
-        } else {
+        } else { // Update
             $this->updateObject();
         }
-        
     }
-    
-    protected function insertObject() {
-        
+
+    protected function insertObject()
+    {
+        $recordDate   = (!$this->record_date) ? "NULL" : $this->db->quote($this->record_date);
+
         $query = $this->db->getQuery(true);
         $query
             ->insert($this->db->quoteName("#__crowdf_payment_sessions"))
-            ->set($this->db->quoteName("user_id") ."=". $this->db->quote($this->user_id))
-            ->set($this->db->quoteName("project_id") ."=". $this->db->quote($this->project_id))
-            ->set($this->db->quoteName("reward_id") ."=". $this->db->quote($this->reward_id))
-            ->set($this->db->quoteName("record_date") ."=". $this->db->quote($this->record_date))
-            ->set($this->db->quoteName("txn_id") ."=". $this->db->quote($this->txn_id))
-            ->set($this->db->quoteName("token") ."=". $this->db->quote($this->token))
-            ->set($this->db->quoteName("gateway") ."=". $this->db->quote($this->gateway))
-            ->set($this->db->quoteName("auser_id") ."=". $this->db->quote($this->auser_id))
-            ->set($this->db->quoteName("intention_id") ."=". $this->db->quote($this->intention_id));
-        
+            ->set($this->db->quoteName("user_id") . "=" . $this->db->quote($this->user_id))
+            ->set($this->db->quoteName("project_id") . "=" . $this->db->quote($this->project_id))
+            ->set($this->db->quoteName("reward_id") . "=" . $this->db->quote($this->reward_id))
+            ->set($this->db->quoteName("record_date") . "=" . $recordDate)
+            ->set($this->db->quoteName("txn_id") . "=" . $this->db->quote($this->txn_id))
+            ->set($this->db->quoteName("token") . "=" . $this->db->quote($this->token))
+            ->set($this->db->quoteName("gateway") . "=" . $this->db->quote($this->gateway))
+            ->set($this->db->quoteName("auser_id") . "=" . $this->db->quote($this->auser_id))
+            ->set($this->db->quoteName("intention_id") . "=" . $this->db->quote($this->intention_id));
+
         $this->db->setQuery($query);
         $this->db->execute();
-        
+
         $this->id = $this->db->insertid();
-        
     }
-    
-    protected function updateObject() {
-    
+
+    protected function updateObject()
+    {
         $query = $this->db->getQuery(true);
         $query
             ->update($this->db->quoteName("#__crowdf_payment_sessions"))
-            ->set($this->db->quoteName("user_id") ."=". $this->db->quote($this->user_id))
-            ->set($this->db->quoteName("project_id") ."=". $this->db->quote($this->project_id))
-            ->set($this->db->quoteName("reward_id") ."=". $this->db->quote($this->reward_id))
-            ->set($this->db->quoteName("record_date") ."=". $this->db->quote($this->record_date))
-            ->set($this->db->quoteName("txn_id") ."=". $this->db->quote($this->txn_id))
-            ->set($this->db->quoteName("token") ."=". $this->db->quote($this->token))
-            ->set($this->db->quoteName("gateway") ."=". $this->db->quote($this->gateway))
-            ->set($this->db->quoteName("auser_id") ."=". $this->db->quote($this->auser_id))
-            ->set($this->db->quoteName("intention_id") ."=". $this->db->quote($this->intention_id))
-            ->where($this->db->quoteName("id") ."=". $this->db->quote($this->id));
-    
+            ->set($this->db->quoteName("user_id") . "=" . $this->db->quote($this->user_id))
+            ->set($this->db->quoteName("project_id") . "=" . $this->db->quote($this->project_id))
+            ->set($this->db->quoteName("reward_id") . "=" . $this->db->quote($this->reward_id))
+            ->set($this->db->quoteName("record_date") . "=" . $this->db->quote($this->record_date))
+            ->set($this->db->quoteName("txn_id") . "=" . $this->db->quote($this->txn_id))
+            ->set($this->db->quoteName("token") . "=" . $this->db->quote($this->token))
+            ->set($this->db->quoteName("gateway") . "=" . $this->db->quote($this->gateway))
+            ->set($this->db->quoteName("auser_id") . "=" . $this->db->quote($this->auser_id))
+            ->set($this->db->quoteName("intention_id") . "=" . $this->db->quote($this->intention_id))
+            ->where($this->db->quoteName("id") . "=" . $this->db->quote($this->id));
+
         $this->db->setQuery($query);
         $this->db->execute();
-    
     }
-    
-    public function delete() {
-    
+
+    /**
+     * Remove a payment session record from database.
+     *
+     * <code>
+     * $keys = (
+     *  "user_id"  => 2,
+     *  "intention_id" => 3
+     * );
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->load($keys);
+     * $paymentSession->delete();
+     * </code>
+     */
+    public function delete()
+    {
         $query = $this->db->getQuery(true);
         $query
             ->delete($this->db->quoteName("#__crowdf_payment_sessions"))
-            ->where($this->db->quoteName("id") ."=".(int)$this->id);
-    
+            ->where($this->db->quoteName("id") . "=" . (int)$this->id);
+
         $this->db->setQuery($query);
         $this->db->execute();
-    
+
         $this->reset();
-    
     }
-    
-    public function reset() {
-    
+
+    /**
+     * Reset object properties.
+     *
+     * <code>
+     * $keys = (
+     *  "user_id"  => 2,
+     *  "intention_id" => 3
+     * );
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->load($keys);
+     *
+     * if (!$paymentSession->getToken()) {
+     *     $paymentSession->reset();
+     * }
+     * </code>
+     */
+    public function reset()
+    {
         $properties = $this->getProperties();
-    
-        foreach($properties as $key => $value) {
+
+        foreach ($properties as $key => $value) {
             $this->$key = null;
         }
-    
     }
-    
-    
-    public function getId() {
-        return $this->id;
+
+    /**
+     * Return payment session ID.
+     *
+     * <code>
+     * $keys = (
+     *  "user_id"  => 2,
+     *  "intention_id" => 3
+     * );
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->load($keys);
+     *
+     * if (!$paymentSession->getId()) {
+     * ...
+     * }
+     * </code>
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return (int)$this->id;
     }
-    
-    public function setUserId($userId) {
+
+    /**
+     * Set user ID to the object.
+     *
+     * <code>
+     * $paymentSessionId = 1;
+     * $userId = 2;
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $paymentSession->setUserId($userId);
+     * </code>
+     *
+     * @param int $userId
+     *
+     * @return self
+     */
+    public function setUserId($userId)
+    {
         $this->user_id = $userId;
+
         return $this;
     }
-    
-    public function getUserId() {
-        return $this->user_id;
+
+    /**
+     * Return user ID which is part of current payment session.
+     *
+     * <code>
+     * $paymentSessionId = 1;
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $userId = $paymentSession->getUserId();
+     * </code>
+     *
+     * @return int
+     */
+    public function getUserId()
+    {
+        return (int)$this->user_id;
     }
-    
-    public function setAnonymousUserId($auserId) {
+
+    /**
+     * Set the ID of the anonymous user.
+     *
+     * <code>
+     * $paymentSessionId = 1;
+     * $anonymousUserId = 2;
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $paymentSession->setAnonymousUserId($anonymousUserId);
+     * </code>
+     *
+     * @param int $auserId
+     *
+     * @return self
+     */
+    public function setAnonymousUserId($auserId)
+    {
         $this->auser_id = $auserId;
+
         return $this;
     }
-    
-    public function getAnonymousUserId() {
+
+    /**
+     * Return the ID (hash) of anonymous user which is part of current payment session.
+     *
+     * <code>
+     * $paymentSessionId = 1;
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $anonymousUserId = $paymentSession->getAnonymousUserId();
+     * </code>
+     *
+     * @return string
+     */
+    public function getAnonymousUserId()
+    {
         return $this->auser_id;
     }
-    
-    public function setProjectId($projectId) {
+
+    /**
+     * Set a project ID.
+     *
+     * <code>
+     * $paymentSessionId = 1;
+     * $projectId = 2;
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $paymentSession->setProjectId($projectId);
+     * </code>
+     *
+     * @param int $projectId
+     *
+     * @return self
+     */
+    public function setProjectId($projectId)
+    {
         $this->project_id = $projectId;
+
         return $this;
     }
-    
-    public function getProjectId() {
-        return $this->project_id;
+
+    /**
+     * Return project ID.
+     *
+     * <code>
+     * $paymentSessionId = 1;
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $projectId = $paymentSession->getProjectId();
+     * </code>
+     *
+     * @return int
+     */
+    public function getProjectId()
+    {
+        return (int)$this->project_id;
     }
-    
-    public function setRewardId($rewardId) {
+
+    /**
+     * Set a reward ID.
+     *
+     * <code>
+     * $paymentSessionId = 1;
+     * $rewardId = 2;
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $paymentSession->setRewardId($rewardId);
+     * </code>
+     *
+     * @param int $rewardId
+     *
+     * @return self
+     */
+    public function setRewardId($rewardId)
+    {
         $this->reward_id = $rewardId;
+
         return $this;
     }
-    
-    public function getRewardId() {
-        return $this->reward_id;
+
+    /**
+     * Return reward ID.
+     *
+     * <code>
+     * $paymentSessionId = 1;
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $rewardId = $paymentSession->getRewardId();
+     * </code>
+     *
+     * @return int
+     */
+    public function getRewardId()
+    {
+        return (int)$this->reward_id;
     }
-    
-    public function setRecordDate($recordDate) {
+
+    /**
+     * Set the date of the database record.
+     *
+     * <code>
+     * $paymentSessionId = 1;
+     * $date = "01-01-2014";
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $paymentSession->setRecordDateId($date);
+     * </code>
+     *
+     * @param string $recordDate
+     *
+     * @return self
+     */
+    public function setRecordDate($recordDate)
+    {
         $this->record_date = $recordDate;
+
         return $this;
     }
-    
-    public function getRecordDate() {
+
+    /**
+     * Return the date of current record.
+     *
+     * <code>
+     * $paymentSessionId = 1;
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $date = $paymentSession->getRecordDate();
+     * </code>
+     *
+     * @return int
+     */
+    public function getRecordDate()
+    {
         return $this->record_date;
     }
-    
-    public function setTransactionId($txnId) {
+
+    /**
+     * Set the ID of transaction that comes from payment gateway.
+     *
+     * <code>
+     * $paymentSessionId = 1;
+     * $txnId = "GEN123456";
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $paymentSession->setTransactionId($txnId);
+     * </code>
+     *
+     * @param string $txnId
+     *
+     * @return self
+     */
+    public function setTransactionId($txnId)
+    {
         $this->txn_id = $txnId;
+
         return $this;
     }
-    
-    public function getTransactionId() {
+
+    /**
+     * Return ID of transaction that comes from payment service.
+     *
+     * <code>
+     * $paymentSessionId = 1;
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $txnId = $paymentSession->getTransactionId();
+     * </code>
+     *
+     * @return string
+     */
+    public function getTransactionId()
+    {
         return $this->txn_id;
     }
-    
-    public function setGateway($gateway) {
+
+    /**
+     * Set the name of the payment gateway.
+     *
+     * <code>
+     * $paymentSessionId = 1;
+     * $name = "PayPal";
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $paymentSession->setGateway($name);
+     * </code>
+     *
+     * @param string $gateway
+     *
+     * @return self
+     */
+    public function setGateway($gateway)
+    {
         $this->gateway = $gateway;
+
         return $this;
     }
-    
-    public function getGateway() {
+
+    /**
+     * Return the name of payment service.
+     *
+     * <code>
+     * $paymentSessionId = 1;
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $name = $paymentSession->getGateway();
+     * </code>
+     *
+     * @return string
+     */
+    public function getGateway()
+    {
         return $this->gateway;
     }
-    
-    public function setToken($token) {
+
+    /**
+     * Set a token of transaction that comes from a payment gateway.
+     *
+     * <code>
+     * $paymentSessionId = 1;
+     * $token = "TOKEN12345";
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $paymentSession->setToken($token);
+     * </code>
+     *
+     * @param string $token
+     *
+     * @return self
+     */
+    public function setToken($token)
+    {
         $this->token = $token;
+
         return $this;
     }
-    
-    public function getToken() {
+
+    /**
+     * Return a token that comes from payment service.
+     *
+     * <code>
+     * $paymentSessionId = 1;
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $token = $paymentSession->getToken();
+     * </code>
+     *
+     * @return string
+     */
+    public function getToken()
+    {
         return $this->token;
     }
-    
-    public function setIntentionId($intentionId) {
+
+    /**
+     * Set intention ID.
+     *
+     * <code>
+     * $paymentSessionId = 1;
+     * $intentionId = 2;
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $paymentSession->setIntentionId($intentionId);
+     * </code>
+     *
+     * @param int $intentionId
+     *
+     * @return self
+     */
+    public function setIntentionId($intentionId)
+    {
         $this->intention_id = $intentionId;
+
         return $this;
     }
-    
-    public function getIntentionId() {
-        return $this->intention_id;
+
+    /**
+     * Return the ID of intention.
+     *
+     * <code>
+     * $paymentSessionId = 1;
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $intentionId = $paymentSession->getIntentionId();
+     * </code>
+     *
+     * @return int
+     */
+    public function getIntentionId()
+    {
+        return (int)$this->intention_id;
     }
-    
-    public function isAnonymous() {
+
+    /**
+     * Check if payment session has been handled from anonymous user.
+     *
+     * <code>
+     * $paymentSessionId = 1;
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * if (!$paymentSession->isAnonymous()) {
+     * ...
+     * }
+     * </code>
+     *
+     * @return int
+     */
+    public function isAnonymous()
+    {
         return (!$this->auser_id) ? false : true;
     }
-    
-    public function getProperties() {
+
+    /**
+     * Return object properties.
+     *
+     * <code>
+     * $paymentSessionId = 1;
+     *
+     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $properties = $paymentSession->getProperties();
+     * </code>
+     *
+     * @return array
+     */
+    public function getProperties()
+    {
         $vars = get_object_vars($this);
-        
-        foreach($vars as $key => $value) {
-            if(strcmp("db", $key) == 0) {
+
+        foreach ($vars as $key => $value) {
+            if (strcmp("db", $key) == 0) {
                 unset($vars[$key]);
             }
         }
+
         return $vars;
     }
-    
 }

@@ -9,10 +9,13 @@
 
 defined('_JEXEC') or die;
 
-class CrowdFundingTableType extends JTable {
-    
-    public function __construct($db) {
+class CrowdFundingTableType extends JTable
+{
+    /**
+     * @param JDatabaseDriver $db
+     */
+    public function __construct($db)
+    {
         parent::__construct('#__crowdf_types', 'id', $db);
     }
-    
 }

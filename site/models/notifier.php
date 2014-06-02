@@ -12,29 +12,26 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.model');
 
-class CrowdFundingModelNotifier extends JModelLegacy {
-    
+class CrowdFundingModelNotifier extends JModelLegacy
+{
     /**
-     * Send mail to administrator and notify him about new transaction.
-     * 
+     * Send mail to administrator and notify him
+     * if there is an error during process of transaction.
      */
-    public function sendMailToAdministrator() {
-        
+    public function sendMailToAdministrator()
+    {
         $app = JFactory::getApplication();
-        /** @var $app JSite **/
-        
-         // Send email to the administrator
+        /** @var $app JApplicationSite */
+
+        // Send email to the administrator
         $subject = JText::_("COM_CROWDFUNDING_ERROR_PAYMENT_PROCESS_SUBJECT");
         $body    = JText::_("COM_CROWDFUNDING_ERROR_PAYMENT_PROCESS_BODY");
-        $return  = JFactory::getMailer()->sendMail($app->getCfg("mailfrom"), $app->getCfg("fromname"), $app->getCfg("mailfrom"), $subject, $body);
-		
-		// Check for an error.
-		if ($return !== true) {
-		    $error = JText::sprintf("COM_CROWDFUNDING_ERROR_MAIL_SENDING_ADMIN");
-			JLog::add($error);
-		}
-        
+        $return  = JFactory::getMailer()->sendMail($app->get("mailfrom"), $app->get("fromname"), $app->get("mailfrom"), $subject, $body);
+
+        // Check for an error.
+        if ($return !== true) {
+            $error = JText::sprintf("COM_CROWDFUNDING_ERROR_MAIL_SENDING_ADMIN");
+            JLog::add($error);
+        }
     }
-	
-    
 }

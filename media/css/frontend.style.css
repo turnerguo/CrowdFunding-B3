@@ -40,6 +40,23 @@ div.info-mini {
 	height: 600px;
 }
 
+.relative {
+    position: relative;
+}
+
+.absolute-bottom{
+	position: absolute;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   margin-left: auto;
+   margin-right: auto;
+}
+
+.padding-left-10 {
+	padding-left: 10px;
+}
+
 .reward-form {
 	background-color: #f2f2f2;
 	border: thin solid #6c6c6c;
@@ -71,9 +88,31 @@ div.info-mini {
 	text-align: center !important;
 }
 
-.cf-founder {
+.bolder {
+	font-weight: bolder;
+}
+
+.uppercase {
+	text-transform: uppercase;
+}
+
+.font-xxsmall {
 	font-size: xx-small;
 }
+
+/* START Project Thumbnail Styles */
+.cf-project {
+	height: 450px;
+	position: relative;
+}
+
+.cf-caption-info {
+	padding: 0 10px;
+	margin: 10px 0;
+	text-align: left;
+}
+
+/* END Project Thumbnail Styles */
 
 .cf-details-block {
 	margin-top: 10px;
@@ -113,7 +152,7 @@ div.info-mini {
 
 
 .cfinfo-days-raised img {
-	margin: 5px 5px 10px 0px;
+	margin: 5px 5px 10px 0;
 	vertical-align: middle;
 }
 
@@ -131,19 +170,19 @@ div.info-mini {
 	border-top: thin solid #b2b2b2;
 	font-size: medium;
 	font-weight: bold;
-	padding: 10px 0px;
+	padding: 10px 0;
 	margin-top:5px;
 }
 
 .cfinfo-funding-action {
 	border-top: thin solid #b2b2b2;
-	padding: 10px 0px;
+	padding: 10px 0;
 	text-transform: uppercase;
 	font-weight: bold;
 }
 
 .cfinfo-funding-type-info {
-	padding: 10px 0px;
+	padding: 10px 0;
 	font-size: x-small;
 }
 
@@ -152,9 +191,9 @@ div.info-mini {
 .cfrewards div.reward_title {
 	text-transform: uppercase;
 	font-weight: bold;
-   color: #6c6c6c;
-   cursor: text;
-   border-bottom: none;
+    color: #6c6c6c;
+    cursor: text;
+    border-bottom: none;
 }
 
 .cfrewards > div:first-child {
@@ -168,10 +207,7 @@ div.info-mini {
     border: 1px solid #DDDDDD;
     
     line-height: 20px;
-    padding-bottom: 8px;
-    padding-top: 8px;
-    padding-left: 12px;
-    padding-right: 12px;
+    padding: 8px 12px;
     display: block;
 
 }
@@ -208,13 +244,13 @@ div.reward:hover  {
 	font-weight: bold;
 	display: block;
 	border-bottom: thin dashed gray;
-   padding: 5px 0px;
+    padding: 5px 0;
 }
 
 .rtitle {
 	font-size: medium;
 	font-weight: bold;
-	margin: 5px 5px 5px 0px;
+	margin: 5px 5px 5px 0;
 	display: block;
 }
 
@@ -326,15 +362,15 @@ form.bs-docs-example {
 	width: 100%;
 }
 .padding-tb-5px {
-	padding: 5px 0px !important;
+	padding: 5px 0 !important;
 }
 
 .margin-tb-15px {
-	margin: 15px 0px !important;
+	margin: 15px 0 !important;
 }
 
 .cf-update-item, .cf-comment-item {
-	padding: 15px 0px;
+	padding: 15px 0;
 	position: relative;
 }
 
@@ -364,17 +400,6 @@ form.bs-docs-example {
 .cf-funder-row {
 	padding: 10px;
 	border-bottom: thin dashed gray;
-}
-
-.cf-raise-capital-intro{
-	font-size:x-large;
-	font-style: italic;
-	-webkit-background-clip: text;
-    -moz-background-clip: text;
-    background-clip: text;
-    
-    text-shadow: rgba(255,255,255,0.5) 0px 3px 3px;
-	
 }
 
 .thumbnail > a > img {
@@ -424,7 +449,7 @@ form.bs-docs-example {
 
 .extra-image-row {
 	border: thin solid #dcdcdc;
-	margin: 20px 0px;
+	margin: 20px 0;
 }
 
 .extra-image-row img, .extra-image-row a {

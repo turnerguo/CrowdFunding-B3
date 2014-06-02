@@ -15,29 +15,23 @@ jimport('joomla.application.component.controller');
 /**
  * Default controller
  *
- * @package		CrowdFunding
- * @subpackage	Components
-  */
-class CrowdFundingController extends JControllerLegacy {
-    
-    protected $option;
-    
-    public function __construct($config){
-        parent::__construct($config);
-        $this->option = JFactory::getApplication()->input->get("option");
-    }
-    
-	public function display($cachable = false, $urlparams = array()) {
+ * @package        CrowdFunding
+ * @subpackage     Components
+ */
+class CrowdFundingController extends JControllerLegacy
+{
+    public function display($cachable = false, $urlparams = array())
+    {
+        $option = $this->input->getCmd("option");
 
-        $viewName      = $this->input->getCmd('view', 'dashboard');
+        $viewName = $this->input->getCmd('view', 'dashboard');
         $this->input->set("view", $viewName);
 
         $doc = JFactory::getDocument();
-        $doc->addStyleSheet("../media/".$this->option.'/css/admin/style.css');
-        
-        parent::display($cachable, $urlparams);
-        return $this;
-        
-	}
+        $doc->addStyleSheet("../media/" . $option . '/css/backend.style.css');
 
+        parent::display($cachable, $urlparams);
+
+        return $this;
+    }
 }

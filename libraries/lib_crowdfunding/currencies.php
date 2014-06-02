@@ -1,197 +1,263 @@
 <?php
 /**
-* @package      CrowdFunding
-* @subpackage   Libraries
-* @author       Todor Iliev
-* @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
-* @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
-*/
+ * @package      CrowdFunding
+ * @subpackage   Currencies
+ * @author       Todor Iliev
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ */
 
 defined('JPATH_PLATFORM') or die;
 
 jimport("crowdfunding.currency");
 
 /**
- * This class provieds functionality that manage currencies.
+ * This class provides functionality that manage currencies.
+ *
+ * @package      CrowdFunding
+ * @subpackage   Currencies
  */
-class CrowdFundingCurrencies implements Iterator, Countable, ArrayAccess {
-    
-    protected $items  = array();
-    
+class CrowdFundingCurrencies implements Iterator, Countable, ArrayAccess
+{
+    protected $items = array();
+
+    protected $position = 0;
+
     /**
      * Database driver.
-     * 
-     * @var JDatabaseMySQLi
+     *
+     * @var JDatabaseDriver
      */
     protected $db;
-    
-    protected $position = 0;
-    
+
     /**
      * Initialize the object.
-     * 
-     * @param JDatabase Database object.
+     *
+     * <code>
+     * $currencies   = new CrowdFundingCurrencies(JFactory::getDbo());
+     * </code>
+     *
+     * @param JDatabaseDriver $db
      */
-    public function __construct(JDatabase $db) {
+    public function __construct(JDatabaseDriver $db)
+    {
         $this->db = $db;
     }
 
-    public function load($ids = array()) {
-        
+    /**
+     * Load currencies data by ID from database.
+     *
+     * <code>
+     * $ids = array(1,2,3,4,5);
+     * $currencies   = new CrowdFundingCurrencies(JFactory::getDbo());
+     * $currencies->load($ids);
+     *
+     * foreach($currencies as $currency) {
+     *   echo $currency["title"];
+     *   echo $currency["abbr"];
+     * }
+     *
+     * </code>
+     *
+     * @param array $ids
+     */
+    public function load($ids = array())
+    {
         // Load project data
         $query = $this->db->getQuery(true);
-        
+
         $query
             ->select("a.id, a.title, a.abbr, a.symbol, a.position")
             ->from($this->db->quoteName("#__crowdf_currencies", "a"));
-    
-        if(!empty($ids)) {
+
+        if (!empty($ids)) {
             JArrayHelper::toInteger($ids);
-            $query->where("a.id IN ( " . implode(",", $ids) ." )");
+            $query->where("a.id IN ( " . implode(",", $ids) . " )");
         }
-        
+
         $this->db->setQuery($query);
         $results = $this->db->loadAssocList();
-        
-        if(!$results) {
+
+        if (!$results) {
             $results = array();
         }
-        
+
         $this->items = $results;
     }
-    
-    public function loadByAbbr($ids = array()) {
-    
+
+    /**
+     * Load currencies data by abbreviation from database.
+     *
+     * <code>
+     * $ids = array("GBP", "EUR", "USD");
+     * $currencies   = new CrowdFundingCurrencies(JFactory::getDbo());
+     * $currencies->loadByAbbr($ids);
+     *
+     * foreach($currencies as $currency) {
+     *   echo $currency["title"];
+     *   echo $currency["abbr"];
+     * }
+     * </code>
+     *
+     * @param array $ids
+     */
+    public function loadByAbbr($ids = array())
+    {
         // Load project data
         $query = $this->db->getQuery(true);
-    
+
         $query
             ->select("a.id, a.title, a.abbr, a.symbol, a.position")
             ->from($this->db->quoteName("#__crowdf_currencies", "a"));
-    
-        if(!empty($ids)) {
-            
-            foreach($ids as $key => $value) {
+
+        if (!empty($ids)) {
+
+            foreach ($ids as $key => $value) {
                 $ids[$key] = $this->db->quote($value);
             }
-            
-            $query->where("a.abbr IN ( " . implode(",", $ids) ." )");
+
+            $query->where("a.abbr IN ( " . implode(",", $ids) . " )");
         }
-    
+
         $this->db->setQuery($query);
         $results = $this->db->loadAssocList();
-    
-        if(!$results) {
+
+        if (!$results) {
             $results = array();
         }
-    
+
         $this->items = $results;
     }
-    
-    public function rewind() {
+
+    public function rewind()
+    {
         $this->position = 0;
     }
-    
-    public function current() {
+
+    public function current()
+    {
         return (!isset($this->items[$this->position])) ? null : $this->items[$this->position];
     }
-    
-    public function key() {
+
+    public function key()
+    {
         return $this->position;
     }
-    
-    public function next() {
+
+    public function next()
+    {
         ++$this->position;
     }
-    
-    public function valid() {
+
+    public function valid()
+    {
         return isset($this->items[$this->position]);
     }
-    
-    public function count() {
+
+    public function count()
+    {
         return (int)count($this->items);
     }
-    
-    public function offsetSet($offset, $value) {
+
+    public function offsetSet($offset, $value)
+    {
         if (is_null($offset)) {
             $this->items[] = $value;
         } else {
             $this->items[$offset] = $value;
         }
     }
-    
-    public function offsetExists($offset) {
+
+    public function offsetExists($offset)
+    {
         return isset($this->items[$offset]);
     }
-    
-    public function offsetUnset($offset) {
+
+    public function offsetUnset($offset)
+    {
         unset($this->items[$offset]);
     }
-    
-    public function offsetGet($offset) {
+
+    public function offsetGet($offset)
+    {
         return isset($this->items[$offset]) ? $this->items[$offset] : null;
     }
 
     /**
      * Create a currency object by abbreviation and return it.
-     * 
+     *
+     * <code>
+     * $ids = array(1,2,3,4,5);
+     * $currencies   = new CrowdFundingCurrencies(JFactory::getDbo());
+     * $currencies->load($ids);
+     *
+     * $currency = $currencies->getCurrencyByAbbr("EUR");
+     * </code>
+     *
      * @param string $abbr
-     * 
+     *
      * @throws UnexpectedValueException
-     * 
-     * @return CrowdFundingCurrency|NULL
+     *
+     * @return null|CrowdFundingCurrency
      */
-    public function getCurrencyByAbbr($abbr) {
-
-        if(!$abbr) {
+    public function getCurrencyByAbbr($abbr)
+    {
+        if (!$abbr) {
             throw new UnexpectedValueException(JText::_("LIB_CROWDFUNDING_INVALID_CURRENCY_ABBREVIATION"));
         }
-        
+
         $currency = null;
-        
-        foreach($this->items as $item) {
-            if(strcmp($abbr, $item["abbr"]) == 0) {
-                
-                $currency = new CrowdFundingCurrency(JFactory::getDbo());
+
+        foreach ($this->items as $item) {
+            if (strcmp($abbr, $item["abbr"]) == 0) {
+
+                $currency = new CrowdFundingCurrency();
                 $currency->bind($item);
-                
+
                 break;
             }
         }
-        
+
         return $currency;
     }
-    
+
     /**
      * Create a currency object and return it.
+     *
+     * <code>
+     * $ids = array(1,2,3,4,5);
+     * $currencies   = new CrowdFundingCurrencies(JFactory::getDbo());
+     * $currencies->load($ids);
+     *
+     * $currency = $currencies->getCurrencyByAbbr(1);
+     * </code>
      *
      * @param string $id
      *
      * @throws UnexpectedValueException
      *
-     * @return CrowdFundingCurrency|NULL
+     * @return null|CrowdFundingCurrency
      */
-    public function getCurrency($id) {
-    
-        if(!$id) {
+    public function getCurrency($id)
+    {
+        if (!$id) {
             throw new UnexpectedValueException(JText::_("LIB_CROWDFUNDING_INVALID_CURRENCY_ID"));
         }
-    
+
         $currency = null;
-    
-        foreach($this->items as $item) {
-            
-            if($id == $item["id"]) {
-    
-                $currency = new CrowdFundingCurrency(JFactory::getDbo());
+
+        foreach ($this->items as $item) {
+
+            if ($id == $item["id"]) {
+
+                $currency = new CrowdFundingCurrency();
                 $currency->bind($item);
-    
+
                 break;
             }
-            
+
         }
-    
+
         return $currency;
     }
-    
 }

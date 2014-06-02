@@ -12,42 +12,42 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
-class CrowdFundingViewLog extends JViewLegacy {
-    
+class CrowdFundingViewLog extends JViewLegacy
+{
     protected $state;
     protected $item;
-    
+
+    protected $output;
+
     /**
      * Display the view
      */
-    public function display($tpl = null){
-        
+    public function display($tpl = null)
+    {
         $this->state = $this->get('State');
-        
+
         $layout = $this->getLayout();
-        
-        switch($layout) {
-        
+
+        switch ($layout) {
+
             case "preview":
-                $this->item  = $this->get('Item');
+                $this->item = $this->get('Item');
                 break;
-        
+
             case "file":
-        
-                $app  = JFactory::getApplication();
-                /** @var $app JAdministrator **/
-                
+
+                $app = JFactory::getApplication();
+                /** @var $app JApplicationAdministrator */
+
                 $file = $app->input->get("file", "", "raw");
-                if(!empty($file)) {
-                    $model  = $this->getModel();
+                if (!empty($file)) {
+                    $model        = $this->getModel();
                     $this->output = $model->loadLogFile($file);
                 }
-        
+
                 break;
-        
         }
-        
+
         parent::display($tpl);
     }
-    
 }

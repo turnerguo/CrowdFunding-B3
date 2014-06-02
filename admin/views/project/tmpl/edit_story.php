@@ -12,25 +12,25 @@ defined('_JEXEC') or die;
 ?>
 <div class="control-group">
     <div class="control-label"><?php echo $this->form->getLabel('pitch_video'); ?></div>
-	<div class="controls"><?php echo $this->form->getInput('pitch_video'); ?></div>
+    <div class="controls"><?php echo $this->form->getInput('pitch_video'); ?></div>
 </div>
 
 <div class="control-group">
     <div class="control-label"><?php echo $this->form->getLabel('pitch_image'); ?></div>
-	<div class="controls">
-		<div class="fileupload fileupload-new" data-provides="fileupload">
+    <div class="controls">
+        <div class="fileupload fileupload-new" data-provides="fileupload">
         <span class="btn btn-file">
-            <span class="fileupload-new"><?php echo JText::_("COM_CROWDFUNDING_SELECT_FILE");?></span>
-            <span class="fileupload-exists"><?php echo JText::_("COM_CROWDFUNDING_CHANGE");?></span>
+            <span class="fileupload-new"><?php echo JText::_("COM_CROWDFUNDING_SELECT_FILE"); ?></span>
+            <span class="fileupload-exists"><?php echo JText::_("COM_CROWDFUNDING_CHANGE"); ?></span>
             <?php echo $this->form->getInput('pitch_image'); ?>
         </span>
-        <span class="fileupload-preview"></span>
-        <a href="#" class="close fileupload-exists" data-dismiss="fileupload" style="float: none">×</a>
+            <span class="fileupload-preview"></span>
+            <a href="#" class="close fileupload-exists" data-dismiss="fileupload" style="float: none">×</a>
         </div>
-	</div>
+    </div>
 </div>
 
 <div class="control-group">
     <div class="control-label"><?php echo $this->form->getLabel('description'); ?></div>
-	<div class="controls"><?php echo $this->form->getInput('description'); ?></div>
+    <div class="controls"><?php echo $this->form->getInput('description'); ?></div>
 </div>

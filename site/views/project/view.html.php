@@ -13,47 +13,96 @@ defined('_JEXEC') or die;
 jimport('joomla.application.categories');
 jimport('joomla.application.component.view');
 
-class CrowdFundingViewProject extends JViewLegacy {
-    
-    protected $form       = null;
-    protected $state      = null;
-    protected $item       = null;
-    
-    protected $option     = null;
-    
-    public function __construct($config){
+class CrowdFundingViewProject extends JViewLegacy
+{
+    /**
+     * @var JDocumentHtml
+     */
+    public $document;
+
+    /**
+     * @var Joomla\Registry\Registry
+     */
+    protected $state;
+
+    /**
+     * @var Joomla\Registry\Registry
+     */
+    protected $params;
+
+    protected $form;
+    protected $item;
+    protected $items;
+
+    /**
+     * @var CrowdFundingCurrency
+     */
+    protected $currency;
+
+    protected $userId;
+    protected $disabledButton;
+    protected $layout;
+    protected $debugMode;
+    protected $rewardsEnabled;
+    protected $article;
+    protected $pathwayName;
+    protected $numberOfTypes;
+    protected $image;
+    protected $isNew;
+    protected $imageFolder;
+    protected $minAmount;
+    protected $maxAmount;
+    protected $minDays;
+    protected $maxDays;
+    protected $checkedDate;
+    protected $checkedDays;
+    protected $pitchImage;
+    protected $pWidth;
+    protected $pHeight;
+    protected $imageSmall;
+    protected $fundingDuration;
+    protected $dateFormat;
+    protected $dateFormatCalendar;
+    protected $rewardsImagesEnabled;
+    protected $rewardsImagesUri;
+    protected $projectId;
+    protected $images;
+    protected $extraImagesUri;
+
+    protected $option;
+
+    protected $pageclass_sfx;
+
+    public function __construct($config)
+    {
         parent::__construct($config);
         $this->option = JFactory::getApplication()->input->getCmd("option");
     }
-    
+
     /**
      * Display the view
-     *
      */
-    public function display($tpl = null){
-        
-        $app = JFactory::getApplication();
-        /** @var $app JSite **/
-        
+    public function display($tpl = null)
+    {
         $this->userId = JFactory::getUser()->id;
-        if(!$this->userId) {
+        if (!$this->userId) {
             $this->setLayout("intro");
         }
-        
+
         $this->disabledButton = "";
-        
+
         $this->layout = $this->getLayout();
-        
-        switch($this->layout) {
-            
+
+        switch ($this->layout) {
+
             case "rewards":
                 $this->prepareRewards();
                 break;
-                
+
             case "story":
                 $this->prepareStory();
                 break;
-                
+
             case "funding":
                 $this->prepareFunding();
                 break;
@@ -61,398 +110,428 @@ class CrowdFundingViewProject extends JViewLegacy {
             case "intro":
                 $this->prepareIntro();
                 break;
-                
+
             default: // Basic data for project
                 $this->prepareBasic();
                 break;
         }
-        
+
         $this->version    = new CrowdFundingVersion();
-        
         $this->prepareDebugMode();
         $this->prepareDocument();
-        
+
         parent::display($tpl);
     }
-    
+
     /**
      * Check the system for debug mode
      */
-    protected function prepareDebugMode() {
-        
+    protected function prepareDebugMode()
+    {
         $app = JFactory::getApplication();
-        /** @var $app JSite **/
+        /** @var $app JApplicationSite */
 
         // Check for maintenance (debug) state
-        $params = $this->state->get("params");
+        $params          = $this->state->get("params");
         $this->debugMode = $params->get("debug_project_adding_disabled", 0);
-        if($this->debugMode) {
+        if ($this->debugMode) {
             $msg = JString::trim($params->get("debug_disabled_functionality_msg"));
-            if(!$msg) {
+            if (!$msg) {
                 $msg = JText::_("COM_CROWDFUNDING_DEBUG_MODE_DEFAULT_MSG");
             }
             $app->enqueueMessage($msg, "notice");
-            
+
             $this->disabledButton = 'disabled="disabled"';
         }
-        
+
     }
-    
+
     /**
      * Check the system for debug mode
      */
-    protected function prepareProjectType() {
-    
+    protected function prepareProjectType()
+    {
         // Get project type and check for enabled rewards.
-        $type = CrowdFundingHelper::getProjectType($this->item->type_id);
-        $this->rewardsEnabled     = true;
-        if(!is_null($type) AND !$type->isRewardsEnabled()){
-            $this->rewardsEnabled = false;
-            $this->disabledButton = 'disabled="disabled"';
+        $this->rewardsEnabled = true;
+
+        if (!empty($this->item->type_id)) {
+            jimport("crowdfunding.type");
+
+            $type = new CrowdFundingType(JFactory::getDbo());
+            $type->load($this->item->type_id);
+
+            if ($type->getId() and !$type->isRewardsEnabled()) {
+                $this->rewardsEnabled = false;
+                $this->disabledButton = 'disabled="disabled"';
+            }
         }
-    
     }
-    
+
     /**
-     * Display default page 
+     * Display default page
      */
-    protected function prepareIntro() {
-        
-        $app = JFactory::getApplication();
-        /** @var $app JSite **/
-        
-        $model             = JModelLegacy::getInstance("Intro", "CrowdFundingModel", $config = array('ignore_request' => false));
-        $this->state       = $model->getState();
-        $this->params      = $this->state->get("params");
-        
-        $articleId         = $this->params->get("project_intro_article", 0);
-        $this->article     = $model->getItem($articleId);
-        
+    protected function prepareIntro()
+    {
+        $model        = JModelLegacy::getInstance("Intro", "CrowdFundingModel", $config = array('ignore_request' => false));
+        /** @var $model CrowdFundingModelIntro */
+
+        // Get state
+        /** @var  $state Joomla\Registry\Registry */
+        $state = $model->getState();
+        $this->state = $state;
+
+        // Get params
+        /** @var  $params Joomla\Registry\Registry */
+        $params = $this->state->get("params");
+        $this->params = $params;
+
+        $articleId     = $this->params->get("project_intro_article", 0);
+        $this->article = $model->getItem($articleId);
+
         $this->pathwayName = JText::_("COM_CROWDFUNDING_START_PROJECT_BREADCRUMB");
-        
     }
-    
-    protected function prepareBasic() {
-        
-        $model             = JModelLegacy::getInstance("Project", "CrowdFundingModel", $config = array('ignore_request' => false));
-        
-        $this->state       = $model->getState();
-        $this->params      = $this->state->get("params");
-        
+
+    protected function prepareBasic()
+    {
+        $model = JModelLegacy::getInstance("Project", "CrowdFundingModel", $config = array('ignore_request' => false));
+        /** @var $model CrowdFundingModelProject */
+
+        // Get state
+        /** @var  $state Joomla\Registry\Registry */
+        $state = $model->getState();
+        $this->state = $state;
+
+        // Get params
+        /** @var  $params Joomla\Registry\Registry */
+        $params = $this->state->get("params");
+        $this->params = $params;
+
         // Get item
-        $itemId            = $this->state->get('project.id');
-        $this->item        = $model->getItem($itemId, $this->userId);
-        
+        $itemId     = $this->state->get('project.id');
+        $this->item = $model->getItem($itemId, $this->userId);
+
         // Set a flag that describes the item as new.
-        $this->isNew       = false;
-        if(!$this->item->id) {
+        $this->isNew = false;
+        if (!$this->item->id) {
             $this->isNew = true;
         }
-        
-        $this->form        = $model->getForm();
-        
+
+        $this->form = $model->getForm();
+
         // Get types
         jimport("crowdfunding.types");
-        $types             = CrowdFundingTypes::getInstance(JFactory::getDbo());
+        $types               = CrowdFundingTypes::getInstance(JFactory::getDbo());
         $this->numberOfTypes = count($types);
-            
+
         // Prepare images
         $this->imageFolder = $this->params->get("images_directory", "images/crowdfunding");
         $this->imageSmall  = $this->item->get("image_small");
-        
+
         $this->pathwayName = JText::_("COM_CROWDFUNDING_STEP_BASIC");
-        
-    } 
-    
-    protected function prepareFunding() {
-        
-        $model             = JModelLegacy::getInstance("Funding", "CrowdFundingModel", $config = array('ignore_request' => false));
-        
-        // Initialise variables
-        $this->state       = $model->getState();
-        $this->params      = $this->state->get("params");
-        
+
+    }
+
+    protected function prepareFunding()
+    {
+        $model = JModelLegacy::getInstance("Funding", "CrowdFundingModel", $config = array('ignore_request' => false));
+        /** @var $model CrowdFundingModelFunding */
+
+        // Get state
+        /** @var  $state Joomla\Registry\Registry */
+        $state = $model->getState();
+        $this->state = $state;
+
+        // Get params
+        /** @var  $params Joomla\Registry\Registry */
+        $params = $this->state->get("params");
+        $this->params = $params;
+
         // Get item
-        $itemId            = $this->state->get('funding.id');
-        $this->item        = $model->getItem($itemId, $this->userId);
-        
-        $this->form        = $model->getForm();
-            
+        $itemId     = $this->state->get('funding.id');
+        $this->item = $model->getItem($itemId, $this->userId);
+
+        $this->form = $model->getForm();
+
         // Get currency
         jimport("crowdfunding.currency");
-        $currencyId        = $this->params->get("project_currency");
-        $this->currency    = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId);
-        
+        $currencyId     = $this->params->get("project_currency");
+        $this->currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $this->params);
+
         // Set minimum values - days, amount,...
-        $this->minAmount   = $this->params->get("project_amount_minimum", 100);
-        $this->maxAmount   = $this->params->get("project_amount_maximum");
-        
-        $this->minDays     = $this->params->get("project_days_minimum", 30);
-        $this->maxDays     = $this->params->get("project_days_maximum");
-        
+        $this->minAmount = $this->params->get("project_amount_minimum", 100);
+        $this->maxAmount = $this->params->get("project_amount_maximum");
+
+        $this->minDays = $this->params->get("project_days_minimum", 30);
+        $this->maxDays = $this->params->get("project_days_maximum");
+
         // Prepare funding duration type
         $this->prepareFundingDurationType();
-        
+
         $this->pathwayName = JText::_("COM_CROWDFUNDING_STEP_FUNDING");
-        
-    } 
-    
-    protected function prepareFundingDurationType() {
-        
-        $this->fundingDuration     = $this->params->get("project_funding_duration");
-        
-        switch($this->fundingDuration) {
-        
+    }
+
+    protected function prepareFundingDurationType()
+    {
+        $this->fundingDuration = $this->params->get("project_funding_duration");
+
+        switch ($this->fundingDuration) {
+
             case "days": // Only days type is enabled
                 $this->checkedDays = 'checked="checked"';
                 break;
-        
+
             case "date": // Only date type is enabled
                 $this->checkedDate = 'checked="checked"';
                 break;
-        
+
             default: // Both ( days and date ) types are enabled
-        
+
                 $this->checkedDays = 0;
                 $this->checkedDate = "";
-                
-                if(!empty($this->item->funding_days)) {
+
+                jimport("itprism.validator.date");
+                $dateValidator = new ITPrismValidatorDate($this->item->funding_end);
+
+                if (!empty($this->item->funding_days)) {
                     $this->checkedDays = 'checked="checked"';
                     $this->checkedDate = '';
-                } else if (CrowdFundingHelper::isValidDate($this->item->funding_end)) {
+                } elseif ($dateValidator->isValid($this->item->funding_end)) {
                     $this->checkedDays = '';
                     $this->checkedDate = 'checked="checked"';
                 }
-        
-                // If missing both, select days
-                if(!$this->checkedDays AND !$this->checkedDate) {
+
+                // If missing both, select days.
+                if (!$this->checkedDays and !$this->checkedDate) {
                     $this->checkedDays = 'checked="checked"';
                 }
                 break;
-        
+
         }
     }
-    
-    protected function prepareStory() {
-        
-        $model             = JModelLegacy::getInstance("Story", "CrowdFundingModel", $config = array('ignore_request' => false));
-        
-        // Initialise variables
-        $this->state       = $model->getState();
-        
+
+    protected function prepareStory()
+    {
+        $model = JModelLegacy::getInstance("Story", "CrowdFundingModel", $config = array('ignore_request' => false));
+        /** @var $model CrowdFundingModelStory */
+
+        // Get state
+        /** @var  $state Joomla\Registry\Registry */
+        $state = $model->getState();
+        $this->state = $state;
+
+        // Get params
+        /** @var  $params Joomla\Registry\Registry */
+        $params = $this->state->get("params");
+        $this->params = $params;
+
         // Get item
-        $itemId            = $this->state->get('story.id');
-        $this->item        = $model->getItem($itemId, $this->userId);
-        
-        $this->form        = $model->getForm();
-        $this->params      = $this->state->get("params");
-            
+        $itemId     = $this->state->get('story.id');
+        $this->item = $model->getItem($itemId, $this->userId);
+
+        $this->form   = $model->getForm();
+
         $this->imageFolder = $this->params->get("images_directory", "images/crowdfunding");
         $this->pitchImage  = $this->item->get("pitch_image");
-        
-        $this->pWidth      = $this->params->get("pitch_image_width", 600);
-        $this->pHeight     = $this->params->get("pitch_image_height", 400);
-        
+
+        $this->pWidth  = $this->params->get("pitch_image_width", 600);
+        $this->pHeight = $this->params->get("pitch_image_height", 400);
+
         // Prepare extra images folder
-        if($this->params->get("extra_images", 0) AND !empty($this->userId)) {
+        if ($this->params->get("extra_images", 0) and !empty($this->userId)) {
 
             jimport('joomla.filesystem.folder');
-            
+
             $userDestinationFolder = CrowdFundingHelper::getImagesFolder($this->userId);
-            if(!JFolder::exists($userDestinationFolder)) {
-                JFolder::create($userDestinationFolder);
-                
-                $userDestinationFolderIndex = JPath::clean($userDestinationFolder."/index.html");
-                $bufffer = "<!DOCTYPE html><title></title>";
-                
-                jimport('joomla.filesystem.file');
-                JFile::write($userDestinationFolderIndex, $bufffer);
+            if (!JFolder::exists($userDestinationFolder)) {
+                CrowdFundingHelper::createFolder($userDestinationFolder);
             }
-            
+
             jimport("crowdfunding.images");
-            $this->images = new CrowdFundingImages($itemId);
-            
+            $this->images = new CrowdFundingImages(JFactory::getDbo());
+            $this->images->load($itemId);
+
             $this->extraImagesUri = CrowdFundingHelper::getImagesFolderUri($this->userId);
         }
-            
+
         $this->pathwayName = JText::_("COM_CROWDFUNDING_STEP_STORY");
-        
-    } 
-    
-    protected function prepareRewards() {
-        
-        $model             = JModelLegacy::getInstance("Rewards", "CrowdFundingModel", $config = array('ignore_request' => false));
-        
+    }
+
+    protected function prepareRewards()
+    {
+        $model = JModelLegacy::getInstance("Rewards", "CrowdFundingModel", $config = array('ignore_request' => false));
+
         // Initialise variables
-        $this->state       = $model->getState();
-        $this->projectId   = $this->state->get("rewards.id");
-        $this->params      = $this->state->get("params");
-        
-        $this->items       = $model->getItems($this->projectId);
-        
+        // Get state
+        /** @var  $state Joomla\Registry\Registry */
+        $state = $model->getState();
+        $this->state = $state;
+
+        // Get params
+        /** @var  $params Joomla\Registry\Registry */
+        $params = $this->state->get("params");
+        $this->params = $params;
+
+        $this->projectId = $this->state->get("rewards.id");
+
+        $this->items = $model->getItems($this->projectId);
+
         // Get project and validate it
         jimport("crowdfunding.project");
-        $project           = CrowdFundingProject::getInstance($this->projectId);
-        $project           = $project->getProperties();
+        $project = CrowdFundingProject::getInstance(JFactory::getDbo(), $this->projectId);
+        $project = $project->getProperties();
 
-        $this->item        = JArrayHelper::toObject($project);
-        if(!$this->item->id OR ($this->item->user_id != $this->userId)) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"), ITPrismErrors::CODE_ERROR);
+        $this->item = JArrayHelper::toObject($project);
+        if (!$this->item->id or ($this->item->user_id != $this->userId)) {
+            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"));
         }
-        
+
         jimport("crowdfunding.currency");
-        $currencyId        = $this->params->get("project_currency");
-		$this->currency    = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId);
-		
-		// Get date format
-		$this->dateFormat          = CrowdFundingHelper::getDateFormat();
-		$this->dateFormatCalendar  = CrowdFundingHelper::getDateFormat(true);
-		$js = '
+        $currencyId     = $this->params->get("project_currency");
+        $this->currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $this->params);
+
+        // Get date format
+        $this->dateFormat         = CrowdFundingHelper::getDateFormat();
+        $this->dateFormatCalendar = CrowdFundingHelper::getDateFormat(true);
+        $js                       = '
 	        // Rewards calendar date format.
             var projectWizard = {
-                dateFormat: "'.$this->dateFormatCalendar.'"
+                dateFormat: "' . $this->dateFormatCalendar . '"
             };
         ';
-		$this->document->addScriptDeclaration($js);
-		
-		// Prepare rewards images.
-		$this->rewardsImagesEnabled = $this->params->get("rewards_images", 0);
-		$this->rewardsImagesUri = CrowdFundingHelper::getImagesFolderUri($this->userId);
-		
-		$this->prepareProjectType();
-		
+        $this->document->addScriptDeclaration($js);
+
+        // Prepare rewards images.
+        $this->rewardsImagesEnabled = $this->params->get("rewards_images", 0);
+        $this->rewardsImagesUri     = CrowdFundingHelper::getImagesFolderUri($this->userId);
+
+        $this->prepareProjectType();
+
         $this->pathwayName = JText::_("COM_CROWDFUNDING_STEP_REWARDS");
-        
-    } 
-    
+    }
+
     /**
      * Prepares the document
      */
-    protected function prepareDocument(){
-
+    protected function prepareDocument()
+    {
         $app = JFactory::getApplication();
-        /** @var $app JSite **/
-        
-         // Prepare page suffix
+        /** @var $app JApplicationSite */
+
+        // Prepare page suffix
         $this->pageclass_sfx = htmlspecialchars($this->params->get('pageclass_sfx'));
-        
+
         $menus = $app->getMenu();
-        
+
         // Because the application sets a default page title,
         // we need to get it from the menu item itself
-        $menu  = $menus->getActive();
-        
-        if($menu) {
+        $menu = $menus->getActive();
+
+        if ($menu) {
             $this->params->def('page_heading', $menu->title);
         } else {
             $this->params->def('page_heading', JText::_('COM_CROWDFUNDING_RAISE_DEFAULT_PAGE_TITLE'));
         }
-        
+
         // Prepare page title
         $title = $menu->title;
-        if(!$title){
-            $title = $app->getCfg('sitename');
-        }elseif($app->getCfg('sitename_pagetitles', 0)){ // Set site name if it is necessary ( the option 'sitename' = 1 )
-            $title = JText::sprintf('JPAGETITLE', $app->getCfg('sitename'), $title);
+        if (!$title) {
+            $title = $app->get('sitename');
+        } elseif ($app->get('sitename_pagetitles', 0)) { // Set site name if it is necessary ( the option 'sitename' = 1 )
+            $title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
         } else { // Item title to the browser title.
-            if(!empty($this->item)) {
-                $title .= " | ". $this->escape($this->item->title);
+            if (!empty($this->item)) {
+                $title .= " | " . $this->escape($this->item->title);
             }
         }
         $this->document->setTitle($title);
-        
+
         // Meta Description
         $this->document->setDescription($this->params->get('menu-meta_description'));
-        
+
         // Meta keywords
         $this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
-        
-        // Add current layout into breadcrumbs 
-        $pathway    = $app->getPathway();
+
+        // Add current layout into breadcrumbs.
+        $pathway = $app->getPathway();
         $pathway->addItem($this->pathwayName);
-        
+
         // Styles
-        
+
         // Load bootstrap navbar styles
-        if($this->params->get("bootstrap_navbar", false)) {
+        if ($this->params->get("bootstrap_navbar", false)) {
             JHtml::_("itprism.ui.bootstrap_navbar");
         }
-        
-        $this->document->addStyleSheet('media/'.$this->option.'/css/site/style.css');
-        
+
         // Scripts
         JHtml::_('bootstrap.framework');
         JHtml::_('bootstrap.tooltip');
         JHtml::_('formbehavior.chosen', 'select');
-        
+
         JHtml::_('behavior.keepalive');
 //         JHtml::_('behavior.formvalidation');
-        
-        switch($this->layout) {
-            
+
+        switch ($this->layout) {
+
             case "rewards":
-                
+
                 // Load language string in JavaScript
                 JText::script('COM_CROWDFUNDING_QUESTION_REMOVE_REWARD');
                 JText::script('COM_CROWDFUNDING_QUESTION_REMOVE_IMAGE');
                 JText::script('COM_CROWDFUNDING_SELECT_IMAGE');
-                
+
                 // Scripts
-                
+
                 // Load bootstrap modal styles and JS library
-                if($this->params->get("bootstrap_modal", false)) {
+                if ($this->params->get("bootstrap_modal", false)) {
                     JHtml::_("itprism.ui.bootstrap_modal");
                 }
-                
-                if($this->params->get("rewards_images", 0)) {
+
+                if ($this->params->get("rewards_images", 0)) {
                     JHtml::_('itprism.ui.bootstrap_filestyle');
                 }
-                
+
                 JHtml::_('itprism.ui.pnotify');
-		        $this->document->addScript('media/'.$this->option.'/js/helper.js');
-		        $this->document->addScript('media/'.$this->option.'/js/site/project_rewards.js');
-		        
+                JHtml::_("itprism.ui.joomla_helper");
+                $this->document->addScript('media/' . $this->option . '/js/site/project_rewards.js');
+
                 break;
-                
+
             case "funding":
                 JHtml::_('itprism.ui.parsley');
-		        $this->document->addScript('media/'.$this->option.'/js/site/project_funding.js');
-		        
-		        // Load language string in JavaScript
-		        JText::script('COM_CROWDFUNDING_THIS_VALUE_IS_REQUIRED');
-		        
+                $this->document->addScript('media/' . $this->option . '/js/site/project_funding.js');
+
+                // Load language string in JavaScript
+                JText::script('COM_CROWDFUNDING_THIS_VALUE_IS_REQUIRED');
+
                 break;
 
             case "story":
-                
+
                 // Scripts
                 JHtml::_('itprism.ui.bootstrap_fileuploadstyle');
-                
-                if($this->params->get("extra_images", 0)) {
+
+                if ($this->params->get("extra_images", 0)) {
                     JHtml::_('itprism.ui.fileupload');
                     JHtml::_('itprism.ui.pnotify');
-                    $this->document->addScript('media/'.$this->option.'/js/helper.js');
+                    JHtml::_("itprism.ui.joomla_helper");
                 }
-                
-                $this->document->addScript('media/'.$this->option.'/js/site/project_story.js');
-                
+
+                $this->document->addScript('media/' . $this->option . '/js/site/project_story.js');
+
                 break;
-                    
+
             default: // Basic
-                
+
                 // Scripts
                 JHtml::_('itprism.ui.bootstrap_fileuploadstyle');
                 JHtml::_('itprism.ui.bootstrap_maxlength');
                 JHtml::_('itprism.ui.bootstrap_typeahead');
                 JHtml::_('itprism.ui.parsley');
-		        $this->document->addScript('media/'.$this->option.'/js/site/project_basic.js');
-		        
-		        // Load language string in JavaScript
-		        JText::script('COM_CROWDFUNDING_THIS_VALUE_IS_REQUIRED');
+                $this->document->addScript('media/' . $this->option . '/js/site/project_basic.js');
+
+                // Load language string in JavaScript
+                JText::script('COM_CROWDFUNDING_THIS_VALUE_IS_REQUIRED');
                 break;
         }
-		
     }
-
-    
 }

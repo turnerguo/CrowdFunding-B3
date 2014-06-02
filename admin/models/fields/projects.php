@@ -14,7 +14,8 @@ jimport('joomla.form.formfield');
 jimport('joomla.form.helper');
 JFormHelper::loadFieldClass('list');
 
-class JFormFieldProjects extends JFormFieldList {
+class JFormFieldProjects extends JFormFieldList
+{
     /**
      * The form field type.
      *
@@ -22,35 +23,35 @@ class JFormFieldProjects extends JFormFieldList {
      * @since   1.6
      */
     protected $type = 'Projects';
-    
+
     /**
      * Method to get the field options.
      *
      * @return  array   The field option objects.
      * @since   1.6
      */
-    protected function getOptions(){
-        
+    protected function getOptions()
+    {
         // Initialize variables.
         $options = array();
-        
-        $db     = JFactory::getDbo();
-        $query  = $db->getQuery(true);
-        
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
         $query
             ->select('a.id AS value, a.title AS text')
             ->from('#__crowdf_projects AS a');
-        
+
         // Get the options.
         $db->setQuery($query);
-        
+
         $options = $db->loadObjectList();
-        
-        array_unshift($options, JHtml::_('select.option', '0', '- '.JText::_('COM_CROWDFUNDING_SELECT_PROJECT').' -', 'value', 'text'));
-        
+
+        array_unshift($options, JHtml::_('select.option', '0', '- ' . JText::_('COM_CROWDFUNDING_SELECT_PROJECT') . ' -', 'value', 'text'));
+
         // Merge any additional options in the XML definition.
         $options = array_merge(parent::getOptions(), $options);
-        
+
         return $options;
     }
 }

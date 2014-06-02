@@ -71,7 +71,7 @@ defined('_JEXEC') or die;
             			<span class="ramount">
             			<input type="radio" name="reward" value="<?php echo $reward->amount;?>" data-id="<?php echo $reward->id;?>" class="reward-amount-radio" <?php echo ($this->rewardId != $reward->id) ? "" : 'checked="checked"'?>/>
             			<?php 
-            			$amount = $this->currency->getAmountString($reward->amount, $this->params->get("locale_intl", 0)); 
+            			$amount = $this->currency->getAmountString($reward->amount);
             			echo JText::sprintf("COM_CROWDFUNDING_INVEST_MORE", $amount ); ?>
             			</span>
             			<span class="rtitle"><?php echo $this->escape($reward->title); ?></span>

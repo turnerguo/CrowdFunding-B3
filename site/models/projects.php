@@ -8,42 +8,42 @@
  */
 
 // no direct access
-defined( '_JEXEC' ) or die;
+defined('_JEXEC') or die;
 
-jimport( 'joomla.application.component.modellist' );
+jimport('joomla.application.component.modellist');
 
 /**
  * Get a list of items
- * 
+ *
  * @author Todor Iliev
  */
-class CrowdFundingModelProjects extends JModelList {
-    
-	 /**
+class CrowdFundingModelProjects extends JModelList
+{
+    /**
      * Constructor.
      *
-     * @param   array   An optional associative array of configuration settings.
+     * @param   array $config  An optional associative array of configuration settings.
+     *
      * @see     JController
      * @since   1.6
      */
-    public function  __construct($config = array()) {
-        
+    public function __construct($config = array())
+    {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
                 'id', 'a.id',
                 'title', 'a.title',
-            	'goal', 'a.goal',
-            	'funded', 'a.funded',
-            	'funding_start', 'a.funding_start',
-            	'funding_end', 'a.funding_end',
-            	'ordering', 'a.ordering'
+                'goal', 'a.goal',
+                'funded', 'a.funded',
+                'funding_start', 'a.funding_start',
+                'funding_end', 'a.funding_end',
+                'ordering', 'a.ordering'
             );
         }
 
         parent::__construct($config);
-		
     }
-    
+
     /**
      * Method to auto-populate the model state.
      *
@@ -51,23 +51,23 @@ class CrowdFundingModelProjects extends JModelList {
      *
      * @since   1.6
      */
-    protected function populateState($ordering = null, $direction = null) {
-        
-        $app       = JFactory::getApplication();
-        /** @var $app JSite **/
+    protected function populateState($ordering = null, $direction = null)
+    {
+        $app = JFactory::getApplication();
+        /** @var $app JApplicationSite */
 
-        $state = $this->getUserStateFromRequest($this->context.'.filter.state', 'filter_state', '', 'string');
+        $state = $this->getUserStateFromRequest($this->context . '.filter.state', 'filter_state', '', 'string');
         $this->setState('filter.state', $state);
-        
+
         $value = JFactory::getUser()->id;
         $this->setState('filter.user_id', $value);
-         
+
         // Load the component parameters.
         $params = $app->getParams($this->option);
         $this->setState('params', $params);
 
         // List state information.
-        parent::populateState('a.title', 'asc');
+        parent::populateState('a.created', 'asc');
     }
 
     /**
@@ -77,71 +77,72 @@ class CrowdFundingModelProjects extends JModelList {
      * different modules that might need different sets of data or different
      * ordering requirements.
      *
-     * @param   string      $id A prefix for the store id.
+     * @param   string $id A prefix for the store id.
+     *
      * @return  string      A store id.
      * @since   1.6
      */
-    protected function getStoreId($id = '') {
-        
+    protected function getStoreId($id = '')
+    {
         // Compile the store id.
         $id .= ':' . $this->getState('filter.state');
         $id .= ':' . $this->getState('filter.user_id');
 
         return parent::getStoreId($id);
     }
-    
-   /**
+
+    /**
      * Build an SQL query to load the list data.
      *
      * @return  JDatabaseQuery
      * @since   1.6
      */
-    protected function getListQuery() {
-        
+    protected function getListQuery()
+    {
         // Create a new query object.
-        $db     = $this->getDbo();
-        /** @var $db JDatabaseMySQLi **/
-        $query  = $db->getQuery(true);
+        $db = $this->getDbo();
+        /** @var $db JDatabaseMySQLi * */
+        $query = $db->getQuery(true);
 
         // Select the required fields from the table.
         $query->select(
             $this->getState(
                 'list.select',
-                'a.id, a.title, a.image_square, a.goal, a.funded, '.
-            	'a.funding_end, a.funding_days, a.funding_start, '.
+                'a.id, a.title, a.image_square, a.goal, a.funded, ' .
+                'a.funding_end, a.funding_days, a.funding_start, ' .
                 $query->concatenate(array("a.id", "a.alias"), "-") . ' AS slug, ' .
-            	'a.published, a.approved, ' .
+                'a.published, a.approved, ' .
                 'b.published AS catstate, ' .
-            	$query->concatenate(array("b.id", "b.alias"), "-") . " AS catslug"
+                $query->concatenate(array("b.id", "b.alias"), "-") . " AS catslug"
             )
         );
         $query->from($db->quoteName('#__crowdf_projects', "a"));
-        $query->leftJoin($db->quoteName('#__categories', "b").' ON a.catid = b.id');
+        $query->leftJoin($db->quoteName('#__categories', "b") . ' ON a.catid = b.id');
 
         // Filter by state
         $state = $this->getState('filter.state');
         if (is_numeric($state)) {
-            $query->where('a.published = '.(int) $state);
-        } else if ($state === '') {
+            $query->where('a.published = ' . (int)$state);
+        } elseif ($state === '') {
             $query->where('(a.published IN (0, 1))');
         }
-        
+
         $userId = $this->getState('filter.user_id');
-        $query->where('a.user_id='.(int)$userId);
-        
+        $query->where('a.user_id=' . (int)$userId);
+
         // Add the list ordering clause.
         $orderString = $this->getOrderString();
-        
+
         $query->order($db->escape($orderString));
-        
+
         return $query;
     }
-    
-    protected function getOrderString() {
-        
-        $orderCol   = $this->getState('list.ordering');
-        $orderDirn  = $this->getState('list.direction');
-        
-        return 'a.published DESC,'.$orderCol.' '.$orderDirn;
+
+    protected function getOrderString()
+    {
+        $orderCol  = $this->getState('list.ordering');
+        $orderDirn = $this->getState('list.direction');
+
+        return $orderCol . ' ' . $orderDirn;
     }
 }

@@ -17,44 +17,42 @@ jimport('itprism.controller.admin');
  *
  * @package      CrowdFunding
  * @subpackage   Components
-  */
-class CrowdFundingControllerLogs extends ITPrismControllerAdmin {
-    
+ */
+class CrowdFundingControllerLogs extends ITPrismControllerAdmin
+{
     /**
      * Proxy for getModel.
      * @since   1.6
      */
-    public function getModel($name = 'Log', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true)) {
+    public function getModel($name = 'Log', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    {
         $model = parent::getModel($name, $prefix, $config);
+
         return $model;
     }
-    
-    public function removeAll() {
-    
+
+    public function removeAll()
+    {
         // Check for request forgeries
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-    
-        $app = JFactory::getApplication();
-        /** @var $app JAdministrator **/
-    
-        $redirectData = array(
+
+        $redirectOptions = array(
             "view" => $this->view_list
         );
-    
+
         // Get the model.
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelLog **/
-    
+        /** @var $model CrowdFundingModelLog * */
+
         try {
-    
+
             $model->removeAll();
-    
-        } catch (Exception $e){
+
+        } catch (Exception $e) {
             JLog::add($e->getMessage());
             throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }
-    
-        $this->displayMessage(JText::_("COM_CROWDFUNDING_ALL_ITEMS_REMOVED_SUCCESSFULLY"), $redirectData);
-    
+
+        $this->displayMessage(JText::_("COM_CROWDFUNDING_ALL_ITEMS_REMOVED_SUCCESSFULLY"), $redirectOptions);
     }
 }

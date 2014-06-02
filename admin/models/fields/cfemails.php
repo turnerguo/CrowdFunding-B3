@@ -21,48 +21,49 @@ JFormHelper::loadFieldClass('list');
  * @subpackage   Component
  * @since        1.6
  */
-class JFormFieldCfEmails extends JFormFieldList {
+class JFormFieldCfEmails extends JFormFieldList
+{
     /**
      * The form field type.
      *
      * @var     string
      * @since   1.6
      */
-    protected $type = 'CfEmails';
-    
+    protected $type = 'cfemails';
+
     /**
      * Method to get the field options.
      *
      * @return  array   The field option objects.
      * @since   1.6
      */
-    protected function getOptions(){
-        
+    protected function getOptions()
+    {
         // Initialize variables.
         $options = array();
-        
-        $db = JFactory::getDbo();
+
+        $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
-        
+
         $query
-            ->select('a.id AS value, a.subject AS text')
+            ->select('a.id AS value, a.title AS text')
             ->from($db->quoteName("#__crowdf_emails", "a"))
             ->order("a.subject ASC");
-        
+
         // Get the options.
         $db->setQuery($query);
-        
+
         $results = $db->loadAssocList();
 
-        if(!$results) {
+        if (!$results) {
             $results = array();
         }
-        
+
         $options = array(0 => JText::_("JNONE"));
-        
+
         // Merge any additional options in the XML definition.
         $options = array_merge(parent::getOptions(), $options, $results);
-        
+
         return $options;
     }
 }

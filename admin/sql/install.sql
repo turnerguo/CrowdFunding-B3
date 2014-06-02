@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_currencies` (
 
 CREATE TABLE IF NOT EXISTS `#__crowdf_emails` (
   `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(128) NOT NULL DEFAULT '',
   `subject` varchar(255) NOT NULL,
   `body` text NOT NULL,
   `sender_name` varchar(255) DEFAULT NULL,
@@ -156,7 +157,7 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_transactions` (
   `txn_amount` decimal(11,2) unsigned NOT NULL DEFAULT '0.00',
   `txn_currency` varchar(64) NOT NULL DEFAULT '',
   `txn_status` enum('pending','completed','canceled','refunded','failed') NOT NULL DEFAULT 'pending',
-  `txn_id` varchar(128) DEFAULT NULL,
+  `txn_id` varchar(64) NOT NULL DEFAULT '',
   `parent_txn_id` varchar(64) NOT NULL DEFAULT '' COMMENT 'Transaction id of an pre authorized transaction.',
   `extra_data` varchar(2048) DEFAULT NULL COMMENT 'Additional information about transaction.',
   `status_reason` varchar(32) NOT NULL DEFAULT '' COMMENT 'This is a reason of the status in few words.',

@@ -12,126 +12,130 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.model');
 
-class CrowdFundingModelBacking extends JModelLegacy {
-    
+class CrowdFundingModelBacking extends JModelLegacy
+{
     protected $item;
-    
+
     /**
-	 * Model context string.
-	 *
-	 * @var    string
-	 * @since  11.1
-	 */
-	protected $context = 'com_crowdfunding.backing';
-    
+     * Model context string.
+     *
+     * @var    string
+     * @since  11.1
+     */
+    protected $context = 'com_crowdfunding.backing';
+
     /**
      * Returns a reference to the a Table object, always creating it.
      *
-     * @param   type    The table type to instantiate
-     * @param   string  A prefix for the table class name. Optional.
-     * @param   array   Configuration array for model. Optional.
+     * @param   string $type    The table type to instantiate
+     * @param   string $prefix A prefix for the table class name. Optional.
+     * @param   array  $config Configuration array for model. Optional.
+     *
      * @return  JTable  A database object
      * @since   1.6
      */
-    public function getTable($type = 'Project', $prefix = 'CrowdFundingTable', $config = array()) {
+    public function getTable($type = 'Project', $prefix = 'CrowdFundingTable', $config = array())
+    {
         return JTable::getInstance($type, $prefix, $config);
     }
-    
+
     /**
      * Method to auto-populate the model state.
      *
      * Note. Calling getState in this method will result in recursion.
      *
-     * @since	1.6
-     * @todo replace $_context with $context
+     * @since    1.6
      */
-    protected function populateState() {
-        
-        $app     = JFactory::getApplication();
-        
+    protected function populateState()
+    {
+        $app = JFactory::getApplication();
+        /** @var  $app JApplicationSite */
+
         // Project ID
-        $itemId   = $app->input->getUint('id');
+        $itemId = $app->input->getUint('id');
         $this->setState('id', $itemId);
-        
+
         // Get reward ID
         $projectContext = $this->getProjectContext($itemId);
-        $value          = $app->getUserStateFromRequest($projectContext.".rid", 'rid');
+        $value          = $app->getUserStateFromRequest($projectContext . ".rid", 'rid');
         $this->setState('reward_id', $value);
-        
+
         // Load the parameters.
-        $params  = $app->getParams();
+        $params = $app->getParams();
         $this->setState('params', $params);
     }
-    
+
     /**
-     * Return the context of the model
-     */
-    /* public function getContext() {
-        return $this->context;        
-    } */
-    
-    /**
-     * Return the context, 
+     * Return the context,
      * used to for storing project data in this model.
      */
-    public function getProjectContext($projectId) {
-        return $this->context.".project".$projectId;
+    public function getProjectContext($projectId)
+    {
+        return $this->context . ".project" . $projectId;
     }
-    
+
     /**
-     * Method to get an ojbect.
+     * Method to get an object.
      *
-     * @param	integer	The id of the object to get.
-     * 
-     * @return	mixed	Object on success, false on failure.
+     * @param    integer $id   The id of the object to get.
+     *
+     * @return    mixed    Object on success, false on failure.
      */
-    public function getItem($id = null) {
-        
+    public function getItem($id = null)
+    {
         if (empty($id)) {
             $id = $this->getState('id');
         }
-        
+
         if (is_null($this->item)) {
-            
-            $db     = $this->getDbo();
-            $query  = $db->getQuery(true);
-            
+
+            $db    = $this->getDbo();
+            $query = $db->getQuery(true);
+
             $query
                 ->select(
-                	"a.id, a.title, a.short_desc, a.image, " . 
-                	"a.funded, a.goal, a.pitch_video, a.pitch_image, " . 
-                	"a.funding_start, a.funding_end, a.funding_days, " .  
-                	"a.funding_type, a.user_id,  a.type_id, " . 
-                	"b.name AS user_name, " .
-                	$query->concatenate(array("a.id", "a.alias"), "-") . ' AS slug, ' .
-                	$query->concatenate(array("c.id", "c.alias"), "-") . ' AS catslug' 
+                    "a.id, a.title, a.short_desc, a.image, " .
+                    "a.funded, a.goal, a.pitch_video, a.pitch_image, " .
+                    "a.funding_start, a.funding_end, a.funding_days, " .
+                    "a.funding_type, a.user_id,  a.type_id, " .
+                    "b.name AS user_name, " .
+                    $query->concatenate(array("a.id", "a.alias"), "-") . ' AS slug, ' .
+                    $query->concatenate(array("c.id", "c.alias"), "-") . ' AS catslug'
                 )
-                ->from("#__crowdf_projects AS a")
-                ->innerJoin('#__users AS b ON a.user_id = b.id')
-                ->innerJoin('#__categories AS c ON a.catid = c.id')
-                ->where("a.id = " .(int)$id)
+                ->from($db->quoteName("#__crowdf_projects", "a"))
+                ->innerJoin($db->quoteName('#__users', 'b') .' ON a.user_id = b.id')
+                ->innerJoin($db->quoteName('#__categories', 'c') . ' ON a.catid = c.id')
+                ->where("a.id = " . (int)$id)
                 ->where("a.published = 1")
                 ->where("a.approved  = 1");
 
             $db->setQuery($query, 0, 1);
             $result = $db->loadObject();
-            
+
             // Attempt to load the row.
             if (!empty($result)) {
-                
-                // Calculate eding date by days left
-                if(!empty($result->funding_days)) {
-                    $result->funding_end     = CrowdFundingHelper::calcualteEndDate($result->funding_start, $result->funding_days);
+
+                // Calculate ending date by days left.
+                if (!empty($result->funding_days)) {
+                    $fundingStartDate = new CrowdFundingDate($result->funding_start);
+                    $endDate = $fundingStartDate->calculateEndDate($result->funding_days);
+                    $result->funding_end = $endDate->format("Y-m-d");
                 }
-                
-                $result->funded_percents = CrowdFundingHelper::calculatePercent($result->funded, $result->goal);
-                $result->days_left       = CrowdFundingHelper::calcualteDaysLeft($result->funding_days, $result->funding_start, $result->funding_end);
+
+                // Calculate funded percent
+                $percent = new ITPrismMath();
+                $percent->calculatePercentage($result->funded, $result->goal, 0);
+                $result->funded_percents = (string)$percent;
+
+                // Calculate days left.
+                $today = new CrowdFundingDate();
+                $result->days_left       = $today->calculateDaysLeft($result->funding_days, $result->funding_start, $result->funding_end);
+
                 $this->item              = $result;
-                
-            } 
+
+            }
         }
-        
+
         return $this->item;
     }
-
 }

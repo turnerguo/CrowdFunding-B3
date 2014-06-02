@@ -12,114 +12,119 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.modellist');
 
-class CrowdFundingModelFeatured extends JModelList {
-    
-    protected $items   = null;
+class CrowdFundingModelFeatured extends JModelList
+{
+    protected $items = null;
     protected $numbers = null;
-    protected $params  = null;
-    
+    protected $params = null;
+
     /**
      * Constructor.
      *
-     * @param   array   An optional associative array of configuration settings.
+     * @param   array  $config An optional associative array of configuration settings.
+     *
      * @see     JController
      * @since   1.6
      */
-    public function __construct($config = array()){
-        
-        if(empty($config['filter_fields'])){
+    public function __construct($config = array())
+    {
+        if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
                 'id', 'a.id',
                 'title', 'a.title',
                 'ordering', 'a.ordering'
             );
         }
-        
+
         parent::__construct($config);
     }
-    
-	/**
+
+    /**
      * Method to auto-populate the model state.
      *
      * Note. Calling getState in this method will result in recursion.
      *
+     * @param string $ordering
+     * @param string $direction
+     *
      * @return  void
      * @since   1.6
      */
-    protected function populateState($ordering = 'ordering', $direction = 'ASC'){
-        
+    protected function populateState($ordering = 'ordering', $direction = 'ASC')
+    {
         parent::populateState("a.ordering", "ASC");
-        
+
         $app = JFactory::getApplication();
-        /** @var $app JSite **/
-        
+        /** @var $app JApplicationSite */
+
         // Load parameters
-        $params     =  $app->getParams();
+        $params = $app->getParams();
         $this->setState('params', $params);
-        
+
         // Set limit
-        $value      = $params->get("featured_items_limit", $app->getCfg('list_limit', 20));
+        $value = $params->get("featured_items_limit", $app->get('list_limit', 20));
         $this->setState('list.limit', $value);
-        
-        $value      = $app->input->getInt('limitstart', 0);
+
+        $value = $app->input->getInt('limitstart', 0);
         $this->setState('list.start', $value);
-        
+
     }
-    
-	/**
+
+    /**
      * Method to get a store id based on model configuration state.
      *
      * This is necessary because the model is used by the component and
      * different modules that might need different sets of data or different
      * ordering requirements.
      *
-     * @param   string      $id A prefix for the store id.
+     * @param   string $id A prefix for the store id.
+     *
      * @return  string      A store id.
      * @since   1.6
      */
-    protected function getStoreId($id = '') {
-        
+    protected function getStoreId($id = '')
+    {
         // Compile the store id.
 //         $id.= ':' . $this->getState($this->context.'.category_id');
 
         return parent::getStoreId($id);
     }
-    
-   /**
+
+    /**
      * Build an SQL query to load the list data.
      *
      * @return  JDatabaseQuery
      * @since   1.6
      */
-    protected function getListQuery() {
-        
-        $db     = $this->getDbo();
-        /** @var $db JDatabaseMySQLi **/
-        
+    protected function getListQuery()
+    {
+        $db = $this->getDbo();
+        /** @var $db JDatabaseMySQLi * */
+
         // Create a new query object.
-        $query  = $db->getQuery(true);
+        $query = $db->getQuery(true);
 
         // Select the required fields from the table.
         $query->select(
             $this->getState(
                 'list.select',
-                'a.id, a.title, a.short_desc, a.image, a.user_id, a.catid, ' .
+                'a.id, a.title, a.short_desc, a.image, a.user_id, a.catid, a.featured, ' .
                 'a.goal, a.funded, a.funding_start, a.funding_end, a.funding_days, a.funding_type, ' .
                 $query->concatenate(array("a.id", "a.alias"), "-") . ' AS slug, ' .
                 'b.name AS user_name, ' .
                 $query->concatenate(array("c.id", "c.alias"), "-") . " AS catslug"
             )
         );
-        $query->from($db->quoteName('#__crowdf_projects').' AS a');
-        $query->innerJoin($db->quoteName('#__users').' AS b ON a.user_id = b.id');
-        $query->innerJoin($db->quoteName('#__categories').' AS c ON a.catid = c.id');
+        $query->from($db->quoteName('#__crowdf_projects', 'a'));
+        $query->innerJoin($db->quoteName('#__users', 'b') . ' ON a.user_id = b.id');
+        $query->innerJoin($db->quoteName('#__categories', 'c') . ' ON a.catid = c.id');
 
         // Filter by category ID
-        $categoryId = $this->getState($this->context.".category_id", 0);
-        if(!empty($categoryId)) {
-            $query->where('a.catid = '.(int)$categoryId);
+        $categoryId = $this->getState($this->context . ".category_id", 0);
+        if (!empty($categoryId)) {
+            $query->where('a.catid = ' . (int)$categoryId);
         }
-        
+
         // Filter by states
         $query->where('a.featured  = 1');
         $query->where('a.published = 1');
@@ -131,65 +136,71 @@ class CrowdFundingModelFeatured extends JModelList {
 
         return $query;
     }
-    
-    protected function getOrderString() {
-        
-        $params     = $this->getState("params");
-        $order      = $params->get("featured_order", "start_date");
-        $orderDirn  = $params->get("featured_dirn",  "desc");
-        
+
+    protected function getOrderString()
+    {
+        $params    = $this->getState("params");
+        $order     = $params->get("featured_order", "start_date");
+        $orderDirn = $params->get("featured_dirn", "desc");
+
         $allowedDirns = array("asc", "desc");
-        if(!in_array($orderDirn, $allowedDirns)) {
+        if (!in_array($orderDirn, $allowedDirns)) {
             $orderDirn = "ASC";
         } else {
             $orderDirn = JString::strtoupper($orderDirn);
         }
-        
-        switch($order) {
-            
+
+        switch ($order) {
+
             case "ordering":
-                $orderCol  = "a.ordering";
+                $orderCol = "a.ordering";
                 break;
-                
+
             case "added":
-                $orderCol  = "a.id";
+                $orderCol = "a.id";
                 break;
-                
+
             default: // Start date
-                $orderCol  = "a.funding_start";
+                $orderCol = "a.funding_start";
                 break;
-                
+
         }
-        
-        $orderString = $orderCol.' '.$orderDirn;
-        
+
+        $orderString = $orderCol . ' ' . $orderDirn;
+
         return $orderString;
     }
-    
-    public function prepareItems($items) {
-    
+
+    public function prepareItems($items)
+    {
         $result = array();
-    
-        if(!empty($items)) {
-            foreach($items as $key => $item) {
-    
+
+        if (!empty($items)) {
+            foreach ($items as $key => $item) {
+
                 $result[$key] = $item;
-    
+
                 // Calculate funding end date
-                if(!empty($item->funding_days)) {
-                    $result[$key]->funding_end = CrowdFundingHelper::calcualteEndDate($item->funding_start, $item->funding_days);
+                if (!empty($item->funding_days)) {
+
+                    $fundingStartDate = new CrowdFundingDate($item->funding_start);
+                    $endDate = $fundingStartDate->calculateEndDate($item->funding_days);
+                    $result[$key]->funding_end = $endDate->format("Y-m-d");
+
                 }
-    
-                // Calculate funded
-                $result[$key]->funded_percents = CrowdFundingHelper::calculatePercent($item->funded, $item->goal);
-    
-                // Calcualte days left
-                $result[$key]->days_left       = CrowdFundingHelper::calcualteDaysLeft($item->funding_days, $item->funding_start, $item->funding_end);
-                
+
+                // Calculate funded percentage.
+                $percent = new ITPrismMath();
+                $percent->calculatePercentage($item->funded, $item->goal, 0);
+                $result[$key]->funded_percents = (string)$percent;
+
+                // Calculate days left
+                $today = new CrowdFundingDate();
+                $result[$key]->days_left       = $today->calculateDaysLeft($item->funding_days, $item->funding_start, $item->funding_end);
+
             }
         }
-    
+
         return $result;
     }
-    
 }

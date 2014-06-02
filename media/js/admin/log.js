@@ -72,14 +72,14 @@ jQuery(document).ready(function() {
 							
 							// Set data
 							jQuery("#js-file-preview").html("");
-							
-							CrowdFundingHelper.displayMessageSuccess(response.title, response.text);
+
+                            ITPrismUIHelper.displayMessageSuccess(response.title, response.text);
 							
 							// Remove the row.
 							jQuery("#"+rowId).remove();
 							
 						} else {
-							CrowdFundingHelper.displayMessageFailure(response.title, response.text);
+                            ITPrismUIHelper.displayMessageFailure(response.title, response.text);
 						}
 					}
 				

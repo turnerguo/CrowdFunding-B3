@@ -35,13 +35,13 @@ defined('_JEXEC') or die;
 			<h3><?php echo JText::_("COM_CROWDFUNDING_INVESTMENT_SUMMARY");?></h3>
 			<div class="bs-docs-example">
 				<p><?php 
-				$amount = $this->currency->getAmountString($this->amount, $this->params->get("locale_intl", 0));
+				$amount = $this->currency->getAmountString($this->amount);
 				echo JText::sprintf("COM_CROWDFUNDING_INVESTMENT_AMOUNT", $amount); ?></p>
 				<p><?php echo JText::sprintf("COM_CROWDFUNDING_FUNDING_TYPE", $this->item->funding_type);?></p>
 				<p class="sticky"><?php
 				$endDate = JHtml::_('date', $this->item->funding_end, JText::_('DATE_FORMAT_LC3'));
             	if($this->item->funding_type == "FIXED") {
-                    $goal    = $this->currency->getAmountString($this->item->goal, $this->params->get("locale_intl", 0));
+                    $goal    = $this->currency->getAmountString($this->item->goal);
             	    echo JText::sprintf("COM_CROWDFUNDING_FUNDING_TYPE_INFO_FIXED", $goal, $endDate);
             	} else {
             	    echo JText::sprintf("COM_CROWDFUNDING_FUNDING_TYPE_INFO_FLEXIBLE", $endDate);

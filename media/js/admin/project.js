@@ -72,7 +72,7 @@ jQuery(document).ready(function() {
 		}).done( function( response ) {
 			
 			if(!response.success) {
-				CrowdFundingHelper.displayMessageFailure(response.title, response.text);
+                ITPrismUIHelper.displayMessageFailure(response.title, response.text);
 			} else {
 				jQuery(_self).parent().parent().remove()
 			}

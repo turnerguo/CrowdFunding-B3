@@ -10,95 +10,89 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.controllerform');
+jimport('itprism.controller.form.frontend');
 
 /**
  * CrowdFunding comment controller
  *
  * @package     CrowdFunding
  * @subpackage  Components
-  */
-class CrowdFundingControllerComment extends JControllerForm {
-    
-	/**
+ */
+class CrowdFundingControllerComment extends ITPrismControllerFormFrontend
+{
+    /**
      * Method to get a model object, loading it if required.
      *
-     * @param	string	$name	The model name. Optional.
-     * @param	string	$prefix	The class prefix. Optional.
-     * @param	array	$config	Configuration array for model. Optional.
+     * @param    string $name   The model name. Optional.
+     * @param    string $prefix The class prefix. Optional.
+     * @param    array  $config Configuration array for model. Optional.
      *
-     * @return	object	The model.
-     * @since	1.5
+     * @return    object    The model.
+     * @since    1.5
      */
-    public function getModel($name = 'Comment', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true)) {
+    public function getModel($name = 'Comment', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    {
         $model = parent::getModel($name, $prefix, $config);
         return $model;
     }
-    
-    public function save() {
-        
+
+    public function save($key = null, $urlVar = null)
+    {
         // Check for request forgeries.
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
- 
-        $userId = JFactory::getUser()->id;
-        if(!$userId) {
-            $this->setMessage(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), "notice");
-            $this->setRedirect(JRoute::_("index.php?option=com_users&view=login", false));
+        JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+        $userId = JFactory::getUser()->get("id");
+        if (!$userId) {
+            $redirectOptions = array(
+                "force_direction" => "index.php?option=com_users&view=login"
+            );
+            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), $redirectOptions);
             return;
         }
-        
-        $app = JFactory::getApplication();
-        /** @var $app JSite **/
-        
-		// Get the data from the form POST
-		$data    = $app->input->post->get('jform', array(), 'array');
-        $itemId  = JArrayHelper::getValue($data, "project_id");
-        
+
+        // Get the data from the form POST
+        $data   = $this->input->post->get('jform', array(), 'array');
+        $itemId = JArrayHelper::getValue($data, "project_id");
+
         // Get project
         jimport("crowdfunding.project");
-        $item    = CrowdFundingProject::getInstance($itemId);
-        
-        $model   = $this->getModel();
-        /** @var $model CrowdFundingModelComment **/
-        
-        $form    = $model->getForm($data, false);
-        /** @var $form JForm **/
-        
-        if(!$form){
-            throw new Exception($model->getError(), 500);
+        $item = CrowdFundingProject::getInstance(JFactory::getDbo(), $itemId);
+
+        $redirectOptions = array(
+            "force_direction" => CrowdFundingHelperRoute::getDetailsRoute($item->getSlug(), $item->getCatSlug(), "comments")
+        );
+
+        $model = $this->getModel();
+        /** @var $model CrowdFundingModelComment */
+
+        $form = $model->getForm($data, false);
+        /** @var $form JForm */
+
+        if (!$form) {
+            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"));
         }
-        
+
         // Test if the data is valid.
         $validData = $model->validate($form, $data);
-        
+
         // Check for validation errors.
-        if($validData === false){
+        if ($validData === false) {
             $errors = $form->getErrors();
             $error  = array_shift($errors);
             $msg    = $error->getMessage();
-            
-            $link = CrowdFundingHelperRoute::getDetailsRoute($item->getSlug(), $item->getCatSlug(), "comments");
-            $this->setMessage($msg, "notice");
-            $this->setRedirect(JRoute::_($link, false));
+
+            $this->displayNotice($msg, $redirectOptions);
             return;
         }
-        
+
         try {
-            
             $model->save($validData);
-            
         } catch (Exception $e) {
-            
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'), ITPrismErrors::CODE_ERROR);
-            
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }
-        
+
         // Redirect to next page
-        $msg  = JText::_("COM_CROWDFUNDING_COMMENT_SUCCESSFULY_SEND");
-        $link = CrowdFundingHelperRoute::getDetailsRoute($item->getSlug(), $item->getCatSlug(), "comments");
-		$this->setRedirect(JRoute::_($link, false), $msg);
-			
+        $this->displayNotice(JText::_("COM_CROWDFUNDING_COMMENT_SUCCESSFULLY_SEND"), $redirectOptions);
     }
-    
 }

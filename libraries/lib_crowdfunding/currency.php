@@ -1,11 +1,11 @@
 <?php
 /**
-* @package      CrowdFunding
-* @subpackage   Libraries
-* @author       Todor Iliev
-* @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
-* @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
-*/
+ * @package      CrowdFunding
+ * @subpackage   Currencies
+ * @author       Todor Iliev
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ */
 
 defined('JPATH_PLATFORM') or die;
 
@@ -13,135 +13,319 @@ defined('JPATH_PLATFORM') or die;
  * This class contains methods that are used for managing currency.
  *
  * @package      CrowdFunding
- * @subpackage   Libraries
+ * @subpackage   Currencies
  */
-class CrowdFundingCurrency {
-    
+class CrowdFundingCurrency
+{
     protected $id;
     protected $title;
     protected $abbr;
     protected $symbol;
     protected $position;
-    
-    protected $intl = false;
-    
+
+    /**
+     * @var Joomla\Registry\Registry
+     */
+    protected $options;
+
     /**
      * Database driver.
-     * 
-     * @var JDatabase
+     *
+     * @var JDatabaseDriver
      */
     protected $db;
-    
+
     protected static $instances = array();
-    
-    public function __construct(JDatabase $db, $id = 0) {
-        
+
+    /**
+     * Initialize the object.
+     *
+     * <code>
+     * $currencyId = 1;
+     * $currency   = new CrowdFundingCurrency(JFactory::getDbo());
+     * $currency->load($currencyId);
+     * </code>
+     *
+     * @param JDatabaseDriver $db
+     */
+    public function __construct(JDatabaseDriver $db = null)
+    {
         $this->db = $db;
-        
-        if(!empty($id)) {
-            $this->load($id);
-        }
+        $this->options = new JRegistry;
     }
-    
-    public static function getInstance(JDatabase $db, $id = 0)  {
-    
-        if (!isset(self::$instances[$id])){
-            self::$instances[$id] = new CrowdFundingCurrency($db, $id);
+
+    /**
+     * Create an object or return existing one.
+     *
+     * <code>
+     * $currencyId = 1;
+     *
+     * $options    = new JRegistry();
+     * $options->set("intl", true);
+     * $options->set("format", "2/./,");
+     *
+     * $currency   = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $options);
+     * </code>
+     *
+     * @param JDatabaseDriver $db
+     * @param int             $id
+     * @param Joomla\Registry\Registry             $options
+     *
+     * @return null|CrowdFundingCurrency
+     */
+    public static function getInstance(JDatabaseDriver $db, $id, $options = null)
+    {
+        if (!isset(self::$instances[$id])) {
+            $item = new CrowdFundingCurrency($db);
+            $item->load($id);
+
+            if (!is_null($options) and ($options instanceof JRegistry)) {
+                $item->setOption("intl", $options->get("locale_intl", false));
+                $item->setOption("format", $options->get("amount_format", false));
+            }
+
+            self::$instances[$id] = $item;
         }
-    
+
         return self::$instances[$id];
     }
-    
-    public function load($id) {
-        
+
+    /**
+     * Set database object.
+     *
+     * <code>
+     * $country   = new CrowdFundingCurrency();
+     * $country->setDb(JFactory::getDbo());
+     * </code>
+     *
+     * @param JDatabaseDriver $db
+     *
+     * @return self
+     */
+    public function setDb(JDatabaseDriver $db)
+    {
+        $this->db = $db;
+        return $this;
+    }
+
+    /**
+     * Load currency data from database.
+     *
+     * <code>
+     * $currencyId = 1;
+     * $currency   = new CrowdFundingCurrency();
+     * $currency->setDb(JFactory::getDbo());
+     * $currency->load($currencyId);
+     * </code>
+     *
+     * @param int $id
+     */
+    public function load($id)
+    {
         $query = $this->db->getQuery(true);
         $query
             ->select("a.id, a.title, a.abbr, a.symbol, a.position")
             ->from($this->db->quoteName("#__crowdf_currencies", "a"))
-            ->where("a.id = ".(int)$id);
-        
+            ->where("a.id = " . (int)$id);
+
         $this->db->setQuery($query);
         $result = $this->db->loadAssoc();
-        
-        if(!$result) {
+
+        if (!$result) {
             $result = array();
         }
-        
+
         $this->bind($result);
-        
     }
-    
-    public function bind($data, $ignore = array()) {
-        
-        foreach($data as $key => $value) {
-            if(!in_array($key, $ignore)) {
+
+    /**
+     * Set data about currency to object parameters.
+     *
+     * <code>
+     * $data = array(
+     *  "title"  => "Pound sterling",
+     *  "symbol" => "£"
+     * );
+     *
+     * $currency   = new CrowdFundingCurrency();
+     * $currency->bind($data);
+     * </code>
+     *
+     * @param       $data
+     * @param array $ignored
+     *
+     */
+    public function bind($data, $ignored = array())
+    {
+        foreach ($data as $key => $value) {
+            if (!in_array($key, $ignored)) {
                 $this->$key = $value;
             }
         }
     }
-    
+
     /**
      * This method generates an amount using symbol or code of the currency.
-     * 
-     * @param mixed This is a value used in the amount string. This can be float, integer,...
-     * @param boolean A flag that disable using of PHP Intl, even though it is loaded into the system.
-     * @param string This a locale code ( en_GB, de_DE,...)
+     *
+     * @param mixed  $value This is a value used in the amount string. This can be float, integer,...
+     *
+     * <code>
+     * $currencyId = 1;
+     *
+     * $currency   = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId);
+     *
+     * // Return $100 or 100USD.
+     * echo $currency->getAmountString(100);
+     * </code>
+     *
      * @return string
      */
-    public function getAmountString($value, $forceIntl = null, $locale = null) {
-        
-        // Change the flag for using PHP Intl library.
-        if(!is_null($forceIntl) AND is_bool($forceIntl)) {
-            $useIntl = $forceIntl; 
-        } else {
-            $useIntl = $this->intl;
+    public function getAmountString($value)
+    {
+        $intl   = (bool)$this->options->get("intl", false);
+        $format = $this->options->get("format");
+
+        if (!$intl and !empty($format)) {
+            $value = $this->formatAmount($value);
         }
-        
+
         // Use PHP Intl library.
-        if($useIntl AND extension_loaded('intl')) { // Generate currency string using PHP NumberFormatter ( Internationalization Functions )
-            
+        if ($intl and extension_loaded('intl')) { // Generate currency string using PHP NumberFormatter ( Internationalization Functions )
+
+            $locale = $this->options->get("locale");
+
             // Get current locale code.
-            if(!$locale) {
+            if (!$locale) {
                 $lang   = JFactory::getLanguage();
-                $locale = $lang->getName();
+                $locale = str_replace("-", "_", $lang->getTag());
             }
-            
+
             $numberFormat = new NumberFormatter($locale, NumberFormatter::CURRENCY);
             $amount       = $numberFormat->formatCurrency($value, $this->abbr);
-            
+
         } else { // Generate a custom currency string.
-        
-            if(!empty($this->symbol)) { // Symbol
-                
-                if(0 == $this->position) { // Symbol at beggining.
-                    $amount = $this->symbol.$value;
+
+            if (!empty($this->symbol)) { // Symbol
+
+                if (0 == $this->position) { // Symbol at beginning.
+                    $amount = $this->symbol . $value;
                 } else { // Symbol at end.
-                    $amount = $value.$this->symbol;
+                    $amount = $value . $this->symbol;
                 }
-                
+
             } else { // Code
-                $amount = $value.$this->abbr;
+                $amount = $value . $this->abbr;
             }
-            
+
         }
-        
+
         return $amount;
     }
-    
-    public function getId() {
+
+    /**
+     * Return currency ID.
+     *
+     * <code>
+     * $currencyId  = 1;
+     *
+     * $currency    = new CrowdFundingCurrency(JFactory::getDbo());
+     * $currency->load($typeId);
+     *
+     * if (!$currency->getId()) {
+     * ....
+     * }
+     * </code>
+     *
+     * @return int
+     */
+    public function getId()
+    {
         return $this->id;
     }
-    
-    public function getAbbr() {
+
+    /**
+     * Return currency code (abbreviation).
+     *
+     * <code>
+     * $currencyId  = 1;
+     *
+     * $currency    = new CrowdFundingCurrency(JFactory::getDbo());
+     * $currency->load($typeId);
+     *
+     * // Return GBP
+     * $code = $currency->getAbbr();
+     * </code>
+     *
+     * @return int
+     */
+    public function getAbbr()
+    {
         return $this->abbr;
     }
-    
-    public function getSymbol() {
+
+    /**
+     * Return currency symbol.
+     *
+     * <code>
+     * $currencyId  = 1;
+     *
+     * $currency    = new CrowdFundingCurrency(JFactory::getDbo());
+     * $currency->load($typeId);
+     *
+     * // Return £
+     * $symbol = $currency->getSymbol();
+     * </code>
+     *
+     * @return int
+     */
+    public function getSymbol()
+    {
         return $this->symbol;
     }
-    
-    public function enableIntl() {
-        $this->intl = true;
+
+    /**
+     * Use this method to set object options.
+     *
+     * <code>
+     * $currencyId = 1;
+     *
+     * $currency   = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId);
+     * $currency->setOption("intl", true);
+     * $currency->setOption("locale", "en_GB");
+     * </code>
+     *
+     * @param string $key Options like "intl", "locale",...
+     * @param mixed $value
+     */
+    public function setOption($key, $value)
+    {
+        $this->options->set($key, $value);
     }
-    
+
+    protected function formatAmount($value)
+    {
+        $format = $this->options->get("format");
+        $format = explode("/", $format);
+
+        if (!empty($format)) {
+            $count = count($format);
+
+            switch ($count) {
+
+                case 1:
+                    $value = number_format($value, $format[0]);
+                    break;
+
+                case 2:
+                    $value = number_format($value, $format[0], $format[1]);
+                    break;
+
+                case 3:
+                    $value = number_format($value, $format[0], $format[1], $format[2]);
+                    break;
+            }
+        }
+
+        return $value;
+    }
 }

@@ -12,20 +12,20 @@ defined('_JEXEC') or die;
 ?>
 <tr>
     <th width="1%" class="hidden-phone">
-		<?php echo JHtml::_('grid.checkall'); ?>
-	</th>
-	<th width="1%" class="center nowrap hidden-phone">&nbsp;</th>
-	<th class="title" >
-	   <?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_TITLE', 'a.title', $this->listDirn, $this->listOrder); ?>
-	</th>
-	<th width="20%" class="center nowrap hidden-phone">
-	    <?php echo JHtml::_('grid.sort',  'COM_CROWDFUNDING_TYPE', 'a.type', $this->listDirn, $this->listOrder); ?>
+        <?php echo JHtml::_('grid.checkall'); ?>
     </th>
-	<th width="20%" class="center nowrap hidden-phone">
-	    <?php echo JHtml::_('grid.sort',  'JDATE', 'a.record_date', $this->listDirn, $this->listOrder); ?>
+    <th width="1%" class="center nowrap hidden-phone">&nbsp;</th>
+    <th class="title">
+        <?php echo JHtml::_('grid.sort', 'COM_CROWDFUNDING_TITLE', 'a.title', $this->listDirn, $this->listOrder); ?>
+    </th>
+    <th width="20%" class="center nowrap hidden-phone">
+        <?php echo JHtml::_('grid.sort', 'COM_CROWDFUNDING_TYPE', 'a.type', $this->listDirn, $this->listOrder); ?>
+    </th>
+    <th width="20%" class="center nowrap hidden-phone">
+        <?php echo JHtml::_('grid.sort', 'JDATE', 'a.record_date', $this->listDirn, $this->listOrder); ?>
     </th>
     <th width="3%" class="center nowrap hidden-phone">
-        <?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ID', 'a.id', $this->listDirn, $this->listOrder); ?>
+        <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $this->listDirn, $this->listOrder); ?>
     </th>
 </tr>
 	  

@@ -12,204 +12,194 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.modelitem');
 
-class CrowdFundingModelProjectItem extends JModelItem {
-    
-    const     PROJECT_STATE_PUBLISHED   = 1;
-    
+class CrowdFundingModelProjectItem extends JModelItem
+{
     protected $item = array();
-    
+
     /**
      * Returns a reference to the a Table object, always creating it.
      *
-     * @param   type    The table type to instantiate
-     * @param   string  A prefix for the table class name. Optional.
-     * @param   array   Configuration array for model. Optional.
-     * @return  JTable  A database object
+     * @param   string $type    The table type to instantiate
+     * @param   string $prefix A prefix for the table class name. Optional.
+     * @param   array  $config Configuration array for model. Optional.
+     *
+     * @return  CrowdFundingTableProject  A database object
      * @since   1.6
      */
-    public function getTable($type = 'Project', $prefix = 'CrowdFundingTable', $config = array()) {
+    public function getTable($type = 'Project', $prefix = 'CrowdFundingTable', $config = array())
+    {
         return JTable::getInstance($type, $prefix, $config);
     }
-    
+
     /**
      * Method to auto-populate the model state.
      *
      * Note. Calling getState in this method will result in recursion.
      *
-     * @since	1.6
+     * @since    1.6
      */
-    protected function populateState() {
-        
-        $app     = JFactory::getApplication();
-        $params  = $app->getParams();
-        
-        // Load the object state.
-        $id = $app->input->getInt('id');
-        $this->setState('project.id', $id);
-        
-        // Load the parameters.
+    protected function populateState()
+    {
+        $app    = JFactory::getApplication();
+        /** @var $app JApplicationSite */
+
+        $params = $app->getParams();
+
+        // Set the parameters.
         $this->setState('params', $params);
     }
-    
+
     /**
-     * Method to get an ojbect.
+     * Method to get an object.
      *
-     * @param	integer	The id of the object to get.
+     * @param    integer   $id
+     * @param    integer   $userId
      *
-     * @return	CrowdFundingTableProject|null	
+     * @return    CrowdFundingTableProject|null
      */
-    public function getItem($id = null) {
-        
-        if (empty($id)) {
-            $id = $this->getState('project.id');
-        }
-        $storedId = $this->getStoreId($id);
-        
+    public function getItem($id, $userId)
+    {
+        $storedId = $this->getStoreId($id.$userId);
+
         if (!isset($this->item[$storedId])) {
-            $this->item[$storedId] = null;
-            
+
+            $keys = array(
+                "id" => $id,
+                "user_id" => $userId
+            );
+
             // Get a level row instance.
             $table = $this->getTable();
-            $table->load($id);
-            
-            // Attempt to load the row.
-            if ($table->id) {
-                $this->item[$storedId] = $table;
-            } 
+            $table->load($keys);
+
+            // Convert to the JObject before adding other data.
+            $properties = $table->getProperties();
+            $this->item[$storedId] = JArrayHelper::toObject($properties, 'JObject');
         }
-        
+
         return $this->item[$storedId];
     }
 
     /**
      * Publish or not an item. If state is going to be published,
      * we have to calculate end date.
-     * 
+     *
      * @param integer $itemId
+     * @param integer $userId
      * @param integer $state
+     *
+     * @throws Exception
      */
-    public function saveState($itemId, $state) {
-        
-        $row   = $this->getItem($itemId);
-        
+    public function saveState($itemId, $userId, $state)
+    {
+        $keys = array(
+            "id"      => $itemId,
+            "user_id" => $userId
+        );
+
+        /** @var $row CrowdFundingTableProject */
+        $row = $this->getTable();
+        $row->load($keys);
+
         // Prepare data only if the user publish the project.
-        if($state == CrowdFundingModelProjectItem::PROJECT_STATE_PUBLISHED) {
+        if ($state == CrowdFundingConstants::PUBLISHED) {
             $this->prepareTable($row);
         }
-        
-        $row->published = (int)$state;
+
+        $row->set("published", (int)$state);
         $row->store();
-        
+
         // Trigger the event
-        
+
         $context = $this->option . '.project';
-        $pks     = array($row->id);
-        
+        $pks     = array($row->get("id"));
+
         // Include the content plugins for the change of state event.
         JPluginHelper::importPlugin('content');
-         
+
         // Trigger the onContentChangeState event.
         $dispatcher = JEventDispatcher::getInstance();
         $results    = $dispatcher->trigger("onContentChangeState", array($context, $pks, $state));
-        
+
         if (in_array(false, $results, true)) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_CHANGE_STATE"), ITPrismErrors::CODE_ERROR);
+            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_CHANGE_STATE"));
         }
-        
+
     }
-    
+
     /**
      * This method calculate start date and validate funding period.
-     * 
-     * @param unknown $table
+     *
+     * @param CrowdFundingTableProject $table
+     *
      * @throws Exception
      */
-    protected function prepareTable(&$table) {
-        
+    protected function prepareTable(&$table)
+    {
         // Calculate start and end date if the user publish a project for first time.
-        if(!CrowdFundingHelper::isValidDate($table->funding_start)) {
-            
+        $fundingStartDate = new ITPrismValidatorDate($table->funding_start);
+        if (!$fundingStartDate->isValid($table->funding_start)) {
+
             $fundindStart         = new JDate();
             $table->funding_start = $fundindStart->toSql();
-            
+
             // If funding type is "days", calculate end date.
-            if(!empty($table->funding_days)) {
-                $table->funding_end = CrowdFundingHelper::calcualteEndDate($table->funding_start, $table->funding_days);
+            if ($table->get("funding_days")) {
+                $fundingStartDate = new CrowdFundingDate($table->get("funding_start"));
+                $endDate = $fundingStartDate->calculateEndDate($table->get("funding_days"));
+                $table->set("funding_end", $endDate->format("Y-m-d"));
             }
-            
+
         }
-        
+
         // Get parameters
-        $params    = JFactory::getApplication()->getParams();
-        
-        $minDays   = $params->get("project_days_minimum", 15);
-        $maxDays   = $params->get("project_days_maximum");
-        
-        // Validate the period if there is an ending date
-        if(CrowdFundingHelper::isValidDate($table->funding_end)) {
-        
-            if(!CrowdFundingHelper::isValidPeriod($table->funding_start, $table->funding_end, $minDays, $maxDays)) {
-                
-                if(!empty($maxDays)) {
-                    throw new Exception(JText::sprintf("COM_CROWDFUNDING_ERROR_INVALID_ENDING_DATE_MIN_MAX_DAYS", $minDays, $maxDays), ITPrismErrors::CODE_WARNING);
+        $app = JFactory::getApplication();
+        /** @var $app JApplicationSite */
+
+        $params = $app->getParams();
+        /** @var  $params Joomla\Registry\Registry */
+
+        $minDays = $params->get("project_days_minimum", 15);
+        $maxDays = $params->get("project_days_maximum");
+
+        // If there is an ending date, validate the period.
+        $fundingEndDate = new ITPrismValidatorDate($table->get("funding_end"));
+        if ($fundingEndDate->isValid()) {
+
+            $fundingStartDate = new CrowdFundingDate($table->get("funding_start"));
+            if (!$fundingStartDate->isValidPeriod($table->get("funding_end"), $minDays, $maxDays)) {
+
+                if (!empty($maxDays)) {
+                    throw new RuntimeException(JText::sprintf("COM_CROWDFUNDING_ERROR_INVALID_ENDING_DATE_MIN_MAX_DAYS", $minDays, $maxDays));
                 } else {
-                    throw new Exception(JText::sprintf("COM_CROWDFUNDING_ERROR_INVALID_ENDING_DATE_MIN_DAYS", $minDays), ITPrismErrors::CODE_WARNING);
+                    throw new RuntimeException(JText::sprintf("COM_CROWDFUNDING_ERROR_INVALID_ENDING_DATE_MIN_DAYS", $minDays));
                 }
             }
-            
+
         }
-        
+
     }
-    
-    /**
-     * It does some validations to be sure about what the project is valid.
-     * 
-     * @param  object $item
-     * @throws Exception
-     */
-    public function validate($item) {
-        
-        if(!$item->goal) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_GOAL"), ITPrismErrors::CODE_WARNING);
-        }
-        
-        if(!$item->funding_type) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_FUNDING_TYPE"), ITPrismErrors::CODE_WARNING);
-        }
-        
-        if(!CrowdFundingHelper::isValidDate($item->funding_end) AND !$item->funding_days) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_FUNDING_DURATION"), ITPrismErrors::CODE_WARNING);
-        }
-        
-        if(!$item->pitch_image AND !$item->pitch_video) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PITCH_IMAGE_OR_VIDEO"), ITPrismErrors::CODE_WARNING);
-        }
-        
-        $desc = JString::trim($item->description);
-        if(!$desc) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_DESCRIPTION"), ITPrismErrors::CODE_WARNING);
-        }
-        
-    }
-    
+
     /**
      * This method counts the rewards of the project.
-     * @param  integer $itemId    Project id
+     *
+     * @param  integer $itemId Project id
+     *
      * @return number
      */
-    protected function countRewards($itemId) {
-        
-        $db = JFactory::getDbo();
+    protected function countRewards($itemId)
+    {
+        $db    = $this->getDbo();
         $query = $db->getQuery(true);
-        
+
         $query
             ->select("COUNT(*)")
-            ->from($db->quoteName("#__crowdf_rewards"))
-            ->where("project_id = ".(int)$itemId);
-            
+            ->from($db->quoteName("#__crowdf_rewards", "a"))
+            ->where("a.project_id = " . (int)$itemId);
+
         $db->setQuery($query);
         $result = $db->loadResult();
-        
+
         return (int)$result;
     }
 }

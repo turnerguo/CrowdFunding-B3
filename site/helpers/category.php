@@ -10,12 +10,12 @@
 defined('_JEXEC') or die;
 jimport('joomla.application.categories');
 
-class CrowdFundingCategories extends JCategories {
-    
-	public function __construct($options = array()) {
-		$options['table']     = '#__crowdf_projects';
-		$options['extension'] = 'com_crowdfunding';
-		parent::__construct($options);
-	}
-	
+class CrowdFundingCategories extends JCategories
+{
+    public function __construct($options = array())
+    {
+        $options['table']     = '#__crowdf_projects';
+        $options['extension'] = 'com_crowdfunding';
+        parent::__construct($options);
+    }
 }

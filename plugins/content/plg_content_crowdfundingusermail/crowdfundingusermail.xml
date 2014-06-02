@@ -6,8 +6,8 @@
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <authorEmail>todor@itprism.com</authorEmail>
     <authorUrl>http://itprism.com</authorUrl>
-    <version>1.6.1</version>
-    <creationDate>10 March, 2014</creationDate>
+    <version>1.7</version>
+    <creationDate>31 May, 2014</creationDate>
     <description><![CDATA[
     <p>CrowdFunding - User Mail is a plugin that sends confirmation mails to users.</p>
     <p><a href="http://itprism.com/" target="_blank">Subscribe for the newsletter</a> to receive information about updates and new ITPrism extensions.</p>
@@ -26,14 +26,12 @@
     <config>
 		<fields name="params">
 			<fieldset name="basic" addfieldpath="/administrator/components/com_crowdfunding/models/fields">
-                
                 <field name="send_when_approved" type="cfemails" default="0" label="PLG_CONTENT_CROWDFUNDINGUSERMAIL_SEND_WHEN_APPROVED" description="PLG_CONTENT_CROWDFUNDINGUSERMAIL_SEND_WHEN_APPROVED_DESC"  />
                 
                 <field name="email_mode" type="list" default="html" label="PLG_CONTENT_CROWDFUNDINGUSERMAIL_EMAIL_MODE" description="PLG_CONTENT_CROWDFUNDINGUSERMAIL_EMAIL_MODE_DESC" >
                    <option value="plain">PLG_CONTENT_CROWDFUNDINGUSERMAIL_PLAIN</option>
                    <option value="html">PLG_CONTENT_CROWDFUNDINGUSERMAIL_HTML</option>
                 </field>
-                
 			</fieldset>
 	            
         </fields>

@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-	<fieldset name="credentials">
+    <fieldset name="credentials">
 
-		<field name="username" type="text"
-			class="validate-username"
-			filter="username"
-			label="COM_CROWDFUNDING_USERNAME"
-			size="25"
-			required="true"
-			validate="username"
-		/>
+        <field name="username" type="text"
+               class="validate-username"
+               filter="username"
+               label="COM_CROWDFUNDING_USERNAME"
+               size="25"
+               required="true"
+               validate="username"
+                />
 
-		<field name="password" type="password"
-			class="validate-password"
-			required="true"
-			filter="raw"
-			label="JGLOBAL_PASSWORD"			
-			size="25"
-		/>
-        
-	</fieldset>
-    
-	<fieldset>
-		<field name="return" type="hidden" />
-	</fieldset>
+        <field name="password" type="password"
+               class="validate-password"
+               required="true"
+               filter="raw"
+               label="JGLOBAL_PASSWORD"
+               size="25"
+                />
+
+    </fieldset>
+
+    <fieldset>
+        <field name="return" type="hidden"/>
+    </fieldset>
 </form>

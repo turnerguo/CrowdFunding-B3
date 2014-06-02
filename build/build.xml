@@ -47,6 +47,7 @@
 		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundingshare" />
 		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundingadminmail" />
 		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundingusermail" />
+		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundingvalidator" />
 	    
 	    <mkdir dir="${cfg.pkgDir}/plugins/system/plg_system_crowdfundingmodules" />
 		
@@ -136,6 +137,15 @@
             <include name="**/*" />
         </fileset>
     </copy>
+	
+	<!-- CONTENT/CROWDFUNDINGVALIDATOR -->
+                
+    <!-- copy plugins files of content/crowdfundingvalidator -->
+    <copy todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingvalidator">
+        <fileset dir="${cfg.pluginsSourceDir}/content/crowdfundingvalidator">
+            <include name="**/*" />
+        </fileset>
+    </copy>
     
     <!-- SYSTEM/CROWDFUNDINGMODULES -->
             
@@ -196,6 +206,7 @@
 		<zip destfile="${cfg.pkgDir}/packages/plg_content_crowdfundingshare.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingshare" />
 		<zip destfile="${cfg.pkgDir}/packages/plg_content_crowdfundingadminmail.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingadminmail" />
 		<zip destfile="${cfg.pkgDir}/packages/plg_content_crowdfundingusermail.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingusermail" />
+		<zip destfile="${cfg.pkgDir}/packages/plg_content_crowdfundingvalidator.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingvalidator" />
 		
 	    <!-- build system pugins -->
 		<zip destfile="${cfg.pkgDir}/packages/plg_system_crowdfundingmodules.zip" basedir="${cfg.pluginsDestDir}/system/plg_system_crowdfundingmodules" />

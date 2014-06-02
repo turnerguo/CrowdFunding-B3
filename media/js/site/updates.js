@@ -27,10 +27,10 @@ jQuery(document).ready(function() {
 					jQuery("#"+elementId).fadeOut("slow", function() {
 						jQuery(this).remove();
 					});
-					
-					CrowdFundingHelper.displayMessageSuccess(response.title, response.text);
+
+                    ITPrismUIHelper.displayMessageSuccess(response.title, response.text);
 				} else {
-					CrowdFundingHelper.displayMessageFailure(response.title, response.text);
+                    ITPrismUIHelper.displayMessageFailure(response.title, response.text);
 				}
 				
 				// Reset form data if the element has been loaded for editing.
@@ -60,7 +60,7 @@ jQuery(document).ready(function() {
 			success: function(response) {
 				
 				if(!response.success) {
-					CrowdFundingHelper.displayMessageFailure(response.title, response.text);
+                    ITPrismUIHelper.displayMessageFailure(response.title, response.text);
 				}
 				
 				jQuery("#jform_title").val(response.data.title);

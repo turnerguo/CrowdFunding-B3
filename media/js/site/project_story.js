@@ -23,8 +23,8 @@ jQuery(document).ready(function() {
 	        done: function (event, response) {
 	            
 	        	if(!response.result.success) {
-	        		
-	        		CrowdFundingHelper.displayMessageFailure(response.result.title, response.result.text);
+
+                    ITPrismUIHelper.displayMessageFailure(response.result.title, response.result.text);
 	        		
 	        	} else {
 	        		
@@ -66,7 +66,7 @@ jQuery(document).ready(function() {
 			}).done( function( response ) {
 				
 				if(!response.success) {
-					CrowdFundingHelper.displayMessageFailure(response.title, response.text);
+                    ITPrismUIHelper.displayMessageFailure(response.title, response.text);
 				} else {
 					jQuery(_self).parent().parent().remove()
 					

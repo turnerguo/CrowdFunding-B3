@@ -1,11 +1,11 @@
 <?php
 /**
-* @package      CrowdFunding
-* @subpackage   Libraries
-* @author       Todor Iliev
-* @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
-* @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
-*/
+ * @package      CrowdFunding
+ * @subpackage   Logs
+ * @author       Todor Iliev
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ */
 
 defined('JPATH_PLATFORM') or die;
 
@@ -14,112 +14,146 @@ jimport("joomla.filesystem.path");
 jimport("joomla.filesystem.folder");
 
 /**
- * This class provieds functionality that manage log files.
+ * This class provides functionality that manage log files.
+ *
+ * @package      CrowdFunding
+ * @subpackage   Logs
  */
-class CrowdFundingLogFiles implements Iterator, Countable, ArrayAccess {
-    
-    protected $items  = array();
-    
+class CrowdFundingLogFiles implements Iterator, Countable, ArrayAccess
+{
+    protected $items = array();
+
     /**
-     * A list with files, which should be in the litst with items.
-     * 
+     * A list with files, which should be in the list with items.
+     *
      * @var array
      */
-    protected $files  = array();
-    
+    protected $files = array();
+
     protected $position = 0;
-    
+
     /**
      * Initialize the object.
-     * 
-     * @param JDatabase Database object.
-     * @param array     Projects IDs
+     *
+     * <code>
+     * $files = array(
+     *    "file1", "file2",
+     *    "file3", "file4"
+     * );
+     *
+     * $logFiles   = new CrowdFundingLogFiles($files);
+     * </code>
+     *
+     * @param array $files
      */
-    public function __construct($files = array()) {
+    public function __construct($files = array())
+    {
         $this->files = $files;
     }
 
-    public function load() {
-        
+    /**
+     * Get the list with files from logs folder
+     *
+     * <code>
+     * $logFiles   = new CrowdFundingLogFiles();
+     * $logFiles->load();
+     *
+     * foreach ($logFiles as $file) {
+     * ....
+     * }
+     * </code>
+     */
+    public function load()
+    {
         // Read files in folder /logs
         $config    = JFactory::getConfig();
+        /** @var  $config Joomla\Registry\Registry */
+
         $logFolder = $config->get("log_path");
-    
-        $files     = JFolder::files($logFolder);
-        if(!is_array($files)) {
+
+        $files = JFolder::files($logFolder);
+        if (!is_array($files)) {
             $files = array();
         }
-    
-        foreach($files as $key => $file) {
-            if(strcmp("index.html", $file) != 0) {
-                $this->items[] = JPath::clean($logFolder .DIRECTORY_SEPARATOR. $files[$key]);
+
+        foreach ($files as $key => $file) {
+            if (strcmp("index.html", $file) != 0) {
+                $this->items[] = JPath::clean($logFolder . DIRECTORY_SEPARATOR . $files[$key]);
             }
         }
-    
-        if(!empty($this->files)) {
-            
-            foreach($this->files as $fileName) {
-                
+
+        if (!empty($this->files)) {
+
+            foreach ($this->files as $fileName) {
+
                 // Check for a file in site folder.
-                $errorLogFile = JPath::clean(JPATH_ROOT .DIRECTORY_SEPARATOR. $fileName);
-                if(JFile::exists($errorLogFile)) {
+                $errorLogFile = JPath::clean(JPATH_ROOT . DIRECTORY_SEPARATOR . $fileName);
+                if (JFile::exists($errorLogFile)) {
                     $this->items[] = $errorLogFile;
                 }
-                
+
                 // Check for a file in admin folder.
-                $errorLogFile = JPath::clean(JPATH_BASE .DIRECTORY_SEPARATOR. $fileName);
-                if(JFile::exists($errorLogFile)) {
+                $errorLogFile = JPath::clean(JPATH_BASE . DIRECTORY_SEPARATOR . $fileName);
+                if (JFile::exists($errorLogFile)) {
                     $this->items[] = $errorLogFile;
                 }
             }
         }
-        
+
         sort($this->items);
-        
     }
-    
-    public function rewind() {
+
+    public function rewind()
+    {
         $this->position = 0;
     }
-    
-    public function current() {
+
+    public function current()
+    {
         return (!isset($this->items[$this->position])) ? null : $this->items[$this->position];
     }
-    
-    public function key() {
+
+    public function key()
+    {
         return $this->position;
     }
-    
-    public function next() {
+
+    public function next()
+    {
         ++$this->position;
     }
-    
-    public function valid() {
+
+    public function valid()
+    {
         return isset($this->items[$this->position]);
     }
-    
-    public function count() {
+
+    public function count()
+    {
         return (int)count($this->items);
     }
-    
-    public function offsetSet($offset, $value) {
+
+    public function offsetSet($offset, $value)
+    {
         if (is_null($offset)) {
             $this->items[] = $value;
         } else {
             $this->items[$offset] = $value;
         }
     }
-    
-    public function offsetExists($offset) {
+
+    public function offsetExists($offset)
+    {
         return isset($this->items[$offset]);
     }
-    
-    public function offsetUnset($offset) {
+
+    public function offsetUnset($offset)
+    {
         unset($this->items[$offset]);
     }
-    
-    public function offsetGet($offset) {
+
+    public function offsetGet($offset)
+    {
         return isset($this->items[$offset]) ? $this->items[$offset] : null;
     }
-    
 }

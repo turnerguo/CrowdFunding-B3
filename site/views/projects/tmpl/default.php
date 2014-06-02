@@ -25,7 +25,7 @@ defined('_JEXEC') or die;?>
             		<th class="nowrap hidden-phone"><?php echo JHtml::_('crowdfunding.sort',  'COM_CROWDFUNDING_STARTING_DATE', 'a.funding_start', $this->listDirn, $this->listOrder); ?></th>
             		<th class="nowrap hidden-phone"><?php echo JHtml::_('crowdfunding.sort',  'COM_CROWDFUNDING_DURATION', 'a.funding_end', $this->listDirn, $this->listOrder); ?></th>
             		<th><?php echo JText::_("COM_CROWDFUNDING_PUBLISHED"); ?></th>
-            		<th><?php echo JText::_("COM_CROWDFUNDING_APPROVED"); ?></th>
+            		<th class="nowrap hidden-phone"><?php echo JText::_("COM_CROWDFUNDING_APPROVED"); ?></th>
             		<th class="nowrap hidden-phone">&nbsp;</th>
             	</tr>
             </thead>
@@ -34,8 +34,8 @@ defined('_JEXEC') or die;?>
             <tbody>
             	<?php foreach($this->items as $item) {
             	    
-            		$goal           = $this->currency->getAmountString($item->goal, $this->params->get("locale_intl", 0));
-            		$funded         = $this->currency->getAmountString($item->funded, $this->params->get("locale_intl", 0));
+            		$goal           = $this->currency->getAmountString($item->goal);
+            		$funded         = $this->currency->getAmountString($item->funded);
             		$fundedPercent  = JHtml::_("crowdfunding.percents", $item->goal, $item->funded);
             	    
             	    // Reverse state.
@@ -46,9 +46,15 @@ defined('_JEXEC') or die;?>
             		    <?php echo JHtml::_("crowdfunding.projectTitle", $item->title, $item->catstate, $item->slug, $item->catslug);?>
             		</td>
             		<td class="cf-center hidden-phone"><?php echo $goal; ?></td>
-            		<td class="cf-center"><span class="hasTooltip cursor-help" title="<?php echo JText::sprintf("COM_CROWDFUNDING_PERCENTS_FUNDED", $fundedPercent);?>"><?php echo $funded; ?></span></td>
-            		<td class="cf-center hidden-phone"><?php echo JHtml::_("crowdfunding.date", $item->funding_start, JText::_('DATE_FORMAT_LC3')); ?></td>
-            		<td class="cf-center hidden-phone"><?php echo JHtml::_("crowdfunding.duration", $item->funding_start, $item->funding_end, $item->funding_days, JText::_('DATE_FORMAT_LC3')); ?></td>
+            		<td class="cf-center">
+                        <span class="hasTooltip cursor-help" title="<?php echo JText::sprintf("COM_CROWDFUNDING_PERCENTS_FUNDED", $fundedPercent);?>"><?php echo $funded; ?></span>
+                    </td>
+            		<td class="cf-center hidden-phone">
+                        <?php echo JHtml::_("crowdfunding.date", $item->funding_start, JText::_('DATE_FORMAT_LC3')); ?>
+                    </td>
+            		<td class="cf-center hidden-phone">
+                        <?php echo JHtml::_("crowdfunding.duration", $item->funding_end, $item->funding_days, JText::_('DATE_FORMAT_LC3')); ?>
+                    </td>
             		<td class="cf-center">
             		    <?php echo JHtml::_("crowdfunding.state", $item->published, JRoute::_("index.php?option=com_crowdfunding&task=projects.savestate&id=".$item->id."&state=".$state."&".JSession::getFormToken()."=1"), true)?>
             		</td>

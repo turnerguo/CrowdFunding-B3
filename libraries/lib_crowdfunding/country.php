@@ -1,11 +1,11 @@
 <?php
 /**
-* @package      CrowdFunding
-* @subpackage   Libraries
-* @author       Todor Iliev
-* @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
-* @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
-*/
+ * @package      CrowdFunding
+ * @subpackage   Countries
+ * @author       Todor Iliev
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ */
 
 defined('JPATH_PLATFORM') or die;
 
@@ -13,10 +13,10 @@ defined('JPATH_PLATFORM') or die;
  * This class contains methods that are used for managing a country.
  *
  * @package      CrowdFunding
- * @subpackage   Libraries
+ * @subpackage   Countries
  */
-class CrowdFundingCountry {
-    
+class CrowdFundingCountry
+{
     protected $id;
     protected $name;
     protected $code;
@@ -25,79 +25,255 @@ class CrowdFundingCountry {
     protected $longitude;
     protected $currency;
     protected $timezone;
-    
+
+    /**
+     * Database driver.
+     *
+     * @var JDatabaseDriver
+     */
     protected $db;
-    
-    public function __construct(JDatabase $db) {
-        
+
+    /**
+     * Initialize the object.
+     *
+     * <code>
+     * $country   = new CrowdFundingCountry(JFactory::getDbo());
+     * </code>
+     *
+     * @param JDatabaseDriver $db
+     */
+    public function __construct(JDatabaseDriver $db = null)
+    {
         $this->db = $db;
-        
     }
-    
-    public function load($keys) {
-        
+
+    /**
+     * Set database object.
+     *
+     * <code>
+     * $country   = new CrowdFundingCountry();
+     * $country->setDb(JFactory::getDbo());
+     * </code>
+     *
+     * @param JDatabaseDriver $db
+     *
+     * @return self
+     */
+    public function setDb(JDatabaseDriver $db)
+    {
+        $this->db = $db;
+        return $this;
+    }
+
+    /**
+     * Load country data from database.
+     *
+     * <code>
+     * $countryId = 1;
+     *
+     * $country   = new CrowdFundingCountry(JFactory::getDbo());
+     * $country->load($countryId);
+     * </code>
+     *
+     * @param int $id
+     */
+    public function load($id)
+    {
         $query = $this->db->getQuery(true);
-        
+
         $query
             ->select("a.id, a.name, a.code, a.code4, a.latitude, a.longitude, a.currency, a.code")
-            ->from($this->db->quoteName("#__crowdf_countries", "a"));
-        
-        if(!is_scalar($keys)) {
-            foreach($keys as $key => $value) {
-                $query->where($this->db->quoteName("a.".$key) ."=".$this->db->quote($value));
-            }
-        } else {
-            $query->where("a.id = " .(int)$keys); 
-        }
-        
+            ->from($this->db->quoteName("#__crowdf_countries", "a"))
+            ->where("a.id = " . (int)$id);
+
         $this->db->setQuery($query);
         $result = $this->db->loadAssoc();
-        
-        if(!empty($result)) {
+
+        if (!empty($result)) {
             $this->bind($result);
         }
-        
     }
-    
-    public function bind($data, $ignore = array()) {
-        
-        foreach($data as $key => $value) {
-            
-            if(!in_array($key, $ignore)) {
+
+    /**
+     * Set data to object properties.
+     *
+     * <code>
+     * $data = (
+     *  "id"    => 1,
+     *  "name"  => "United Kingdom",
+     *  "code4" => "gb_GB"
+     * );
+     *
+     * // Ignore the data for index key "id".
+     * $ignored = array("id");
+     *
+     * $country   = new CrowdFundingCountry(JFactory::getDbo());
+     * $country->bind($data, $ignored);
+     * </code>
+     *
+     * @param array $data
+     * @param array $ignored
+     */
+    public function bind($data, $ignored = array())
+    {
+        foreach ($data as $key => $value) {
+            if (!in_array($key, $ignored)) {
                 $this->$key = $value;
-            }            
-            
+            }
         }
     }
-    
-    public function getCode() {
+
+    /**
+     * Return country ID.
+     *
+     * <code>
+     * $countryId  = 1;
+     *
+     * $country    = new CrowdFundingCountry(JFactory::getDbo());
+     * $country->load($typeId);
+     *
+     * if (!$country->getId()) {
+     * ....
+     * }
+     * </code>
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Return 2 symbols country code (en).
+     *
+     * <code>
+     * $countryId = 1;
+     *
+     * $country   = new CrowdFundingCountry(JFactory::getDbo());
+     * $country->load($countryId);
+     *
+     * $countryCode = $country->getCode();
+     * </code>
+     *
+     * @return string
+     */
+    public function getCode()
+    {
         return $this->code;
     }
-    
-    public function getCode4() {
+
+    /**
+     * Return 4 symbols country code (en_GB).
+     *
+     * <code>
+     * $countryId = 1;
+     *
+     * $country   = new CrowdFundingCountry(JFactory::getDbo());
+     * $country->load($countryId);
+     *
+     * $countryCode = $country->getCode4();
+     * </code>
+     *
+     * @return string
+     */
+    public function getCode4()
+    {
         return $this->code4;
     }
-    
-    public function getName() {
+
+    /**
+     * Return country name.
+     *
+     * <code>
+     * $countryId = 1;
+     *
+     * $country   = new CrowdFundingCountry(JFactory::getDbo());
+     * $country->load($countryId);
+     *
+     * $name = $country->getName();
+     * </code>
+     *
+     * @return string
+     */
+    public function getName()
+    {
         return $this->name;
     }
-    
-	public function getLatitue() {
+
+    /**
+     * Return country latitude.
+     *
+     * <code>
+     * $countryId = 1;
+     *
+     * $country   = new CrowdFundingCountry(JFactory::getDbo());
+     * $country->load($countryId);
+     *
+     * $latitude = $country->getLatitude();
+     * </code>
+     *
+     * @return string
+     */
+    public function getLatitude()
+    {
         return $this->latitude;
     }
 
-	public function getLongtitu() {
+    /**
+     * Return country longitude.
+     *
+     * <code>
+     * $countryId = 1;
+     *
+     * $country   = new CrowdFundingCountry(JFactory::getDbo());
+     * $country->load($countryId);
+     *
+     * $longitude = $country->getLongitude();
+     * </code>
+     *
+     * @return string
+     */
+    public function getLongitude()
+    {
         return $this->longitude;
     }
 
-	public function getCurrency() {
+    /**
+     * Return country currency code (GBP).
+     *
+     * <code>
+     * $countryId = 1;
+     *
+     * $country   = new CrowdFundingCountry(JFactory::getDbo());
+     * $country->load($countryId);
+     *
+     * $currency = $country->getCurrency();
+     * </code>
+     *
+     * @return string
+     */
+    public function getCurrency()
+    {
         return $this->currency;
     }
 
-	public function getTimezone() {
+    /**
+     * Return country timezone.
+     *
+     * <code>
+     * $countryId = 1;
+     *
+     * $country   = new CrowdFundingCountry(JFactory::getDbo());
+     * $country->load($countryId);
+     *
+     * $timezone = $country->getTimezone();
+     * </code>
+     *
+     * @return string
+     */
+    public function getTimezone()
+    {
         return $this->timezone;
     }
-
-    
-    
 }

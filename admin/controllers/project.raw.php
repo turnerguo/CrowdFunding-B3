@@ -10,73 +10,75 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport( 'joomla.application.component.controller' );
+jimport('joomla.application.component.controller');
 
 /**
  * CrowdFunding project controller
  *
- * @package     ITPrism Components
- * @subpackage  CrowdFunding
-  */
-class CrowdFundingControllerProject extends JControllerLegacy {
-    
-	/**
+ * @package     CrowdFunding
+ * @subpackage  Components
+ */
+class CrowdFundingControllerProject extends JControllerLegacy
+{
+    /**
      * Method to get a model object, loading it if required.
      *
-     * @param	string	$name	The model name. Optional.
-     * @param	string	$prefix	The class prefix. Optional.
-     * @param	array	$config	Configuration array for model. Optional.
+     * @param    string $name   The model name. Optional.
+     * @param    string $prefix The class prefix. Optional.
+     * @param    array  $config Configuration array for model. Optional.
      *
-     * @return	object	The model.
-     * @since	1.5
+     * @return    object    The model.
+     * @since    1.5
      */
-    public function getModel($name = 'Project', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true)) {
+    public function getModel($name = 'Project', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    {
         $model = parent::getModel($name, $prefix, $config);
+
         return $model;
     }
-    
-    
-	/**
-	 * Deletes Extra Image
-	 *
-	 */
-	public function removeExtraImage() {
-	     
-	    $app = JFactory::getApplication();
-	    /** @var $app JAdministrator **/
-	
-	    // Get the model
-	    $model  = $this->getModel();
-	    /** @var $model CrowdFundingModelProject **/
-	     
-	    $userId   = $app->input->post->getInt("user_id");
-	    $imageId  = $app->input->post->getInt("id");
-	    
-	    // Get the folder where the images are stored.
-	    $imagesFolder = CrowdFundingHelper::getImagesFolder($userId);
-	    
-	    try {
-	
-	        jimport('joomla.filesystem.file');
-	        
-	        // Get the model
-	        $model = $this->getModel();
-	        $model->removeExtraImage($imageId, $imagesFolder);
-	
-	    } catch ( Exception $e ) {
-	        JLog::add($e->getMessage());
-	        throw new Exception($e->getMessage());
-	    }
-	
-	    $response = array(
-            "success" => true,
-            "title"=> JText::_('COM_CROWDFUNDING_SUCCESS'),
-            "text" => JText::_('COM_CROWDFUNDING_IMAGE_DELETED'),
-            "data" => array("item_id" => $imageId)
-	    );
-	
-	    echo json_encode($response);
-	    JFactory::getApplication()->close();
-	}
-	
+
+    /**
+     * Deletes extra image.
+     */
+    public function removeExtraImage()
+    {
+        jimport("itprism.response.json");
+        $response = new ITPrismResponseJson();
+
+        $userId  = $this->input->post->getInt("user_id");
+        $imageId = $this->input->post->getInt("id");
+
+        // Get the folder where the images are stored.
+        $imagesFolder = CrowdFundingHelper::getImagesFolder($userId);
+
+        try {
+
+            jimport('joomla.filesystem.file');
+
+            // Get the model
+            $model = $this->getModel();
+            $model->removeExtraImage($imageId, $imagesFolder);
+
+        } catch (Exception $e) {
+
+            JLog::add($e->getMessage());
+
+            $response
+                ->setTitle(JText::_('COM_CROWDFUNDING_FAIL'))
+                ->setText(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'))
+                ->failure();
+
+            echo $response;
+            JFactory::getApplication()->close();
+        }
+
+        $response
+            ->setTitle(JText::_('COM_CROWDFUNDING_SUCCESS'))
+            ->setText(JText::_('COM_CROWDFUNDING_IMAGE_DELETED'))
+            ->setData(array("item_id" => $imageId))
+            ->success();
+
+        echo $response;
+        JFactory::getApplication()->close();
+    }
 }

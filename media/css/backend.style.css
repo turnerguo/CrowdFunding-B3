@@ -8,7 +8,7 @@
 
 .extra-image-row {
 	border: thin solid #dcdcdc;
-	margin: 20px 0px;
+	margin: 20px 0;
 }
 
 .extra-image-row img, .extra-image-row a {
@@ -24,6 +24,8 @@
 #jform_funding_days-lbl, #jform_funding_end-lbl {
     display: inline !important;
 }
+
+/** Dashboard Statistics **/
 
 .dashboard-stats .span4, .dashboard-stats .span6, .dashboard-stats .span8{
     border: thin solid #dcdcdc;

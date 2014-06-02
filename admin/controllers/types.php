@@ -18,15 +18,16 @@ jimport('itprism.controller.admin');
  * @package      CrowdFunding
  * @subpackage   Components
  */
-class CrowdFundingControllerTypes extends ITPrismControllerAdmin {
-    
+class CrowdFundingControllerTypes extends ITPrismControllerAdmin
+{
     /**
      * Proxy for getModel.
      * @since   1.6
      */
-    public function getModel($name = 'Type', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true)) {
+    public function getModel($name = 'Type', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    {
         $model = parent::getModel($name, $prefix, $config);
+
         return $model;
     }
-    
 }

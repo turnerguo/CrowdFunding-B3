@@ -17,9 +17,7 @@ defined('_JEXEC') or die;
     <div class="cfinfo-raised-of">
         <?php echo JText::sprintf("MOD_CROWDFUNDINGINFO_RAISED_OF", $fundedAmount);?>
 	</div>
-	<div class="progress progress-success">
-   		<div class="bar" style="width: <?php echo JHtml::_("crowdfunding.funded", $project->getFundedPercents());?>%"></div>
-    </div>
+    <?php echo JHtml::_("crowdfunding.progressbar", $project->getFundedPercent(), $project->getDaysLeft(), $project->getFundingType()); ?>
 	<div class="cfinfo-days-raised">
     	<div class="cfinfo-days-wrapper">
     		<div class="cfinfo-days">
@@ -31,7 +29,7 @@ defined('_JEXEC') or die;
 		<div class="cfinfo-percent-wrapper">
 			<div class="cfinfo-percent">
     			<img src="media/com_crowdfunding/images/piggy-bank.png" width="27" height="20" />
-        		<?php echo $project->getFundedPercents();?>%
+        		<?php echo $project->getFundedPercent();?>%
     		</div>
     		<div class="tac fzmfwbu pt5"><?php echo JText::_("MOD_CROWDFUNDINGINFO_FUNDED");?></div>
 		</div>
@@ -43,18 +41,19 @@ defined('_JEXEC') or die;
     
 	<?php if($project->isCompleted()) {?>
 	<div class="well">
-		<div class="cf-fund-result-state pull-center"><?php echo JHtml::_("crowdfunding.resultState", $project->getFundedPercents(), $project->getFundingType());?></div>
-		<div class="cf-frss pull-center"><?php echo JHtml::_("crowdfunding.resultStateText", $project->getFundedPercents(), $project->getFundingType());?></div>
+		<div class="cf-fund-result-state pull-center"><?php echo JHtml::_("crowdfunding.resultState", $project->getFundedPercent(), $project->getFundingType());?></div>
+		<div class="cf-frss pull-center"><?php echo JHtml::_("crowdfunding.resultStateText", $project->getFundedPercent(), $project->getFundingType());?></div>
 	</div>
 	<?php } else {?>
 	<div class="cfinfo-funding-action">
-		<a class="btn btn-large btn-block" href="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($project->getSlug(), $project->getCatSlug()));?>"><?php echo JText::_("MOD_CROWDFUNDINGINFO_INVEST_NOW"); ?></a>
+		<a class="btn btn-large btn-block" href="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($project->getSlug(), $project->getCatSlug()));?>">
+            <?php echo JText::_("MOD_CROWDFUNDINGINFO_INVEST_NOW"); ?>
+        </a>
 	</div>
 	<?php }?>
     
     <div class="cfinfo-funding-type-info">
     	<?php
-    	
     	$endDate = JHtml::_('crowdfunding.date', $project->getFundingEnd(), JText::_('DATE_FORMAT_LC3'));
     	
     	if("FIXED" == $project->getFundingType()) {

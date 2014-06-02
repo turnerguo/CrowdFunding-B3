@@ -12,105 +12,123 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
-class CrowdFundingViewDashboard extends JViewLegacy {
-    
+class CrowdFundingViewDashboard extends JViewLegacy
+{
+    /**
+     * @var JDocumentHtml
+     */
+    public $document;
+
+    /**
+     * @var Joomla\Registry\Registry
+     */
+    protected $state;
+
+    /**
+     * @var Joomla\Registry\Registry
+     */
+    protected $params;
+
     protected $option;
-    
-    public function __construct($config){
+
+    protected $popular;
+    protected $mostFunded;
+    protected $latestStarted;
+    protected $latestCreated;
+    protected $currency;
+    protected $version;
+    protected $itprismVersion;
+
+    protected $sidebar;
+
+    public function __construct($config)
+    {
         parent::__construct($config);
         $this->option = JFactory::getApplication()->input->get("option");
     }
-    
-    public function display($tpl = null){
-        
-        $model         = $this->getModel();
-        $this->params  = $model->getState("params");
-        
+
+    public function display($tpl = null)
+    {
+        $this->state  = $this->get("State");
+        $this->params = $this->state->get("params");
+
         $this->version = new CrowdFundingVersion();
-        
+
         // Load ITPrism library version
         jimport("itprism.version");
-        if(!class_exists("ITPrismVersion")) {
+        if (!class_exists("ITPrismVersion")) {
             $this->itprismVersion = JText::_("COM_CROWDFUNDING_ITPRISM_LIBRARY_DOWNLOAD");
         } else {
-            $itprismVersion = new ITPrismVersion();
+            $itprismVersion       = new ITPrismVersion();
             $this->itprismVersion = $itprismVersion->getShortVersion();
         }
-        
+
         // Get popular projects.
         jimport("crowdfunding.statistics.projects.popular");
         $this->popular = new CrowdFundingStatisticsProjectsPopular(JFactory::getDbo());
         $this->popular->load(5);
-        
+
         // Get popular most funded.
         jimport("crowdfunding.statistics.projects.mostfunded");
         $this->mostFunded = new CrowdFundingStatisticsProjectsMostFunded(JFactory::getDbo());
         $this->mostFunded->load(5);
-        
+
         // Get latest started.
         jimport("crowdfunding.statistics.projects.latest");
         $this->latestStarted = new CrowdFundingStatisticsProjectsLatest(JFactory::getDbo());
         $this->latestStarted->load(5);
-        
+
         // Get latest created.
         $this->latestCreated = new CrowdFundingStatisticsProjectsLatest(JFactory::getDbo());
         $this->latestCreated->loadByCreated(5);
-        
+
         // Get currency.
-        $currencyId = $this->params->get("project_currency");
-        $useIntl    = $this->params->get("locale_intl", 0);
-        
         jimport("crowdfunding.currency");
-        $this->currency = new CrowdFundingCurrency(JFactory::getDbo(), $currencyId);
-        if(!empty($useIntl)) {
-            $this->currency->enableIntl();
-        }
-        
-        JLoader::register('JHtmlString', JPATH_LIBRARIES.'/joomla/html/html/string.php');
-        
+        $currencyId = $this->params->get("project_currency");
+        $this->currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $this->params);
+
         // Add submenu
         CrowdFundingHelper::addSubmenu($this->getName());
-        
+
         $this->addToolbar();
         $this->addSidebar();
         $this->setDocument();
-        
+
         parent::display($tpl);
     }
-    
+
     /**
      * Add a menu on the sidebar of page
      */
-    protected function addSidebar() {
+    protected function addSidebar()
+    {
         $this->sidebar = JHtmlSidebar::render();
     }
-    
-    
+
     /**
      * Add the page title and toolbar.
      *
      * @since   1.6
      */
-    protected function addToolbar(){
+    protected function addToolbar()
+    {
         JToolbarHelper::title(JText::_("COM_CROWDFUNDING_DASHBOARD"));
-        
+
         JToolbarHelper::preferences('com_crowdfunding');
         JToolbarHelper::divider();
-        
+
         // Help button
         $bar = JToolbar::getInstance('toolbar');
-		$bar->appendButton('Link', 'help', JText::_('JHELP'), JText::_('COM_CROWDFUNDING_HELP_URL'));
+        $bar->appendButton('Link', 'help', JText::_('JHELP'), JText::_('COM_CROWDFUNDING_HELP_URL'));
     }
 
-	/**
-	 * Method to set up the document properties
-	 *
-	 * @return void
-	 */
-	protected function setDocument() {
-	    
-		$this->document->setTitle(JText::_('COM_CROWDFUNDING_DASHBOARD'));
-		
-	}
-	
+    /**
+     * Method to set up the document properties
+     *
+     * @return void
+     */
+    protected function setDocument()
+    {
+        $this->document->setTitle(JText::_('COM_CROWDFUNDING_DASHBOARD'));
+    }
 }

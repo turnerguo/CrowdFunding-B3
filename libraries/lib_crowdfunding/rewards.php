@@ -1,125 +1,199 @@
 <?php
 /**
-* @package      CrowdFunding
-* @subpackage   Libraries
-* @author       Todor Iliev
-* @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
-* @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
-*/
+ * @package      CrowdFunding
+ * @subpackage   Rewards
+ * @author       Todor Iliev
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ */
 
 defined('JPATH_PLATFORM') or die;
 
 /**
- * This class provieds functionality that manage rewards.
+ * This class provides functionality that manage rewards.
+ *
+ * @package      CrowdFunding
+ * @subpackage   Rewards
  */
-class CrowdFundingRewards implements Iterator, Countable, ArrayAccess {
-    
-    public $rewards = array();
-    
+class CrowdFundingRewards implements Iterator, Countable, ArrayAccess
+{
+    protected $items = array();
+
     /**
      * Database driver.
-     * 
-     * @var JDatabaseMySQLi
+     *
+     * @var JDatabaseDriver
      */
     protected $db;
-    
+
     protected $position = 0;
-    
+
     protected static $instances = array();
-    
+
     /**
-     * Load or set rewards. 
-     * 
-     * @param integer   $id      Project ID
-     * @param array     $rewards Rewards
+     * Initialize the object.
+     *
+     * <code>
+     * $rewards   = new CrowdFundingRewards(JFactory::getDbo());
+     * </code>
+     *
+     * @param JDatabaseDriver $db
      */
-    public function __construct($id = 0, $options = array()) {
-        
-        $this->db = JFactory::getDbo();
-        
-        if(!empty($id)) {
-            $this->load($id, $options);
+    public function __construct(JDatabaseDriver $db = null)
+    {
+        $this->db = $db;
+    }
+
+    /**
+     * Create and initialize an object.
+     *
+     * <code>
+     * $projectId = 1;
+     *
+     * $options = array(
+     *     "state" = CrowdFundingConstants::PUBLISHED
+     * );
+     *
+     * $rewards   = CrowdFundingRewards::getInstance(JFactory::getDbo(), $projectId, $options);
+     * </code>
+     *
+     * @param JDatabaseDriver $db
+     * @param                 $id
+     * @param array           $options
+     *
+     * @return null|CrowdFundingRewards
+     */
+    public static function getInstance(JDatabaseDriver $db, $id, $options = array())
+    {
+        if (!isset(self::$instances[$id])) {
+            $item                 = new CrowdFundingRewards($db);
+            $item->load($id, $options);
+            self::$instances[$id] = $item;
+        }
+
+        return self::$instances[$id];
+    }
+
+    /**
+     * Set the database object.
+     *
+     * <code>
+     * $rewards    = new CrowdFundingRewards();
+     * $rewards->setDb(JFactory::getDbo());
+     * </code>
+     *
+     * @param JDatabaseDriver $db
+     *
+     * @return self
+     */
+    public function setDb(JDatabaseDriver $db)
+    {
+        $this->db = $db;
+
+        return $this;
+    }
+
+    /**
+     * Load rewards data from database, by project ID.
+     *
+     * <code>
+     * $projectId = 1;
+     *
+     * $options = array(
+     *  "state" => CrowdFundingConstants::PUBLISHED
+     * );
+     *
+     * $rewards   = new CrowdFundingRewards(JFactory::getDbo());
+     * $rewards->load($projectId, $options);
+     *
+     * foreach($rewards as $reward) {
+     *   echo $reward->title;
+     *   echo $reward->amount;
+     * }
+     * </code>
+     *
+     * @param int $id
+     * @param array $options
+     */
+    public function load($id, $options = array())
+    {
+        $query = $this->db->getQuery(true);
+
+        $query
+            ->select(
+                "a.id, a.title, a.description, a.amount, " .
+                "a.image, a.image_thumb, a.image_square"
+            )
+            ->from($this->db->quoteName("#__crowdf_rewards", "a"))
+            ->where("a.project_id = " . (int)$id);
+
+        // Get state
+        $state = JArrayHelper::getValue($options, "state", 0, "int");
+        if (!empty($state)) {
+            $query->where("a.published = " . (int)$state);
+        }
+
+        $this->db->setQuery($query);
+        $results = $this->db->loadObjectList();
+
+        if (!$results) {
+            $results = array();
+        }
+
+        $this->items = $results;
+    }
+
+    public function rewind()
+    {
+        $this->position = 0;
+    }
+
+    public function current()
+    {
+        return (!isset($this->items[$this->position])) ? null : $this->items[$this->position];
+    }
+
+    public function key()
+    {
+        return $this->position;
+    }
+
+    public function next()
+    {
+        ++$this->position;
+    }
+
+    public function valid()
+    {
+        return isset($this->items[$this->position]);
+    }
+
+    public function count()
+    {
+        return (int)count($this->items);
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        if (is_null($offset)) {
+            $this->items[] = $value;
+        } else {
+            $this->items[$offset] = $value;
         }
     }
 
-    public static function getInstance($id, $options = array())  {
-    
-        if (empty(self::$instances[$id])){
-            $item = new CrowdFundingRewards($id, $options);
-            self::$instances[$id] = $item;
-        }
-        
-        return self::$instances[$id];
+    public function offsetExists($offset)
+    {
+        return isset($this->items[$offset]);
     }
-      
-    
-    public function load($id, $options = array()) {
-        
-        $query = $this->db->getQuery(true);
-        
-        $query
-            ->select("a.id, a.title, a.description, a.amount, " .
-                    "a.image, a.image_thumb, a.image_square")
-            ->from($this->db->quoteName("#__crowdf_rewards") . " AS a")
-            ->where("a.project_id = " .(int)$id);
-        
-        // Get state
-        $state = JArrayHelper::getValue($options, "state", 0, "int");
-        if(!empty($state)) {
-            $query->where("a.published = ". (int)$state);
-        }
-        
-        $this->db->setQuery($query);
-        $results = $this->db->loadObjectList();
-        
-        if(!$results) {
-            $results = array();
-        }
-        
-        $this->rewards = $results;
+
+    public function offsetUnset($offset)
+    {
+        unset($this->items[$offset]);
     }
-    
-    public function rewind() {
-        $this->position = 0;
-    }
-    
-    public function current() {
-        return (!isset($this->rewards[$this->position])) ? null : $this->rewards[$this->position];
-    }
-    
-    public function key() {
-        return $this->position;
-    }
-    
-    public function next() {
-        ++$this->position;
-    }
-    
-    public function valid() {
-        return isset($this->rewards[$this->position]);
-    }
-    
-    public function count() {
-        return (int)count($this->rewards);
-    }
-    
-    public function offsetSet($offset, $value) {
-        if (is_null($offset)) {
-            $this->rewards[] = $value;
-        } else {
-            $this->rewards[$offset] = $value;
-        }
-    }
-    
-    public function offsetExists($offset) {
-        return isset($this->rewards[$offset]);
-    }
-    
-    public function offsetUnset($offset) {
-        unset($this->rewards[$offset]);
-    }
-    
-    public function offsetGet($offset) {
-        return isset($this->rewards[$offset]) ? $this->rewards[$offset] : null;
+
+    public function offsetGet($offset)
+    {
+        return isset($this->items[$offset]) ? $this->items[$offset] : null;
     }
 }

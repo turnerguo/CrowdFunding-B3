@@ -105,9 +105,9 @@ jQuery(document).ready(function() {
 					
 					if(response.success) {
 						jQuery("#reward_box_"+index).remove();
-						CrowdFundingHelper.displayMessageSuccess(response.title, response.text);
+                        ITPrismUIHelper.displayMessageSuccess(response.title, response.text);
 					} else {
-						CrowdFundingHelper.displayMessageFailure(response.title, response.text);
+                        ITPrismUIHelper.displayMessageFailure(response.title, response.text);
 					}
 					
 				}
@@ -184,10 +184,10 @@ jQuery(document).ready(function() {
 					if(response.success) {
 						jQuery("#js-reward-image-"+rewardId).attr("src", "media/com_crowdfunding/images/no_image.png");
 						jQuery(self).remove();
-						
-						CrowdFundingHelper.displayMessageSuccess(response.title, response.text);
+
+                        ITPrismUIHelper.displayMessageSuccess(response.title, response.text);
 					} else {
-						CrowdFundingHelper.displayMessageFailure(response.title, response.text);
+                        ITPrismUIHelper.displayMessageFailure(response.title, response.text);
 					}
 					
 				}

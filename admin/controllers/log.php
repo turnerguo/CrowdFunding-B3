@@ -15,25 +15,26 @@ jimport('itprism.controller.form.backend');
 /**
  * CrowdFunding log controller class.
  *
- * @package		CrowdFunding
- * @subpackage	Components
- * @since		1.6
+ * @package        CrowdFunding
+ * @subpackage     Components
+ * @since          1.6
  */
-class CrowdFundingControllerLog extends ITPrismControllerFormBackend {
-   
+class CrowdFundingControllerLog extends ITPrismControllerFormBackend
+{
     /**
      * Method to get a model object, loading it if required.
      *
-     * @param	string	$name	The model name. Optional.
-     * @param	string	$prefix	The class prefix. Optional.
-     * @param	array	$config	Configuration array for model. Optional.
+     * @param    string $name   The model name. Optional.
+     * @param    string $prefix The class prefix. Optional.
+     * @param    array  $config Configuration array for model. Optional.
      *
-     * @return	object	The model.
-     * @since	1.5
+     * @return    object    The model.
+     * @since    1.5
      */
-    public function getModel($name = 'Log', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true)) {
+    public function getModel($name = 'Log', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    {
         $model = parent::getModel($name, $prefix, $config);
+
         return $model;
     }
-    
 }

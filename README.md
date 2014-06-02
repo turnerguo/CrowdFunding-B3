@@ -1,12 +1,41 @@
 CrowdFunding for Joomla! 
 ==========================
-( Version 1.6.1 )
+( Version 1.7 )
 - - -
 
-CrowdFunding is a platform that provides functionality for creating collective funding websites, powered by Joomla!
+CrowdFunding is a platform that provides functionality for creating collective funding websites, powered by Joomla! CMS.
+
+##Documentation
+You can find documentation on following pages.
+[Documentation and FAQ] (http://itprism.com/help/95-crowdfunding-documentation-faq)
+[Quick start guide] (http://itprism.com/help/119-crowdfunding-step-by-step)
+[Developers Guide] (http://itprism.com/help/120-crowdfunding-developers-documentation)
+[API documentation] (http://cdn.itprism.com/api/crowdfunding-api)
+
+##Download
+You can [download CrowdFunding package] (http://itprism.com/free-joomla-extensions/ecommerce-gamification/crowdfunding-collective-raising-capital) and all payment plugins from the website of ITPrism.
 
 Changelog
 -----------
+
+###v1.7
+* Added options that are used on views Discover and Featured.
+    * custom CSS styles ( Now you can include styles for project states "completed successfully", "completed unsuccessfully", "new", "ending soon", "featured" ).
+    * title and description length.
+* Added option for amount formatting.
+* Improved "Content - CrowdFunding Share".
+    * Added new option to Facebook Like. That is a button type "Button".
+    * Replaced "Send" button with "Share".
+    * Added languages to the LinkedIn button.
+* Added ability for overwriting component styles by template ones.
+* Added title to email templates.
+* Added event "onContentValidate" to wizard steps Basic, Funding, Story. Now data validation is handled by plugins.
+* Added event "onContentValidateAfterSave" to step "Story".
+* Added event "onContentAfterSave" to steps Basic, Funding, Story of the wizard.
+* Added method "notifyAjax". Now, the plugin BankTransfer send a request to that method to process transaction.
+* Move functionality that validates wizard steps to a plugin "Content - CrowdFunding Validator".
+* It was written and generated (CrowdFunding Library documentation) [http://cdn.itprism.com/api/crowdfunding-api].
+* Improved code quality.
 
 ###v1.6.1
 

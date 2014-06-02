@@ -12,70 +12,98 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
-class CrowdFundingViewProjects extends JViewLegacy {
-    
+class CrowdFundingViewProjects extends JViewLegacy
+{
+
+    /**
+     * @var JDocumentHtml
+     */
+    public $document;
+
+    /**
+     * @var Joomla\Registry\Registry
+     */
     protected $state;
+
+    /**
+     * @var Joomla\Registry\Registry
+     */
+    protected $params;
+
     protected $items;
     protected $pagination;
-    protected $params;
-    
+
+    protected $currency;
+    protected $rewards;
+
     protected $option;
-    
-    public function __construct($config){
+
+    protected $listOrder;
+    protected $listDirn;
+    protected $saveOrder;
+    protected $saveOrderingUrl;
+    protected $sortFields;
+
+    protected $sidebar;
+
+    public function __construct($config)
+    {
         parent::__construct($config);
         $this->option = JFactory::getApplication()->input->get("option");
     }
-    
-    public function display($tpl = null){
-        
+
+    public function display($tpl = null)
+    {
         $this->state      = $this->get('State');
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
-        
-        $this->params     = $this->state->get("params");
-        
+
+        $this->params = $this->state->get("params");
+
         jimport("crowdfunding.currency");
-        $currencyId       = $this->state->params->get("project_currency");
-        $this->currency   = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId);
-        
-        $model = $this->getModel();
-        
-        // Get rewards number
+        $currencyId     = $this->state->params->get("project_currency");
+        $this->currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $this->params);
+
+        // Get projects IDs
         $projectsIds = array();
-        foreach($this->items as $item) {
+        foreach ($this->items as $item) {
             $projectsIds[] = $item->id;
         }
-        $this->rewards    = $model->getRewardsNumber($projectsIds);
-        
+
+        // Get number of rewards.
+        jimport("crowdfunding.projects");
+        $projects = new CrowdFundingProjects(JFactory::getDbo());
+        $this->rewards = $projects->getRewardsNumber($projectsIds);
+
         // Add submenu
         CrowdFundingHelper::addSubmenu($this->getName());
-        
+
         // Prepare sorting data
         $this->prepareSorting();
-        
+
         // Prepare actions
         $this->addToolbar();
         $this->addSidebar();
         $this->setDocument();
-        
+
         parent::display($tpl);
     }
-    
+
     /**
      * Prepare sortable fields, sort values and filters.
      */
-    protected function prepareSorting() {
-    
+    protected function prepareSorting()
+    {
         // Prepare filters
-        $this->listOrder  = $this->escape($this->state->get('list.ordering'));
-        $this->listDirn   = $this->escape($this->state->get('list.direction'));
-        $this->saveOrder  = (strcmp($this->listOrder, 'a.ordering') != 0 ) ? false : true;
-    
+        $this->listOrder = $this->escape($this->state->get('list.ordering'));
+        $this->listDirn  = $this->escape($this->state->get('list.direction'));
+        $this->saveOrder = (strcmp($this->listOrder, 'a.ordering') != 0) ? false : true;
+
         if ($this->saveOrder) {
-            $this->saveOrderingUrl = 'index.php?option='.$this->option.'&task='.$this->getName().'.saveOrderAjax&format=raw';
-            JHtml::_('sortablelist.sortable', $this->getName().'List', 'adminForm', strtolower($this->listDirn), $this->saveOrderingUrl);
+            $this->saveOrderingUrl = 'index.php?option=' . $this->option . '&task=' . $this->getName() . '.saveOrderAjax&format=raw';
+            JHtml::_('sortablelist.sortable', $this->getName() . 'List', 'adminForm', strtolower($this->listDirn), $this->saveOrderingUrl);
         }
-    
+
         $this->sortFields = array(
             'a.ordering'      => JText::_('JGRID_HEADING_ORDERING'),
             'a.published'     => JText::_('JSTATUS'),
@@ -88,75 +116,74 @@ class CrowdFundingViewProjects extends JViewLegacy {
             'a.funding_start' => JText::_('COM_CROWDFUNDING_START_DATE'),
             'a.funding_end'   => JText::_('COM_CROWDFUNDING_END_DATE'),
             'a.approved'      => JText::_('COM_CROWDFUNDING_APPROVED'),
+            'd.name'          => JText::_('COM_CROWDFUNDING_OWNER'),
             'a.id'            => JText::_('JGRID_HEADING_ID')
-            
+
         );
-    
     }
-    
+
     /**
      * Add a menu on the sidebar of page
      */
-    protected function addSidebar() {
-    
-        JHtmlSidebar::setAction('index.php?option='.$this->option.'&view='.$this->getName());
-        
+    protected function addSidebar()
+    {
+        JHtmlSidebar::setAction('index.php?option=' . $this->option . '&view=' . $this->getName());
+
         // Prepare options
         $approvedOptions = array(
             JHtml::_("select.option", 1, JText::_("COM_CROWDFUNDING_APPROVED")),
             JHtml::_("select.option", 0, JText::_("COM_CROWDFUNDING_DISAPPROVED")),
         );
-        
+
         $featuredOptions = array(
             JHtml::_("select.option", 1, JText::_("COM_CROWDFUNDING_FEATURED")),
             JHtml::_("select.option", 0, JText::_("COM_CROWDFUNDING_NOT_FEATURED")),
         );
-        
+
         JHtmlSidebar::addFilter(
             JText::_('JOPTION_SELECT_PUBLISHED'),
             'filter_state',
             JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.state'), true)
         );
-        
+
         JHtmlSidebar::addFilter(
             JText::_('COM_CROWDFUNDING_SELECT_APPROVED_STATUS'),
             'filter_approved',
             JHtml::_('select.options', $approvedOptions, 'value', 'text', $this->state->get('filter.approved'), true)
         );
-    
+
         JHtmlSidebar::addFilter(
             JText::_('COM_CROWDFUNDING_SELECT_FEATURED_STATUS'),
             'filter_featured',
             JHtml::_('select.options', $featuredOptions, 'value', 'text', $this->state->get('filter.featured'), true)
         );
-        
+
         JHtmlSidebar::addFilter(
             JText::_('JOPTION_SELECT_CATEGORY'),
             'filter_category_id',
             JHtml::_('select.options', JHtml::_('category.options', 'com_crowdfunding'), 'value', 'text', $this->state->get('filter.category_id'))
         );
-    
+
         jimport("crowdfunding.filters");
         $filters      = new CrowdFundingFilters(JFactory::getDbo());
         $typesOptions = $filters->getProjectsTypes();
-        
+
         JHtmlSidebar::addFilter(
             JText::_('COM_CROWDFUNDING_SELECT_TYPE'),
             'filter_type_id',
             JHtml::_('select.options', $typesOptions, 'value', 'text', $this->state->get('filter.type_id'))
         );
-        
+
         $this->sidebar = JHtmlSidebar::render();
-    
     }
-    
+
     /**
      * Add the page title and toolbar.
      *
      * @since   1.6
      */
-    protected function addToolbar(){
-        
+    protected function addToolbar()
+    {
         // Set toolbar items for the page
         JToolbarHelper::title(JText::_('COM_CROWDFUNDING_PROJECTS_MANAGER'));
         JToolbarHelper::publishList("projects.publish");
@@ -164,37 +191,34 @@ class CrowdFundingViewProjects extends JViewLegacy {
         JToolbarHelper::divider();
         JToolbarHelper::custom('projects.approve', "ok", "", JText::_("COM_CROWDFUNDING_APPROVE"), false);
         JToolbarHelper::custom('projects.disapprove', "ban-circle", "", JText::_("COM_CROWDFUNDING_DISAPPROVE"), false);
-        
+
         JToolbarHelper::divider();
-        
+
         if ($this->state->get('filter.state') == -2) {
             JToolbarHelper::deleteList('', 'projects.delete', 'JTOOLBAR_EMPTY_TRASH');
         } else {
             JToolbarHelper::trash('projects.trash');
         }
-        
+
         JToolbarHelper::divider();
         JToolbarHelper::custom('projects.backToDashboard', "dashboard", "", JText::_("COM_CROWDFUNDING_DASHBOARD"), false);
-        
     }
-    
-	/**
-	 * Method to set up the document properties
-	 *
-	 * @return void
-	 */
-	protected function setDocument() {
-	    
-		$this->document->setTitle(JText::_('COM_CROWDFUNDING_PROJECTS_MANAGER'));
-		
-		// Scripts
-		JHtml::_('behavior.multiselect');
-		JHtml::_('bootstrap.tooltip');
-		
-		JHtml::_('formbehavior.chosen', 'select');
-		
-		JHtml::_('itprism.ui.joomla_list');
-		
-	}
-    
+
+    /**
+     * Method to set up the document properties
+     *
+     * @return void
+     */
+    protected function setDocument()
+    {
+        $this->document->setTitle(JText::_('COM_CROWDFUNDING_PROJECTS_MANAGER'));
+
+        // Scripts
+        JHtml::_('behavior.multiselect');
+        JHtml::_('bootstrap.tooltip');
+
+        JHtml::_('formbehavior.chosen', 'select');
+
+        JHtml::_('itprism.ui.joomla_list');
+    }
 }

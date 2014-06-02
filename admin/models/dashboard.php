@@ -8,15 +8,15 @@
  */
 
 // no direct access
-defined( '_JEXEC' ) or die;
+defined('_JEXEC') or die;
 
 jimport('joomla.application.component.model');
 
 /**
  * Dashboard model.
  */
-class CrowdFundingModelDashboard extends JModelLegacy {
-    
+class CrowdFundingModelDashboard extends JModelLegacy
+{
     /**
      * Method to auto-populate the model state.
      *
@@ -24,13 +24,10 @@ class CrowdFundingModelDashboard extends JModelLegacy {
      *
      * @since   1.6
      */
-    protected function populateState($ordering = null, $direction = null) {
-        
+    protected function populateState($ordering = null, $direction = null)
+    {
         // Load the component parameters.
         $params = JComponentHelper::getParams($this->option);
         $this->setState('params', $params);
-
     }
-
-    
 }

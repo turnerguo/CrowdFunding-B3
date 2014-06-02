@@ -10,9 +10,9 @@
 // no direct access
 defined('_JEXEC') or die;
 
-if(!empty($this->article)) {
+if (!empty($this->article)) {
 
-    if($this->params->get("project_intro_article_title", 0)){
+    if ($this->params->get("project_intro_article_title", 0)) {
         echo "<h2>".$this->escape($this->article->title)."</h2>";
     }
 
@@ -22,5 +22,4 @@ if(!empty($this->article)) {
 } else {
     echo JText::_("COM_CROWDFUNDING_INTRO_ARTICLE_INFO");
 }
-?>
-<?php echo $this->version->backlink;?>
+echo $this->version->backlink;

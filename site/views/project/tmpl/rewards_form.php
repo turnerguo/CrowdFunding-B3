@@ -54,7 +54,7 @@ if(!empty($deliveryDate)) {
         
         <input name="rewards[<?php echo $this->formIndex;?>][id]" type="hidden" value="<?php echo JArrayHelper::getValue($this->formItem,  "id", 0)?>" />
         
-        <?php if(!empty($this->rewardsImagesEnabled)) {
+        <?php if(!empty($this->rewardsImagesEnabled) AND !empty($this->formItem)) {
             echo $this->loadTemplate("image");
         } ?>
     </div>

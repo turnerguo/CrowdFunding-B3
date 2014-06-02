@@ -20,9 +20,9 @@ defined('_JEXEC') or die;
                 <div class="span10">
                     <?php echo $this->form->getInput('goal'); ?>
                     <?php if(!empty($this->maxAmount)) {?>
-                    <span class="help-block"><?php echo JText::sprintf("COM_CROWDFUNDING_MINIMUM_MAXIMUM_AMOUNT", $this->currency->getAmountString($this->minAmount, $this->params->get("locale_intl", 0)), $this->currency->getAmountString($this->maxAmount, $this->params->get("locale_intl", 0)));?></span>
+                    <span class="help-block"><?php echo JText::sprintf("COM_CROWDFUNDING_MINIMUM_MAXIMUM_AMOUNT", $this->currency->getAmountString($this->minAmount), $this->currency->getAmountString($this->maxAmount));?></span>
                     <?php } else {?>
-                    <span class="help-block"><?php echo JText::sprintf("COM_CROWDFUNDING_MINIMUM_AMOUNT", $this->currency->getAmountString($this->minAmount, $this->params->get("locale_intl", 0)));?></span>
+                    <span class="help-block"><?php echo JText::sprintf("COM_CROWDFUNDING_MINIMUM_AMOUNT", $this->currency->getAmountString($this->minAmount));?></span>
                     <?php }?>
                 </div>
             </div>
