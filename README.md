@@ -14,7 +14,7 @@ You can find documentation on following pages.
 
 [Developers Guide] (http://itprism.com/help/120-crowdfunding-developers-documentation)
 
-[API documentation] (http://cdn.itprism.com/api/crowdfunding-api)
+[API documentation] (http://cdn.itprism.com/api/crowdfunding/index.html)
 
 ##Download
 You can [download CrowdFunding package] (http://itprism.com/free-joomla-extensions/ecommerce-gamification/crowdfunding-collective-raising-capital) and all payment plugins from the website of ITPrism.
