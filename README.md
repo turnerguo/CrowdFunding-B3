@@ -7,9 +7,13 @@ CrowdFunding is a platform that provides functionality for creating collective f
 
 ##Documentation
 You can find documentation on following pages.
+
 [Documentation and FAQ] (http://itprism.com/help/95-crowdfunding-documentation-faq)
+
 [Quick start guide] (http://itprism.com/help/119-crowdfunding-step-by-step)
+
 [Developers Guide] (http://itprism.com/help/120-crowdfunding-developers-documentation)
+
 [API documentation] (http://cdn.itprism.com/api/crowdfunding-api)
 
 ##Download
@@ -34,7 +38,7 @@ Changelog
 * Added event "onContentAfterSave" to steps Basic, Funding, Story of the wizard.
 * Added method "notifyAjax". Now, the plugin BankTransfer send a request to that method to process transaction.
 * Move functionality that validates wizard steps to a plugin "Content - CrowdFunding Validator".
-* It was written and generated (CrowdFunding Library documentation) [http://cdn.itprism.com/api/crowdfunding-api].
+* It was written and generated [CrowdFunding Library documentation] (http://cdn.itprism.com/api/crowdfunding/index.html).
 * Improved code quality.
 
 ###v1.6.1
