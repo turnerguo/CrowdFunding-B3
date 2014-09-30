@@ -8,7 +8,7 @@
                size="40"
                filter="trim"
                required="true"
-                />
+               />
 
         <field name="short_desc" type="textarea" class="span12"
                label="COM_CROWDFUNDING_FIELD_DESCRIPTION"
@@ -19,7 +19,7 @@
                placement="left"
                />
 
-        <field name="catid" type="category"
+        <field name="catid" type="category" class="cf-advanced-select"
                label="JCATEGORY"
                extension="com_crowdfunding"
                filter="int"
@@ -33,13 +33,11 @@
                description="COM_CROWDFUNDING_FIELD_LOCATION_DESC"
                size="40"
                filter="trim"
-                />
+               />
 
-        <field
-                name="type_id"
-                type="cftypes"
-                label="COM_CROWDFUNDING_FIELD_PROJECT_TYPE"
-                />
+        <field name="type_id" type="cftypes" class="cf-advanced-select"
+               label="COM_CROWDFUNDING_FIELD_PROJECT_TYPE"
+               />
 
         <field
                 name="image"

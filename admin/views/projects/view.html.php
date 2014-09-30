@@ -186,6 +186,9 @@ class CrowdFundingViewProjects extends JViewLegacy
     {
         // Set toolbar items for the page
         JToolbarHelper::title(JText::_('COM_CROWDFUNDING_PROJECTS_MANAGER'));
+        JToolbarHelper::addNew('project.add');
+        JToolbarHelper::editList('project.edit');
+        JToolbarHelper::divider();
         JToolbarHelper::publishList("projects.publish");
         JToolbarHelper::unpublishList("projects.unpublish");
         JToolbarHelper::divider();

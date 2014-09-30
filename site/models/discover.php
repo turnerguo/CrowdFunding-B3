@@ -28,7 +28,6 @@ class CrowdFundingModelDiscover extends JModelList
      */
     public function __construct($config = array())
     {
-
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
                 'id', 'a.id',
@@ -135,7 +134,7 @@ class CrowdFundingModelDiscover extends JModelList
     protected function getListQuery()
     {
         $db = $this->getDbo();
-        /** @var $db JDatabaseMySQLi * */
+        /** @var $db JDatabaseDriver */
 
         // Create a new query object.
         $query = $db->getQuery(true);
@@ -204,7 +203,6 @@ class CrowdFundingModelDiscover extends JModelList
 
     protected function getOrderString()
     {
-
         $params    = $this->getState("params");
         $order     = $params->get("discover_order", "start_date");
         $orderDirn = $params->get("discover_dirn", "desc");

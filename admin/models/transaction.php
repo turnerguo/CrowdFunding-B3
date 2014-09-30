@@ -10,8 +10,6 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.modeladmin');
-
 class CrowdFundingModelTransaction extends JModelAdmin
 {
     protected $event_transaction_change_state = null;

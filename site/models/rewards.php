@@ -216,6 +216,7 @@ class CrowdFundingModelRewards extends JModelLegacy
         jimport("itprism.file.uploader.local");
         jimport("itprism.file.validator.size");
         jimport("itprism.file.validator.image");
+        jimport("itprism.file.validator.server");
 
         $KB = 1024 * 1024;
 
@@ -235,13 +236,19 @@ class CrowdFundingModelRewards extends JModelLegacy
 
             $uploadedFile = JArrayHelper::getValue($image, 'tmp_name');
             $uploadedName = JString::trim(JArrayHelper::getValue($image, 'name'));
+            $errorCode    = JArrayHelper::getValue($image, 'error');
 
             $file = new ITPrismFileImage();
 
             if (!empty($uploadedName)) {
                 // Prepare size validator.
                 $fileSize = (int)JArrayHelper::getValue($image, 'size');
+
+                // Prepare file size validator.
                 $sizeValidator = new ITPrismFileValidatorSize($fileSize, $uploadMaxSize);
+
+                // Prepare server validator.
+                $serverValidator = new ITPrismFileValidatorServer($errorCode, array(UPLOAD_ERR_NO_FILE));
 
                 // Prepare image validator.
                 $imageValidator = new ITPrismFileValidatorImage($uploadedFile, $uploadedName);
@@ -254,12 +261,11 @@ class CrowdFundingModelRewards extends JModelLegacy
 
                 $file
                     ->addValidator($sizeValidator)
-                    ->addValidator($imageValidator);
+                    ->addValidator($imageValidator)
+                    ->addValidator($serverValidator);
 
                 // Validate the file
-                try {
-                    $file->validate();
-                } catch (Exception $e) {
+                if (!$file->isValid()) {
                     continue;
                 }
 
@@ -273,7 +279,7 @@ class CrowdFundingModelRewards extends JModelLegacy
                 $destFile = JPath::clean($destFolder . DIRECTORY_SEPARATOR . $generatedName . "." . $ext);
 
                 // Prepare uploader object.
-                $uploader = new ITPrismFileUploaderLocal($image);
+                $uploader = new ITPrismFileUploaderLocal($uploadedFile);
                 $uploader->setDestination($destFile);
 
                 // Upload temporary file

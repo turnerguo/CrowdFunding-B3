@@ -120,6 +120,39 @@ abstract class CrowdFundingHelperRoute
     }
 
     /**
+     * This method route item in the view "transactions".
+     */
+    public static function getTransactionsRoute()
+    {
+        /**
+         *
+         * # category
+         * We will check for view category first. If find a menu item with view "category" and "id" eqallity of the key,
+         * we will get that menu item ( Itemid ).
+         *
+         * # categories view
+         * If miss a menu item with view "category" we continue with searchin but now for view "categories".
+         * It is assumed view "categories" will be in the first level of the menu.
+         * The view "categories" won't contain category ID so it has to contain 0 for ID key.
+         */
+        $needles = array(
+            'transactions' => array(0),
+        );
+
+        //Create the link
+        $link = 'index.php?option=com_crowdfunding&view=transactions';
+
+        // Looking for menu item (Itemid)
+        if ($item = self::findItem($needles)) {
+            $link .= '&Itemid=' . $item;
+        } elseif ($item = self::findItem()) { // Get the menu item (Itemid) from the active (current) item.
+            $link .= '&Itemid=' . $item;
+        }
+
+        return $link;
+    }
+
+    /**
      * @param    int    $id     The id of the item.
      * @param    int    $catid  The id of the category.
      * @param    string $layout
@@ -231,7 +264,7 @@ abstract class CrowdFundingHelperRoute
      *                          
      * @return string
      */
-    public static function getFormRoute($id)
+    public static function getFormRoute($id, $layout = "default")
     {
         $needles = array(
             'project' => array(0)
@@ -239,6 +272,10 @@ abstract class CrowdFundingHelperRoute
 
         //Create the link
         $link = 'index.php?option=com_crowdfunding&view=project&id=' . $id;
+
+        if (strcmp($layout, "default") != 0) {
+            $link .= "&layout=".$layout;
+        }
 
         // Looking for menu item (Itemid)
         if ($item = self::findItem($needles)) {

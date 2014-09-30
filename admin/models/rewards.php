@@ -10,11 +10,8 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.modellist');
-
 class CrowdFundingModelRewards extends JModelList
 {
-
     /**
      * Constructor.
      *
@@ -100,7 +97,7 @@ class CrowdFundingModelRewards extends JModelList
     protected function getListQuery()
     {
         $db = $this->getDbo();
-        /** @var $db JDatabaseMySQLi * */
+        /** @var $db JDatabaseDriver */
 
         // Create a new query object.
         $query = $db->getQuery(true);
@@ -113,7 +110,7 @@ class CrowdFundingModelRewards extends JModelList
                 'a.shipping, a.project_id, (a.number - a.distributed) AS available, a.published '
             )
         );
-        $query->from($db->quoteName('#__crowdf_rewards') . ' AS a');
+        $query->from($db->quoteName('#__crowdf_rewards', 'a'));
 
         // Filter by project
         $projectId = $this->getState('project_id');

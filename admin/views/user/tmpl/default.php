@@ -18,7 +18,8 @@ defined('_JEXEC') or die;
 <div class="row-fluid">
     <div class="span4">
         <img src="../../media/com_crowdfunding/images/no_image.png" class="img-rounded">
-        <h2><?php echo $this->escape($this->item->name); ?></h2>
+        <h2><?php echo JHtml::_('crowdfundingbackend.profileLink', $this->socialProfile, $this->item->name, $this->item->id); ?></h2>
+            <?php //echo $this->escape($this->item->name); ?>
 
         <div class="small">
             <?php echo JText::sprintf("COM_CROWDFUNDING_REGISTERED_S", JHtml::_('date', $this->item->registerDate, JText::_('DATE_FORMAT_LC3'))); ?>
@@ -26,7 +27,7 @@ defined('_JEXEC') or die;
     </div>
     <div class="span4">
         <h2><?php echo JText::_("COM_CROWDFUNDING_BASIC_INFORMATION");?></h2>
-        <table class="table table-condensed">
+        <table class="table table-bordered">
             <tbody>
             <tr>
                 <th><?php echo JText::_("COM_CROWDFUNDING_PROJECTS");?></th>
@@ -61,4 +62,9 @@ defined('_JEXEC') or die;
             </tbody>
         </table>
     </div>
+</div>
+
+<h3><?php echo JText::_("COM_CROWDFUNDING_REWARDS"); ?></h3>
+<div class="row-fluid">
+<?php echo $this->loadTemplate("rewards"); ?>
 </div>

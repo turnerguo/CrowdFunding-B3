@@ -369,6 +369,10 @@ form.bs-docs-example {
 	margin: 15px 0 !important;
 }
 
+.margin-tb-25px {
+	margin: 25px 0 !important;
+}
+
 .cf-update-item, .cf-comment-item {
 	padding: 15px 0;
 	position: relative;
@@ -400,6 +404,47 @@ form.bs-docs-example {
 .cf-funder-row {
 	padding: 10px;
 	border-bottom: thin dashed gray;
+}
+
+.cf-funder-row .cf-funder-picture {
+	margin-right: 5px;
+}
+
+.cf-location {
+	background: url(../images/icon_location.png) no-repeat left !important;
+	padding-left: 20px;
+}
+
+.cf-funder-amount {
+	font-size: large;
+}
+
+.cf-project-manager-box {
+	 border: 1px solid #ddd;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.055);
+    display: block;
+    line-height: 20px;
+    padding: 0px;
+    transition: all 0.2s ease-in-out 0s;
+}
+
+.cf-pl-5 {
+	padding-left: 5px;
+}
+
+.cf-m-0 {
+	margin: 0;
+}
+
+.cf-font-small {
+	font-size: smaller;
+}
+.cf-bg-color-yellow {
+	background-color: #fffacd;
+}
+
+.cf-bg-color-brown {
+	background-color: #deb887;
 }
 
 .thumbnail > a > img {
@@ -481,4 +526,26 @@ form.bs-docs-example {
 
 .js-reward-image-wrapper .js-btn-remove-reward-image {
 	margin-top: 10px;
+}
+
+/* YouTube Responsive */
+
+.video-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    padding-top: 30px; height: 0; overflow: hidden;
+}
+ 
+.video-container iframe,
+.video-container object,
+.video-container embed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.cf-rewards-submit-btn button:last-of-type {
+	margin-left: 20px;
 }

@@ -36,7 +36,6 @@ class CrowdFundingModelTransactions extends JModelList
                 'reward', 'd.title',
                 'investor', 'e.name',
                 'receiver', 'f.name',
-
             );
         }
 
@@ -53,10 +52,13 @@ class CrowdFundingModelTransactions extends JModelList
     protected function populateState($ordering = null, $direction = null)
     {
         $app = JFactory::getApplication();
-        /** @var $app JApplicationSite * */
+        /** @var $app JApplicationSite */
 
-        $value = JFactory::getUser()->id;
+        $value = JFactory::getUser()->get("id");
         $this->setState('filter.receiver_id', $value);
+
+        $value = $app->input->getString("filter_search");
+        $this->setState('filter.search', $value);
 
         // Load the component parameters.
         $params = $app->getParams($this->option);
@@ -82,6 +84,7 @@ class CrowdFundingModelTransactions extends JModelList
     {
         // Compile the store id.
         $id .= ':' . $this->getState('filter.receiver_id');
+        $id .= ':' . $this->getState('filter.search');
 
         return parent::getStoreId($id);
     }
@@ -121,10 +124,21 @@ class CrowdFundingModelTransactions extends JModelList
         $query->leftJoin($db->quoteName('#__users') . ' AS e ON a.investor_id = e.id');
         $query->innerJoin($db->quoteName('#__users') . ' AS f ON a.receiver_id = f.id');
 
+        // Filter by search phrase or ID.
+        $search = $this->getState('filter.search');
+        if (!empty($search)) {
+            if (stripos($search, 'id:') === 0) {
+                $query->where('a.id = ' . (int)substr($search, 3));
+            } else {
+                $escaped = $db->escape($search, true);
+                $quoted  = $db->quote("%" . $escaped . "%", false);
+                $query->where('b.title LIKE ' . $quoted);
+            }
+        }
+
         // Filter by receiver
         $userId = $this->getState('filter.receiver_id');
-        $query->where('a.investor_id=' . (int)$userId, "OR");
-        $query->where('a.receiver_id=' . (int)$userId);
+        $query->where('(a.investor_id = ' . (int)$userId . ' OR a.receiver_id = ' . (int)$userId .')');
 
         // Add the list ordering clause.
         $orderString = $this->getOrderString();

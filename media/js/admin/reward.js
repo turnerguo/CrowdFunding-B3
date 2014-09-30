@@ -6,5 +6,7 @@ jQuery(document).ready(function() {
             Joomla.submitform(task, document.getElementById('adminForm'));
         }
     };
+
+    jQuery('.fileupload').fileuploadstyle();
     
 });

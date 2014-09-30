@@ -15,7 +15,7 @@ JLoader::register("ITPrismFileInterfaceValidator", JPATH_LIBRARIES . DIRECTORY_S
  * This class provides functionality for removing extra image from database.
  *
  * @package      CrowdFunding\Images
- * @subpackage   Remover
+ * @subpackage   Removers
  */
 class CrowdFundingImageRemoverExtra implements ITPrismFileInterfaceRemover
 {

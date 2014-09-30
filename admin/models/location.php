@@ -10,8 +10,6 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.modeladmin');
-
 class CrowdFundingModelLocation extends JModelAdmin
 {
     /**

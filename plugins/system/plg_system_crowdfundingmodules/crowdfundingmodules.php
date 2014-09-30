@@ -22,7 +22,7 @@ jimport('crowdfunding.init');
  * @package        CrowdFunding
  * @subpackage     Plugins
  */
-class plgSystemCrowdfundingModules extends JPlugin
+class plgSystemCrowdFundingModules extends JPlugin
 {
     /**
      * @var Joomla\Registry\Registry
@@ -46,9 +46,9 @@ class plgSystemCrowdfundingModules extends JPlugin
             return;
         }
 
-        // It works only for GET request
-        $method = $app->input->getMethod();
-        if (strcmp("GET", $method) !== 0) {
+        // It works only for GET and POST requests.
+        $method = JString::strtolower($app->input->getMethod());
+        if (!in_array($method, array("get", "post"))) {
             return;
         }
 

@@ -18,6 +18,14 @@ defined('_JEXEC') or die;
  */
 class CrowdFundingPaymentPlugin extends JPlugin
 {
+    /**
+     * Affects constructor behavior. If true, language files will be loaded automatically.
+     *
+     * @var    boolean
+     * @since  3.1
+     */
+    protected $autoloadLanguage = true;
+
     protected $paymentService;
 
     protected $log;
@@ -55,8 +63,6 @@ class CrowdFundingPaymentPlugin extends JPlugin
             $this->log->addWriter(new ITPrismLogWriterFile($file));
         }
 
-        // Load language
-        $this->loadLanguage();
     }
 
 
@@ -251,8 +257,17 @@ class CrowdFundingPaymentPlugin extends JPlugin
                 $email->setSenderEmail($app->get("mailfrom"));
             }
 
-            $recipientName = $email->getSenderName();
-            $recipientMail = $email->getSenderEmail();
+            // Prepare recipient data.
+            $componentParams = JComponentHelper::getParams("com_crowdfunding");
+            $recipientId = $componentParams->get("administrator_id");
+            if (!empty($recipientId)) {
+                $recipient = JFactory::getUser($recipientId);
+                $recipientName = $recipient->get("name");
+                $recipientMail = $recipient->get("email");
+            } else {
+                $recipientName = $app->get("fromname");
+                $recipientMail = $app->get("mailfrom");
+            }
 
             // Prepare data for parsing
             $data["sender_name"]     = $email->getSenderName();

@@ -52,17 +52,33 @@ class CrowdFundingControllerRewards extends ITPrismControllerAdmin
             return;
         }
 
+        $params        = JComponentHelper::getParams("com_crowdfunding");
+        /** @var  $params Joomla\Registry\Registry */
+
         // Get the data from the form POST
-        $data      = $this->input->post->get('rewards', array(), 'array');
-        $projectId = $this->input->post->get('id', 0, 'int');
+        $data         = $this->input->post->get('rewards', array(), 'array');
+        $projectId    = $this->input->post->get('id', 0, 'int');
+        $actionSubmit = $this->input->post->getCmd('btn_submit', 'save');
 
         $images = $this->input->files->get('images', array(), 'array');
 
         $userId = JFactory::getUser()->get("id");
 
+        // Get wizard type
+        $wizardType   = $params->get("project_wizard_type", "five_steps");
+        $fiveStepsWizard = (strcmp($wizardType, "five_steps") == 0) ? true : false;
+
+        // If it is five steps wizard type, redirect to manager.
+        // If it is six steps wizard type, redirect to extras.
+        if (!$fiveStepsWizard) {
+            $layout = (strcmp($actionSubmit, "save_continue") == 0) ? "extras" : "rewards";
+        } else {
+            $layout = (strcmp($actionSubmit, "save_continue") == 0) ? "manager" : "rewards";
+        }
+
         $redirectOptions = array(
             "view"   => "project",
-            "layout" => "rewards",
+            "layout" => $layout,
             "id"     => $projectId
         );
 
@@ -81,9 +97,6 @@ class CrowdFundingControllerRewards extends ITPrismControllerAdmin
 
             $validData  = $model->validate($data);
             $rewardsIds = $model->save($validData, $projectId);
-
-            $params        = JComponentHelper::getParams("com_crowdfunding");
-            /** @var  $params Joomla\Registry\Registry */
 
             $imagesAllowed = $params->get("rewards_images", 0);
 
@@ -117,7 +130,7 @@ class CrowdFundingControllerRewards extends ITPrismControllerAdmin
         }
 
         // Redirect to next page
-        $this->displayMessage(JText::_("COM_CROWDFUNDING_REWARDS_SUCCESSFULY_SAVED"), $redirectOptions);
+        $this->displayMessage(JText::_("COM_CROWDFUNDING_REWARDS_SUCCESSFULLY_SAVED"), $redirectOptions);
     }
 
 
@@ -138,12 +151,12 @@ class CrowdFundingControllerRewards extends ITPrismControllerAdmin
                 "force_direction" => JRoute::_("index.php?option=com_users&view=login", false)
             );
             $this->displayNotice(JText::_("COM_CROWDFUNDING_ERROR_NOT_LOG_IN"), $redirectOptions);
-
             return;
         }
 
+        $redirect = base64_decode($this->input->get("redirect"));
         $redirectOptions = array(
-            "view" => "transactions"
+            "force_direction" => JRoute::_($redirect, false)
         );
 
         $txnId = $this->input->get->getInt('txn_id');

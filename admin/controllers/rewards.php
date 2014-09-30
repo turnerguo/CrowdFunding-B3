@@ -20,19 +20,9 @@ jimport('itprism.controller.admin');
  *
  * @package      CrowdFunding
  * @subpackage   Components
- *
- * @todo do it to work with observers
  */
 class CrowdFundingControllerRewards extends ITPrismControllerAdmin
 {
-    public function __construct($config)
-    {
-        parent::__construct($config);
-
-        // Register Observers
-//         JObserverMapper::addObserverClassToClass('CrowdFundingObserverReward', 'CrowdFundingTableReward', array('typeAlias' => 'com_crowdfunding.reward'));
-    }
-
     /**
      * Proxy for getModel.
      * @since   1.6

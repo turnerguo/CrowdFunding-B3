@@ -108,8 +108,8 @@ class CrowdFundingModelDetails extends JModelItem
                         $result->funding_end = "0000-00-00";
                     } else {
                         $fundingStartDate = new CrowdFundingDate($result->funding_start);
-                        $endDate = $fundingStartDate->calculateEndDate($result->funding_days);
-                        $result->funding_end = $endDate->format("Y-m-d");
+                        $fundingEndDate = $fundingStartDate->calculateEndDate($result->funding_days);
+                        $result->funding_end = $fundingEndDate->format("Y-m-d");
                     }
 
                 }

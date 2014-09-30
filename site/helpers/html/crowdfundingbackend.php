@@ -114,6 +114,33 @@ abstract class JHtmlCrowdFundingBackend
         return implode(" ", $html);
     }
 
+    public static function rewardState($rewardId, $transactionId, $sent = 0, $return = "")
+    {
+        $sent  = (!$sent) ? 0 : 1;
+        $state = (!$sent) ? 1 : 0;
+
+        $html = array();
+
+        $rewardLink = "index.php?option=com_crowdfunding&task=reward.changeState&id=" . $rewardId."&txn_id=".$transactionId."&state=".(int)$state."&".JSession::getFormToken().'=1&return='.$return;
+
+        if (!$sent) {
+            $icon  = "../media/com_crowdfunding/images/reward_16.png";
+            $title = 'title="';
+            $title .= JText::_("COM_CROWDFUNDING_REWARD_HAS_NOT_BEEN_SENT");
+            $title .= '"';
+        } else {
+            $icon  = "../media/com_crowdfunding/images/reward_sent_16.png";
+            $title = 'title="';
+            $title .= JText::_("COM_CROWDFUNDING_REWARD_HAS_BEEN_SENT");
+            $title .= '"';
+        }
+
+        $html[] = '<a href="' . $rewardLink . '" class="hasTooltip" ' . $title . '>';
+        $html[] = '<img src="' . $icon . '" width="16" height="16" />';
+        $html[] = '</a>';
+
+        return implode(" ", $html);
+    }
 
     /**
      * @param   int $i
@@ -156,6 +183,46 @@ abstract class JHtmlCrowdFundingBackend
         $html[] = '<a class="btn btn-micro hasTooltip" href="javascript:void(0);" title="' . addslashes($title) . '">';
         $html[] = '<i class="icon-question"></i>';
         $html[] = '</a>';
+
+        return implode("\n", $html);
+    }
+
+    public static function profileIcon($socialProfile, $userId)
+    {
+        $html = array();
+
+        if (!empty($socialProfile)) {
+            $link = str_replace("/administrator", "", $socialProfile->getLink());
+            $link = $str= ltrim($link, '/');
+
+            $html[] = '<a href="'. JUri::root() .$link .'" class="btn" target="_blank">';
+            $html[] = '<i class="icon icon-user"></i>';
+            $html[] = '</a>';
+        } else {
+            $html[] = '<a href="index.php?option=com_crowdfunding&view=users&filter_search=id:' . (int)$userId.'" class="btn">';
+            $html[] = '<i class="icon icon-user"></i>';
+            $html[] = '</a>';
+        }
+
+        return implode("\n", $html);
+    }
+
+    public static function profileLink($socialProfile, $name, $userId)
+    {
+        $html = array();
+
+        if (!empty($socialProfile)) {
+            $link = str_replace("/administrator", "", $socialProfile->getLink());
+            $link = $str= ltrim($link, '/');
+
+            $html[] = '<a href="'. JUri::root() .$link .'" target="_blank">';
+            $html[] = htmlentities($name, ENT_QUOTES, "UTF-8");
+            $html[] = '</a>';
+        } else {
+            $html[] = '<a href="index.php?option=com_crowdfunding&view=users&filter_search=id:' . (int)$userId.'">';
+            $html[] = htmlentities($name, ENT_QUOTES, "UTF-8");
+            $html[] = '</a>';
+        }
 
         return implode("\n", $html);
     }

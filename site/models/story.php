@@ -10,8 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-// jimport('joomla.application.component.modelform');
-JLoader::register("CrowdFundingModelProject", CROWDFUNDING_PATH_COMPONENT_SITE . DIRECTORY_SEPARATOR . "models" . DIRECTORY_SEPARATOR . "project.php");
+JLoader::register("CrowdFundingModelProject", CROWDFUNDING_PATH_COMPONENT_SITE . "/models/project.php");
 
 class CrowdFundingModelStory extends CrowdFundingModelProject
 {
@@ -53,7 +52,7 @@ class CrowdFundingModelStory extends CrowdFundingModelProject
         if (!$data) {
 
             $itemId = (int)$this->getState($this->getName() . '.id');
-            $userId = JFactory::getUser()->id;
+            $userId = JFactory::getUser()->get("id");
 
             $data = $this->getItem($itemId, $userId);
 
@@ -147,6 +146,7 @@ class CrowdFundingModelStory extends CrowdFundingModelProject
 
         $uploadedFile = JArrayHelper::getValue($image, 'tmp_name');
         $uploadedName = JArrayHelper::getValue($image, 'name');
+        $errorCode    = JArrayHelper::getValue($image, 'error');
 
         // Load parameters.
         $params     = JComponentHelper::getParams($this->option);
@@ -164,6 +164,7 @@ class CrowdFundingModelStory extends CrowdFundingModelProject
         jimport("itprism.file.uploader.local");
         jimport("itprism.file.validator.size");
         jimport("itprism.file.validator.image");
+        jimport("itprism.file.validator.server");
 
         $file = new ITPrismFile();
 
@@ -174,6 +175,8 @@ class CrowdFundingModelStory extends CrowdFundingModelProject
 
         $sizeValidator = new ITPrismFileValidatorSize($fileSize, $uploadMaxSize);
 
+        // Prepare server validator.
+        $serverValidator = new ITPrismFileValidatorServer($errorCode, array(UPLOAD_ERR_NO_FILE));
 
         // Prepare image validator.
         $imageValidator = new ITPrismFileValidatorImage($uploadedFile, $uploadedName);
@@ -188,10 +191,13 @@ class CrowdFundingModelStory extends CrowdFundingModelProject
 
         $file
             ->addValidator($sizeValidator)
-            ->addValidator($imageValidator);
+            ->addValidator($imageValidator)
+            ->addValidator($serverValidator);
 
         // Validate the file
-        $file->validate();
+        if (!$file->isValid()) {
+            throw new RuntimeException($file->getError());
+        }
 
         // Generate temporary file name
         $ext = JString::strtolower(JFile::makeSafe(JFile::getExt($image['name'])));
@@ -203,7 +209,7 @@ class CrowdFundingModelStory extends CrowdFundingModelProject
         $tmpDestFile = $tmpFolder . DIRECTORY_SEPARATOR . $generatedName . "." . $ext;
 
         // Prepare uploader object.
-        $uploader = new ITPrismFileUploaderLocal($image);
+        $uploader = new ITPrismFileUploaderLocal($uploadedFile);
         $uploader->setDestination($tmpDestFile);
 
         // Upload temporary file
@@ -290,6 +296,7 @@ class CrowdFundingModelStory extends CrowdFundingModelProject
         jimport("itprism.file.uploader.local");
         jimport("itprism.file.validator.size");
         jimport("itprism.file.validator.image");
+        jimport("itprism.file.validator.server");
         jimport("itprism.string");
 
         // Joomla! media extension parameters
@@ -304,6 +311,7 @@ class CrowdFundingModelStory extends CrowdFundingModelProject
 
                 $uploadedFile = JArrayHelper::getValue($image, 'tmp_name');
                 $uploadedName = JArrayHelper::getValue($image, 'name');
+                $errorCode    = JArrayHelper::getValue($image, 'error');
 
                 $file = new ITPrismFile();
 
@@ -312,7 +320,11 @@ class CrowdFundingModelStory extends CrowdFundingModelProject
                 $fileSize      = JArrayHelper::getValue($image, "size");
                 $uploadMaxSize = $mediaParams->get("upload_maxsize") * $KB;
 
+                // Prepare file size validator
                 $sizeValidator = new ITPrismFileValidatorSize($fileSize, $uploadMaxSize);
+
+                // Prepare server validator.
+                $serverValidator = new ITPrismFileValidatorServer($errorCode, array(UPLOAD_ERR_NO_FILE));
 
                 // Prepare image validator.
                 $imageValidator = new ITPrismFileValidatorImage($uploadedFile, $uploadedName);
@@ -327,10 +339,13 @@ class CrowdFundingModelStory extends CrowdFundingModelProject
 
                 $file
                     ->addValidator($sizeValidator)
-                    ->addValidator($imageValidator);
+                    ->addValidator($imageValidator)
+                    ->addValidator($serverValidator);
 
                 // Validate the file
-                $file->validate();
+                if (!$file->isValid()) {
+                    throw new RuntimeException($file->getError());
+                }
 
                 // Generate file name
                 $ext = JString::strtolower(JFile::makeSafe(JFile::getExt($image['name'])));
@@ -341,7 +356,7 @@ class CrowdFundingModelStory extends CrowdFundingModelProject
                 $tmpDestFile = $destination . DIRECTORY_SEPARATOR . $generatedName . "_extra." . $ext;
 
                 // Prepare uploader object.
-                $uploader = new ITPrismFileUploaderLocal($image);
+                $uploader = new ITPrismFileUploaderLocal($uploadedFile);
                 $uploader->setDestination($tmpDestFile);
 
                 // Upload temporary file
@@ -424,6 +439,8 @@ class CrowdFundingModelStory extends CrowdFundingModelProject
      * @param integer $imageId Image ID
      * @param string  $imagesFolder A path to the images folder.
      * @param integer  $userId
+     *
+     * @throws RuntimeException
      */
     public function removeExtraImage($imageId, $imagesFolder, $userId)
     {
@@ -436,9 +453,9 @@ class CrowdFundingModelStory extends CrowdFundingModelProject
 
         // Validate owner of the project.
         $ownerValidator = new CrowdFundingImageValidatorOwner(JFactory::getDbo(), $imageId, $userId);
-        $file->addValidator($ownerValidator);
-
-        $file->validate();
+        if (!$ownerValidator->isValid()) {
+            throw new RuntimeException(JText::_("COM_CROWDFUNDING_INVALID_PROJECT"));
+        }
 
         // Remove the image.
         $remover = new CrowdFundingImageRemoverExtra(JFactory::getDbo(), $imageId, $imagesFolder);

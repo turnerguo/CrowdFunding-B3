@@ -10,7 +10,6 @@
 // no direct access
 defined('_JEXEC') or die();
 
-jimport('joomla.application.component.modeladmin');
 jimport("crowdfunding.log.files");
 
 class CrowdFundingModelLog extends JModelAdmin

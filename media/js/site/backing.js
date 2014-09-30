@@ -1,25 +1,26 @@
 jQuery(document).ready(function() {
 	
-	jQuery(".reward-amount").bind("click", function(event) {
+	jQuery(".js-reward-amount").on("click", function() {
 		
-		var elements  	  = jQuery(this).find(".reward-amount-radio");
+		var elements  	  = jQuery(this).find(".js-reward-amount-radio");
 		var radio  	  	  = elements[0];
 		
 		if(jQuery(radio).is(':checked') === false) {
-			jQuery(".reward-amount-radio").attr('checked', false);
+			jQuery(".js-reward-amount-radio").attr('checked', false);
 			jQuery(radio).attr('checked', true);
 	    }
 		
 		var rewardId      = jQuery(radio).data("id");
+        var amountElement = jQuery("#js-current-amount");
 		
 		var amount  	  = parseFloat( jQuery(radio).val() );
-		var currentAmount = parseFloat( jQuery("#current-amount").val() );
+		var currentAmount = parseFloat( jQuery(amountElement).val());
 		
 		if(currentAmount < amount) {
-			jQuery("#current-amount").val(amount);
+			jQuery(amountElement).val(amount);
 		}
 		
-		jQuery("#reward-id").val(rewardId);
+		jQuery("#js-reward-id").val(rewardId);
 		
 	});
 	

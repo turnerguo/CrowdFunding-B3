@@ -81,7 +81,7 @@ class CrowdFundingControllerStory extends JControllerLegacy
         if (!$files) {
             $response
                 ->setTitle(JText::_('COM_CROWDFUNDING_FAIL'))
-                ->setText(JText::_('COM_CROWDFUNDING_ERROR_FILE_UPLOAD'))
+                ->setText(JText::_('COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED'))
                 ->failure();
 
             echo $response;

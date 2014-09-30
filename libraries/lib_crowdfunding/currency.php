@@ -113,6 +113,7 @@ class CrowdFundingCurrency
      *
      * <code>
      * $currencyId = 1;
+     *
      * $currency   = new CrowdFundingCurrency();
      * $currency->setDb(JFactory::getDbo());
      * $currency->load($currencyId);
@@ -139,6 +140,38 @@ class CrowdFundingCurrency
     }
 
     /**
+     * Load currency data from database.
+     *
+     * <code>
+     * $currencyCode = "EUR";
+     *
+     * $currency   = new CrowdFundingCurrency();
+     * $currency->setDb(JFactory::getDbo());
+     *
+     * $currency->loadByAbbr($currencyCode);
+     * </code>
+     *
+     * @param string $abbr
+     */
+    public function loadByAbbr($abbr)
+    {
+        $query = $this->db->getQuery(true);
+        $query
+            ->select("a.id, a.title, a.abbr, a.symbol, a.position")
+            ->from($this->db->quoteName("#__crowdf_currencies", "a"))
+            ->where("a.abbr = " . $this->db->quote($abbr));
+
+        $this->db->setQuery($query);
+        $result = $this->db->loadAssoc();
+
+        if (!$result) {
+            $result = array();
+        }
+
+        $this->bind($result);
+    }
+
+    /**
      * Set data about currency to object parameters.
      *
      * <code>
@@ -151,7 +184,7 @@ class CrowdFundingCurrency
      * $currency->bind($data);
      * </code>
      *
-     * @param       $data
+     * @param array $data
      * @param array $ignored
      *
      */

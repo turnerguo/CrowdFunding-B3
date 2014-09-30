@@ -98,7 +98,14 @@ class CrowdFundingModelProject extends JModelForm
             $data = $this->getItem($itemId, $userId);
 
             if (!empty($data->location)) {
-                $locationName = $this->getLocationName($data->location, true);
+
+                // Load location from database.
+                jimport("crowdfunding.location");
+                $location = new CrowdFundingLocation(JFactory::getDbo());
+                $location->load($data->location);
+                $locationName = $location->getName(true);
+
+                // Set the name to the form element.
                 if (!empty($locationName)) {
                     $data->location_preview = $locationName;
                 }
@@ -346,6 +353,7 @@ class CrowdFundingModelProject extends JModelForm
 
         $uploadedFile = JArrayHelper::getValue($image, 'tmp_name');
         $uploadedName = JArrayHelper::getValue($image, 'name');
+        $errorCode    = JArrayHelper::getValue($image, 'error');
 
         // Load parameters.
         $params     = JComponentHelper::getParams($this->option);
@@ -363,6 +371,7 @@ class CrowdFundingModelProject extends JModelForm
         jimport("itprism.file.uploader.local");
         jimport("itprism.file.validator.size");
         jimport("itprism.file.validator.image");
+        jimport("itprism.file.validator.server");
 
         $file = new ITPrismFile();
 
@@ -371,8 +380,11 @@ class CrowdFundingModelProject extends JModelForm
         $fileSize      = (int)$app->input->server->get('CONTENT_LENGTH');
         $uploadMaxSize = $mediaParams->get("upload_maxsize") * $KB;
 
+        // Prepare file size validator
         $sizeValidator = new ITPrismFileValidatorSize($fileSize, $uploadMaxSize);
 
+        // Prepare server validator.
+        $serverValidator = new ITPrismFileValidatorServer($errorCode, array(UPLOAD_ERR_NO_FILE));
 
         // Prepare image validator.
         $imageValidator = new ITPrismFileValidatorImage($uploadedFile, $uploadedName);
@@ -387,10 +399,13 @@ class CrowdFundingModelProject extends JModelForm
 
         $file
             ->addValidator($sizeValidator)
-            ->addValidator($imageValidator);
+            ->addValidator($imageValidator)
+            ->addValidator($serverValidator);
 
         // Validate the file
-        $file->validate();
+        if (!$file->isValid()) {
+            throw new RuntimeException($file->getError());
+        }
 
         // Generate temporary file name
         $ext = JFile::makeSafe(JFile::getExt($image['name']));
@@ -402,7 +417,7 @@ class CrowdFundingModelProject extends JModelForm
         $tmpDestFile = $tmpFolder . DIRECTORY_SEPARATOR . $generatedName . "." . $ext;
 
         // Prepare uploader object.
-        $uploader = new ITPrismFileUploaderLocal($image);
+        $uploader = new ITPrismFileUploaderLocal($uploadedFile);
         $uploader->setDestination($tmpDestFile);
 
         // Upload temporary file
@@ -414,7 +429,7 @@ class CrowdFundingModelProject extends JModelForm
         $tmpDestFile = JPath::clean($file->getFile());
 
         if (!is_file($tmpDestFile)) {
-            throw new RuntimeException('COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED');
+            throw new RuntimeException(JText::_('COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED'));
         }
 
         // Resize image
@@ -516,72 +531,4 @@ class CrowdFundingModelProject extends JModelForm
         $row->store();
     }
 
-
-    /**
-     * Get a list with locations searching by string
-     *
-     * @param string $string
-     *
-     * @return array
-     */
-    public function getLocations($string)
-    {
-        $db    = $this->getDbo();
-        $query = $db->getQuery(true);
-
-        $search = $db->quote($db->escape($string, true) . '%');
-
-        $caseWhen = ' CASE WHEN ';
-        $caseWhen .= $query->charLength('a.state_code', '!=', '0');
-        $caseWhen .= ' THEN ';
-        $caseWhen .= $query->concatenate(array('a.name', 'a.state_code', 'a.country_code'), ', ');
-        $caseWhen .= ' ELSE ';
-        $caseWhen .= $query->concatenate(array('a.name', 'a.country_code'), ', ');
-        $caseWhen .= ' END as name';
-
-        $query
-            ->select("a.id, " . $caseWhen)
-            ->from($db->quoteName("#__crowdf_locations", "a"))
-            ->where($db->quoteName("a.name") . " LIKE " . $search);
-
-        $db->setQuery($query, 0, 8);
-        $results = $db->loadAssocList();
-
-        return (array)$results;
-
-    }
-
-    /**
-     * Load a location name from database
-     *
-     * @param integer $id        ID of the location
-     * @param bool    $includeCC Include country code
-     *
-     * @return mixed    string or null
-     */
-    public function getLocationName($id, $includeCC = false)
-    {
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        if (!$includeCC) {
-
-            $query
-                ->select("a.name")
-                ->from($db->quoteName("#__crowdf_locations", "a"))
-                ->where("a.id = " . (int)$id);
-
-        } else {
-
-            $query
-                ->select("CONCAT(a.name, ', ', a.country_code) AS name")
-                ->from($db->quoteName("#__crowdf_locations", "a"))
-                ->where("a.id = " . (int)$id);
-        }
-
-        $db->setQuery($query, 0, 1);
-        $result = $db->loadResult();
-
-        return $result;
-    }
 }

@@ -180,8 +180,8 @@ class CrowdFundingProject
                 $this->funding_end = "0000-00-00";
             } else {
                 $fundingStartDate = new CrowdFundingDate($this->funding_start);
-                $endDate = $fundingStartDate->calculateEndDate($this->funding_days);
-                $this->funding_end = $endDate->format("Y-m-d");
+                $fundingEndDate = $fundingStartDate->calculateEndDate($this->funding_days);
+                $this->funding_end = $fundingEndDate->format("Y-m-d");
             }
 
         }

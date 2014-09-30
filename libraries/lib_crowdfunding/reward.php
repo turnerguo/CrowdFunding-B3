@@ -30,6 +30,7 @@ class CrowdFundingReward
     protected $image_square;
     protected $published;
     protected $project_id;
+    protected $user_id;
     protected $available = 0;
 
     /**
@@ -97,9 +98,11 @@ class CrowdFundingReward
         $query
             ->select(
                 "a.id, a.title, a.description, a.amount, a.number, a.distributed, a.delivery, " .
-                "a.shipping, a.image, a.image_thumb, a.image_square, a.published, a.project_id"
+                "a.shipping, a.image, a.image_thumb, a.image_square, a.published, a.project_id, " .
+                "b.user_id"
             )
-            ->from($this->db->quoteName("#__crowdf_rewards", "a"));
+            ->from($this->db->quoteName("#__crowdf_rewards", "a"))
+            ->innerJoin($this->db->quoteName("#__crowdf_projects", "b") . " ON a.project_id = b.id");
 
         if (!is_array($keys)) {
             $query->where("a.id = " . (int)$keys);
@@ -295,6 +298,158 @@ class CrowdFundingReward
     public function getAmount()
     {
         return $this->amount;
+    }
+
+    /**
+     * Return the ID of the user which provides the reward.
+     *
+     * <code>
+     * $rewardId  = 1;
+     *
+     * $reward    = new CrowdFundingReward(JFactory::getDbo());
+     * $reward->load($rewardId);
+     *
+     * $userId = $reward->getUserId();
+     * </code>
+     *
+     * @return int
+     */
+    public function getUserId()
+    {
+        return (int)$this->user_id;
+    }
+
+    /**
+     * Return a reward image.
+     *
+     * <code>
+     * $rewardId  = 1;
+     *
+     * $reward    = new CrowdFundingReward(JFactory::getDbo());
+     * $reward->load($rewardId);
+     *
+     * $image = $reward->getImage();
+     * </code>
+     *
+     * @return string
+     */
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    /**
+     * Return the thumbnail of the reward.
+     *
+     * <code>
+     * $rewardId  = 1;
+     *
+     * $reward    = new CrowdFundingReward(JFactory::getDbo());
+     * $reward->load($rewardId);
+     *
+     * $thumbnail = $reward->getImageThumbnail();
+     * </code>
+     *
+     * @return string
+     */
+    public function getImageThumbnail()
+    {
+        return $this->image_thumb;
+    }
+
+    /**
+     * Return the square image of the reward.
+     *
+     * <code>
+     * $rewardId  = 1;
+     *
+     * $reward    = new CrowdFundingReward(JFactory::getDbo());
+     * $reward->load($rewardId);
+     *
+     * $square = $reward->getImageSquare();
+     * </code>
+     *
+     * @return string
+     */
+    public function getImageSquare()
+    {
+        return $this->image_square;
+    }
+
+    /**
+     * Return the date to which must be delivered the reward.
+     *
+     * <code>
+     * $rewardId  = 1;
+     *
+     * $reward    = new CrowdFundingReward(JFactory::getDbo());
+     * $reward->load($rewardId);
+     *
+     * $date = $reward->getDeliveryDate();
+     * </code>
+     *
+     * @return string
+     */
+    public function getDeliveryDate()
+    {
+        return $this->delivery;
+    }
+
+    /**
+     * Return the number of the reward.
+     *
+     * <code>
+     * $rewardId  = 1;
+     *
+     * $reward    = new CrowdFundingReward(JFactory::getDbo());
+     * $reward->load($rewardId);
+     *
+     * $number = $reward->getNumber();
+     * </code>
+     *
+     * @return int
+     */
+    public function getNumber()
+    {
+        return $this->number;
+    }
+
+    /**
+     * Return an ID of a project.
+     *
+     * <code>
+     * $rewardId  = 1;
+     *
+     * $reward    = new CrowdFundingReward(JFactory::getDbo());
+     * $reward->load($rewardId);
+     *
+     * $projectId = $reward->getProjectId();
+     * </code>
+     *
+     * @return int
+     */
+    public function getProjectId()
+    {
+        return $this->project_id;
+    }
+
+    /**
+     * Return the number of distributed rewards.
+     *
+     * <code>
+     * $rewardId  = 1;
+     *
+     * $reward    = new CrowdFundingReward(JFactory::getDbo());
+     * $reward->load($rewardId);
+     *
+     * $distributed = $reward->getNumber();
+     * </code>
+     *
+     * @return int
+     */
+    public function getDistributed()
+    {
+        return $this->distributed;
     }
 
     /**

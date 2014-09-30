@@ -96,8 +96,9 @@ class CrowdFundingViewDiscover extends JViewLegacy
             $this->prepareIntegration($this->items, $this->params);
         }
 
-        $this->version    = new CrowdFundingVersion();
         $this->prepareDocument();
+
+        $this->version    = new CrowdFundingVersion();
 
         parent::display($tpl);
     }

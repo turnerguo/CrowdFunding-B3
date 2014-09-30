@@ -39,7 +39,7 @@ class CrowdFundingControllerComment extends ITPrismControllerFormBackend
         /** @var $model CrowdFundingModelComment */
 
         $form = $model->getForm($data, false);
-        /** @var $form JForm * */
+        /** @var $form JForm */
 
         if (!$form) {
             throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"), 500);

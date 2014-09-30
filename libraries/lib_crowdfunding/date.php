@@ -64,7 +64,7 @@ class CrowdFundingDate extends ITPrismDate
             $daysLeft = 0;
         }
 
-        return $daysLeft;
+        return abs($daysLeft);
     }
 
     /**

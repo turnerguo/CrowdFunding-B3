@@ -69,8 +69,9 @@ class CrowdFundingViewProjects extends JViewLegacy
         $this->listDirn  = $this->escape($this->state->get('list.direction'));
         $this->saveOrder = (strcmp($this->listOrder, 'a.ordering') != 0) ? false : true;
 
-        $this->version    = new CrowdFundingVersion();
         $this->prepareDocument();
+
+        $this->version    = new CrowdFundingVersion();
 
         parent::display($tpl);
     }

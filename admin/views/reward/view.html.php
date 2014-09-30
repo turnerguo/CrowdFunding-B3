@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.view');
+jimport('itprism.validator.date');
 
 class CrowdFundingViewReward extends JViewLegacy
 {
@@ -24,13 +24,28 @@ class CrowdFundingViewReward extends JViewLegacy
      */
     protected $state;
 
+    /**
+     * @var Joomla\Registry\Registry
+     */
+    protected $params;
+
     protected $item;
     protected $form;
 
     protected $rewardsImagesUri;
+    protected $allowedImages;
+    protected $projectTitle;
+    protected $rewards;
+    protected $deliveryDate;
+    protected $socialProfile;
+    protected $profileLink;
+    protected $imagesFolder;
+    protected $rewardOwnerId;
+    protected $returnUrl;
 
     protected $documentTitle;
     protected $option;
+    protected $layout;
 
     public function __construct($config)
     {
@@ -47,19 +62,69 @@ class CrowdFundingViewReward extends JViewLegacy
         $this->item  = $this->get('Item');
         $this->form  = $this->get('Form');
 
+        $this->params     = $this->state->get("params");
+
+        // Get rewards images URI.
         if (!empty($this->item->id)) {
             $userId = CrowdFundingHelper::getUserIdByRewardId($this->item->id);
-
             $uri = JUri::getInstance();
-
             $this->rewardsImagesUri = $uri->toString(array("scheme", "host")) . "/" . CrowdFundingHelper::getImagesFolderUri($userId, JPATH_BASE);
         }
 
-        // Prepare actions, behaviors, scritps and document
+        $app = JFactory::getApplication();
+        /** @var  $app JApplicationAdministrator */
+
+        // Get project title.
+        $projectId = $app->getUserState("com_crowdfunding.rewards.pid");
+        $this->projectTitle = CrowdFundingHelper::getProjectTitle($projectId);
+
+        // Get a property that give us ability to upload images.
+        $this->allowedImages = $this->params->get("rewards_images", 0);
+
+        $this->layout = $this->getLayout();
+
+        if (strcmp("default", $this->layout) == 0) {
+            $this->prepareDefaultLayout();
+        }
+        
+        // Prepare actions, behaviors, scripts and document.
         $this->addToolbar();
         $this->setDocument();
 
         parent::display($tpl);
+    }
+
+    protected function prepareDefaultLayout()
+    {
+        jimport("crowdfunding.user.rewards");
+        $this->rewards = new CrowdFundingUserRewards(JFactory::getDbo());
+        $this->rewards->loadByRewardId($this->item->id);
+
+        $this->rewardOwnerId = CrowdFundingHelper::getUserIdByRewardId($this->item->id);
+
+        $dateValidator = new ITPrismValidatorDate($this->item->delivery);
+        $this->deliveryDate = ($dateValidator->isValid()) ? JHtml::_('date', $this->item->delivery, JText::_('DATE_FORMAT_LC3')) : "--";
+
+        $this->imagesFolder = CrowdFundingHelper::getImagesFolderUri($this->rewardOwnerId);
+
+        // Get social profile
+        $socialPlatform = $this->params->get("integration_social_platform");
+
+        if (!empty($socialPlatform)) {
+            $options = array(
+                "social_platform" => $socialPlatform,
+                "user_id" => $this->rewardOwnerId
+            );
+
+            jimport("itprism.integrate.profile.builder");
+            $profileBuilder = new ITPrismIntegrateProfileBuilder($options);
+            $profileBuilder->build();
+
+            $this->socialProfile = $profileBuilder->getProfile();
+            $this->profileLink   = $this->socialProfile->getLink();
+        }
+
+        $this->returnUrl = base64_encode("index.php?option=com_crowdfunding&view=reward&id=".$this->item->id);
     }
 
     /**
@@ -69,21 +134,35 @@ class CrowdFundingViewReward extends JViewLegacy
      */
     protected function addToolbar()
     {
-        JFactory::getApplication()->input->set('hidemainmenu', true);
-        $isNew = ($this->item->id == 0);
+        if (strcmp("default", $this->layout) != 0) { // Layout "edit".
 
-        $this->documentTitle = $isNew ? JText::_('COM_CROWDFUNDING_NEW_REWARD')
-            : JText::_('COM_CROWDFUNDING_EDIT_REWARD');
+            JFactory::getApplication()->input->set('hidemainmenu', true);
+            $isNew = ($this->item->id == 0);
 
-        JToolbarHelper::title($this->documentTitle);
+            $this->documentTitle = $isNew ?
+                JText::sprintf('COM_CROWDFUNDING_NEW_REWARD', $this->projectTitle) :
+                JText::sprintf('COM_CROWDFUNDING_EDIT_REWARD', $this->projectTitle);
 
-        JToolbarHelper::apply('reward.apply');
-        JToolbarHelper::save('reward.save');
+            JToolbarHelper::title($this->documentTitle);
 
-        if (!$isNew) {
-            JToolbarHelper::cancel('reward.cancel', 'JTOOLBAR_CANCEL');
-        } else {
+            JToolbarHelper::apply('reward.apply');
+            JToolbarHelper::save2new('reward.save2new');
+            JToolbarHelper::save('reward.save');
+
+            if (!$isNew) {
+                JToolbarHelper::cancel('reward.cancel', 'JTOOLBAR_CANCEL');
+            } else {
+                JToolbarHelper::cancel('reward.cancel', 'JTOOLBAR_CLOSE');
+            }
+
+        } else { // Layout 'default'.
+
+            $this->documentTitle = JText::sprintf('COM_CROWDFUNDING_VIEW_REWARD_S_PROJECT_S', $this->item->title, $this->projectTitle);
+
+            JToolbarHelper::title($this->documentTitle);
+
             JToolbarHelper::cancel('reward.cancel', 'JTOOLBAR_CLOSE');
+
         }
     }
 
@@ -100,6 +179,7 @@ class CrowdFundingViewReward extends JViewLegacy
         JHtml::_('behavior.keepalive');
         JHtml::_('behavior.formvalidation');
         JHtml::_('behavior.tooltip');
+        JHtml::_('itprism.ui.bootstrap_fileuploadstyle');
 
         JHtml::_('formbehavior.chosen', 'select');
 

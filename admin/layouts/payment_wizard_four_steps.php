@@ -10,14 +10,14 @@
 // no direct access
 defined('_JEXEC') or die;
 
-$active = array("rewards" => false, "login" => false, "payment" => false, "share" => false);
+$active = array("rewards" => false, "step2" => false, "payment" => false, "share" => false);
 
 switch ($displayData->layout) {
     case "default":
         $active["rewards"] = true;
         break;
-    case "login":
-        $active["login"] = true;
+    case "step2":
+        $active["step2"] = true;
         break;
     case "payment":
         $active["payment"] = true;
@@ -26,7 +26,6 @@ switch ($displayData->layout) {
         $active["share"] = true;
         break;
 }
-
 ?>
 <div class="navbar">
     <div class="navbar-inner">
@@ -39,19 +38,19 @@ switch ($displayData->layout) {
                 </a>
             </li>
 
-            <li <?php echo ($active["login"]) ? 'class="active"' : ''; ?>>
-                <?php if (!empty($displayData->paymentProcess->step1)) { ?>
-                    <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($displayData->item->slug, $displayData->item->catslug, "login")); ?>">
-                        (2) <?php echo JText::_("COM_CROWDFUNDING_STEP_LOGIN"); ?>
+            <li <?php echo ($active["step2"]) ? 'class="active"' : ''; ?>>
+                <?php if (!empty($displayData->paymentSession->step1)) { ?>
+                    <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($displayData->item->slug, $displayData->item->catslug, "step2")); ?>">
+                        (2) <?php echo JText::_("COM_CROWDFUNDING_LAYOUT_PAYMENT_WIZARD_STEP2_TITLE"); ?>
                     </a>
                 <?php } else { ?>
                     <a href="javascript: void(0);"
-                       class="disabled">(2) <?php echo JText::_("COM_CROWDFUNDING_STEP_LOGIN"); ?></a>
+                       class="disabled">(2) <?php echo JText::_("COM_CROWDFUNDING_LAYOUT_PAYMENT_WIZARD_STEP2_TITLE"); ?></a>
                 <?php } ?>
             </li>
 
             <li <?php echo ($active["payment"]) ? 'class="active"' : ''; ?>>
-                <?php if (!empty($displayData->paymentProcess->step1)) { ?>
+                <?php if (!empty($displayData->paymentSession->step1)) { ?>
                     <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($displayData->item->slug, $displayData->item->catslug, "payment")); ?>">
                         (3) <?php echo JText::_("COM_CROWDFUNDING_STEP_PAY"); ?>
                     </a>
@@ -62,7 +61,7 @@ switch ($displayData->layout) {
             </li>
 
             <li <?php echo ($active["share"]) ? 'class="active"' : ''; ?>>
-                <?php if (!empty($displayData->paymentProcess->step2)) { ?>
+                <?php if (!empty($displayData->paymentSession->step2)) { ?>
                     <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($displayData->item->slug, $displayData->item->catslug, "share")); ?>">
                         (4) <?php echo JText::_("COM_CROWDFUNDING_STEP_SHARE"); ?>
                     </a>

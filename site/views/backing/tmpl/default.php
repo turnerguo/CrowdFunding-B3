@@ -31,23 +31,27 @@ defined('_JEXEC') or die;
 	<div class="row-fluid">
 		<div class="span12">
 			
-			<form method="post" action="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug)."&task=backing.step1");?>" class="bs-docs-example cfbf" id="form-pledge" autocomplete="off">
+			<form method="post" action="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug));?>" class="bs-docs-example cfbf" id="form-pledge" autocomplete="off">
 				<fieldset>
     				<legend><?php echo JText::_("COM_CROWDFUNDING_ENTER_YOUR_INVESTMENT_AMOUNT");?></legend>
-    				<?php echo JHtml::_("crowdfunding.inputAmount", $this->rewardAmount, $this->currency, array("name"=>"amount", "id"=>"current-amount")); ?>
+    				<?php echo JHtml::_("crowdfunding.inputAmount", $this->rewardAmount, $this->currency, array("name"=>"amount", "id"=>"js-current-amount")); ?>
     				<?php 
     				if($this->params->get("backing_terms", 0)) {
     				    $termsUrl = $this->params->get("backing_terms_url", "");
     				?>
     				<label class="checkbox">
-                    	<input type="checkbox" name="terms" value="1"> <?php echo (!$termsUrl) ? JText::_("COM_CROWDFUNDING_TERMS_AGREEMENT") : JText::sprintf("COM_CROWDFUNDING_TERMS_AGREEMENT_URL", $termsUrl);?>
+                    	<input type="checkbox" name="terms" value="1">&nbsp;
+                        <?php echo (!$termsUrl) ? JText::_("COM_CROWDFUNDING_TERMS_AGREEMENT") : JText::sprintf("COM_CROWDFUNDING_TERMS_AGREEMENT_URL", $termsUrl);?>
                     </label>
                     <?php }?>
     				<input type="hidden" name="id" value="<?php echo $this->item->id; ?>" />
-    				<input type="hidden" name="rid" value="<?php echo $this->rewardId; ?>" id="reward-id" />
-    				<?php echo JHtml::_('form.token'); ?> 
+    				<input type="hidden" name="rid" value="<?php echo $this->rewardId; ?>" id="js-reward-id" />
+    				<input type="hidden" name="task" value="<?php echo $this->secondStepTask; ?>" />
+    				<?php echo JHtml::_('form.token'); ?>
     				
-    				<button type="submit" class="button button-large" <?php echo $this->disabledButton;?>><?php echo JText::_("COM_CROWDFUNDING_CONTINUE");?></button>
+    				<button type="submit" class="button button-large" <?php echo $this->disabledButton;?>>
+                        <?php echo JText::_("COM_CROWDFUNDING_CONTINUE");?>
+                    </button>
     				
                 </fieldset>
             </form>
@@ -57,9 +61,9 @@ defined('_JEXEC') or die;
 			    <div class="reward_title pull-center"><?php echo JText::_("COM_CROWDFUNDING_REWARDS");?></div>
 			
             	<div class="reward">
-            		<a href="javascript: void(0);" class="reward-amount" >
+            		<a href="javascript: void(0);" class="js-reward-amount" >
             			<span class="ramount">
-            			<input type="radio" name="reward" value="0" data-id="0" class="reward-amount-radio" <?php echo (!$this->rewardId) ? 'checked="checked"' : ""; ?>/>
+            			<input type="radio" name="reward" value="0" data-id="0" class="js-reward-amount-radio" <?php echo (!$this->rewardId) ? 'checked="checked"' : ""; ?>/>
             			<?php echo JText::_("COM_CROWDFUNDING_NO_REWARD"); ?>
             			</span>
             			<span class="rdesc"><?php echo JText::_("COM_CROWDFUNDING_JUST_INVEST"); ?></span>
@@ -67,9 +71,9 @@ defined('_JEXEC') or die;
             	</div>
             	<?php foreach($this->rewards as $reward) {?>
             	<div class="reward">
-            		<a href="javascript: void(0);" class="reward-amount" >
+            		<a href="javascript: void(0);" class="js-reward-amount" >
             			<span class="ramount">
-            			<input type="radio" name="reward" value="<?php echo $reward->amount;?>" data-id="<?php echo $reward->id;?>" class="reward-amount-radio" <?php echo ($this->rewardId != $reward->id) ? "" : 'checked="checked"'?>/>
+            			<input type="radio" name="reward" value="<?php echo $reward->amount;?>" data-id="<?php echo $reward->id;?>" class="js-reward-amount-radio" <?php echo ($this->rewardId != $reward->id) ? "" : 'checked="checked"'?>/>
             			<?php 
             			$amount = $this->currency->getAmountString($reward->amount);
             			echo JText::sprintf("COM_CROWDFUNDING_INVEST_MORE", $amount ); ?>

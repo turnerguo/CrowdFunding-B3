@@ -37,7 +37,7 @@ class CrowdFundingObserverReward extends JTableObserver
      * @param   JObservableInterface $observableObject The subject object to be observed
      * @param   array                $params           ( 'typeAlias' => $typeAlias )
      *
-     * @return  UserIdeasObserverVote
+     * @return  CrowdFundingObserverReward
      *
      * @since   3.1.2
      */
@@ -66,25 +66,25 @@ class CrowdFundingObserverReward extends JTableObserver
 
         // Remove image.
         if (!empty($this->table->image)) {
-            $fileSource = $imagesFolder . DIRECTORY_SEPARATOR . $$this->table->image;
+            $fileSource = $imagesFolder . DIRECTORY_SEPARATOR . $this->table->image;
             if (JFile::exists($fileSource)) {
-//                 JFile::delete($fileSource);
+                 JFile::delete($fileSource);
             }
         }
 
         // Remove thumbnail.
-        if (!empty($$this->table->image_thumb)) {
-            $fileSource = $imagesFolder . DIRECTORY_SEPARATOR . $$this->table->image_thumb;
+        if (!empty($this->table->image_thumb)) {
+            $fileSource = $imagesFolder . DIRECTORY_SEPARATOR . $this->table->image_thumb;
             if (JFile::exists($fileSource)) {
-//                 JFile::delete($fileSource);
+                 JFile::delete($fileSource);
             }
         }
 
         // Remove square image.
-        if (!empty($$this->table->image_square)) {
-            $fileSource = $imagesFolder . DIRECTORY_SEPARATOR . $$this->table->image_square;
+        if (!empty($this->table->image_square)) {
+            $fileSource = $imagesFolder . DIRECTORY_SEPARATOR . $this->table->image_square;
             if (JFile::exists($fileSource)) {
-//                 JFile::delete($fileSource);
+                 JFile::delete($fileSource);
             }
         }
     }

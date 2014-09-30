@@ -118,8 +118,8 @@ class CrowdFundingModelBacking extends JModelLegacy
                 // Calculate ending date by days left.
                 if (!empty($result->funding_days)) {
                     $fundingStartDate = new CrowdFundingDate($result->funding_start);
-                    $endDate = $fundingStartDate->calculateEndDate($result->funding_days);
-                    $result->funding_end = $endDate->format("Y-m-d");
+                    $fundingEndDate = $fundingStartDate->calculateEndDate($result->funding_days);
+                    $result->funding_end = $fundingEndDate->format("Y-m-d");
                 }
 
                 // Calculate funded percent

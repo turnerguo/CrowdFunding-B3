@@ -11,22 +11,12 @@
 defined('_JEXEC') or die;
 ?>
 
-<div class="control-group">
-    <div class="control-label"><?php echo $this->form->getLabel('title'); ?></div>
-    <div class="controls"><?php echo $this->form->getInput('title'); ?></div>
-</div>
-<div class="control-group">
-    <div class="control-label"><?php echo $this->form->getLabel('alias'); ?></div>
-    <div class="controls"><?php echo $this->form->getInput('alias'); ?></div>
-</div>
-<div class="control-group">
-    <div class="control-label"><?php echo $this->form->getLabel('catid'); ?></div>
-    <div class="controls"><?php echo $this->form->getInput('catid'); ?></div>
-</div>
-<div class="control-group">
-    <div class="control-label"><?php echo $this->form->getLabel('type_id'); ?></div>
-    <div class="controls"><?php echo $this->form->getInput('type_id'); ?></div>
-</div>
+<?php echo $this->form->getControlGroup('title'); ?>
+<?php echo $this->form->getControlGroup('alias'); ?>
+<?php echo $this->form->getControlGroup('catid'); ?>
+<?php echo $this->form->getControlGroup('type_id'); ?>
+<?php echo $this->form->getControlGroup('location_preview'); ?>
+
 <div class="control-group">
     <div class="control-label"><?php echo $this->form->getLabel('image'); ?></div>
     <div class="controls">
@@ -41,19 +31,10 @@ defined('_JEXEC') or die;
         </div>
     </div>
 </div>
-<div class="control-group">
-    <div class="control-label"><?php echo $this->form->getLabel('published'); ?></div>
-    <div class="controls"><?php echo $this->form->getInput('published'); ?></div>
-</div>
-<div class="control-group">
-    <div class="control-label"><?php echo $this->form->getLabel('approved'); ?></div>
-    <div class="controls"><?php echo $this->form->getInput('approved'); ?></div>
-</div>
-<div class="control-group">
-    <div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
-    <div class="controls"><?php echo $this->form->getInput('id'); ?></div>
-</div>
-<div class="control-group">
-    <div class="control-label"><?php echo $this->form->getLabel('short_desc'); ?></div>
-    <div class="controls"><?php echo $this->form->getInput('short_desc'); ?></div>
-</div>
+
+<?php echo $this->form->getControlGroup('published'); ?>
+<?php echo $this->form->getControlGroup('approved'); ?>
+<?php echo $this->form->getControlGroup('user_id'); ?>
+<?php echo $this->form->getControlGroup('id'); ?>
+<?php echo $this->form->getControlGroup('short_desc'); ?>
+<?php echo $this->form->getControlGroup('location'); ?>

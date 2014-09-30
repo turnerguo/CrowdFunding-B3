@@ -42,6 +42,7 @@ class CrowdFundingViewTransactions extends JViewLegacy
     protected $listDirn;
     protected $saveOrder;
     protected $userId;
+    protected $redirectUrl;
 
     protected $option;
 
@@ -77,8 +78,11 @@ class CrowdFundingViewTransactions extends JViewLegacy
 
         $this->userId = JFactory::getUser()->get("id");
 
-        $this->version    = new CrowdFundingVersion();
+        $this->redirectUrl = CrowdFundingHelperRoute::getTransactionsRoute();
+
         $this->prepareDocument();
+
+        $this->version    = new CrowdFundingVersion();
 
         parent::display($tpl);
     }

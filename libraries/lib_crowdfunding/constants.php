@@ -17,8 +17,8 @@ defined('JPATH_PLATFORM') or die;
  */
 class CrowdFundingConstants
 {
-    // Payment Process
-    const PAYMENT_PROCESS_CONTEXT = "payment_process_project";
+    // Payment session
+    const PAYMENT_SESSION_CONTEXT = "payment_session_project";
 
     // States
     const PUBLISHED   = 1;

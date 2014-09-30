@@ -37,7 +37,7 @@ class CrowdFundingControllerProject extends ITPrismControllerFormBackend
         );
 
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelProject * */
+        /** @var $model CrowdFundingModelProject */
 
         $form = $model->getForm($data, false);
         /** @var $form JForm * */
@@ -85,7 +85,9 @@ class CrowdFundingControllerProject extends ITPrismControllerFormBackend
 
             }
 
-            $model->save($validData);
+            $itemId = $model->save($validData);
+
+            $redirectOptions["id"] = $itemId;
 
         } catch (Exception $e) {
 
@@ -116,7 +118,6 @@ class CrowdFundingControllerProject extends ITPrismControllerFormBackend
         // Check for registered user
         if (!$itemId) {
             $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_INVALID_IMAGE'), $redirectOptions);
-
             return;
         }
 

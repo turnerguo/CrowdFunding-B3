@@ -95,8 +95,17 @@ class CrowdFundingModelFunders extends JModelList
      */
     protected function getListQuery()
     {
+
+        $app = JFactory::getApplication();
+        /** @var $app JApplicationSite */
+
+        // Load parameters
+        $params = $app->getParams();
+
+        $displayAnonymous = $params->get("funders_display_anonymous", 0);
+
         $db = $this->getDbo();
-        /** @var $db JDatabaseMySQLi * */
+        /** @var $db JDatabaseDriver */
 
         // Create a new query object.
         $query = $db->getQuery(true);
@@ -105,16 +114,21 @@ class CrowdFundingModelFunders extends JModelList
         $query->select(
             $this->getState(
                 'list.select',
-                'a.txn_date, ' .
+                'a.txn_date, a.txn_amount, a.txn_currency, ' .
                 'b.id, b.name'
             )
         );
+
         $query->from($db->quoteName('#__crowdf_transactions', 'a'));
-        $query->innerJoin($db->quoteName('#__users', 'b') . ' ON a.investor_id = b.id');
+        $query->leftJoin($db->quoteName('#__users', 'b') . ' ON a.investor_id = b.id');
 
         // Filter by project id
         $projectId = $this->getState($this->context . ".project_id");
         $query->where("a.project_id =" . (int)$projectId);
+
+        if (!$displayAnonymous) {
+            $query->where("a.investor_id != 0");
+        }
 
         // Add the list ordering clause.
         $orderString = $this->getOrderString();

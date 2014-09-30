@@ -2,11 +2,11 @@ jQuery(document).ready(function() {
 	
 	// Style file input
 	jQuery('.fileupload').fileuploadstyle();
-	
-	jQuery('#jform_short_desc').attr("maxlength", 255);
-	
-	// Initialize symbol length indicator
-	jQuery('#jform_short_desc').maxlength({
+
+    // Initialize symbol length indicator
+    var shortDesc = jQuery('#jform_short_desc');
+    shortDesc.attr("maxlength", 255);
+    shortDesc.maxlength({
 		alwaysShow: true,
 		placement: 'bottom-right'
 	});

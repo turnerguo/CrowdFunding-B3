@@ -119,7 +119,7 @@ class CrowdFundingControllerPayments extends JControllerLegacy
 
             // Get project id.
             $projectId = $this->input->getUint("pid");
-            $paymentProcessContext = CrowdFundingConstants::PAYMENT_PROCESS_CONTEXT . $projectId;
+            $paymentProcessContext = CrowdFundingConstants::PAYMENT_SESSION_CONTEXT . $projectId;
 
             // Initialize the payment process object.
             $paymentProcess        = new JData();

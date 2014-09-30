@@ -5,7 +5,6 @@
         <field name="title" type="text" class="span12"
                label="JGLOBAL_TITLE"
                description="COM_CROWDFUNDING_FIELD_PROJECT_TITLE_DESC"
-               size="80"
                filter="trim"
                required="true"
                 />
@@ -13,30 +12,35 @@
         <field name="alias" type="text" class="span12"
                label="JFIELD_ALIAS_LABEL"
                description="JFIELD_ALIAS_DESC"
-               size="80"
-                />
+               />
 
         <field name="catid" type="category"
                label="JCATEGORY"
                description="JFIELD_CATEGORY_DESC"
                extension="com_crowdfunding"
-                />
+               />
 
         <field name="type_id" type="cftypes"
                label="COM_CROWDFUNDING_TYPE"
                size="1"
                filter="int"
-                >
+               >
             <option value="0">COM_CROWDFUNDING_NONE</option>
         </field>
+
+        <field name="location_preview" type="text"
+               label="COM_CROWDFUNDING_FIELD_LOCATION"
+               description="COM_CROWDFUNDING_FIELD_LOCATION_DESC"
+               size="40"
+               filter="trim"
+               />
 
         <field name="published" type="radio" class="btn-group"
                label="JSTATUS"
                description="JFIELD_PUBLISHED_DESC"
                filter="intval"
-               size="1"
                default="1"
-                >
+               >
             <option value="1">JPUBLISHED</option>
             <option value="0">JUNPUBLISHED</option>
         </field>
@@ -45,12 +49,18 @@
                label="COM_CROWDFUNDING_APPROVED"
                description="COM_CROWDFUNDING_APPROVED_DESC"
                filter="intval"
-               size="1"
                default="0"
-                >
+               >
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
+
+        <field name="user_id" type="user"
+               label="COM_CROWDFUNDING_USER"
+               description="COM_CROWDFUNDING_FIELD_USER_DESC"
+               filter="intval"
+               required="true"
+               />
 
         <field name="id" type="text" class="readonly"
                label="JGLOBAL_FIELD_ID_LABEL"
@@ -58,17 +68,18 @@
                readonly="true"
                default="0"/>
 
-
         <field name="short_desc" type="textarea" class="span12"
                label="COM_CROWDFUNDING_SHORT_DESCRIPTION"
                description="COM_CROWDFUNDING_SHORT_DESCRIPTION_DESC"
                rows="10"
-                />
+               />
 
         <field name="image" type="file"
                label="COM_CROWDFUNDING_IMAGE"
                description="COM_CROWDFUNDING_PROJECT_IMAGE_DESC"
-                />
+               />
+
+        <field name="location" type="hidden" filter="int"/>
 
     </fieldset>
 
@@ -98,11 +109,17 @@
                filter="trim"
                 />
 
+        <field name="funding_start" type="calendar"
+               label="COM_CROWDFUNDING_FIELD_FUNDING_START"
+               filter="trim"
+               default="NOW"
+               />
+
         <field name="funding_end" type="calendar"
                label="COM_CROWDFUNDING_FIELD_FUNDING_END"
                filter="trim"
                default="NOW"
-                />
+               />
 
     </fieldset>
 

@@ -35,7 +35,7 @@ jQuery(document).ready(function() {
 	        		var extraImage  = jQuery("#js-extra-img-row").clone().removeClass("hide");
 	        		jQuery(extraImage).removeAttr("id");
 	        		
-	        		// Set the thumnail to the image element
+	        		// Set the thumbnail to the image element
 	        		var imgSrc = jQuery(extraImage).find(".js-extra-img");
 	        		jQuery(imgSrc).attr("src", data.thumb);
 	        		

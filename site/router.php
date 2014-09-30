@@ -108,11 +108,17 @@ function CrowdFundingBuildRoute(&$query)
 
                 break;
 
-            case "project": // Form for adding prajects
+            case "project": // Form for adding projects
 
                 if ($menuItem->query["view"] == $view) {
                     unset($query['view']);
                 }
+
+                break;
+
+            case "reward": // Form for adding projects
+
+                $query['view'] = "reward";
 
                 break;
         }

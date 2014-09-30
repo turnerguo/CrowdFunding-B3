@@ -10,6 +10,9 @@
 // no direct access
 defined('_JEXEC') or die;
 ?>
+
+<?php if ($this->commentsEnabled) { ?>
+
 <?php if($this->userId) { ?>
 <form action="<?php echo JRoute::_('index.php?option=com_crowdfunding'); ?>" method="post" name="commentsForm" id="crowdf-comments-form" class="form-validate" autocomplete="off">
         
@@ -39,8 +42,7 @@ defined('_JEXEC') or die;
         }
         
         $socialProfile  = (!$this->socialProfiles) ? null : $this->socialProfiles->getLink($item->user_id);
-        $socialAvatar   = (!$this->socialProfilesAvatars) ? $this->defaultAvatar : $this->socialProfilesAvatars->getAvatar($item->user_id, $this->avatarsSize);
-        
+        $socialAvatar   = (!$this->socialProfiles) ? $this->defaultAvatar : $this->socialProfiles->getAvatar($item->user_id, $this->avatarsSize);
 ?>
     <div class="row-fluid cf-comment-item" id="comment<?php echo $item->id;?>">
         
@@ -76,3 +78,11 @@ defined('_JEXEC') or die;
     
 <input type="hidden" value="<?php echo JText::_("COM_CROWDFUNDING_QUESTION_REMOVE_COMMENT");?>" id="cf-hidden-question" />
 <?php }?>
+
+<?php } ?>
+
+<?php
+if(!empty($this->onCommentAfterDisplay)) {
+    echo $this->onCommentAfterDisplay;
+}
+?>

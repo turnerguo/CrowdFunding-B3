@@ -10,8 +10,6 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.modeladmin');
-
 class CrowdFundingModelProject extends JModelAdmin
 {
     /**
@@ -61,6 +59,20 @@ class CrowdFundingModelProject extends JModelAdmin
         $data = JFactory::getApplication()->getUserState($this->option . '.edit.project.data', array());
         if (empty($data)) {
             $data = $this->getItem();
+
+            if (!empty($data->location)) {
+
+                // Load location from database.
+                jimport("crowdfunding.location");
+                $location = new CrowdFundingLocation(JFactory::getDbo());
+                $location->load($data->location);
+                $locationName = $location->getName(true);
+
+                // Set the name to the form element.
+                if (!empty($locationName)) {
+                    $data->location_preview = $locationName;
+                }
+            }
         }
 
         return $data;
@@ -75,13 +87,15 @@ class CrowdFundingModelProject extends JModelAdmin
      */
     public function save($data)
     {
-        $id        = JArrayHelper::getValue($data, "id");
+        $id        = JArrayHelper::getValue($data, "id", 0, "int");
         $title     = JArrayHelper::getValue($data, "title");
         $alias     = JArrayHelper::getValue($data, "alias");
-        $catId     = JArrayHelper::getValue($data, "catid");
-        $typeId    = JArrayHelper::getValue($data, "type_id");
-        $published = JArrayHelper::getValue($data, "published");
-        $approved  = JArrayHelper::getValue($data, "approved");
+        $catId     = JArrayHelper::getValue($data, "catid", 0, "int");
+        $typeId    = JArrayHelper::getValue($data, "type_id", 0, "int");
+        $userId    = JArrayHelper::getValue($data, "user_id", 0, "int");
+        $location  = JArrayHelper::getValue($data, "location");
+        $published = JArrayHelper::getValue($data, "published", 0, "int");
+        $approved  = JArrayHelper::getValue($data, "approved", 0, "int");
         $shortDesc = JArrayHelper::getValue($data, "short_desc");
 
         $goal        = JArrayHelper::getValue($data, "goal");
@@ -89,7 +103,6 @@ class CrowdFundingModelProject extends JModelAdmin
         $fundingType = JArrayHelper::getValue($data, "funding_type");
 
         $pitchVideo  = JArrayHelper::getValue($data, "pitch_video");
-        $pitchImage  = JArrayHelper::getValue($data, "pitch_image");
         $description = JArrayHelper::getValue($data, "description");
 
         // Load a record from the database
@@ -100,6 +113,8 @@ class CrowdFundingModelProject extends JModelAdmin
         $row->set("alias", $alias);
         $row->set("catid", $catId);
         $row->set("type_id", $typeId);
+        $row->set("user_id", $userId);
+        $row->set("location", $location);
         $row->set("published", $published);
         $row->set("approved", $approved);
         $row->set("short_desc", $shortDesc);
@@ -131,6 +146,22 @@ class CrowdFundingModelProject extends JModelAdmin
      */
     protected function prepareTableData($table, $data)
     {
+        // Set order value
+        if (!$table->get("id") and !$table->get("ordering")) {
+
+            $db    = $this->getDbo();
+            $query = $db->getQuery(true);
+
+            $query
+                ->select("MAX(ordering)")
+                ->from($db->quoteName("#__crowdf_projects"));
+
+            $db->setQuery($query, 0, 1);
+            $max = $db->loadResult();
+
+            $table->set("ordering", $max + 1);
+        }
+
         // Prepare image.
         if (!empty($data["image"])) {
 
@@ -196,35 +227,47 @@ class CrowdFundingModelProject extends JModelAdmin
         // Prepare funding duration
 
         $durationType = JArrayHelper::getValue($data, "duration_type");
+        $fundingStart = JArrayHelper::getValue($data, "funding_start");
         $fundingEnd   = JArrayHelper::getValue($data, "funding_end");
         $fundingDays  = JArrayHelper::getValue($data, "funding_days");
+
+        jimport("itprism.validator.date");
+
+        // Prepare funding start date.
+        $fundingStartValidator = new ITPrismValidatorDate($fundingStart);
+        if (!$fundingStartValidator->isValid()) {
+            $table->funding_start = "0000-00-00";
+        } else {
+            $date = new JDate($fundingStart);
+            $table->funding_start = $date->toSql();
+        }
 
         switch ($durationType) {
 
             case "days":
 
+                // Set funding day.
                 $table->funding_days = $fundingDays;
 
                 // Calculate end date
-                if (!empty($table->funding_start)) {
-                    jimport("crowdfunding.date");
-                    $fundingStartDate = new CrowdFundingDate($table->funding_start);
-                    $table->funding_end = $fundingStartDate->calculateEndDate($table->funding_days);
-                } else {
+                $fundingStartValidator = new ITPrismValidatorDate($table->funding_start);
+                if (!$fundingStartValidator->isValid()) {
                     $table->funding_end = "0000-00-00";
+                } else {
+                    $fundingStartDate   = new CrowdFundingDate($table->funding_start);
+                    $fundingEndDate     = $fundingStartDate->calculateEndDate($table->funding_days);
+                    $table->funding_end = $fundingEndDate->toSql();
                 }
 
                 break;
 
             case "date":
 
-                jimport("itprism.validator.date");
                 $fundingEndValidator = new ITPrismValidatorDate($fundingEnd);
                 if (!$fundingEndValidator->isValid()) {
                     throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_DATE"));
                 }
 
-                jimport('joomla.utilities.date');
                 $date = new JDate($fundingEnd);
 
                 $table->funding_days = 0;
@@ -355,8 +398,9 @@ class CrowdFundingModelProject extends JModelAdmin
                         if (!empty($table->funding_days)) {
 
                             jimport("crowdfunding.date");
-                            $fundingStartDate = new CrowdFundingDate($table->funding_start);
-                            $table->funding_end = $fundingStartDate->calculateEndDate($table->funding_days);
+                            $fundingStartDate   = new CrowdFundingDate($table->funding_start);
+                            $fundingEndDate     = $fundingStartDate->calculateEndDate($table->funding_days);
+                            $table->funding_end = $fundingEndDate->toSql();
                         }
                     }
 
@@ -611,6 +655,7 @@ class CrowdFundingModelProject extends JModelAdmin
 
         $uploadedFile = JArrayHelper::getValue($image, 'tmp_name');
         $uploadedName = JArrayHelper::getValue($image, 'name');
+        $errorCode    = JArrayHelper::getValue($image, 'error');
 
         // Load parameters.
         $params     = JComponentHelper::getParams($this->option);
@@ -628,6 +673,7 @@ class CrowdFundingModelProject extends JModelAdmin
         jimport("itprism.file.uploader.local");
         jimport("itprism.file.validator.size");
         jimport("itprism.file.validator.image");
+        jimport("itprism.file.validator.server");
 
         $file = new ITPrismFile();
 
@@ -636,8 +682,11 @@ class CrowdFundingModelProject extends JModelAdmin
         $fileSize      = (int)$app->input->server->get('CONTENT_LENGTH');
         $uploadMaxSize = $mediaParams->get("upload_maxsize") * $KB;
 
+        // Prepare file size validator
         $sizeValidator = new ITPrismFileValidatorSize($fileSize, $uploadMaxSize);
 
+        // Prepare server validator.
+        $serverValidator = new ITPrismFileValidatorServer($errorCode, array(UPLOAD_ERR_NO_FILE));
 
         // Prepare image validator.
         $imageValidator = new ITPrismFileValidatorImage($uploadedFile, $uploadedName);
@@ -652,10 +701,13 @@ class CrowdFundingModelProject extends JModelAdmin
 
         $file
             ->addValidator($sizeValidator)
-            ->addValidator($imageValidator);
+            ->addValidator($imageValidator)
+            ->addValidator($serverValidator);
 
         // Validate the file
-        $file->validate();
+        if (!$file->isValid()) {
+            throw new RuntimeException($file->getError());
+        }
 
         // Generate temporary file name
         $ext = JFile::makeSafe(JFile::getExt($image['name']));
@@ -667,7 +719,7 @@ class CrowdFundingModelProject extends JModelAdmin
         $tmpDestFile = $tmpFolder . DIRECTORY_SEPARATOR . $generatedName . "." . $ext;
 
         // Prepare uploader object.
-        $uploader = new ITPrismFileUploaderLocal($image);
+        $uploader = new ITPrismFileUploaderLocal($uploadedFile);
         $uploader->setDestination($tmpDestFile);
 
         // Upload temporary file
@@ -745,6 +797,7 @@ class CrowdFundingModelProject extends JModelAdmin
 
         $uploadedFile = JArrayHelper::getValue($image, 'tmp_name');
         $uploadedName = JArrayHelper::getValue($image, 'name');
+        $errorCode    = JArrayHelper::getValue($image, 'error');
 
         // Load parameters.
         $params     = JComponentHelper::getParams($this->option);
@@ -762,6 +815,7 @@ class CrowdFundingModelProject extends JModelAdmin
         jimport("itprism.file.uploader.local");
         jimport("itprism.file.validator.size");
         jimport("itprism.file.validator.image");
+        jimport("itprism.file.validator.server");
 
         $file = new ITPrismFile();
 
@@ -772,6 +826,8 @@ class CrowdFundingModelProject extends JModelAdmin
 
         $sizeValidator = new ITPrismFileValidatorSize($fileSize, $uploadMaxSize);
 
+        // Prepare server validator.
+        $serverValidator = new ITPrismFileValidatorServer($errorCode, array(UPLOAD_ERR_NO_FILE));
 
         // Prepare image validator.
         $imageValidator = new ITPrismFileValidatorImage($uploadedFile, $uploadedName);
@@ -786,10 +842,13 @@ class CrowdFundingModelProject extends JModelAdmin
 
         $file
             ->addValidator($sizeValidator)
-            ->addValidator($imageValidator);
+            ->addValidator($imageValidator)
+            ->addValidator($serverValidator);
 
         // Validate the file
-        $file->validate();
+        if (!$file->isValid()) {
+            throw new RuntimeException($file->getError());
+        }
 
         // Generate temporary file name
         $ext = JString::strtolower(JFile::makeSafe(JFile::getExt($image['name'])));
@@ -801,7 +860,7 @@ class CrowdFundingModelProject extends JModelAdmin
         $tmpDestFile = $tmpFolder . DIRECTORY_SEPARATOR . $generatedName . "." . $ext;
 
         // Prepare uploader object.
-        $uploader = new ITPrismFileUploaderLocal($image);
+        $uploader = new ITPrismFileUploaderLocal($uploadedFile);
         $uploader->setDestination($tmpDestFile);
 
         // Upload temporary file

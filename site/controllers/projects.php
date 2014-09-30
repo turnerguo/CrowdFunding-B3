@@ -76,7 +76,7 @@ class CrowdFundingControllerProjects extends ITPrismControllerAdmin
         /** @var $model CrowdFundingModelProjectItem */
 
         $item = $model->getItem($itemId, $userId);
-        if (!$item->get("id")) {
+        if (!$item->id) {
             $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_INVALID_PROJECT'), $redirectOptions);
             return;
         }
@@ -112,9 +112,9 @@ class CrowdFundingControllerProjects extends ITPrismControllerAdmin
 
         // Redirect to next page
         if (!$state) {
-            $msg = JText::_("COM_CROWDFUNDING_PROJECT_UNPUBLISHED_SUCCESSFULLY");
+            $msg = JText::_("COM_CROWDFUNDING_PROJECT_STOPPED_SUCCESSFULLY");
         } else {
-            $msg = JText::_("COM_CROWDFUNDING_PROJECT_PUBLISHED_SUCCESSFULLY_INFO");
+            $msg = JText::_("COM_CROWDFUNDING_PROJECT_LAUNCHED_SUCCESSFULLY_INFO");
         }
 
         $this->displayMessage($msg, $redirectOptions);

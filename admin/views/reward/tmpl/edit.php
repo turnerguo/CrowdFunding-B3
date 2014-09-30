@@ -12,10 +12,7 @@ defined('_JEXEC') or die;
 ?>
 <div class="row-fluid">
     <div class="span6 form-horizontal">
-        <form action="<?php echo JRoute::_('index.php?option=com_crowdfunding'); ?>" method="post" name="adminForm"
-              id="adminForm" class="form-validate" enctype="multipart/form-data">
-
-            <fieldset>
+        <form action="<?php echo JRoute::_('index.php?option=com_crowdfunding'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate" enctype="multipart/form-data">
 
                 <div class="control-group">
                     <div class="control-label"><?php echo $this->form->getLabel('title'); ?></div>
@@ -37,6 +34,24 @@ defined('_JEXEC') or die;
                     <div class="control-label"><?php echo $this->form->getLabel('delivery'); ?></div>
                     <div class="controls"><?php echo $this->form->getInput('delivery'); ?></div>
                 </div>
+                <?php
+                if ($this->allowedImages) { ?>
+                <div class="control-group">
+                    <div class="control-label"><?php echo $this->form->getLabel('image'); ?></div>
+                    <div class="controls">
+                        <div class="fileupload fileupload-new" data-provides="fileupload">
+                            <span class="btn btn-file">
+                                <span class="fileupload-new"><?php echo JText::_("COM_CROWDFUNDING_SELECT_FILE"); ?></span>
+                                <span class="fileupload-exists"><?php echo JText::_("COM_CROWDFUNDING_CHANGE"); ?></span>
+                                <?php echo $this->form->getInput('image'); ?>
+                            </span>
+                            <span class="fileupload-preview"></span>
+                            <a href="#" class="close fileupload-exists" data-dismiss="fileupload" style="float: none">×</a>
+                        </div>
+                    </div>
+                </div>
+                <?php
+                } ?>
                 <div class="control-group">
                     <div class="control-label"><?php echo $this->form->getLabel('published'); ?></div>
                     <div class="controls"><?php echo $this->form->getInput('published'); ?></div>
@@ -50,19 +65,26 @@ defined('_JEXEC') or die;
                     <div class="controls"><?php echo $this->form->getInput('description'); ?></div>
                 </div>
 
-            </fieldset>
-
             <?php echo $this->form->getInput('project_id'); ?>
             <input type="hidden" name="task" value=""/>
             <?php echo JHtml::_('form.token'); ?>
         </form>
     </div>
 
-    <?php if (!empty($this->item->id) AND !empty($this->item->image)) { ?>
+    <?php if (!empty($this->item->id) and !empty($this->item->image)) { ?>
         <div class="span6">
             <div class="thumbnail">
                 <img src="<?php echo $this->rewardsImagesUri . "/" . $this->item->image; ?>"/>
             </div>
+
+            <div class="clearfix"></div>
+            <br/>
+            <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=reward.removeImage&id=" . (int)$this->item->id . "&" . JSession::getFormToken() . "=1"); ?>"
+               class="btn btn-danger">
+                <i class="icon-trash icon-white"></i>
+                <?php echo JText::_("COM_CROWDFUNDING_REMOVE_IMAGE"); ?>
+            </a>
+
         </div>
     <?php } ?>
 </div>

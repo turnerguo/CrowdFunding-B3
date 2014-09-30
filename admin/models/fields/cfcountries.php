@@ -40,14 +40,18 @@ class JFormFieldCfCountries extends JFormFieldList
      */
     protected function getOptions()
     {
-        // Initialize variables.
-        $options = array();
+        $indexes = array("id", "code");
+        $index   = (string)$this->element["index"];
+
+        if (!in_array($index, $indexes)) {
+            $index = "id";
+        }
 
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
         $query
-            ->select('a.id AS value, a.name AS text')
+            ->select('a.'.$index.' AS value, a.name AS text')
             ->from($db->quoteName('#__crowdf_countries', 'a'))
             ->order("a.name ASC");
 

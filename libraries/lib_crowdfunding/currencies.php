@@ -229,10 +229,10 @@ class CrowdFundingCurrencies implements Iterator, Countable, ArrayAccess
      * $currencies   = new CrowdFundingCurrencies(JFactory::getDbo());
      * $currencies->load($ids);
      *
-     * $currency = $currencies->getCurrencyByAbbr(1);
+     * $currency = $currencies->getCurrency(1);
      * </code>
      *
-     * @param string $id
+     * @param int $id
      *
      * @throws UnexpectedValueException
      *

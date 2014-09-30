@@ -119,37 +119,14 @@ jQuery(document).ready(function() {
 		}
 		
 	});
-	
-	// Display modal window and ask a question when publishing project
-	var btnPublishProject = jQuery("#js-btn-rewards-publish");
-	if(btnPublishProject.length > 0) {
-		
-		jQuery("#js-btn-rewards-publish").on("click", function(event){
-			event.preventDefault();
-			jQuery("#js-modal-publish-project").modal('show');
-		});
-		
-		jQuery("#js-modal-btn-pp-no").on("click", function(event){
-			event.preventDefault();
-			jQuery("#js-modal-publish-project").modal('hide');
-		});
-		
-		// Publish the item
-		jQuery("#js-modal-btn-pp-yes").on("click", function(event){
-			
-			event.preventDefault();
-			
-			jQuery("#js-modal-publish-project").modal('hide');
-			
-			var url = jQuery("#js-btn-rewards-publish").attr("href");
-			window.location.href = url;
-			
-		});
-	}
-	
-	
-	// Style file input
-	jQuery(":file").filestyle({buttonText: Joomla.JText._('COM_CROWDFUNDING_SELECT_IMAGE')});
+
+
+    // Check for image elements and enabled rewards functionality.
+    var imageWrappers = jQuery(".js-reward-image-wrapper");
+    if (imageWrappers.length > 0) {
+        // Style file input
+        jQuery(":file").filestyle({buttonText: Joomla.JText._('COM_CROWDFUNDING_SELECT_IMAGE')});
+    }
 	
 	jQuery("#rewards_wrapper").on("click", ".js-btn-remove-reward-image", function(event) {
 		event.preventDefault();

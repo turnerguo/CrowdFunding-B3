@@ -92,7 +92,8 @@ class CrowdFundingStatisticsProject
     public function getFullPeriodAmounts()
     {
         $query = $this->db->getQuery(true);
-        $query->select("a.funding_start, a.funding_end")
+        $query
+            ->select("a.funding_start, a.funding_end")
             ->from($this->db->quoteName("#__crowdf_projects", "a"))
             ->where("a.id = " . (int)$this->id);
 
@@ -211,5 +212,71 @@ class CrowdFundingStatisticsProject
         );
 
         return $data;
+    }
+
+    /**
+     * Return the number of comments.
+     *
+     * <code>
+     * $projectId    = 1;
+     *
+     * $statistics   = new CrowdFundingStatisticsProject(JFactory::getDbo(), $projectId);
+     * $numberOfComments = $statistics->getCommentsNumber();
+     * </code>
+     *
+     * @return int
+     */
+    public function getCommentsNumber()
+    {
+        // Create a new query object.
+        $query = $this->db->getQuery(true);
+
+        $query
+            ->select("COUNT(*)")
+            ->from($this->db->quoteName("#__crowdf_comments", "a"))
+            ->where("a.project_id = " . (int)$this->id);
+
+        $this->db->setQuery($query);
+
+        $result = $this->db->loadResult();
+
+        if (!$result) {
+            $result = 0;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Return the number of updates.
+     *
+     * <code>
+     * $projectId    = 1;
+     *
+     * $statistics   = new CrowdFundingStatisticsProject(JFactory::getDbo(), $projectId);
+     * $numberOfUpdates = $statistics->getUpdatesNumber();
+     * </code>
+     *
+     * @return int
+     */
+    public function getUpdatesNumber()
+    {
+        // Create a new query object.
+        $query = $this->db->getQuery(true);
+
+        $query
+            ->select("COUNT(*)")
+            ->from($this->db->quoteName("#__crowdf_updates", "a"))
+            ->where("a.project_id = " . (int)$this->id);
+
+        $this->db->setQuery($query);
+
+        $result = $this->db->loadResult();
+
+        if (!$result) {
+            $result = 0;
+        }
+
+        return $result;
     }
 }

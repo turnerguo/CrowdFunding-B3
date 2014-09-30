@@ -9,18 +9,15 @@
 
 defined('JPATH_BASE') or die;
 
-JLoader::register(
-    "ITPrismFileInterfaceValidator",
-    JPATH_LIBRARIES . DIRECTORY_SEPARATOR . "itprism" . DIRECTORY_SEPARATOR . "file" . DIRECTORY_SEPARATOR . "interface" . DIRECTORY_SEPARATOR . "validator.php"
-);
+JLoader::register("ITPrismFileValidator", JPATH_LIBRARIES . "/itprism/validator/interface.php");
 
 /**
  * This class provides functionality validation image owner.
  *
  * @package      CrowdFunding\Images
- * @subpackage   Validator
+ * @subpackage   Validators
  */
-class CrowdFundingImageValidatorOwner implements ITPrismFileInterfaceValidator
+class CrowdFundingImageValidatorOwner implements ITPrismValidatorInterface
 {
     protected $db;
     protected $imageId;
@@ -33,7 +30,7 @@ class CrowdFundingImageValidatorOwner implements ITPrismFileInterfaceValidator
      * $imageId = 1;
      * $userId = 2;
      *
-     * $image   = new CrowdFundingImageValidatorOwner(JFactory::getDbo(), $image, $userId);
+     * $image   = new CrowdFundingImageValidatorOwner(JFactory::getDbo(), $imageId, $userId);
      * </code>
      *
      * @param JDatabaseDriver $db Database object.
@@ -54,13 +51,15 @@ class CrowdFundingImageValidatorOwner implements ITPrismFileInterfaceValidator
      * $imageId = 1;
      * $userId = 2;
      *
-     * $image   = new CrowdFundingImageValidatorOwner(JFactory::getDbo(), $image, $userId);
-     * $image->validate();
+     * $image   = new CrowdFundingImageValidatorOwner(JFactory::getDbo(), $imageId, $userId);
+     * if (!$image->isValid()) {
+     * ...
+     * }
      * </code>
      *
      * @throws RuntimeException
      */
-    public function validate()
+    public function isValid()
     {
         $subQuery = $this->db->getQuery(true);
         $subQuery
@@ -78,8 +77,6 @@ class CrowdFundingImageValidatorOwner implements ITPrismFileInterfaceValidator
         $this->db->setQuery($query, 0, 1);
         $result = $this->db->loadResult();
 
-        if (!$result) {
-            throw new RuntimeException(JText::_("LIB_CROWDFUNDING_INVALID_PROJECT"));
-        }
+        return (bool)$result;
     }
 }

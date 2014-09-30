@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<extension type="package" version="3.2" method="upgrade">
+<extension type="package" version="3.3" method="upgrade">
     <name>CrowdFunding Package</name>
     <packagename>crowdfunding</packagename>
     <author>Todor Iliev</author>
@@ -7,8 +7,8 @@
     <authorUrl>http://itprism.com</authorUrl>
     <copyright>Copyright (C) 2014 Todor Iliev ( ITPrism.com )</copyright>
     <license>http://www.gnu.org/copyleft/gpl.html</license>
-    <version>1.7</version>
-    <creationDate>31 May, 2014</creationDate>
+    <version>1.8</version>
+    <creationDate>30 September, 2014</creationDate>
     <url>http://itprism.com</url>
     <packager>Todor Iliev</packager>
     <packagerurl>http://itprism.com</packagerurl>
@@ -28,12 +28,12 @@
         <file type="plugin" id="crowdfundingusermail" group="content">plg_content_crowdfundingusermail.zip</file>
         <file type="plugin" id="crowdfundingvalidator" group="content">plg_content_crowdfundingvalidator.zip</file>
 
-        <file type="plugin" id="paypal" group="crowdfundingpayment">plg_crowdfundingpayment_paypal.zip</file>
+        <file type="plugin" id="crowdfundingpayment_paypal" group="crowdfundingpayment">plg_crowdfundingpayment_paypal.zip</file>
         <file type="plugin" id="crowdfundingmodules" group="system">plg_system_crowdfundingmodules.zip</file>
 
+        <file type="module" id="mod_crowdfundingdetails" client="site">mod_crowdfundingdetails.zip</file>
         <file type="module" id="mod_crowdfundinginfo" client="site">mod_crowdfundinginfo.zip</file>
         <file type="module" id="mod_crowdfundingrewards" client="site">mod_crowdfundingrewards.zip</file>
-        <file type="module" id="mod_crowdfundingdetails" client="site">mod_crowdfundingdetails.zip</file>
     </files>
 
     <scriptfile>install.php</scriptfile>

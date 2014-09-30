@@ -25,9 +25,9 @@ defined('_JEXEC') or die;
                 </div>
             <?php } ?>
         </td>
-        <td class="center hidden-phone"><?php echo JHtml::_("crowdfunding.name", $item->sender); ?></td>
-        <td class="center hidden-phone"><?php echo $this->escape($item->beneficiary); ?></td>
-        <td class="center hidden-phone">
+        <td class="hidden-phone"><?php echo JHtml::_("crowdfunding.name", $item->sender); ?></td>
+        <td class="hidden-phone"><?php echo $this->escape($item->beneficiary); ?></td>
+        <td class="hidden-phone">
             <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=transactions&filter_search=pid:" . $item->project_id); ?>">
                 <?php echo JHtmlString::truncate(strip_tags($item->project), 53); ?>
             </a>
@@ -41,7 +41,7 @@ defined('_JEXEC') or die;
             }
             ?></td>
         <td class="center hidden-phone"><?php echo $item->txn_date; ?></td>
-        <td class="center hidden-phone"><?php echo $item->service_provider; ?></td>
+        <td class="hidden-phone"><?php echo $item->service_provider; ?></td>
         <td class="center hidden-phone">
             <?php echo $item->txn_status; ?>
             <?php echo JHtml::_('crowdfundingbackend.reason', $item->status_reason); ?>

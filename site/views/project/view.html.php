@@ -68,6 +68,19 @@ class CrowdFundingViewProject extends JViewLegacy
     protected $projectId;
     protected $images;
     protected $extraImagesUri;
+    protected $rewards;
+
+    protected $imageWidth;
+    protected $imageHeight;
+    protected $titleLength;
+    protected $descriptionLength;
+    protected $returnUrl;
+
+    protected $wizardType;
+    protected $layoutsBasePath;
+    protected $layoutData = array();
+    protected $sixSteps = false;
+    protected $statistics = array();
 
     protected $option;
 
@@ -77,6 +90,8 @@ class CrowdFundingViewProject extends JViewLegacy
     {
         parent::__construct($config);
         $this->option = JFactory::getApplication()->input->getCmd("option");
+
+        $this->layoutsBasePath = JPath::clean(JPATH_COMPONENT_ADMINISTRATOR . "/layouts");
     }
 
     /**
@@ -84,7 +99,7 @@ class CrowdFundingViewProject extends JViewLegacy
      */
     public function display($tpl = null)
     {
-        $this->userId = JFactory::getUser()->id;
+        $this->userId = JFactory::getUser()->get("id");
         if (!$this->userId) {
             $this->setLayout("intro");
         }
@@ -95,16 +110,24 @@ class CrowdFundingViewProject extends JViewLegacy
 
         switch ($this->layout) {
 
-            case "rewards":
-                $this->prepareRewards();
+            case "funding":
+                $this->prepareFunding();
                 break;
 
             case "story":
                 $this->prepareStory();
                 break;
 
-            case "funding":
-                $this->prepareFunding();
+            case "rewards":
+                $this->prepareRewards();
+                break;
+
+            case "extras":
+                $this->prepareExtras();
+                break;
+
+            case "manager":
+                $this->prepareManager();
                 break;
 
             case "intro":
@@ -116,9 +139,19 @@ class CrowdFundingViewProject extends JViewLegacy
                 break;
         }
 
-        $this->version    = new CrowdFundingVersion();
+        // Get wizard type
+        $this->wizardType = $this->params->get("project_wizard_type", "five_steps");
+        $this->sixSteps   = (strcmp("six_steps", $this->wizardType) != 0) ? false : true;
+
+        $this->layoutData = array(
+            "layout"  => $this->layout,
+            "item_id" => (!empty($this->item->id)) ? $this->item->id : 0
+        );
+
         $this->prepareDebugMode();
         $this->prepareDocument();
+
+        $this->version    = new CrowdFundingVersion();
 
         parent::display($tpl);
     }
@@ -143,7 +176,6 @@ class CrowdFundingViewProject extends JViewLegacy
 
             $this->disabledButton = 'disabled="disabled"';
         }
-
     }
 
     /**
@@ -385,6 +417,7 @@ class CrowdFundingViewProject extends JViewLegacy
             throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"));
         }
 
+        // Create a currency object.
         jimport("crowdfunding.currency");
         $currencyId     = $this->params->get("project_currency");
         $this->currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $this->params);
@@ -407,6 +440,99 @@ class CrowdFundingViewProject extends JViewLegacy
         $this->prepareProjectType();
 
         $this->pathwayName = JText::_("COM_CROWDFUNDING_STEP_REWARDS");
+    }
+
+    protected function prepareManager()
+    {
+        $model = JModelLegacy::getInstance("Manager", "CrowdFundingModel", $config = array('ignore_request' => false));
+        /** @var $model CrowdFundingModelManager */
+
+        // Get state
+        /** @var  $state Joomla\Registry\Registry */
+        $this->state = $model->getState();
+
+        // Get params
+        /** @var  $params Joomla\Registry\Registry */
+        $params = $this->state->get("params");
+        $this->params = $params;
+
+        $this->imageWidth  = $this->params->get("image_width", 200);
+        $this->imageHeight = $this->params->get("image_height", 200);
+        $this->titleLength       = $this->params->get("discover_title_length", 0);
+        $this->descriptionLength = $this->params->get("discover_description_length", 0);
+
+        // Get the folder with images
+        $this->imageFolder = $params->get("images_directory", "images/crowdfunding");
+
+        // Filter the URL.
+        $uri = JUri::getInstance();
+
+        $filter    = JFilterInput::getInstance();
+        $this->returnUrl = $filter->clean($uri->toString());
+
+        // Get item
+        $itemId     = $this->state->get('manager.id');
+
+        // Create a currency object.
+        jimport("crowdfunding.currency");
+        $currencyId     = $this->params->get("project_currency");
+        $this->currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $this->params);
+
+        $this->item = $model->getItem($itemId, $this->userId);
+
+        if (empty($this->item->id)) {
+
+            $app = JFactory::getApplication();
+            /** $app JApplicationSite */
+
+            $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_SOMETHING_WRONG"), "notice");
+            $app->redirect(JRoute::_(CrowdFundingHelperRoute::getDiscoverRoute()));
+            return;
+        }
+
+        jimport("crowdfunding.statistics.project");
+        $statistics = new CrowdFundingStatisticsProject(JFactory::getDbo(), $this->item->id);
+        $this->statistics = array(
+            "updates"  => $statistics->getUpdatesNumber(),
+            "comments" => $statistics->getCommentsNumber(),
+            "funders"  => $statistics->getTransactionsNumber(),
+        );
+
+        // Get rewards
+        jimport("crowdfunding.rewards");
+        $this->rewards = new CrowdFundingRewards(JFactory::getDbo());
+        $this->rewards->load($this->item->id);
+
+        $this->pathwayName = JText::_("COM_CROWDFUNDING_STEP_MANAGER");
+    }
+
+    protected function prepareExtras()
+    {
+        $model = JModelLegacy::getInstance("Extras", "CrowdFundingModel", $config = array('ignore_request' => false));
+        /** @var $model CrowdFundingModelManager */
+
+        // Get state
+        /** @var  $state Joomla\Registry\Registry */
+        $this->state = $model->getState();
+
+        // Get params
+        /** @var  $params Joomla\Registry\Registry */
+        $params = $this->state->get("params");
+        $this->params = $params;
+
+        // Get item
+        $itemId     = $this->state->get('extras.id');
+        $this->item = $model->getItem($itemId, $this->userId);
+        
+        $this->pathwayName = JText::_("COM_CROWDFUNDING_STEP_EXTRAS");
+
+        // Events
+        JPluginHelper::importPlugin('crowdfunding');
+        $dispatcher = JEventDispatcher::getInstance();
+        $results    = $dispatcher->trigger('onExtrasDisplay', array('com_crowdfunding.project.extras', &$this->item, &$this->params));
+
+        $this->item->event                   = new stdClass();
+        $this->item->event->onExtrasDisplay = trim(implode("\n", $results));
     }
 
     /**
@@ -464,11 +590,13 @@ class CrowdFundingViewProject extends JViewLegacy
 
         // Scripts
         JHtml::_('bootstrap.framework');
-        JHtml::_('bootstrap.tooltip');
-        JHtml::_('formbehavior.chosen', 'select');
+//        JHtml::_('bootstrap.tooltip');
+
+        if ($this->params->get("enable_chosen", 1)) {
+            JHtml::_('formbehavior.chosen', '.cf-advanced-select');
+        }
 
         JHtml::_('behavior.keepalive');
-//         JHtml::_('behavior.formvalidation');
 
         switch ($this->layout) {
 
@@ -480,11 +608,6 @@ class CrowdFundingViewProject extends JViewLegacy
                 JText::script('COM_CROWDFUNDING_SELECT_IMAGE');
 
                 // Scripts
-
-                // Load bootstrap modal styles and JS library
-                if ($this->params->get("bootstrap_modal", false)) {
-                    JHtml::_("itprism.ui.bootstrap_modal");
-                }
 
                 if ($this->params->get("rewards_images", 0)) {
                     JHtml::_('itprism.ui.bootstrap_filestyle');
@@ -517,6 +640,20 @@ class CrowdFundingViewProject extends JViewLegacy
                 }
 
                 $this->document->addScript('media/' . $this->option . '/js/site/project_story.js');
+
+                break;
+
+            case "manager":
+
+                $this->document->addScript('media/' . $this->option . '/js/site/project_manager.js');
+
+                // Load language string in JavaScript
+                JText::script('COM_CROWDFUNDING_QUESTION_LAUNCH_PROJECT');
+                JText::script('COM_CROWDFUNDING_QUESTION_STOP_PROJECT');
+
+                break;
+
+            case "extras":
 
                 break;
 

@@ -331,7 +331,8 @@ class plgContentCrowdFundingValidator extends JPlugin
                     $days = JArrayHelper::getValue($data, "funding_days", 0, "integer");
 
                     $fundingStartDate = new CrowdFundingDate($item->funding_start);
-                    $fundingEndDate = $fundingStartDate->calculateEndDate($days);
+                    $endDate          = $fundingStartDate->calculateEndDate($days);
+                    $fundingEndDate   = $endDate->format("Y-m-d");
 
                 } else { // Get funding end date from request
                     $fundingEndDate = JArrayHelper::getValue($data, "funding_end");

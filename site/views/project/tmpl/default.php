@@ -9,8 +9,15 @@
 
 // no direct access
 defined('_JEXEC') or die;
+
+if (strcmp("five_steps", $this->wizardType) == 0) {
+    $layout      = new JLayoutFile('project_wizard', $this->layoutsBasePath);
+} else {
+    $layout      = new JLayoutFile('project_wizard_six_steps', $this->layoutsBasePath);
+}
+echo $layout->render($this->layoutData);
 ?>
-<?php echo $this->loadTemplate("nav");?>
+
 <div class="row-fluid">
     <div class="span6">
         <form action="<?php echo JRoute::_('index.php?option=com_crowdfunding'); ?>" method="post" name="projectForm" id="js-cf-project-form" novalidate="novalidate" autocomplete="off" enctype="multipart/form-data" >
@@ -23,7 +30,7 @@ defined('_JEXEC') or die;
             
             <?php echo $this->form->getLabel('catid'); ?>
             <?php echo $this->form->getInput('catid'); ?>
-            
+
             <?php echo $this->form->getLabel('location_preview'); ?>
             <?php echo $this->form->getInput('location_preview'); ?>
             
@@ -83,4 +90,5 @@ defined('_JEXEC') or die;
     </div>
     <?php }?>
 </div>
+<div class="clearfix">&nbsp;</div>
 <?php echo $this->version->backlink;?>

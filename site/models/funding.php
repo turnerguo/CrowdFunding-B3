@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.modelform');
+JLoader::register("CrowdFundingModelProject", CROWDFUNDING_PATH_COMPONENT_SITE . "/models/project.php");
 
 class CrowdFundingModelFunding extends CrowdFundingModelProject
 {
@@ -77,9 +77,9 @@ class CrowdFundingModelFunding extends CrowdFundingModelProject
 
                 // Generate end date.
                 $today   = new CrowdFundingDate();
-                $endDate = $today->calculateEndDate($minDays);
+                $fundingEndDate = $today->calculateEndDate($minDays);
 
-                $data->funding_end = $endDate->format("Y-m-d");
+                $data->funding_end = $fundingEndDate->format("Y-m-d");
             }
 
             $date              = new JDate($data->funding_end);
@@ -161,9 +161,9 @@ class CrowdFundingModelFunding extends CrowdFundingModelProject
 
                 // Calculate end date
                 if (!empty($table->funding_start)) {
-                    $fundingStartDate = new CrowdFundingDate($table->funding_start);
-                    $endDate = $fundingStartDate->calculateEndDate($table->funding_days);
-                    $table->funding_end = $endDate->format("Y-m-d");
+                    $fundingStartDate   = new CrowdFundingDate($table->funding_start);
+                    $fundingEndDate     = $fundingStartDate->calculateEndDate($table->funding_days);
+                    $table->funding_end = $fundingEndDate->format("Y-m-d");
                 } else {
                     $table->funding_end = "0000-00-00";
                 }

@@ -10,11 +10,9 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.modelitem');
-
 class CrowdFundingModelProjectItem extends JModelItem
 {
-    protected $item = array();
+    protected $items = array();
 
     /**
      * Returns a reference to the a Table object, always creating it.
@@ -40,44 +38,80 @@ class CrowdFundingModelProjectItem extends JModelItem
      */
     protected function populateState()
     {
-        $app    = JFactory::getApplication();
+        parent::populateState();
+
+        $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
 
-        $params = $app->getParams();
+        // Get the pk of the record from the request.
+        $itemId = $app->input->getInt("id");
+        $this->setState($this->getName() . '.id', $itemId);
 
-        // Set the parameters.
-        $this->setState('params', $params);
+        // Load the parameters.
+        $value = $app->getParams($this->option);
+        $this->setState('params', $value);
+
     }
 
-    /**
-     * Method to get an object.
-     *
-     * @param    integer   $id
-     * @param    integer   $userId
-     *
-     * @return    CrowdFundingTableProject|null
-     */
-    public function getItem($id, $userId)
+    public function getItem($itemId, $userId)
     {
-        $storedId = $this->getStoreId($id.$userId);
+        $storedId = $this->getStoreId($itemId.$userId);
 
-        if (!isset($this->item[$storedId])) {
+        if (!isset($this->items[$storedId])) {
 
-            $keys = array(
-                "id" => $id,
-                "user_id" => $userId
+            $db = $this->getDbo();
+            /** @var $db JDatabaseDriver */
+
+            // Create a new query object.
+            $query = $db->getQuery(true);
+
+            // Select the required fields from the table.
+            $query->select(
+                'a.id, a.title, a.alias, a.short_desc, a.description, a.image, a.image_square, a.image_small, a.location, ' .
+                'a.goal, a.funded, a.funding_type, a.funding_start, a.funding_end, a.funding_days, ' .
+                'a.pitch_video, a.pitch_image, a.hits, a.created, a.featured, a.published, a.approved, a.ordering, a.catid, a.type_id, a.user_id, ' .
+                $query->concatenate(array("a.id", "a.alias"), "-") . ' AS slug, ' .
+                'b.name AS user_name, ' .
+                $query->concatenate(array("c.id", "c.alias"), "-") . " AS catslug"
             );
 
-            // Get a level row instance.
-            $table = $this->getTable();
-            $table->load($keys);
+            $query->from($db->quoteName('#__crowdf_projects', 'a'));
+            $query->innerJoin($db->quoteName('#__users', 'b') . ' ON a.user_id = b.id');
+            $query->innerJoin($db->quoteName('#__categories', 'c') . ' ON a.catid = c.id');
 
-            // Convert to the JObject before adding other data.
-            $properties = $table->getProperties();
-            $this->item[$storedId] = JArrayHelper::toObject($properties, 'JObject');
+            $query->where("a.id = ". (int)$itemId);
+            $query->where("a.user_id = ". (int)$userId);
+
+            $db->setQuery($query);
+
+            $item = $db->loadObject();
+
+            if (!empty($item)) {
+
+                // Calculate funding end date
+                if (!empty($item->funding_days)) {
+                    $fundingStartDate  = new CrowdFundingDate($item->funding_start);
+                    $fundingEndDate    = $fundingStartDate->calculateEndDate($item->funding_days);
+                    $item->funding_end = $fundingEndDate->format("Y-m-d");
+                }
+
+                // Calculate funded percentage.
+                $percent = new ITPrismMath();
+                $percent->calculatePercentage($item->funded, $item->goal, 0);
+                $item->funded_percents = (string)$percent;
+
+                // Calculate days left
+                $today = new CrowdFundingDate();
+                $item->days_left       = $today->calculateDaysLeft($item->funding_days, $item->funding_start, $item->funding_end);
+
+            } else {
+                $item = new stdClass();
+            }
+
+            $this->items[$storedId] = $item;
         }
 
-        return $this->item[$storedId];
+        return $this->items[$storedId];
     }
 
     /**
@@ -140,8 +174,8 @@ class CrowdFundingModelProjectItem extends JModelItem
         $fundingStartDate = new ITPrismValidatorDate($table->funding_start);
         if (!$fundingStartDate->isValid($table->funding_start)) {
 
-            $fundindStart         = new JDate();
-            $table->funding_start = $fundindStart->toSql();
+            $fundingStart         = new JDate();
+            $table->funding_start = $fundingStart->toSql();
 
             // If funding type is "days", calculate end date.
             if ($table->get("funding_days")) {

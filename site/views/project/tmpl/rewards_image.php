@@ -16,7 +16,7 @@ defined('_JEXEC') or die;
         $rewardId   = JArrayHelper::getValue($this->formItem, "id");
         $imageThumb = JArrayHelper::getValue($this->formItem, "image_thumb");
         
-        if(!empty($imageThumb)) {
+        if (!empty($imageThumb)) {
             $rewardImage = $this->rewardsImagesUri."/".$imageThumb;
             $displayRemoveButton = "";
         } else {
@@ -28,14 +28,13 @@ defined('_JEXEC') or die;
         ?>
     </div>
     
-    <?php if(!$this->debugMode) {?>
+    <?php if (!$this->debugMode) {?>
     <input type="file" name="images[<?php echo (int)$this->formItem["id"]?>]" value="" />
     
 	<a href="javascript: void(0);" class="btn btn-danger js-btn-remove-reward-image" <?php echo $displayRemoveButton; ?> data-reward-id="<?php echo $rewardId;?>">
     	<i class="icon-trash icon-white"></i> 
     	<?php echo JText::_("COM_CROWDFUNDING_REMOVE")?>
 	</a>
-	
-	<?php }?>
+	<?php } ?>
 	
 </div>

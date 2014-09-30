@@ -10,8 +10,6 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.model');
-
 class CrowdFundingModelExport extends JModelLegacy
 {
     public function getCurrencies()

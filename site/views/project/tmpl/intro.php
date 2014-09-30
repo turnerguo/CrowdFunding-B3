@@ -22,4 +22,6 @@ if (!empty($this->article)) {
 } else {
     echo JText::_("COM_CROWDFUNDING_INTRO_ARTICLE_INFO");
 }
-echo $this->version->backlink;
+?>
+<div class="clearfix">&nbsp;</div>
+<?php echo $this->version->backlink;?>

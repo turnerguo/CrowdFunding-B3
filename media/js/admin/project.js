@@ -80,5 +80,25 @@ jQuery(document).ready(function() {
 		});
 		
 	});
+
+    jQuery('#jform_location_preview').typeahead({
+        ajax : {
+            url: "index.php?option=com_crowdfunding&format=raw&task=project.loadLocation",
+            method: "get",
+            triggerLength: 3,
+            preProcess: function (response) {
+
+                if (response.success === false) {
+                    return false;
+                }
+
+                return response.data;
+            }
+        },
+        onSelect: function(item) {
+            jQuery("#jform_location").attr("value", item.value);
+        }
+
+    });
 	
 });

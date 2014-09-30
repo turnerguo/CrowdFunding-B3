@@ -45,15 +45,22 @@ JLoader::register(
     JPATH_LIBRARIES . DIRECTORY_SEPARATOR . "joomla" . DIRECTORY_SEPARATOR . "html" . DIRECTORY_SEPARATOR . "html" . DIRECTORY_SEPARATOR . "category.php"
 );
 
+// Include HTML helpers path
+JHtml::addIncludePath(CROWDFUNDING_PATH_COMPONENT_SITE . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'html');
+
+// Register Observers
+JLoader::register(
+    "CrowdFundingObserverReward",
+    CROWDFUNDING_PATH_COMPONENT_ADMINISTRATOR .DIRECTORY_SEPARATOR. "tables" .DIRECTORY_SEPARATOR. "observers" .DIRECTORY_SEPARATOR. "reward.php"
+);
+JObserverMapper::addObserverClassToClass('CrowdFundingObserverReward', 'CrowdFundingTableReward', array('typeAlias' => 'com_crowdfunding.reward'));
+
 // Prepare logger
 $registry = JRegistry::getInstance("com_crowdfunding");
 /** @var  $registry Joomla\Registry\Registry */
 
 $registry->set("logger.table", "#__crowdf_logs");
 $registry->set("logger.file", "com_crowdfunding.php");
-
-// Include HTML helpers path
-JHtml::addIncludePath(CROWDFUNDING_PATH_COMPONENT_SITE . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'html');
 
 // Load library language
 $lang = JFactory::getLanguage();

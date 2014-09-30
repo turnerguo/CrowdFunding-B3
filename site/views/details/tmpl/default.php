@@ -39,7 +39,7 @@ defined('_JEXEC') or die;
                     echo JHtml::_("image", $this->imageFolder."/".$this->item->pitch_image, $this->escape($this->item->title), array("class"=>"img-polaroid"));
                 }   
         	} else {
-        	    echo JHtml::_("crowdfunding.video", $this->item->pitch_video);
+        	    echo JHtml::_("crowdfunding.video", $this->item->pitch_video, $this->params->get("video_responsive", 0));
         	}?>
         	</div>
         	

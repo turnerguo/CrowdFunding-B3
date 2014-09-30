@@ -34,7 +34,13 @@ class CrowdFundingViewUser extends JViewLegacy
     protected $currency;
     protected $projects;
     protected $investedAmount;
+    protected $investedTransactions;
     protected $receivedAmount;
+    protected $receivedTransactions;
+    protected $socialProfile;
+    protected $profileLink;
+    protected $rewards;
+    protected $returnUrl;
 
     protected $documentTitle;
     protected $option;
@@ -71,7 +77,7 @@ class CrowdFundingViewUser extends JViewLegacy
 
         // Get number of rewards.
         jimport("crowdfunding.statistics.user");
-        $statistics = new CrowdFundingStatisticsUser(JFactory::getDbo(), $userId);
+        $statistics = new CrowdFundingStatisticsUser(JFactory::getDbo(), $this->item->id);
         $this->projects  = $statistics->getProjectsNumber();
 
         $amounts   = $statistics->getAmounts();
@@ -86,7 +92,28 @@ class CrowdFundingViewUser extends JViewLegacy
             $this->receivedTransactions = (int)$amounts["received"]->number;
         }
 
-//        var_dump($amounts); exit;
+        // Get social profile
+        $socialPlatform = $this->params->get("integration_social_platform");
+
+        if (!empty($socialPlatform)) {
+            $options = array(
+                "social_platform" => $socialPlatform,
+                "user_id" => $this->item->id
+            );
+
+            jimport("itprism.integrate.profile.builder");
+            $profileBuilder = new ITPrismIntegrateProfileBuilder($options);
+            $profileBuilder->build();
+
+            $this->socialProfile = $profileBuilder->getProfile();
+            $this->profileLink   = $this->socialProfile->getLink();
+        }
+
+        jimport("crowdfunding.user.rewards");
+        $this->rewards = new CrowdFundingUserRewards(JFactory::getDbo());
+        $this->rewards->load($this->item->id);
+
+        $this->returnUrl = base64_encode("index.php?option=com_crowdfunding&view=user&id=".$this->item->id);
 
         // Prepare actions, behaviors, scripts and document
         $this->addToolbar();
@@ -104,7 +131,9 @@ class CrowdFundingViewUser extends JViewLegacy
     {
         JFactory::getApplication()->input->set('hidemainmenu', true);
 
-        JToolbarHelper::title(JText::_('COM_CROWDFUNDING_VIEW_USER'));
+        $this->documentTitle = JText::_('COM_CROWDFUNDING_VIEW_USER');
+
+        JToolbarHelper::title($this->documentTitle);
 
         // Refresh page.
         $bar = JToolbar::getInstance('toolbar');

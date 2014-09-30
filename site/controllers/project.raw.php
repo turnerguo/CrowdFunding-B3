@@ -51,12 +51,14 @@ class CrowdFundingControllerProject extends JControllerLegacy
         jimport('itprism.response.json');
         $response = new ITPrismResponseJson();
 
-        // Get the model
-        $model = $this->getModel();
-        /** @var $model CrowdFundingModelProject * */
-
         try {
-            $locationData = $model->getLocations($query);
+
+            jimport("crowdfunding.locations");
+            $locations = new CrowdFundingLocations(JFactory::getDbo());
+            $locations->loadByString($query);
+
+            $locationData = $locations->toOptions();
+
         } catch (Exception $e) {
             JLog::add($e->getMessage());
             throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));

@@ -43,7 +43,7 @@ class CrowdFundingValidatorProjectOwner implements ITPrismValidatorInterface
     }
 
     /**
-     * Validate reward owner.
+     * Validate project owner.
      *
      * <code>
      * $projectId = 1;

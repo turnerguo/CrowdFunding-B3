@@ -18,7 +18,7 @@ defined('_JEXEC') or die;
         <i class="icon-upload"></i>
         <span><?php echo JText::_("COM_CROWDFUNDING_UPLOAD_IMAGES");?></span>
         <!-- The file input field used as target for the file upload widget -->
-        <input id="js-extra-fileupload" type="file" name="files[]" data-url="<?php echo JText::_("index.php?option=com_crowdfunding&task=story.addExtraImage&format=raw");?>" multiple />
+        <input id="js-extra-fileupload" type="file" name="files[]" data-url="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=story.addExtraImage&format=raw");?>" multiple />
     </span>
     <img src="/media/com_crowdfunding/images/ajax-loader.gif" width="16" height="16" id="js-extra-images-loader" style="display: none;" />
     

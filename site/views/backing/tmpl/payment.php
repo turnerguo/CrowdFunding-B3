@@ -50,7 +50,7 @@ defined('_JEXEC') or die;
 			<?php if($this->rewardsEnabled) {?>
 			<h2><?php echo JText::_("COM_CROWDFUNDING_SELECTED_REWARD");?></h2>
 			<div class="bs-docs-example">
-			<?php if(!$this->paymentProcess->rewardId) {?>
+			<?php if(!$this->paymentSession->rewardId) {?>
 				<p><?php echo JText::_("COM_CROWDFUNDING_NO_SELECTED_REWARD");?></p>
 			<?php } else { ?>
 				<h4><?php echo $this->escape($this->reward->getTitle());?></h4>

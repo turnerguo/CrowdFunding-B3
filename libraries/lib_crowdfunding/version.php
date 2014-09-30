@@ -36,7 +36,7 @@ class CrowdFundingVersion
      *
      * @var integer
      */
-    public $devLevel = '7';
+    public $devLevel = '8';
 
     /**
      * Release Type
@@ -57,7 +57,7 @@ class CrowdFundingVersion
      *
      * @var string
      */
-    public $releaseDate = '31 May, 2014';
+    public $releaseDate = '30 September, 2014';
 
     /**
      * License
@@ -88,7 +88,7 @@ class CrowdFundingVersion
     public $backlink = '<div style="width:100%; text-align: left; font-size: xx-small; margin-top: 10px;"><a href="http://itprism.com/free-joomla-extensions/ecommerce-gamification/crowdfunding-collective-raising-capital" target="_blank">Joomla! crowdfunding</a></div>';
 
     /**
-     * Developer webiste.
+     * Developer website.
      *
      * @var string
      */

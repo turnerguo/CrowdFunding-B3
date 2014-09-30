@@ -112,7 +112,7 @@ class CrowdFundingRewards implements Iterator, Countable, ArrayAccess
      * }
      * </code>
      *
-     * @param int $id
+     * @param int $id Project ID
      * @param array $options
      */
     public function load($id, $options = array())
@@ -121,7 +121,7 @@ class CrowdFundingRewards implements Iterator, Countable, ArrayAccess
 
         $query
             ->select(
-                "a.id, a.title, a.description, a.amount, " .
+                "a.id, a.title, a.description, a.amount, a.number, a.distributed, " .
                 "a.image, a.image_thumb, a.image_square"
             )
             ->from($this->db->quoteName("#__crowdf_rewards", "a"))

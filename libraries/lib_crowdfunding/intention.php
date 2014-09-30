@@ -26,6 +26,7 @@ class CrowdFundingIntention
     protected $token;
     protected $gateway;
     protected $auser_id;
+    protected $session_id;
 
     /**
      * Database driver.
@@ -87,7 +88,10 @@ class CrowdFundingIntention
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("a.id, a.user_id, a.project_id, a.reward_id, a.record_date, a.txn_id, a.token, a.gateway, a.auser_id")
+            ->select(
+                "a.id, a.user_id, a.project_id, a.reward_id, a.record_date, " .
+                "a.txn_id, a.token, a.gateway, a.auser_id, a.session_id"
+            )
             ->from($this->db->quoteName("#__crowdf_intentions", "a"));
 
         if (!is_array($keys)) {
@@ -169,6 +173,7 @@ class CrowdFundingIntention
             ->set($this->db->quoteName("token") . "=" . $this->db->quote($this->token))
             ->set($this->db->quoteName("gateway") . "=" . $this->db->quote($this->gateway))
             ->set($this->db->quoteName("auser_id") . "=" . $this->db->quote($this->auser_id))
+            ->set($this->db->quoteName("session_id") . "=" . $this->db->quote($this->session_id))
             ->where($this->db->quoteName("id") ."=". (int)$this->id);
 
         $this->db->setQuery($query);
@@ -190,7 +195,8 @@ class CrowdFundingIntention
             ->set($this->db->quoteName("txn_id") . "=" . $this->db->quote($this->txn_id))
             ->set($this->db->quoteName("token") . "=" . $this->db->quote($this->token))
             ->set($this->db->quoteName("gateway") . "=" . $this->db->quote($this->gateway))
-            ->set($this->db->quoteName("auser_id") . "=" . $this->db->quote($this->auser_id));
+            ->set($this->db->quoteName("auser_id") . "=" . $this->db->quote($this->auser_id))
+            ->set($this->db->quoteName("session_id") . "=" . $this->db->quote($this->session_id));
 
         $this->db->setQuery($query);
         $this->db->execute();
@@ -263,6 +269,24 @@ class CrowdFundingIntention
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set the ID of intention.
+     *
+     * <code>
+     * $intentionId  = 1;
+     *
+     * $intention    = new CrowdFundingIntention(JFactory::getDbo());
+     *
+     * $intention->setId($intentionId);
+     * </code>
+     */
+    public function setId($id)
+    {
+        $this->id = (int)$id;
+
+        return $this;
     }
 
     /**
@@ -431,6 +455,48 @@ class CrowdFundingIntention
     }
 
     /**
+     * Return token.
+     *
+     * <code>
+     * $intentionId  = 1;
+     *
+     * $intention    = new CrowdFundingIntention();
+     * $intention->setDb(JFactory::getDbo());
+     * $intention->load($intentionId);
+     *
+     * $sessionId = $intention->getSessionId();
+     * </code>
+     */
+    public function getSessionId()
+    {
+        return $this->session_id;
+    }
+
+    /**
+     * Set a token.
+     *
+     * <code>
+     * $intentionId  = 1;
+     * $sessionId    = "SESSION_ID_1234";
+     *
+     * $intention    = new CrowdFundingIntention();
+     * $intention->setDb(JFactory::getDbo());
+     * $intention->load($intentionId);
+     *
+     * $intention->setSessionId($sessionId);
+     * </code>
+     *
+     * @param string $sessionId
+     * @return self
+     */
+    public function setSessionId($sessionId)
+    {
+        $this->session_id = $sessionId;
+
+        return $this;
+    }
+
+    /**
      * Check if the intention record is of an anonymous user.
      *
      * <code>
@@ -475,6 +541,7 @@ class CrowdFundingIntention
         foreach ($vars as $key => $value) {
             if (strcmp("db", $key) == 0) {
                 unset($vars[$key]);
+                break;
             }
         }
 

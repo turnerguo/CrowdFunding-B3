@@ -141,8 +141,7 @@ class CrowdFundingViewProject extends JViewLegacy
         JFactory::getApplication()->input->set('hidemainmenu', true);
         $isNew = ($this->item->id == 0);
 
-        $this->documentTitle = $isNew ? JText::_('COM_CROWDFUNDING_NEW_PROJECT')
-            : JText::_('COM_CROWDFUNDING_EDIT_PROJECT');
+        $this->documentTitle = $isNew ? JText::_('COM_CROWDFUNDING_NEW_PROJECT') : JText::_('COM_CROWDFUNDING_EDIT_PROJECT');
 
         JToolbarHelper::title($this->documentTitle);
 
@@ -173,6 +172,7 @@ class CrowdFundingViewProject extends JViewLegacy
 
         JHtml::_('bootstrap.tooltip');
         JHtml::_('itprism.ui.bootstrap_fileuploadstyle');
+        JHtml::_('itprism.ui.bootstrap_typeahead');
 
         JHtml::_("itprism.ui.joomla_helper");
 

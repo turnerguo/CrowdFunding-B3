@@ -54,7 +54,7 @@ class CrowdFundingControllerPayments extends JControllerLegacy
         $this->log->addWriter(new ITPrismLogWriterFile($file));
 
         // Create an object that contains a data used during the payment process.
-        $this->paymentProcessContext = CrowdFundingConstants::PAYMENT_PROCESS_CONTEXT . $this->projectId;
+        $this->paymentProcessContext = CrowdFundingConstants::PAYMENT_SESSION_CONTEXT . $this->projectId;
         $this->paymentProcess        = $app->getUserState($this->paymentProcessContext);
 
     }

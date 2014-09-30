@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.view');
+jimport('itprism.validator.date');
 
 class CrowdFundingViewRewards extends JViewLegacy
 {
@@ -57,7 +57,7 @@ class CrowdFundingViewRewards extends JViewLegacy
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
 
-        $this->params = $this->state->get("params");
+        $this->params     = $this->state->get("params");
 
         jimport("crowdfunding.currency");
         $currencyId     = $this->state->params->get("project_currency");
@@ -133,6 +133,18 @@ class CrowdFundingViewRewards extends JViewLegacy
     {
         // Set toolbar items for the page
         JToolbarHelper::title(JText::sprintf('COM_CROWDFUNDING_REWARDS_MANAGER', $this->projectTitle));
+
+        JToolbarHelper::addNew('reward.add');
+        JToolbarHelper::editList('reward.edit');
+        JToolbarHelper::divider();
+
+        if ($this->state->get('filter.state') == -2) {
+            JToolbarHelper::deleteList('', 'rewards.delete', 'JTOOLBAR_EMPTY_TRASH');
+        } else {
+            JToolbarHelper::trash('rewards.trash');
+        }
+
+        JToolbarHelper::divider();
 
         // Add custom buttons
         $bar = JToolbar::getInstance('toolbar');

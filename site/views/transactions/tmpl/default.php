@@ -45,10 +45,15 @@ defined('_JEXEC') or die;?>
             <tbody>
             	<?php foreach($this->items as $item) {?>
             	<tr>
-            		<td>
+            		<td class="has-context">
             			<a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($item->slug, $item->catslug));?>">
             			<?php echo JHtmlString::truncate(strip_tags($item->project), 64); ?>
             		    </a>
+                        <?php if(!empty($item->txn_id)) { ?>
+                        <div class="cf-font-small">
+                            <?php echo JText::sprintf("COM_CROWDFUNDING_TRANSACTION_ID_S", $item->txn_id); ?>
+                        </div>
+                        <?php } ?>
         		    </td>
             		<td class="cf-center"><?php echo $this->currency->getAmountString($item->txn_amount); ?></td>
             		<td class="cf-center hidden-phone"><?php echo JHtml::_("crowdfunding.name", $item->investor); ?></td>
@@ -57,7 +62,7 @@ defined('_JEXEC') or die;?>
             		<td class="cf-center hidden-phone">
             		    <?php 
             		    $canEdit = ($this->userId != $item->receiver_id) ? false : true;
-            		    echo JHtml::_('crowdfunding.reward', $item->reward_id, $item->reward, $item->id, $item->reward_state, $canEdit ); ?>
+            		    echo JHtml::_('crowdfunding.reward', $item->reward_id, $item->reward, $item->id, $item->reward_state, $canEdit, $this->redirectUrl); ?>
             		</td>
             		<td class="cf-center hidden-phone">
             			<?php echo $item->id; ?>
@@ -86,5 +91,5 @@ defined('_JEXEC') or die;?>
 
     <?php echo $this->pagination->getPagesLinks(); ?>
 </div>
-<div class="clearfix"></div>
+<div class="clearfix">&nbsp;</div>
 <?php echo $this->version->backlink;?>

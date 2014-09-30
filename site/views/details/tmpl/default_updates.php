@@ -33,7 +33,7 @@ defined('_JEXEC') or die;
 <?php }?>
 <?php if(!empty($this->items)) {
     $socialProfile  = (!$this->socialProfiles) ? null : $this->socialProfiles->getLink($this->item->user_id); 
-    $socialAvatar   = (!$this->socialProfilesAvatars) ? $this->defaultAvatar : $this->socialProfilesAvatars->getAvatar($this->item->user_id, $this->avatarsSize); 
+    $socialAvatar   = (!$this->socialProfiles) ? $this->defaultAvatar : $this->socialProfiles->getAvatar($this->item->user_id, $this->avatarsSize);
 ?>
 <?php foreach($this->items as $item ) { ?>
     <div class="row-fluid cf-update-item" id="update<?php echo $item->id;?>">

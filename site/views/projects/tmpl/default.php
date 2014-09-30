@@ -24,7 +24,7 @@ defined('_JEXEC') or die;?>
             		<th class="nowrap"><?php echo JHtml::_('crowdfunding.sort',  'COM_CROWDFUNDING_FUNDED', 'a.funded', $this->listDirn, $this->listOrder); ?></th>
             		<th class="nowrap hidden-phone"><?php echo JHtml::_('crowdfunding.sort',  'COM_CROWDFUNDING_STARTING_DATE', 'a.funding_start', $this->listDirn, $this->listOrder); ?></th>
             		<th class="nowrap hidden-phone"><?php echo JHtml::_('crowdfunding.sort',  'COM_CROWDFUNDING_DURATION', 'a.funding_end', $this->listDirn, $this->listOrder); ?></th>
-            		<th><?php echo JText::_("COM_CROWDFUNDING_PUBLISHED"); ?></th>
+            		<th><?php echo JText::_("COM_CROWDFUNDING_LAUNCHED"); ?></th>
             		<th class="nowrap hidden-phone"><?php echo JText::_("COM_CROWDFUNDING_APPROVED"); ?></th>
             		<th class="nowrap hidden-phone">&nbsp;</th>
             	</tr>
@@ -66,6 +66,10 @@ defined('_JEXEC') or die;?>
             			    <i class="icon-edit icon-white"></i> 
             			    <?php echo JText::_("COM_CROWDFUNDING_EDIT");?>
         			    </a>
+                        <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getFormRoute($item->id, "manager")) ;?>" class="btn btn-small">
+                            <i class="icon-wrench icon-white"></i>
+                            <?php echo JText::_("COM_CROWDFUNDING_MANAGER");?>
+                        </a>
             		</td>
             	</tr>
             	<?php }?>
@@ -79,4 +83,5 @@ defined('_JEXEC') or die;?>
         <?php echo JHtml::_('form.token'); ?>
     </form>
 </div>
+<div class="clearfix">&nbsp;</div>
 <?php echo $this->version->backlink;?>

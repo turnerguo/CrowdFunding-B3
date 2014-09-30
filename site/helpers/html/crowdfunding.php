@@ -233,7 +233,7 @@ abstract class JHtmlCrowdFunding
         if (!empty($tip)) {
             JHtml::_("bootstrap.tooltip");
 
-            $tipMessage = ($value != 1) ? JText::_("COM_CROWDFUNDING_PUBLISH_THIS_ITEM") : JText::_("COM_CROWDFUNDING_UNPUBLISH_THIS_ITEM");
+            $tipMessage = ($value != 1) ? JText::_("COM_CROWDFUNDING_LAUNCH_CAMPAIGN") : JText::_("COM_CROWDFUNDING_STOP_CAMPAIGN");
 
             $class = ' class="btn btn-small hasTooltip"';
             $title = ' title="' . htmlspecialchars($tipMessage, ENT_QUOTES, "UTF-8") . '"';
@@ -298,16 +298,27 @@ abstract class JHtmlCrowdFunding
      * This method generates a code that display a video
      *
      * @param string $value
+     * @param boolean $responsive
      *
      * @return string
      */
-    public static function video($value)
+    public static function video($value, $responsive = false)
     {
         jimport("itprism.video.embed");
         $videoEmbed = new ITPrismVideoEmbed($value);
-        $html       = $videoEmbed->getHtmlCode();
+        $videoEmbed->parse();
 
-        return $html;
+        $html = array();
+
+        if (!$responsive) {
+            $html[] = $videoEmbed->getHtmlCode();
+        } else {
+            $html[] = '<div class="video-container">';
+            $html[] = $videoEmbed->getHtmlCode();
+            $html[] = '</div>';
+        }
+
+        return implode("\n", $html);
     }
 
 
@@ -358,7 +369,7 @@ abstract class JHtmlCrowdFunding
         return $html;
     }
 
-    public static function reward($rewardId, $reward, $txnId, $sent = 0, $canEdit = false)
+    public static function reward($rewardId, $reward, $txnId, $sent = 0, $canEdit = false, $redirect = "")
     {
         $state = (!$sent) ? 1 : 0;
 
@@ -402,7 +413,11 @@ abstract class JHtmlCrowdFunding
         if (!$rewardId or !$canEdit) {
             $link = "javascript: void(0);";
         } else {
-            $link = JRoute::_("index.php?option=com_crowdfunding&task=rewards.changeState&txn_id=" . (int)$txnId . "&state=" . (int)$state . "&" . JSession::getFormToken() . "=1");
+            if (!empty($redirect)) {
+                $redirect = "&redirect=".base64_encode($redirect);
+            }
+
+            $link = JRoute::_("index.php?option=com_crowdfunding&task=rewards.changeState&txn_id=" . (int)$txnId . "&state=" . (int)$state . "&" . JSession::getFormToken() . "=1".$redirect);
         }
 
         $html[] = '<a href="' . $link . '" class="hasTooltip" ' . $title . '>';
@@ -551,6 +566,22 @@ abstract class JHtmlCrowdFunding
         return implode("\n", $html);
     }
 
+    public static function rewardsNumber($number)
+    {
+        return (!$number) ? JText::_("COM_CROWDFUNDING_UNLIMITED") : (int)$number;
+    }
+
+    public static function rewardsAvailable($number, $distributed)
+    {
+        if (!empty($number)) {
+            $result = abs($number - $distributed);
+        } else {
+            $result = JText::_("COM_CROWDFUNDING_UNLIMITED");
+        }
+
+        return $result;
+    }
+
     /**
      * Prepare some specific CSS styles of the projects.
      *
@@ -614,4 +645,25 @@ abstract class JHtmlCrowdFunding
 
         self::$loaded[__METHOD__] = true;
     }
+
+    /**
+     * Display a location of an user.
+     */
+    public static function profileLocation($name, $countryCode)
+    {
+        $html = array();
+        if (!empty($name)) {
+            $html[] = '<div class="cf-location">';
+            $html[] = htmlentities($name, ENT_QUOTES, "UTF-8");
+
+            if (!empty($countryCode)) {
+                $html[] = ", " . htmlentities($countryCode, ENT_QUOTES, "UTF-8");
+            }
+
+            $html[] = '</div>';
+        }
+
+        return implode("", $html);
+    }
+
 }

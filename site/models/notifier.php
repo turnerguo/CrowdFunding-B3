@@ -34,4 +34,20 @@ class CrowdFundingModelNotifier extends JModelLegacy
             JLog::add($error);
         }
     }
+
+    /**
+     * Remove a record of payment session from the database.
+     *
+     * @param object $session
+     */
+    public function closePaymentSession($session)
+    {
+        if (!empty($session->id)) {
+            jimport("crowdfunding.intention");
+            $intention = new CrowdFundingIntention(JFactory::getDbo());
+
+            $intention->setId($session->id);
+            $intention->delete();
+        }
+    }
 }

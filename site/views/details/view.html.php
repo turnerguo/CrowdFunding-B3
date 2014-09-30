@@ -33,7 +33,6 @@ class CrowdFundingViewDetails extends JViewLegacy
 
     protected $imageFolder;
     protected $screen;
-    protected $socialProfilesAvatars;
     protected $items;
     protected $form;
     protected $userId;
@@ -41,6 +40,10 @@ class CrowdFundingViewDetails extends JViewLegacy
     protected $avatarsSize;
     protected $socialProfiles;
     protected $defaultAvatar;
+    protected $onCommentAfterDisplay;
+    protected $commentsEnabled;
+    protected $currency;
+    protected $displayAmounts;
 
     protected $option;
 
@@ -67,7 +70,7 @@ class CrowdFundingViewDetails extends JViewLegacy
         $this->params = $params;
 
         $model  = $this->getModel();
-        $userId = JFactory::getUser()->id;
+        $userId = JFactory::getUser()->get("id");
 
         if (!$this->item or $model->isRestricted($this->item, $userId)) {
 
@@ -90,8 +93,10 @@ class CrowdFundingViewDetails extends JViewLegacy
         // Get the current screen
         $this->screen = $app->input->getCmd("screen", "home");
 
-        $this->version    = new CrowdFundingVersion();
         $this->prepareDocument();
+
+        // Import content plugins
+        JPluginHelper::importPlugin('content');
 
         switch ($this->screen) {
 
@@ -112,7 +117,6 @@ class CrowdFundingViewDetails extends JViewLegacy
         }
 
         // Events
-        JPluginHelper::importPlugin('content');
         $dispatcher        = JEventDispatcher::getInstance();
         $this->item->event = new stdClass();
         $offset            = 0;
@@ -128,6 +132,8 @@ class CrowdFundingViewDetails extends JViewLegacy
 
         // Count hits
         $model->hit($this->item->id);
+
+        $this->version    = new CrowdFundingVersion();
 
         parent::display($tpl);
     }
@@ -162,30 +168,41 @@ class CrowdFundingViewDetails extends JViewLegacy
 
     protected function prepareCommentsScreen()
     {
-        $model       = JModelLegacy::getInstance("Comments", "CrowdFundingModel", $config = array('ignore_request' => false));
-        $this->items = $model->getItems();
-        $this->form  = $model->getForm();
+        $this->commentsEnabled = $this->params->get("comments_enabled", 1);
 
-        $this->userId  = JFactory::getUser()->id;
-        $this->isOwner = ($this->userId != $this->item->user_id) ? false : true;
+        // Initialize default comments functionality.
+        if ($this->commentsEnabled) {
+            $model       = JModelLegacy::getInstance("Comments", "CrowdFundingModel", $config = array('ignore_request' => false));
+            $this->items = $model->getItems();
+            $this->form  = $model->getForm();
 
-        // Get users IDs
-        $usersIds = array();
-        foreach ($this->items as $item) {
-            $usersIds[] = $item->user_id;
+            $this->userId  = JFactory::getUser()->get("id");
+            $this->isOwner = ($this->userId != $this->item->user_id) ? false : true;
+
+            // Get users IDs
+            $usersIds = array();
+            foreach ($this->items as $item) {
+                $usersIds[] = $item->user_id;
+            }
+
+            // Prepare integration. Load avatars and profiles.
+            $this->prepareIntegration($usersIds, $this->params);
+
+            // Scripts
+            JHtml::_('behavior.keepalive');
+            JHtml::_('behavior.formvalidation');
+            JHtml::_('itprism.ui.pnotify');
+
+            JHtml::_("itprism.ui.joomla_helper");
+
+            $this->document->addScript('media/' . $this->option . '/js/site/comments.js');
         }
 
-        // Prepare integration. Load avatars and profiles.
-        $this->prepareIntegration($usersIds, $this->params);
+        // Trigger comments plugins.
+        $dispatcher        = JEventDispatcher::getInstance();
 
-        // Scripts
-        JHtml::_('behavior.keepalive');
-        JHtml::_('behavior.formvalidation');
-        JHtml::_('itprism.ui.pnotify');
-
-        JHtml::_("itprism.ui.joomla_helper");
-
-        $this->document->addScript('media/' . $this->option . '/js/site/comments.js');
+        $results = $dispatcher->trigger('onContentAfterDisplay', array('com_crowdfunding.comments', &$this->item, &$this->params));
+        $this->onCommentAfterDisplay = trim(implode("\n", $results));
     }
 
     protected function prepareFundersScreen()
@@ -197,6 +214,14 @@ class CrowdFundingViewDetails extends JViewLegacy
         $usersIds = array();
         foreach ($this->items as $item) {
             $usersIds[] = $item->id;
+        }
+
+        // Create a currency object if I have to display funders amounts.
+        $this->displayAmounts = $this->params->get("funders_display_amounts", 0);
+        if ($this->displayAmounts) {
+            jimport("crowdfunding.currency");
+            $currencyId = $this->params->get("project_currency");
+            $this->currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId);
         }
 
         // Prepare integration. Load avatars and profiles.
@@ -313,14 +338,14 @@ class CrowdFundingViewDetails extends JViewLegacy
      */
     protected function prepareIntegration($usersIds, $params)
     {
+        $usersIds = array_filter($usersIds);
+
         // Get a social platform for integration
         $socialPlatform = $params->get("integration_social_platform");
-        $avatarsService = $params->get("integration_avatars");
 
         $this->avatarsSize = $params->get("integration_avatars_size", 50);
 
         $this->socialProfiles        = null;
-        $this->socialProfilesAvatars = null;
         $this->defaultAvatar         = $params->get("integration_avatars_default", "/media/com_crowdfunding/images/no-profile.png");
 
         // If there is now users, do not continue.
@@ -336,11 +361,6 @@ class CrowdFundingViewDetails extends JViewLegacy
         // Load the social profiles
         if (!empty($socialPlatform)) {
             $this->socialProfiles = ITPrismIntegrateProfiles::factory($socialPlatform, $usersIds);
-        }
-
-        // Load the social profiles used for avatars
-        if (!empty($avatarsService)) {
-            $this->socialProfilesAvatars = ITPrismIntegrateProfiles::factory($avatarsService, $usersIds);
         }
     }
 }

@@ -31,12 +31,12 @@
                description="COM_CROWDFUNDING_TERMS_URL_DESC" class="span6"/>
         <field name="backing_wizard_type" type="list" default="three_steps" label="COM_CROWDFUNDING_BACKING_WIZARD_TYPE"
                description="COM_CROWDFUNDING_BACKING_WIZARD_TYPE_DESC">
-            <option value="three_steps">COM_CROWDFUNDING_BACKING_THREE_STEPS</option>
-            <option value="four_steps">COM_CROWDFUNDING_BACKING_FOUR_STEPS</option>
+            <option value="three_steps">COM_CROWDFUNDING_THREE_STEPS</option>
+            <option value="four_steps">COM_CROWDFUNDING_FOUR_STEPS</option>
         </field>
     </fieldset>
 
-    <fieldset name="images" label="COM_CROWDFUNDING_IMAGES_TITLE" description="COM_CROWDFUNDING_IMAGES_PARAMS">
+    <fieldset name="images" label="COM_CROWDFUNDING_MEDIA" description="COM_CROWDFUNDING_MEDIA_PARAMS">
 
         <field name="images_directory" type="text" default="images/crowdfunding" size="50"
                label="COM_CROWDFUNDING_IMAGES_DIRECTORY" description="COM_CROWDFUNDING_IMAGES_DIRECTORY_DESC"
@@ -98,6 +98,12 @@
         <field name="rewards_image_square_height" type="text" default="50"
                label="COM_CROWDFUNDING_REWARD_IMAGE_SQUARE_HEIGHT"
                description="COM_CROWDFUNDING_REWARD_IMAGE_SQUARE_HEIGHT_DESC"/>
+
+        <field name="spacer3" type="spacer" label="COM_CROWDFUNDING_VIDEO_OPTIONS"/>
+        <field name="video_responsive" type="radio" default="0" label="COM_CROWDFUNDING_VIDEO_RESPONSIVE" description="COM_CROWDFUNDING_VIDEO_RESPONSIVE_DESC" class="btn-group">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
     </fieldset>
 
     <fieldset name="project" label="COM_CROWDFUNDING_PROJECT" description="COM_CROWDFUNDING_PROJECTS_PARAMS"
@@ -131,6 +137,12 @@
         </field>
         <field name="project_terms_url" type="text" default="" size="50" label="COM_CROWDFUNDING_TERMS_URL"
                description="COM_CROWDFUNDING_TERMS_URL_DESC" class="span6"/>
+
+        <field name="project_wizard_type" type="list" default="five_steps" label="COM_CROWDFUNDING_PROJECT_WIZARD_TYPE"
+               description="COM_CROWDFUNDING_PROJECT_WIZARD_TYPE_DESC">
+             <option value="five_steps">COM_CROWDFUNDING_FIVE_STEPS</option>
+            <option value="six_steps">COM_CROWDFUNDING_SIX_STEPS</option>
+        </field>
     </fieldset>
 
     <fieldset name="project" addfieldpath="/administrator/components/com_content/models/fields">
@@ -169,9 +181,7 @@
     </fieldset>
 
     <fieldset name="integration" label="COM_CROWDFUNDING_INTEGRATION" description="COM_CROWDFUNDING_INTEGRATION_PARAMS">
-        <field name="integration_social_platform" type="list" default=""
-               label="COM_CROWDFUNDING_INTEGRATION_SOCIAL_PLATFORM"
-               description="COM_CROWDFUNDING_INTEGRATION_SOCIAL_PLATFORM_DESC">
+        <field name="integration_social_platform" type="list" default="" label="COM_CROWDFUNDING_INTEGRATION_SOCIAL_PLATFORM" description="COM_CROWDFUNDING_INTEGRATION_SOCIAL_PLATFORM_DESC">
             <option value="">COM_CROWDFUNDING_NONE</option>
             <option value="socialcommunity">COM_CROWDFUNDING_SOCIAL_COMMUNITY</option>
             <option value="gravatar">COM_CROWDFUNDING_GRAVATAR</option>
@@ -179,25 +189,28 @@
             <option value="easysocial">COM_CROWDFUNDING_EASYSOCIAL</option>
             <option value="kunena">COM_CROWDFUNDING_KUNENA</option>
         </field>
-        <field name="integration_avatars" type="list" default="" label="COM_CROWDFUNDING_INTEGRATION_AVATAR"
-               description="COM_CROWDFUNDING_INTEGRATION_AVATAR_DESC">
-            <option value="">COM_CROWDFUNDING_NONE</option>
-            <option value="socialcommunity">COM_CROWDFUNDING_SOCIAL_COMMUNITY</option>
-            <option value="gravatar">COM_CROWDFUNDING_GRAVATAR</option>
-            <option value="jomsocial">COM_CROWDFUNDING_JOMSOCIAL</option>
-            <option value="easysocial">COM_CROWDFUNDING_EASYSOCIAL</option>
-            <option value="kunena">COM_CROWDFUNDING_KUNENA</option>
+        <field name="integration_avatars_size" type="text" default="50" label="COM_CROWDFUNDING_AVATARS_SIZE" description="COM_CROWDFUNDING_AVATARS_SIZE_DESC"/>
+        <field name="integration_avatars_default" type="text" default="/media/com_crowdfunding/images/no-profile.png" label="COM_CROWDFUNDING_AVATARS_DEFAULT" description="COM_CROWDFUNDING_AVATARS_DEFAULT_DESC" class="span6"/>
+    </fieldset>
+
+    <fieldset name="funders" label="COM_CROWDFUNDING_FUNDERS" description="COM_CROWDFUNDING_FUNDERS_PARAMS">
+        <field name="funders_display_anonymous" type="radio" default="0" label="COM_CROWDFUNDING_DISPLAY_ANONYMOUS" description="COM_CROWDFUNDING_FUNDERS_DISPLAY_ANONYMOUS_DESC" class="btn-group">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
         </field>
-        <field name="integration_avatars_size" type="text" default="50" label="COM_CROWDFUNDING_AVATARS_SIZE"
-               description="COM_CROWDFUNDING_AVATARS_SIZE_DESC"/>
-        <field name="integration_avatars_default" type="text" default="/media/com_crowdfunding/images/no-profile.png"
-               label="COM_CROWDFUNDING_AVATARS_DEFAULT" description="COM_CROWDFUNDING_AVATARS_DEFAULT_DESC"
-               class="span6"/>
+        <field name="funders_display_amounts" type="radio" default="0" label="COM_CROWDFUNDING_DISPLAY_AMOUNTS" description="COM_CROWDFUNDING_FUNDERS_DISPLAY_AMOUNTS_DESC" class="btn-group">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
     </fieldset>
 
     <fieldset name="comments" label="COM_CROWDFUNDING_COMMENTS" description="COM_CROWDFUNDING_COMMENTS_PARAMS">
-        <field name="comments_adding_state" type="radio" default="0" label="COM_CROWDFUNDING_COMMENTS_ADDING_STATE"
-               description="COM_CROWDFUNDING_COMMENTS_ADDING_STATE_DESC" class="btn-group">
+        <field name="comments_enabled" type="radio" default="1" label="COM_CROWDFUNDING_COMMENTS_ENABLED" description="COM_CROWDFUNDING_COMMENTS_ENABLED_DESC" class="btn-group">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+
+        <field name="comments_adding_state" type="radio" default="0" label="COM_CROWDFUNDING_COMMENTS_DEFAULT_STATE" description="COM_CROWDFUNDING_COMMENTS_DEFAULT_STATE_DESC" class="btn-group">
             <option value="0">JUNPUBLISHED</option>
             <option value="1">JPUBLISHED</option>
         </field>
@@ -279,6 +292,12 @@
                description="COM_CROWDFUNDING_AMOUNT_FORMAT_DESC"/>
         <field name="project_date_format" type="text" default="%Y-%m-%d" label="COM_CROWDFUNDING_DATE_FORMAT"
                description="COM_CROWDFUNDING_DATE_FORMAT_DESC"/>
+        <field name="enable_chosen" type="radio" default="1" label="COM_CROWDFUNDING_ENABLE_CHOSEN"
+               description="COM_CROWDFUNDING_ENABLE_CHOSEN_DESC" class="btn-group">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        <field name="administrator_id" type="user" label="COM_CROWDFUNDING_ADMINISTRATOR" description="COM_CROWDFUNDING_FIELD_ADMINISTRATOR_DESC" />
     </fieldset>
 
     <fieldset name="permissions" description="JCONFIG_PERMISSIONS_DESC" label="JCONFIG_PERMISSIONS_LABEL">

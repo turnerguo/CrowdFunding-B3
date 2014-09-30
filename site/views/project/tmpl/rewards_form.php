@@ -11,17 +11,20 @@
 defined('_JEXEC') or die;
 
 // Prepare availability number
-$availability = JArrayHelper::getValue($this->formItem,  "number", 0);
-if(!$availability) {
+$availability = JArrayHelper::getValue($this->formItem, "number", 0);
+if (!$availability) {
     $availability = "";
 }
 
 // Prepare delivery date
-$deliveryDate = JArrayHelper::getValue($this->formItem,  "delivery", null);
-if(!empty($deliveryDate)) {
-    if(!CrowdFundingHelper::isValidDate($deliveryDate)) {
+$deliveryDate = JArrayHelper::getValue($this->formItem, "delivery", null);
+if (!empty($deliveryDate)) {
+
+    $dateValidator = new ITPrismValidatorDate($deliveryDate);
+
+    if (!$dateValidator->isValid()) {
         $deliveryDate = null;
-    } else { // Formating date
+    } else { // Formatting date
         $date = new JDate($deliveryDate);
         $deliveryDate = $date->format($this->dateFormat);
     }

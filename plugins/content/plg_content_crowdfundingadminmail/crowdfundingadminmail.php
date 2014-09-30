@@ -233,8 +233,17 @@ class plgContentCrowdFundingAdminMail extends JPlugin
             $email->setSenderEmail($app->get("mailfrom"));
         }
 
-        $recipientName = $email->getSenderName();
-        $recipientMail = $email->getSenderEmail();
+        // Prepare recipient data.
+        $componentParams = JComponentHelper::getParams("com_crowdfunding");
+        $recipientId = $componentParams->get("administrator_id");
+        if (!empty($recipientId)) {
+            $recipient = JFactory::getUser($recipientId);
+            $recipientName = $recipient->get("name");
+            $recipientMail = $recipient->get("email");
+        } else {
+            $recipientName = $app->get("fromname");
+            $recipientMail = $app->get("mailfrom");
+        }
 
         // Prepare data for parsing
         $data["sender_name"]     = $email->getSenderName();

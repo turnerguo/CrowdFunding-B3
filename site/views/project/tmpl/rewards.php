@@ -9,8 +9,15 @@
 
 // no direct access
 defined('_JEXEC') or die;
+
+if (strcmp("five_steps", $this->wizardType) == 0) {
+    $layout      = new JLayoutFile('project_wizard', $this->layoutsBasePath);
+} else {
+    $layout      = new JLayoutFile('project_wizard_six_steps', $this->layoutsBasePath);
+}
+echo $layout->render($this->layoutData);
+
 ?>
-<?php echo $this->loadTemplate("nav");?>
 <div class="row-fluid">
     <form action="<?php echo JRoute::_('index.php?option=com_crowdfunding'); ?>" method="post" name="projectForm" id="crowdf-rewards-form" class="form-validate" enctype="multipart/form-data" >
         
@@ -47,44 +54,20 @@ defined('_JEXEC') or die;
             <p class="sticky"><?php echo JText::_("COM_CROWDFUNDING_NOTE_REWARDS_CREATING_NOT_ALLOWED");?></p>
         <?php }?>
         
-        <div class="btn-group cf-rewards-submit-btn">
-            <button class="btn" <?php echo $this->disabledButton;?>>
+        <div class="cf-rewards-submit-btn">
+            <button class="btn" <?php echo $this->disabledButton;?> name="btn_submit" value="save" type="submit">
                 <i class="icon-ok icon-white"></i>
                 <?php echo JText::_("COM_CROWDFUNDING_SAVE_REWARDS");?>
             </button>
-            <?php if(empty($this->item->published)) {?>
-            <button class="btn dropdown-toggle" data-toggle="dropdown" <?php echo $this->disabledButton;?>>
-                <span class="caret"></span>
+
+            <button class="btn" <?php echo $this->disabledButton;?> name="btn_submit" value="save_continue" type="submit">
+                <i class="icon-ok icon-white"></i>
+                <?php echo JText::_("COM_CROWDFUNDING_SAVE_AND_CONTINUE");?>
             </button>
-            <ul class="dropdown-menu">
-                <li>
-                    <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=projects.savestate&id=".(int)$this->item->id."&state=1&".JSession::getFormToken()."=1&return=1"); ?>" id="js-btn-rewards-publish">
-                        <i class="icon-ok-circle icon-white"></i>
-                        <?php echo JText::_("COM_CROWDFUNDING_PUBLISH_NOW");?>
-                    </a>
-                </li>
-            </ul>
-            <?php }?>
         </div>
-        
+
     </form>
 </div>
 <?php echo $this->loadTemplate("tmpl");?>
+<div class="clearfix">&nbsp;</div>
 <?php echo $this->version->backlink;?>
-
-<?php if(empty($this->item->published)) {?>
-<div class="modal hide fade" id="js-modal-publish-project">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h3><?php echo JText::_("COM_CROWDFUNDING_PUBLISHING_PROJECT");?></h3>
-    </div>
-    <div class="modal-body">
-        <p class="cf-fm"><?php echo JText::_("COM_CROWDFUNDING_QUESTION_PUBLISH_PROJECT");?></p>
-        <p><?php echo JText::_("COM_CROWDFUNDING_NOTE_PUBLISHING_PROJECT");?></p>
-    </div>
-    <div class="modal-footer">
-        <a href="#" class="btn btn-primary" id="js-modal-btn-pp-yes"><?php echo JText::_("JYES");?></a>
-        <a href="#" class="btn" id="js-modal-btn-pp-no"><?php echo JText::_("JNO");?></a>
-    </div>
-</div>
-<?php }?>

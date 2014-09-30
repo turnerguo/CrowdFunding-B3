@@ -10,8 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 ?>
-<form action="<?php echo JRoute::_('index.php?option=com_crowdfunding&view=rewards'); ?>" method="post" name="adminForm"
-      id="adminForm">
+<form action="<?php echo JRoute::_('index.php?option=com_crowdfunding&view=rewards'); ?>" method="post" name="adminForm" id="adminForm">
     <?php if (!empty($this->sidebar)): ?>
     <div id="j-sidebar-container" class="span2">
         <?php echo $this->sidebar; ?>
@@ -23,12 +22,11 @@ defined('_JEXEC') or die;
 
             <div id="filter-bar" class="btn-toolbar">
                 <div class="filter-search btn-group pull-left">
-                    <label for="filter_search"
-                           class="element-invisible"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
-                    <input type="text" name="filter_search" id="filter_search"
+                    <label for="filter_search" class="element-invisible"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
+                    <input type="text" name="filter_search" id="filter_search" class="hasTooltip"
                            placeholder="<?php echo JText::_('COM_CROWDFUNDING_SEARCH_IN_TITLE'); ?>"
                            value="<?php echo $this->escape($this->state->get('filter.search')); ?>"
-                           title="<?php echo JText::_('COM_CROWDFUNDING_SEARCH_IN_TITLE'); ?>"/>
+                           title="<?php echo JText::_('COM_CROWDFUNDING_SEARCH_IN_TOOLTIP'); ?>"/>
                 </div>
                 <div class="btn-group pull-left">
                     <button class="btn hasTooltip" type="submit"

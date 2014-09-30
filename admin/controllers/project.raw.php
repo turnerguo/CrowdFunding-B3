@@ -81,4 +81,43 @@ class CrowdFundingControllerProject extends JControllerLegacy
         echo $response;
         JFactory::getApplication()->close();
     }
+
+    /**
+     * Method to save the submitted ordering values for records via AJAX.
+     *
+     * @throws Exception
+     * @return  void
+     */
+    public function loadLocation()
+    {
+        // Get the input
+        $query = $this->input->get->get('query', "", 'string');
+
+        jimport('itprism.response.json');
+        $response = new ITPrismResponseJson();
+
+        // Get the model
+        $model = $this->getModel();
+        /** @var $model CrowdFundingModelProject */
+
+        try {
+
+            jimport("crowdfunding.locations");
+            $locations = new CrowdFundingLocations(JFactory::getDbo());
+            $locations->loadByString($query);
+            
+            $locationData = $locations->toOptions();
+
+        } catch (Exception $e) {
+            JLog::add($e->getMessage());
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
+        }
+
+        $response
+            ->setData($locationData)
+            ->success();
+
+        echo $response;
+        JFactory::getApplication()->close();
+    }
 }

@@ -85,7 +85,12 @@ class plgContentCrowdFundingNav extends JPlugin
             }
             $class .= '"';
 
-            $stat = '<span class="label">' . JArrayHelper::getValue($stats, "comments", 0) . '</span>';
+            if (!$params->get("comments_enabled", 1)) {
+                $stat = '<span class="cf-dclabel">&nbsp;</span>';
+            } else {
+                $stat = '<span class="label">' . JArrayHelper::getValue($stats, "comments", 0) . '</span>';
+            }
+
             $html .= '<li ' . $class . '><a href="' . JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($article->slug, $article->catslug, "comments")) . '">' . JText::_("PLG_CONTENT_CROWDFUNDINGNAV_COMMENTS") . ' ' . $stat . '</a></li>';
         }
 
