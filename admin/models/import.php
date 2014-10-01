@@ -80,6 +80,76 @@ class CrowdFundingModelImport extends JModelForm
         return $filePath;
     }
 
+    public function uploadFile($fileData, $type)
+    {
+        $app = JFactory::getApplication();
+        /** @var $app JApplicationAdministrator */
+
+        jimport('joomla.filesystem.archive');
+        jimport('itprism.file');
+        jimport('itprism.file.uploader.local');
+        jimport('itprism.file.validator.size');
+        jimport('itprism.file.validator.server');
+
+        $uploadedFile = JArrayHelper::getValue($fileData, 'tmp_name');
+        $uploadedName = JArrayHelper::getValue($fileData, 'name');
+        $errorCode    = JArrayHelper::getValue($fileData, 'error');
+
+        $destination = JPath::clean($app->get("tmp_path")) . DIRECTORY_SEPARATOR . JFile::makeSafe($uploadedName);
+
+        $file = new ITPrismFile();
+
+        // Prepare size validator.
+        $KB       = 1024 * 1024;
+        $fileSize = (int)$app->input->server->get('CONTENT_LENGTH');
+
+        $mediaParams   = JComponentHelper::getParams("com_media");
+        /** @var $mediaParams Joomla\Registry\Registry */
+
+        $uploadMaxSize = $mediaParams->get("upload_maxsize") * $KB;
+
+        // Prepare size validator.
+        $sizeValidator = new ITPrismFileValidatorSize($fileSize, $uploadMaxSize);
+
+        // Prepare server validator.
+        $serverValidator = new ITPrismFileValidatorServer($errorCode, array(UPLOAD_ERR_NO_FILE));
+
+        $file->addValidator($sizeValidator);
+        $file->addValidator($serverValidator);
+
+        // Validate the file
+        if (!$file->isValid()) {
+            throw new RuntimeException($file->getError());
+        }
+
+        // Prepare uploader object.
+        $uploader = new ITPrismFileUploaderLocal($uploadedFile);
+        $uploader->setDestination($destination);
+
+        // Upload the file
+        $file->setUploader($uploader);
+        $file->upload();
+
+        $fileName = basename($destination);
+
+        // Extract file if it is archive
+        $ext = JString::strtolower(JFile::getExt($fileName));
+        if (strcmp($ext, "zip") == 0) {
+
+            $destFolder = JPath::clean($app->get("tmp_path")) . "/". $type;
+            if (is_dir($destFolder)) {
+                JFolder::delete($destFolder);
+            }
+
+            $filePath = $this->extractFile($destination, $destFolder);
+
+        } else {
+            $filePath = $destination;
+        }
+
+        return $filePath;
+    }
+
     /**
      *
      * Import currencies from XML file.
@@ -106,7 +176,7 @@ class CrowdFundingModelImport extends JModelForm
             $result = $db->loadResult();
 
             if (!empty($result)) { // Update current currencies and insert newest.
-                $this->updateCurrenices($content, $resetId);
+                $this->updateCurrencies($content, $resetId);
             } else { // Insert new ones
                 $this->insertCurrencies($content, $resetId);
             }
@@ -149,9 +219,9 @@ class CrowdFundingModelImport extends JModelForm
     /**
      * Update the currencies with new columns.
      */
-    protected function updateCurrenices($content)
+    protected function updateCurrencies($content)
     {
-        JLoader::register("CrowdFundingTableCurrency", JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . "components" . DIRECTORY_SEPARATOR . "com_crowdfunding" . DIRECTORY_SEPARATOR . "tables" . DIRECTORY_SEPARATOR . "currency.php");
+        JLoader::register("CrowdFundingTableCurrency", JPATH_ADMINISTRATOR ."/components/com_crowdfunding/tables/currency.php");
         $db = $this->getDbo();
 
         foreach ($content as $item) {
@@ -388,7 +458,7 @@ class CrowdFundingModelImport extends JModelForm
      */
     protected function updateCountries($content)
     {
-        JLoader::register("CrowdFundingTableCountry", JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . "components" . DIRECTORY_SEPARATOR . "com_crowdfunding" . DIRECTORY_SEPARATOR . "tables" . DIRECTORY_SEPARATOR . "country.php");
+        JLoader::register("CrowdFundingTableCountry", JPATH_ADMINISTRATOR ."/components/com_crowdfunding/tables/country.php");
         $db = $this->getDbo();
 
         foreach ($content->country as $item) {

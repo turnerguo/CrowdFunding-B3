@@ -1,6 +1,9 @@
 CrowdFunding Release Notes
 ==========================
 
+###v1.8.1
+* Fixed import functionality for currencies, countries, locations and states.
+
 ###v1.8
 * The video on details page can be responsive.
 * Improved payment wizard. Now, the content of step 2, when use wizard in four steps, is displayed by a plugin.
