@@ -256,6 +256,36 @@ class CrowdFundingCurrency
     }
 
     /**
+     * This method format an amount value.
+     *
+     * <code>
+     * $currencyId = 1;
+     *
+     * $options    = new JRegistry();
+     * $options->set("format", "2/./,");
+     *
+     * $amount   = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $options);
+     *
+     * // Returns 25.00
+     * echo $currency->getAmountValue(25.000);
+     * </code>
+     *
+     * @param mixed  $amount This is a value used in the amount string. This can be float, integer,...
+     *
+     * @return string
+     */
+    public function getAmountValue($amount)
+    {
+        $format = $this->options->get("format");
+
+        if (!empty($format)) {
+            $amount = $this->formatAmount($amount);
+        }
+
+        return $amount;
+    }
+
+    /**
      * Return currency ID.
      *
      * <code>

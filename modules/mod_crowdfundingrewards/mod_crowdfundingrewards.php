@@ -51,6 +51,16 @@ $project = CrowdFundingProject::getInstance(JFactory::getDbo(), $projectId);
 
 $rewards = $project->getRewards(array("state" => 1));
 
+// Calculate the number of funders.
+if ($params->get("display_funders", 0)) {
+    $rewards->loadAdditionalData();
+}
+
+$additionalInfo = false;
+if ($params->get("display_funders", 0) or $params->get("display_claimed", 0) or $params->get("display_delivery_date", 0)) {
+    $additionalInfo = true;
+}
+
 $layout  = $params->get('layout', 'default');
 
 switch ($layout) {

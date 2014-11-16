@@ -28,21 +28,23 @@ abstract class JHtmlCrowdFunding
      * Display an icon for approved or not approved project.
      *
      * @param integer $value
+     * @param string $iconOk
+     * @param string $iconRemove
      *
      * @return string
      */
-    public static function approved($value)
+    public static function approved($value, $iconOk = "icon-ok-sign", $iconRemove = "icon-remove-sign")
     {
         $html = '<i class="{ICON}"></i>';
 
         switch ($value) {
 
             case 1: // Published
-                $html = str_replace("{ICON}", "icon-ok-sign", $html);
+                $html = str_replace("{ICON}", $iconOk, $html);
                 break;
 
             default: // Unpublished
-                $html = str_replace("{ICON}", "icon-remove-sign", $html);
+                $html = str_replace("{ICON}", $iconRemove, $html);
                 break;
         }
 
@@ -224,10 +226,12 @@ abstract class JHtmlCrowdFunding
      * @param integer $value
      * @param string  $url An url to the task
      * @param bool  $tip
+     * @param string  $iconOk
+     * @param string  $iconRemove
      *
      * @return string
      */
-    public static function state($value, $url, $tip = false)
+    public static function state($value, $url, $tip = false, $iconOk = "icon-ok-circle", $iconRemove = "icon-remove-circle")
     {
         $title = "";
         if (!empty($tip)) {
@@ -247,11 +251,11 @@ abstract class JHtmlCrowdFunding
         switch ($value) {
 
             case 1: // Published
-                $html = str_replace("{ICON}", "icon-ok-circle", $html);
+                $html = str_replace("{ICON}", $iconOk, $html);
                 break;
 
             default: // Unpublished
-                $html = str_replace("{ICON}", "icon-remove-circle", $html);
+                $html = str_replace("{ICON}", $iconRemove, $html);
                 break;
         }
 
@@ -665,5 +669,4 @@ abstract class JHtmlCrowdFunding
 
         return implode("", $html);
     }
-
 }

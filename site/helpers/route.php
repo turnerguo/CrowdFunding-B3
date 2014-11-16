@@ -27,13 +27,14 @@ jimport('joomla.application.categories');
  */
 abstract class CrowdFundingHelperRoute
 {
+    protected static $projects = array();
     protected static $lookup;
 
     /**
      * This method route item in the view "details".
      *
-     * @param    int $id    The id of the item.
-     * @param    int $catid The id of the category.
+     * @param    int    $id    The id of the item.
+     * @param    int    $catid The id of the category.
      * @param    string $screen
      *
      * @return string
@@ -153,10 +154,10 @@ abstract class CrowdFundingHelperRoute
     }
 
     /**
-     * @param    int    $id     The id of the item.
-     * @param    int    $catid  The id of the category.
+     * @param    int    $id    The id of the item.
+     * @param    int    $catid The id of the category.
      * @param    string $layout
-     * @param    int $rewardId
+     * @param    int    $rewardId
      *
      * @return string
      */
@@ -209,8 +210,8 @@ abstract class CrowdFundingHelperRoute
     }
 
     /**
-     * @param    int $id    The id of the item.
-     * @param    int $catid The id of the category.
+     * @param    int    $id    The id of the item.
+     * @param    int    $catid The id of the category.
      * @param    string $layout
      *
      * @return   string
@@ -261,7 +262,8 @@ abstract class CrowdFundingHelperRoute
 
     /**
      * @param    int    $id     The id of the item.
-     *                          
+     * @param    string $layout Layout name.
+     *
      * @return string
      */
     public static function getFormRoute($id, $layout = "default")
@@ -274,7 +276,7 @@ abstract class CrowdFundingHelperRoute
         $link = 'index.php?option=com_crowdfunding&view=project&id=' . $id;
 
         if (strcmp($layout, "default") != 0) {
-            $link .= "&layout=".$layout;
+            $link .= "&layout=" . $layout;
         }
 
         // Looking for menu item (Itemid)
@@ -288,7 +290,9 @@ abstract class CrowdFundingHelperRoute
     }
 
     /**
-     * Prepare a link to discover page
+     * Prepare a link to discover page.
+     *
+     * @return string
      */
     public static function getDiscoverRoute()
     {
@@ -305,6 +309,44 @@ abstract class CrowdFundingHelperRoute
         } elseif ($item = self::findItem()) { // Get the menu item (Itemid) from the active (current) item.
             $link .= '&Itemid=' . $item;
         }
+
+        return $link;
+    }
+
+    /**
+     * Prepare a link to a category on discover page.
+     *
+     * @param int $categoryId
+     *
+     * @return string
+     */
+    public static function getCategoryRoute($categoryId = 0)
+    {
+        $needles = array(
+            'discover' => array($categoryId)
+        );
+
+        //Create the link
+        $link = 'index.php?option=com_crowdfunding&view=discover';
+
+        $item = self::findItem($needles);
+        if (!$item and !empty($categoryId)) {
+
+            $link .= "&id=".$categoryId;
+
+            $needles = array(
+                'discover' => array(0)
+            );
+            $item = self::findItem($needles);
+        }
+
+        // Looking for menu item (Itemid)
+        if ($item) {
+            $link .= '&Itemid=' . $item;
+        } elseif ($item = self::findItem()) { // Get the menu item (Itemid) from the active (current) item.
+            $link .= '&Itemid=' . $item;
+        }
+
 
         return $link;
     }
@@ -404,31 +446,44 @@ abstract class CrowdFundingHelperRoute
     }
 
     /**
-     *
-     * Load an object that contains a data about project.
+     * Load data about project.
      * We use this method in the router "CrowdFundingParseRoute".
      *
      * @param int $id
      *
-     * @return null|object
+     * @return array
      */
     public static function getProject($id)
     {
+        $result = array();
+
+        // Check for valid ID.
+        if (!$id) {
+            return $result;
+        }
+
+        // Return cached data.
+        if (isset(self::$projects[$id])) {
+            return self::$projects[$id];
+        }
+
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
         $query
-            ->select("a.alias, a.catid")
+            ->select("a.id, a.alias, a.catid," . $query->concatenate(array("a.id", "a.alias"), "-") . " AS slug")
             ->from($query->quoteName("#__crowdf_projects", "a"))
             ->where("a.id = " . (int)$id);
 
         $db->setQuery($query);
-        $result = $db->loadObject();
+        $result = $db->loadAssoc();
 
         if (!$result) {
-            $result = null;
+            $result = array();
         }
 
-        return $result;
+        self::$projects[$id] = $result;
+
+        return self::$projects[$id];
     }
 }

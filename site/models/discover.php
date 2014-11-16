@@ -10,8 +10,6 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.modellist');
-
 class CrowdFundingModelDiscover extends JModelList
 {
     protected $items = null;
@@ -87,6 +85,8 @@ class CrowdFundingModelDiscover extends JModelList
             // Filter by category
             $value = $app->input->get("filter_category");
             $this->setState($this->context . '.category_id', $value);
+        } else {
+            $app->input->set("filter_category", (int)$catId);
         }
 
         // Set limit
@@ -235,32 +235,40 @@ class CrowdFundingModelDiscover extends JModelList
         return $orderString;
     }
 
-    public function prepareItems($items)
+    public function prepareItems($items, $numberInRow)
     {
         $result = array();
 
         if (!empty($items)) {
+            $i = 0;
+            $row = 1;
             foreach ($items as $key => $item) {
 
-                $result[$key] = $item;
+                $result[$row][$key] = $item;
 
                 // Calculate funding end date
                 if (!empty($item->funding_days)) {
 
                     $fundingStartDate = new CrowdFundingDate($item->funding_start);
                     $endDate = $fundingStartDate->calculateEndDate($item->funding_days);
-                    $result[$key]->funding_end = $endDate->format("Y-m-d");
+                    $result[$row][$key]->funding_end = $endDate->format("Y-m-d");
 
                 }
 
                 // Calculate funded percentage.
                 $percent = new ITPrismMath();
                 $percent->calculatePercentage($item->funded, $item->goal, 0);
-                $result[$key]->funded_percents = (string)$percent;
+                $result[$row][$key]->funded_percents = (string)$percent;
 
                 // Calculate days left
                 $today = new CrowdFundingDate();
-                $result[$key]->days_left       = $today->calculateDaysLeft($item->funding_days, $item->funding_start, $item->funding_end);
+                $result[$row][$key]->days_left       = $today->calculateDaysLeft($item->funding_days, $item->funding_start, $item->funding_end);
+
+                $i++;
+                if ($i == $numberInRow) {
+                    $row++;
+                    $i = 0;
+                }
 
             }
         }

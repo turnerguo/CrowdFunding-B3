@@ -88,5 +88,3 @@ echo $layout->render($this->layoutData);
         <?php echo $this->loadTemplate("rewards"); ?>
     </div>
 </div>
-<div class="clearfix">&nbsp;</div>
-<?php echo $this->version->backlink;?>

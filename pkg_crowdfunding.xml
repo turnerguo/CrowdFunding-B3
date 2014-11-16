@@ -7,8 +7,8 @@
     <authorUrl>http://itprism.com</authorUrl>
     <copyright>Copyright (C) 2014 Todor Iliev ( ITPrism.com )</copyright>
     <license>http://www.gnu.org/copyleft/gpl.html</license>
-    <version>1.8.1</version>
-    <creationDate>1 October, 2014</creationDate>
+    <version>1.9</version>
+    <creationDate>16 November, 2014</creationDate>
     <url>http://itprism.com</url>
     <packager>Todor Iliev</packager>
     <packagerurl>http://itprism.com</packagerurl>
@@ -28,7 +28,7 @@
         <file type="plugin" id="crowdfundingusermail" group="content">plg_content_crowdfundingusermail.zip</file>
         <file type="plugin" id="crowdfundingvalidator" group="content">plg_content_crowdfundingvalidator.zip</file>
 
-        <file type="plugin" id="crowdfundingpayment_paypal" group="crowdfundingpayment">plg_crowdfundingpayment_paypal.zip</file>
+        <file type="plugin" id="paypal" group="crowdfundingpayment">plg_crowdfundingpayment_paypal.zip</file>
         <file type="plugin" id="crowdfundingmodules" group="system">plg_system_crowdfundingmodules.zip</file>
 
         <file type="module" id="mod_crowdfundingdetails" client="site">mod_crowdfundingdetails.zip</file>

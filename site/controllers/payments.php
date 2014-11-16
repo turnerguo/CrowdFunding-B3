@@ -76,6 +76,12 @@ class CrowdFundingControllerPayments extends JControllerLegacy
         return $model;
     }
 
+    /**
+     * Invoke the plugin method onPaymentsCheckout.
+     *
+     * @throws UnexpectedValueException
+     * @throws Exception
+     */
     public function checkout()
     {
         // Check for request forgeries.
@@ -265,6 +271,8 @@ class CrowdFundingControllerPayments extends JControllerLegacy
         $item->rewardId = $this->paymentProcess->rewardId;
         $item->amount   = $this->paymentProcess->amount;
         $item->currency = $this->currency->getAbbr();
+        $item->starting_date = $project->getFundingStart();
+        $item->ending_date   = $project->getFundingEnd();
 
         return $item;
     }

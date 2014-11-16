@@ -10,8 +10,6 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.view');
-
 class CrowdFundingViewTransactions extends JViewLegacy
 {
 
@@ -81,8 +79,6 @@ class CrowdFundingViewTransactions extends JViewLegacy
         $this->redirectUrl = CrowdFundingHelperRoute::getTransactionsRoute();
 
         $this->prepareDocument();
-
-        $this->version    = new CrowdFundingVersion();
 
         parent::display($tpl);
     }

@@ -586,6 +586,25 @@ class CrowdFundingProject
     }
 
     /**
+     * Return the date when the campaign has started.
+     *
+     * <code>
+     * $projectId = 1;
+     *
+     * $project   = new CrowdFundingProject(JFactory::getDbo());
+     * $project->load($projectId);
+     *
+     * $fundedStartDate = $project->getFundingStart();
+     * </code>
+     *
+     * @return string
+     */
+    public function getFundingStart()
+    {
+        return $this->funding_start;
+    }
+
+    /**
      * Return the date of the end of campaign.
      *
      * <code>

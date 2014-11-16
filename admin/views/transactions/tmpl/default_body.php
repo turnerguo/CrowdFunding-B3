@@ -32,17 +32,10 @@ defined('_JEXEC') or die;
                 <?php echo JHtmlString::truncate(strip_tags($item->project), 53); ?>
             </a>
         </td>
-        <td class="center"><?php
-            $currency = $this->currencies->getCurrencyByAbbr($item->txn_currency);
-            if (!empty($currency)) {
-                echo $currency->getAmountString($item->txn_amount);
-            } else {
-                echo $item->txn_amount;
-            }
-            ?></td>
-        <td class="center hidden-phone"><?php echo $item->txn_date; ?></td>
+        <td><?php echo JHtml::_('crowdfundingbackend.transactionAmount', $item, $this->currencies); ?></td>
+        <td class="hidden-phone"><?php echo $item->txn_date; ?></td>
         <td class="hidden-phone"><?php echo $item->service_provider; ?></td>
-        <td class="center hidden-phone">
+        <td class="hidden-phone">
             <?php echo $item->txn_status; ?>
             <?php echo JHtml::_('crowdfundingbackend.reason', $item->status_reason); ?>
         </td>

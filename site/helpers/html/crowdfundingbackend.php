@@ -19,7 +19,6 @@ defined('_JEXEC') or die;
  */
 abstract class JHtmlCrowdFundingBackend
 {
-
     public static function approved($i, $value, $prefix, $checkbox = 'cb')
     {
         JHtml::_('bootstrap.tooltip');
@@ -225,5 +224,75 @@ abstract class JHtmlCrowdFundingBackend
         }
 
         return implode("\n", $html);
+    }
+
+    /**
+     * Generates tracking information about a transaction data.
+     *
+     * @param mixed $trackId
+     *
+     * @return string
+     */
+    public static function trackId($trackId)
+    {
+        if (!$trackId) {
+            $output = JText::sprintf("COM_CROWDFUNDING_DATE_AND_TIME", "---");
+        } else {
+
+            if (!is_numeric($trackId)) {
+                $output = JText::sprintf("COM_CROWDFUNDING_TRACK_ID", htmlentities($trackId, ENT_QUOTES, "UTF-8"));
+            } else {
+
+                jimport("itprism.validator.date");
+                $validator = new ITPrismValidatorDate($trackId);
+
+                if (!$validator->isValid()) {
+                    $output = JText::sprintf("COM_CROWDFUNDING_DATE_AND_TIME", "---");
+                } else {
+                    $date = new JDate($trackId);
+                    $output = JText::sprintf("COM_CROWDFUNDING_DATE_AND_TIME", $date->format(DATE_RFC822));
+                }
+            }
+
+        }
+
+        return $output;
+    }
+
+    /**
+     * Generates information about transaction amount.
+     *
+     * @param object $item
+     * @param CrowdFundingCurrencies $currencies
+     *
+     * @return string
+     */
+    public static function transactionAmount($item, $currencies)
+    {
+        $currency = $currencies->getCurrencyByAbbr($item->txn_currency);
+
+        $item->txn_amount = floatval($item->txn_amount);
+        $item->fee = floatval($item->fee);
+
+        $output = (!empty($currency)) ? $currency->getAmountString($item->txn_amount) : $item->txn_amount;
+
+        if (!empty($item->fee)) {
+
+            $fee = (!empty($currency)) ? $currency->getAmountString($item->fee) : $item->fee;
+
+            // Prepare project owner amount.
+            $projectOwnerAmount = round($item->txn_amount - $item->fee, 2);
+            $projectOwnerAmount = (!empty($currency)) ? $currency->getAmountString($projectOwnerAmount) : $projectOwnerAmount;
+
+            JHtml::_('bootstrap.tooltip');
+
+            $title = JText::sprintf("COM_CROWDFUNDING_TRANSACTION_AMOUNT_FEE", $projectOwnerAmount, $fee);
+
+            $output .= '<a class="btn btn-micro hasTooltip" href="javascript:void(0);" title="' . addslashes($title) . '">';
+            $output .= '<i class="icon-question"></i>';
+            $output .= '</a>';
+        }
+
+        return $output;
     }
 }

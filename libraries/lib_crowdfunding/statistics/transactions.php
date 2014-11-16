@@ -44,7 +44,7 @@ abstract class CrowdFundingStatisticsTransactions
 
         $query
             ->select(
-                "a.id, a.txn_date, a.txn_amount, a.txn_currency, a.txn_id, a.project_id, " .
+                "a.id, a.txn_date, a.txn_amount, a.txn_currency, a.txn_id, a.project_id, a.fee, " .
                 "b.title"
             )
             ->from($this->db->quoteName("#__crowdf_transactions", "a"))

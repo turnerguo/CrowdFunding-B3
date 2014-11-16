@@ -26,16 +26,16 @@ defined('_JEXEC') or die;
     <th width="10%" class="nowrap hidden-phone">
         <?php echo JHtml::_('grid.sort', 'COM_CROWDFUNDING_PROJECT', 'c.title', $this->listDirn, $this->listOrder); ?>
     </th>
-    <th width="10%" class="center nowrap">
+    <th width="10%" class="nowrap">
         <?php echo JHtml::_('grid.sort', 'COM_CROWDFUNDING_AMOUNT', 'a.txn_amount', $this->listDirn, $this->listOrder); ?>
     </th>
-    <th width="10%" class="center nowrap hidden-phone">
+    <th width="10%" class="nowrap hidden-phone">
         <?php echo JHtml::_('grid.sort', 'COM_CROWDFUNDING_DATE', 'a.txn_date', $this->listDirn, $this->listOrder); ?>
     </th>
     <th width="10%" class="nowrap hidden-phone">
         <?php echo JHtml::_('grid.sort', 'COM_CROWDFUNDING_PAYMENT_GETAWAY', 'a.service_provider', $this->listDirn, $this->listOrder); ?>
     </th>
-    <th width="10%" class="center nowrap hidden-phone">
+    <th width="10%" class="nowrap hidden-phone">
         <?php echo JText::_('COM_CROWDFUNDING_PAYMENT_STATUS'); ?>
     </th>
     <th width="10%" class="center nowrap hidden-phone">

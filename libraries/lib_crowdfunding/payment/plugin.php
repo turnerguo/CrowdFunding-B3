@@ -162,7 +162,7 @@ class CrowdFundingPaymentPlugin extends JPlugin
         }
 
         $doc = JFactory::getDocument();
-        /**  @var $doc JDocumentHtml * */
+        /**  @var $doc JDocumentHtml */
 
         // Check document type
         $docType = $doc->getType();
@@ -412,8 +412,7 @@ class CrowdFundingPaymentPlugin extends JPlugin
         $userId    = JArrayHelper::getValue($options, "user_id");
         $aUserId   = JArrayHelper::getValue($options, "auser_id");
         $projectId = JArrayHelper::getValue($options, "project_id");
-        $token     = JArrayHelper::getValue($options, "token");
-        $txnId     = JArrayHelper::getValue($options, "txn_id");
+        $uniqueKey = JArrayHelper::getValue($options, "unique_key");
 
         // Prepare keys for anonymous user.
         if (!empty($aUserId)) {
@@ -430,16 +429,10 @@ class CrowdFundingPaymentPlugin extends JPlugin
                 "project_id" => $projectId
             );
 
-        } elseif (!empty($token)) { // Prepare keys for token.
+        } elseif (!empty($uniqueKey)) { // Prepare keys to get record by unique key.
 
             $intentionKeys = array(
-                "token" => $token,
-            );
-
-        } elseif (!empty($txnId)) { // Prepare keys for transaction ID.
-
-            $intentionKeys = array(
-                "txn_id" => $txnId,
+                "unique_key" => $uniqueKey,
             );
 
         } else {
@@ -451,5 +444,126 @@ class CrowdFundingPaymentPlugin extends JPlugin
         $intention->load($intentionKeys);
 
         return $intention;
+    }
+
+    /**
+     * Generate a system message.
+     *
+     * @param string $message
+     *
+     * @return string
+     */
+    protected function generateSystemMessage($message)
+    {
+        $html = '
+        <div id="system-message-container">
+			<div id="system-message">
+                <div class="alert alert-error">
+                    <a data-dismiss="alert" class="close">×</a>
+                    <h4 class="alert-heading">Error</h4>
+                    <div>
+                        <p>'.htmlentities($message, ENT_QUOTES, "UTF-8").'</p>
+                    </div>
+                </div>
+            </div>
+	    </div>';
+
+        return $html;
+    }
+
+    /**
+     * This method get fees from CrowdFunding Finance.
+     *
+     * @param $fundingType
+     *
+     * @return array
+     */
+    protected function getFees($fundingType)
+    {
+        $fees = array();
+
+        if (JComponentHelper::isEnabled("com_crowdfundingfinance")) {
+
+            $params = JComponentHelper::getParams("com_crowdfundingfinance");
+            /** @var $params Joomla\Registry\Registry */
+
+            if (strcmp("FIXED", $fundingType) == 0) {
+                if ($params->get("fees_fixed_campaign_percent")) {
+                    $fees["fixed_campaign_percent"] = $params->get("fees_fixed_campaign_percent");
+                }
+
+                if ($params->get("fees_fixed_campaign_amount")) {
+                    $fees["fixed_campaign_amount"] = $params->get("fees_fixed_campaign_amount");
+                }
+            }
+
+            if (strcmp("FLEXIBLE", $fundingType) == 0) {
+                if ($params->get("fees_flexible_campaign_percent")) {
+                    $fees["flexible_campaign_percent"] = $params->get("fees_flexible_campaign_percent");
+                }
+
+                if ($params->get("fees_flexible_campaign_amount")) {
+                    $fees["flexible_campaign_amount"] = $params->get("fees_flexible_campaign_amount");
+                }
+            }
+        }
+
+        return $fees;
+    }
+
+    /**
+     * This method calculates a fee which is set by CrowdFunding Finance.
+     *
+     * @param $fundingType
+     * @param $fees
+     * @param $txnAmount
+     *
+     * @return float
+     */
+    protected function calculateFee($fundingType, $fees, $txnAmount)
+    {
+        $result = 0;
+
+        switch($fundingType) {
+
+            case "FIXED":
+                $feePercent = JArrayHelper::getValue($fees, "fixed_campaign_percent", 0, "float");
+                $feeAmount  = JArrayHelper::getValue($fees, "fixed_campaign_amount", 0, "float");
+
+                break;
+
+            case "FLEXIBLE":
+                $feePercent = JArrayHelper::getValue($fees, "flexible_campaign_percent", 0, "float");
+                $feeAmount  = JArrayHelper::getValue($fees, "flexible_campaign_amount", 0, "float");
+                break;
+        }
+
+        // Calculate fee based on percent.
+        if (!empty($feePercent)) {
+
+            // Calculate amount.
+            jimport("itprism.math");
+            $math = new ITPrismMath();
+            $math->calculateValueFromPercent($feePercent, $txnAmount);
+
+            // Add the amount to the result.
+            $feePercentAmount = (string)$math;
+
+            if ($txnAmount > $feePercentAmount) {
+                $result += (float)$feePercentAmount;
+            }
+        }
+
+        // Calculate fees based on amount.
+        if (!empty($feeAmount) and ($txnAmount > $feeAmount)) {
+            $result += $feeAmount;
+        }
+
+        // Check for invalid value that is less than zero.
+        if ($result < 0) {
+            $result = 0;
+        }
+
+        return (float)$result;
     }
 }

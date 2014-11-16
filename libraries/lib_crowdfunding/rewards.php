@@ -122,7 +122,7 @@ class CrowdFundingRewards implements Iterator, Countable, ArrayAccess
         $query
             ->select(
                 "a.id, a.title, a.description, a.amount, a.number, a.distributed, " .
-                "a.image, a.image_thumb, a.image_square"
+                "a.delivery, a.image, a.image_thumb, a.image_square"
             )
             ->from($this->db->quoteName("#__crowdf_rewards", "a"))
             ->where("a.project_id = " . (int)$id);
@@ -134,7 +134,7 @@ class CrowdFundingRewards implements Iterator, Countable, ArrayAccess
         }
 
         $this->db->setQuery($query);
-        $results = $this->db->loadObjectList();
+        $results = $this->db->loadAssocList();
 
         if (!$results) {
             $results = array();
@@ -195,5 +195,56 @@ class CrowdFundingRewards implements Iterator, Countable, ArrayAccess
     public function offsetGet($offset)
     {
         return isset($this->items[$offset]) ? $this->items[$offset] : null;
+    }
+
+    /**
+     * Return an array that contains rewards IDs.
+     *
+     * @return array
+     */
+    public function getKeys()
+    {
+        $keys = array();
+
+        foreach ($this->items as $item) {
+            $keys[] = $item["id"];
+        }
+
+        return $keys;
+    }
+
+    /**
+     * Load information about funders, number of rewards and delivery date.
+     */
+    public function loadAdditionalData()
+    {
+        $keys = $this->getKeys();
+        JArrayHelper::toInteger($keys);
+
+        if (!$keys) {
+            return array();
+        }
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select("a.reward_id, COUNT(a.id) AS funders")
+            ->from($db->quoteName("#__crowdf_transactions", "a"))
+            ->group("a.reward_id")
+            ->where("a.reward_id IN ( ". implode(",", $keys) . " )");
+
+        $db->setQuery($query);
+        $result = $db->loadAssocList("reward_id");
+
+        if (!empty($result)) {
+            foreach ($this->items as &$item) {
+                $item["funders"] = (!isset($result[$item["id"]])) ? 0 : $result[$item["id"]]["funders"];
+            }
+        } else {
+            $result = array();
+        }
+
+        return $result;
     }
 }

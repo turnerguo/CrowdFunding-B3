@@ -1,5 +1,6 @@
 jQuery(document).ready(function() {
-	
+    "use strict";
+
 	jQuery("#cf_add_new_reward").bind("click", function(event) {
 		event.preventDefault();
 		
@@ -87,8 +88,8 @@ jQuery(document).ready(function() {
 		
 		// Confirm reward removing.
 		if((rewardId > 0) || (rewardTitle.length > 0) || (rewardDesc.length > 0)) {
-			if(!confirm(Joomla.JText._('COM_CROWDFUNDING_QUESTION_REMOVE_REWARD')) ) {
-				return false;
+			if(!window.confirm(Joomla.JText._('COM_CROWDFUNDING_QUESTION_REMOVE_REWARD')) ) {
+				return;
 			}
 		}
 		
@@ -135,8 +136,8 @@ jQuery(document).ready(function() {
 		
 		// Confirm reward removing.
 		if(rewardId) {
-			if(!confirm(Joomla.JText._('COM_CROWDFUNDING_QUESTION_REMOVE_IMAGE')) ) {
-				return false;
+			if(!window.confirm(Joomla.JText._('COM_CROWDFUNDING_QUESTION_REMOVE_IMAGE')) ) {
+				return;
 			}
 		}
 		

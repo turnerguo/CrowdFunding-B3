@@ -32,5 +32,3 @@ if (!empty($this->item->event->onExtrasDisplay)) {
         </a>
     </div>
 </div>
-<div class="clearfix">&nbsp;</div>
-<?php echo $this->version->backlink;?>

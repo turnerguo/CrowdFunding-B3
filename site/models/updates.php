@@ -10,8 +10,6 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.modellist');
-
 /**
  * Get a list of items
  */
@@ -92,7 +90,8 @@ class CrowdFundingModelUpdates extends JModelList
     {
         // Create a new query object.
         $db = $this->getDbo();
-        /** @var $db JDatabaseMySQLi * */
+        /** @var $db JDatabaseDriver */
+
         $query = $db->getQuery(true);
 
         // Select the required fields from the table.

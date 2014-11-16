@@ -115,8 +115,6 @@ class CrowdFundingViewReward extends JViewLegacy
 
         $this->prepareDocument();
 
-        $this->version    = new CrowdFundingVersion();
-
         parent::display($tpl);
     }
 

@@ -116,7 +116,7 @@ class CrowdFundingControllerNotifier extends JControllerLegacy
 
             // Event Notify
             JPluginHelper::importPlugin('crowdfundingpayment');
-            $results = $dispatcher->trigger('onPaymenNotify', array($this->context, &$this->params));
+            $results = $dispatcher->trigger('onPaymentNotify', array($this->context, &$this->params));
 
             if (!empty($results)) {
                 foreach ($results as $result) {
@@ -202,9 +202,9 @@ class CrowdFundingControllerNotifier extends JControllerLegacy
             // Import CrowdFunding Payment Plugins
             JPluginHelper::importPlugin('crowdfundingpayment');
 
-            // Trigger onPaymenNotify event.
+            // Trigger onPaymentNotify event.
             $dispatcher = JEventDispatcher::getInstance();
-            $results    = $dispatcher->trigger("onPaymenNotify", array($this->context, &$this->params));
+            $results    = $dispatcher->trigger("onPaymentNotify", array($this->context, &$this->params));
 
             if (!empty($results)) {
                 foreach ($results as $result) {

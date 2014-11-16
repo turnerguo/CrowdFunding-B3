@@ -73,13 +73,13 @@ defined('_JEXEC') or die;
             	<div class="reward">
             		<a href="javascript: void(0);" class="js-reward-amount" >
             			<span class="ramount">
-            			<input type="radio" name="reward" value="<?php echo $reward->amount;?>" data-id="<?php echo $reward->id;?>" class="js-reward-amount-radio" <?php echo ($this->rewardId != $reward->id) ? "" : 'checked="checked"'?>/>
+            			<input type="radio" name="reward" value="<?php echo $reward["amount"];?>" data-id="<?php echo $reward["id"];?>" class="js-reward-amount-radio" <?php echo ($this->rewardId != $reward["id"]) ? "" : 'checked="checked"'?>/>
             			<?php 
-            			$amount = $this->currency->getAmountString($reward->amount);
+            			$amount = $this->currency->getAmountString($reward["amount"]);
             			echo JText::sprintf("COM_CROWDFUNDING_INVEST_MORE", $amount ); ?>
             			</span>
-            			<span class="rtitle"><?php echo $this->escape($reward->title); ?></span>
-            			<span class="rdesc"><?php echo $this->escape($reward->description); ?></span>
+            			<span class="rtitle"><?php echo $this->escape($reward["title"]); ?></span>
+            			<span class="rdesc"><?php echo $this->escape($reward["description"]); ?></span>
             		</a>
             	</div>
             	<?php }?>
@@ -90,4 +90,3 @@ defined('_JEXEC') or die;
 	</div>
 </div>
 <div class="clearfix">&nbsp;</div>
-<?php echo $this->version->backlink;?>

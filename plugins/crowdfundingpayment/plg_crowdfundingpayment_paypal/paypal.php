@@ -35,7 +35,7 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin
      *
      * @return string
      */
-    public function onProjectPayment($context, $item, $params)
+    public function onProjectPayment($context, &$item, &$params)
     {
         if (strcmp("com_crowdfunding.payment", $context) != 0) {
             return null;
@@ -66,15 +66,26 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin
 
         $html   = array();
         $html[] = '<h4><img src="' . $pluginURI . '/images/paypal_icon.png" width="36" height="32" alt="PayPal" />' . JText::_($this->textPrefix . "_TITLE") . '</h4>';
+
+        // Prepare payment receiver.
+        $paymentReceiverOption = $this->params->get("paypal_payment_receiver", "site_owner");
+        $paymentReceiverInput = $this->preparePaymentReceiver($paymentReceiverOption, $item->id);
+        if (is_null($paymentReceiverInput)) {
+            $html[] = $this->generateSystemMessage(JText::_($this->textPrefix . "_ERROR_PAYMENT_RECEIVER_MISSING"));
+            return implode("\n", $html);
+        }
+
+        // Display additional information.
         $html[] = '<p>' . JText::_($this->textPrefix . "_INFO") . '</p>';
 
-        if (!$this->params->get('paypal_sandbox', 1)) {
-            $html[] = '<form action="' . JString::trim($this->params->get('paypal_url')) . '" method="post">';
-            $html[] = '<input type="hidden" name="business" value="' . JString::trim($this->params->get('paypal_business_name')) . '" />';
-        } else {
+        // Start the form.
+        if ($this->params->get('paypal_sandbox', 1)) {
             $html[] = '<form action="' . JString::trim($this->params->get('paypal_sandbox_url')) . '" method="post">';
-            $html[] = '<input type="hidden" name="business" value="' . JString::trim($this->params->get('paypal_sandbox_business_name')) . '" />';
+        } else {
+            $html[] = '<form action="' . JString::trim($this->params->get('paypal_url')) . '" method="post">';
         }
+
+        $html[] = $paymentReceiverInput;
 
         $html[] = '<input type="hidden" name="cmd" value="_xclick" />';
         $html[] = '<input type="hidden" name="charset" value="utf-8" />';
@@ -90,7 +101,7 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin
         $html[] = '<input type="hidden" name="item_name" value="' . $title . '" />';
 
         // Get intention
-        $userId  = JFactory::getUser()->id;
+        $userId  = JFactory::getUser()->get("id");
         $aUserId = $app->getUserState("auser_id");
 
         $intention = $this->getIntention(array(
@@ -114,17 +125,18 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin
             $html[] = '<input type="hidden" name="image_url" value="' . $imageUrl . '" />';
         }
 
+        // Set URLs
         $html[] = '<input type="hidden" name="cancel_return" value="' . $cancelUrl . '" />';
-
         $html[] = '<input type="hidden" name="return" value="' . $returnUrl . '" />';
-
         $html[] = '<input type="hidden" name="notify_url" value="' . $notifyUrl . '" />';
 
         $this->prepareLocale($html);
 
+        // End the form.
         $html[] = '<img alt="" border="0" width="1" height="1" src="https://www.paypal.com/en_US/i/scr/pixel.gif" >';
         $html[] = '</form>';
 
+        // Display a sticky note if the extension works in sandbox mode.
         if ($this->params->get('paypal_sandbox', 1)) {
             $html[] = '<p class="sticky">' . JText::_($this->textPrefix . "_WORKS_SANDBOX") . '</p>';
         }
@@ -140,7 +152,7 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin
      *
      * @return null|array
      */
-    public function onPaymenNotify($context, &$params)
+    public function onPaymentNotify($context, &$params)
     {
         if (strcmp("com_crowdfunding.notify.paypal", $context) != 0) {
             return null;
@@ -196,11 +208,10 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin
         }
 
         // Get PayPal URL
-        $sandbox = $this->params->get('paypal_sandbox', 0);
-        if (!$sandbox) {
-            $url = JString::trim($this->params->get('paypal_url', "https://www.paypal.com/cgi-bin/webscr"));
-        } else {
+        if ($this->params->get('paypal_sandbox', 1)) {
             $url = JString::trim($this->params->get('paypal_sandbox_url', "https://www.sandbox.paypal.com/cgi-bin/webscr"));
+        } else {
+            $url = JString::trim($this->params->get('paypal_url', "https://www.paypal.com/cgi-bin/webscr"));
         }
 
         jimport("itprism.payment.paypal.ipn");
@@ -211,11 +222,12 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin
         // DEBUG DATA
         JDEBUG ? $this->log->add(JText::_($this->textPrefix . "_DEBUG_VERIFY_OBJECT"), $this->debugType, $paypalIpn) : null;
 
-        // Prepare the array that will be returned by this method
+        // Prepare the array that have to be returned by this method.
         $result = array(
             "project"         => null,
             "reward"          => null,
             "transaction"     => null,
+            "payment_session" => null,
             "payment_service" => "PayPal"
         );
 
@@ -235,12 +247,13 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin
 
             // Get payment session as intention.
             if (!$intention->getId()) {
+
+                $keys = array("intention_id" => $intentionId);
+
                 jimport("crowdfunding.payment.session");
-                $keys      = array(
-                    "intention_id" => $intentionId
-                );
                 $intention = new CrowdFundingPaymentSession(JFactory::getDbo());
                 $intention->load($keys);
+
             }
 
             // DEBUG DATA
@@ -276,7 +289,7 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin
                 return $result;
             }
 
-            // Set the receiver of funds
+            // Set the receiver of funds.
             $validData["receiver_id"] = $project->getUserId();
 
             // Save transaction data.
@@ -303,15 +316,19 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin
             // Generate object of data, based on the transaction properties.
             $result["transaction"] = JArrayHelper::toObject($transactionData);
 
-            // Generate object of data based on the project properties
+            // Generate object of data based on the project properties.
             $properties        = $project->getProperties();
             $result["project"] = JArrayHelper::toObject($properties);
 
-            // Generate object of data based on the reward properties
+            // Generate object of data based on the reward properties.
             if (!empty($reward)) {
                 $properties       = $reward->getProperties();
                 $result["reward"] = JArrayHelper::toObject($properties);
             }
+
+            // Generate data object, based on the intention properties.
+            $properties       = $intention->getProperties();
+            $result["payment_session"] = JArrayHelper::toObject($properties);
 
             // DEBUG DATA
             JDEBUG ? $this->log->add(JText::_($this->textPrefix . "_DEBUG_RESULT_DATA"), $this->debugType, $result) : null;
@@ -336,7 +353,7 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin
     }
 
     /**
-     * This method is executed after complete payment.
+     * This method is invoked after complete payment.
      * It is used to be sent mails to user and administrator
      *
      * @param object $context
@@ -344,9 +361,9 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin
      * @param Joomla\Registry\Registry $params Component parameters
      * @param object $project Project data
      * @param object $reward Reward data
-     *
+     * @param object $paymentSession Payment session data.
      */
-    public function onAfterPayment($context, &$transaction, &$params, &$project, &$reward)
+    public function onAfterPayment($context, &$transaction, &$params, &$project, &$reward, &$paymentSession)
     {
         if (strcmp("com_crowdfunding.notify.paypal", $context) != 0) {
             return;
@@ -428,25 +445,23 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin
         }
 
 
-        // Check receiver
+        // Check payment receiver.
         $allowedReceivers = array(
             JString::strtolower(JArrayHelper::getValue($data, "business")),
             JString::strtolower(JArrayHelper::getValue($data, "receiver_email")),
             JString::strtolower(JArrayHelper::getValue($data, "receiver_id"))
         );
 
-        if ($this->params->get("paypal_sandbox", 0)) {
-            $receiver = JString::strtolower(JString::trim($this->params->get("paypal_sandbox_business_name")));
-        } else {
-            $receiver = JString::strtolower(JString::trim($this->params->get("paypal_business_name")));
-        }
+        // Get payment receiver.
+        $paymentReceiverOption = $this->params->get("paypal_payment_receiver", "site_owner");
+        $paymentReceiver       = $this->getPaymentReceiver($paymentReceiverOption, $transaction["project_id"]);
 
-        if (!in_array($receiver, $allowedReceivers)) {
+        if (!in_array($paymentReceiver, $allowedReceivers)) {
             // Log data in the database
             $this->log->add(
                 JText::_($this->textPrefix . "_ERROR_INVALID_RECEIVER"),
                 $this->debugType,
-                array("TRANSACTION DATA" => $transaction, "RECEIVER" => $receiver, "RECEIVER DATA" => $allowedReceivers)
+                array("TRANSACTION DATA" => $transaction, "RECEIVER" => $paymentReceiver, "RECEIVER DATA" => $allowedReceivers)
             );
 
             return null;
@@ -480,7 +495,7 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin
         if ($transaction->getId()) {
 
             // If the current status if completed,
-            // stop the process.
+            // stop the payment process.
             if ($transaction->isCompleted()) {
                 return null;
             }
@@ -514,11 +529,11 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin
     {
         $page = JString::trim($this->params->get('paypal_notify_url'));
 
-        $uri    = JURI::getInstance();
+        $uri    = JUri::getInstance();
         $domain = $uri->toString(array("host"));
 
         if (false == strpos($page, $domain)) {
-            $page = JURI::root() . str_replace("&", "&amp;", $page);
+            $page = JUri::root() . str_replace("&", "&amp;", $page);
         }
 
         if (false === strpos($page, "payment_service=PayPal")) {
@@ -535,7 +550,7 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin
     {
         $page = JString::trim($this->params->get('paypal_return_url'));
         if (!$page) {
-            $uri  = JURI::getInstance();
+            $uri  = JUri::getInstance();
             $page = $uri->toString(array("scheme", "host")) . JRoute::_(CrowdFundingHelperRoute::getBackingRoute($slug, $catslug, "share"), false);
         }
 
@@ -549,7 +564,7 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin
     {
         $page = JString::trim($this->params->get('paypal_cancel_url'));
         if (!$page) {
-            $uri  = JURI::getInstance();
+            $uri  = JUri::getInstance();
             $page = $uri->toString(array("scheme", "host")) . JRoute::_(CrowdFundingHelperRoute::getBackingRoute($slug, $catslug, "default"), false);
         }
 
@@ -590,11 +605,9 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin
             if (!$buttonUrl) {
 
                 if (strcmp("US", $code) == 0) {
-                    $html[] = '<input type="image" name="submit" border="0" src="https://www.paypalobjects.com/' . $code4 .
-                        '/i/btn/' . $button . '.gif" alt="' . JText::_($this->textPrefix . "_BUTTON_ALT") . '">';
+                    $html[] = '<input type="image" name="submit" border="0" src="https://www.paypalobjects.com/' . $code4 . '/i/btn/' . $button . '.gif" alt="' . JText::_($this->textPrefix . "_BUTTON_ALT") . '">';
                 } else {
-                    $html[] = '<input type="image" name="submit" border="0" src="https://www.paypalobjects.com/' . $code4 . '/' . $code .
-                        '/i/btn/' . $button . '.gif" alt="' . JText::_($this->textPrefix . "_BUTTON_ALT") . '">';
+                    $html[] = '<input type="image" name="submit" border="0" src="https://www.paypalobjects.com/' . $code4 . '/' . $code . '/i/btn/' . $button . '.gif" alt="' . JText::_($this->textPrefix . "_BUTTON_ALT") . '">';
                 }
 
             } else {
@@ -603,8 +616,7 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin
 
         } else { // Default button
 
-            $html[] = '<input type="image" name="submit" border="0" src="https://www.paypalobjects.com/en_US/i/btn/' . $button . '.gif" alt="' .
-                JText::_($this->textPrefix . "_BUTTON_ALT") . '">';
+            $html[] = '<input type="image" name="submit" border="0" src="https://www.paypalobjects.com/en_US/i/btn/' . $button . '.gif" alt="' . JText::_($this->textPrefix . "_BUTTON_ALT") . '">';
 
         }
 
@@ -625,7 +637,7 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin
 
             // If intention object is instance of CrowdFundingIntention,
             // create a payment session record and remove intention record.
-            // If it is NOT instance of CrowdFundingIntention, do NOT remove the recrod,
+            // If it is NOT instance of CrowdFundingIntention, do NOT remove the record,
             // because it will be used again when PayPal sends a response with status "completed".
             if ($intention instanceof CrowdFundingIntention) {
 
@@ -637,10 +649,10 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin
                     ->setProjectId($intention->getProjectId())
                     ->setRewardId($intention->getRewardId())
                     ->setRecordDate($intention->getRecordDate())
-                    ->setTransactionId($intention->getTransactionId())
-                    ->setGateway($intention->getGateway())
+                    ->setUniqueKey($intention->getUniqueKey())
+                    ->setGatewayData($intention->getGatewayData())
                     ->setIntentionId($intention->getId())
-                    ->setToken($intention->getToken());
+                    ->setSessionId($intention->getSessionId());
 
                 $paymentSession->store();
 
@@ -655,5 +667,85 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin
         } elseif (strcmp("completed", $txnStatus) == 0) {
             $intention->delete();
         }
+    }
+
+    /**
+     * Prepare a form element of payment receiver.
+     *
+     * @param $paymentReceiverOption
+     * @param $itemId
+     *
+     * @return null|string
+     */
+    protected function preparePaymentReceiver($paymentReceiverOption, $itemId)
+    {
+        if ($this->params->get('paypal_sandbox', 1)) {
+            return '<input type="hidden" name="business" value="' . JString::trim($this->params->get('paypal_sandbox_business_name')) . '" />';
+        } else {
+
+            if (strcmp("site_owner", $paymentReceiverOption) == 0) { // Site owner
+                return '<input type="hidden" name="business" value="' . JString::trim($this->params->get('paypal_business_name')) . '" />';
+            } else {
+
+                if (!JComponentHelper::isEnabled("com_crowdfundingfinance")) {
+                    return null;
+                } else {
+
+                    jimport("crowdfundingfinance.payout");
+                    $payout = new CrowdFundingFinancePayout(JFactory::getDbo());
+                    $payout->load($itemId);
+
+                    if (!$payout->getPaypalEmail()) {
+                        return null;
+                    }
+
+                    return '<input type="hidden" name="business" value="' . JString::trim($payout->getPaypalEmail()) . '" />';
+
+                }
+
+            }
+
+        }
+
+    }
+
+    /**
+     * Return payment receiver.
+     *
+     * @param $paymentReceiverOption
+     * @param $itemId
+     *
+     * @return null|string
+     */
+    protected function getPaymentReceiver($paymentReceiverOption, $itemId)
+    {
+
+        if ($this->params->get('paypal_sandbox', 1)) {
+            return JString::strtolower(JString::trim($this->params->get('paypal_sandbox_business_name')));
+        } else {
+
+            if (strcmp("site_owner", $paymentReceiverOption) == 0) { // Site owner
+                return JString::strtolower(JString::trim($this->params->get('paypal_business_name')));
+            } else {
+
+                if (!JComponentHelper::isEnabled("com_crowdfundingfinance")) {
+                    return null;
+                } else {
+
+                    jimport("crowdfundingfinance.payout");
+                    $payout = new CrowdFundingFinancePayout(JFactory::getDbo());
+                    $payout->load($itemId);
+
+                    if (!$payout->getPaypalEmail()) {
+                        return null;
+                    }
+
+                    return JString::strtolower(JString::trim($payout->getPaypalEmail()));
+                }
+
+            }
+
+        }
+
     }
 }

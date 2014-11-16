@@ -55,6 +55,7 @@ function CrowdFundingBuildRoute(&$query)
 
     // are we dealing with a category that is attached to a menu item?
     if (isset($view) and ($mView == $view) and (isset($query['id'])) and ($mId == intval($query['id']))) {
+
         unset($query['view']);
         unset($query['catid']);
         unset($query['id']);
@@ -69,10 +70,27 @@ function CrowdFundingBuildRoute(&$query)
 
             case "backing":
 
-                $catId = $query['catid'];
+                $id    = JArrayHelper::getValue($query, "id");
+                $catId = JArrayHelper::getValue($query, "catid", 0, "int");
+
+                if (!$catId or (false === strpos($id, "-"))) {
+                    $projectData = CrowdFundingHelperRoute::getProject($id);
+                }
+
+                // Get project slug if it is missing.
+                if (!empty($id)) {
+                    if (false === strpos($id, "-")) {
+                        $id = JArrayHelper::getValue($projectData, "slug");
+                    }
+                } else {
+                    $id = 0;
+                }
+
+                // Get category ID if it is missing.
+                $catId = ($catId) ?: JArrayHelper::getValue($projectData, "catid");
+
                 CrowdFundingHelperRoute::prepareCategoriesSegments($catId, $segments, $mId);
 
-                $id         = $query['id'];
                 $segments[] = $id;
 
                 unset($query['id']);
@@ -84,10 +102,27 @@ function CrowdFundingBuildRoute(&$query)
 
             case "details":
 
-                $catId = $query['catid'];
+                $id    = JArrayHelper::getValue($query, "id");
+                $catId = JArrayHelper::getValue($query, "catid");
+
+                if (!$catId or (false === strpos($id, "-"))) {
+                    $projectData = CrowdFundingHelperRoute::getProject($id);
+                }
+
+                // Get project slug if it is missing.
+                if (!empty($id)) {
+                    if (false === strpos($id, "-")) {
+                        $id = JArrayHelper::getValue($projectData, "slug");
+                    }
+                } else {
+                    $id = 0;
+                }
+
+                // Get category ID if it is missing.
+                $catId = ($catId) ?: JArrayHelper::getValue($projectData, "catid");
+
                 CrowdFundingHelperRoute::prepareCategoriesSegments($catId, $segments, $mId);
 
-                $id         = $query['id'];
                 $segments[] = $id;
 
                 unset($query['id']);
@@ -96,15 +131,44 @@ function CrowdFundingBuildRoute(&$query)
 
             case "embed":
 
-                $catId = $query['catid'];
+                $id    = JArrayHelper::getValue($query, "id");
+                $catId = JArrayHelper::getValue($query, "catid", 0, "int");
+
+                if (!$catId or (false === strpos($id, "-"))) {
+                    $projectData = CrowdFundingHelperRoute::getProject($id);
+                }
+
+                // Get project slug if it is missing.
+                if (!empty($id)) {
+                    if (false === strpos($id, "-")) {
+                        $id = JArrayHelper::getValue($projectData, "slug");
+                    }
+                } else {
+                    $id = 0;
+                }
+
+                // Get category ID if it is missing.
+                $catId = ($catId) ?: JArrayHelper::getValue($projectData, "catid");
+
                 CrowdFundingHelperRoute::prepareCategoriesSegments($catId, $segments, $mId);
+
+                $segments[] = $id;
+
+                unset($query['id']);
                 unset($query['catid']);
 
-                $id         = $query['id'];
-                $segments[] = $id;
-                unset($query['id']);
-
                 $segments[] = "embed";
+
+                break;
+
+            case "discover":
+            case "categories":
+
+                $id    = JArrayHelper::getValue($query, "id");
+
+                $segments[] = $id;
+
+                unset($query['id']);
 
                 break;
 
@@ -201,10 +265,12 @@ function CrowdFundingParseRoute($segments)
             return $vars;
         } else {
             $project = CrowdFundingHelperRoute::getProject($id);
-            if ($project) {
-                if ($project->alias == $alias) {
+            if (!empty($project)) {
+
+                if ($project["alias"] == $alias) {
+
                     $vars['view']  = 'details';
-                    $vars['catid'] = (int)$project->catid;
+                    $vars['catid'] = (int)$project["catid"];
                     $vars['id']    = (int)$id;
 
                     return $vars;

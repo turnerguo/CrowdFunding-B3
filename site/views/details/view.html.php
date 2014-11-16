@@ -10,8 +10,6 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.view');
-
 class CrowdFundingViewDetails extends JViewLegacy
 {
     /**
@@ -132,8 +130,6 @@ class CrowdFundingViewDetails extends JViewLegacy
 
         // Count hits
         $model->hit($this->item->id);
-
-        $this->version    = new CrowdFundingVersion();
 
         parent::display($tpl);
     }

@@ -33,19 +33,19 @@ defined('_JEXEC') or die;
     foreach ($this->rewards as $reward) {?>
         <tr class="">
             <td>
-                <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=reward&id=" . (int)$reward->id); ?>">
-                    <?php echo $this->escape($reward->title); ?>
+                <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=reward&id=" . (int)$reward["id"]); ?>">
+                    <?php echo $this->escape($reward["title"]); ?>
                 </a>
-                <p><?php echo $this->escape($reward->description); ?></p>
+                <p><?php echo $this->escape($reward["description"]); ?></p>
             </td>
             <td class="center hidden-phone">
-                <?php echo JHtml::_('crowdfunding.rewardsNumber', $reward->number); ?>
+                <?php echo JHtml::_('crowdfunding.rewardsNumber', $reward["number"]); ?>
             </td>
             <td class="center hidden-phone">
-                <?php echo $reward->distributed; ?>
+                <?php echo $reward["distributed"]; ?>
             </td>
             <td class="center hidden-phone">
-                <?php echo JHtml::_('crowdfunding.rewardsAvailable', $reward->number, $reward->distributed); ?>
+                <?php echo JHtml::_('crowdfunding.rewardsAvailable', $reward["number"], $reward["distributed"]); ?>
             </td>
         </tr>
         <?php } ?>

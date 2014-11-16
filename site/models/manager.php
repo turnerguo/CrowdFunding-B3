@@ -14,7 +14,6 @@ JLoader::register("CrowdFundingModelProjectItem", CROWDFUNDING_PATH_COMPONENT_SI
 
 class CrowdFundingModelManager extends CrowdFundingModelProjectItem
 {
-
     /**
      * Return information about project rewards and their receivers.
      *
@@ -49,6 +48,4 @@ class CrowdFundingModelManager extends CrowdFundingModelProjectItem
 
         return $results;
     }
-
-
 }

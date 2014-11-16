@@ -16,7 +16,8 @@ jimport('itprism.init');
 jimport('crowdfunding.init');
 
 /**
- * CrowdFunding Validator Plugin
+ * This plugin validates data.
+ * It works only on front-end.
  *
  * @package      CrowdFunding
  * @subpackage   Plugins
@@ -145,7 +146,9 @@ class plgContentCrowdFundingValidator extends JPlugin
     }
 
     /**
-     * This method validates project data when someone decides to change a project state ( to publish or approve ).
+     * This method validates project data
+     * when someone decides to change a project state ( to publish or approve ).
+     * It works only on front-end.
      *
      * @param string $context
      * @param object $item

@@ -10,8 +10,6 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.view');
-
 class CrowdFundingViewProjects extends JViewLegacy
 {
     /**
@@ -70,8 +68,6 @@ class CrowdFundingViewProjects extends JViewLegacy
         $this->saveOrder = (strcmp($this->listOrder, 'a.ordering') != 0) ? false : true;
 
         $this->prepareDocument();
-
-        $this->version    = new CrowdFundingVersion();
 
         parent::display($tpl);
     }

@@ -20,6 +20,7 @@ jimport("crowdfunding.currency");
 class CrowdFundingCurrencies implements Iterator, Countable, ArrayAccess
 {
     protected $items = array();
+    protected $options;
 
     protected $position = 0;
 
@@ -34,14 +35,26 @@ class CrowdFundingCurrencies implements Iterator, Countable, ArrayAccess
      * Initialize the object.
      *
      * <code>
-     * $currencies   = new CrowdFundingCurrencies(JFactory::getDbo());
+     * $options    = new JRegistry();
+     * $options->set("intl", true);
+     * $options->set("format", "2/./,");
+     *
+     * $currencies   = new CrowdFundingCurrencies(JFactory::getDbo(), $options);
      * </code>
      *
      * @param JDatabaseDriver $db
+     * @param @param null|Joomla\Registry\Registry $options
      */
-    public function __construct(JDatabaseDriver $db)
+    public function __construct(JDatabaseDriver $db, $options = null)
     {
-        $this->db = $db;
+        $this->db       = $db;
+
+        // Set options.
+        if (!is_null($options) and ($options instanceof JRegistry)) {
+            $this->options  = $options;
+        } else {
+            $this->options  = new JRegistry;
+        }
     }
 
     /**
@@ -214,6 +227,11 @@ class CrowdFundingCurrencies implements Iterator, Countable, ArrayAccess
                 $currency = new CrowdFundingCurrency();
                 $currency->bind($item);
 
+                if (!is_null($this->options) and ($this->options instanceof JRegistry)) {
+                    $currency->setOption("intl", $this->options->get("locale_intl", false));
+                    $currency->setOption("format", $this->options->get("amount_format", false));
+                }
+
                 break;
             }
         }
@@ -252,6 +270,11 @@ class CrowdFundingCurrencies implements Iterator, Countable, ArrayAccess
 
                 $currency = new CrowdFundingCurrency();
                 $currency->bind($item);
+
+                if (!is_null($this->options) and ($this->options instanceof JRegistry)) {
+                    $currency->setOption("intl", $this->options->get("locale_intl", false));
+                    $currency->setOption("format", $this->options->get("amount_format", false));
+                }
 
                 break;
             }

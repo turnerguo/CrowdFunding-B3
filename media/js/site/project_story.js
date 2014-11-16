@@ -1,5 +1,6 @@
 jQuery(document).ready(function() {
-	
+	"use strict";
+
 	// Style file input
 	jQuery('.fileupload').fileuploadstyle();
 	
@@ -68,8 +69,7 @@ jQuery(document).ready(function() {
 				if(!response.success) {
                     ITPrismUIHelper.displayMessageFailure(response.title, response.text);
 				} else {
-					jQuery(_self).parent().parent().remove()
-					
+					jQuery(_self).parent().parent().remove();
 				}
     	    	
 			});

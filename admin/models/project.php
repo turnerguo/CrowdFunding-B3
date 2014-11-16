@@ -318,7 +318,7 @@ class CrowdFundingModelProject extends JModelAdmin
         $result     = $dispatcher->trigger($this->event_change_state, array($context, $pks, $value));
 
         if (in_array(false, $result, true)) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_CHANGE_STATE"));
+            throw new RuntimeException(JText::_("COM_CROWDFUNDING_ERROR_TRIGGERING_PLUGIN"));
         }
 
         // Clear the component's cache

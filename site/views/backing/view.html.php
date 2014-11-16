@@ -9,7 +9,6 @@
 
 // no direct access
 defined('_JEXEC') or die;
-jimport('joomla.application.component.view');
 
 class CrowdFundingViewBacking extends JViewLegacy
 {
@@ -187,8 +186,6 @@ class CrowdFundingViewBacking extends JViewLegacy
         $this->prepareDebugMode($paymentSession);
         $this->prepareDocument();
 
-        $this->version    = new CrowdFundingVersion();
-
         parent::display($tpl);
     }
 
@@ -226,7 +223,7 @@ class CrowdFundingViewBacking extends JViewLegacy
         }
 
         // Get amount from session
-        $this->rewardAmount = (!$paymentSession->amount) ? 0 : $paymentSession->amount;
+        $this->rewardAmount = (!$paymentSession->amount) ? 0 : $this->currency->getAmountValue($paymentSession->amount);
 
         // Get rewards
         jimport("crowdfunding.rewards");
@@ -238,10 +235,10 @@ class CrowdFundingViewBacking extends JViewLegacy
         // use the amount of selected reward.
         if (!empty($this->rewardId)) {
             foreach ($this->rewards as $reward) {
-                if ($this->rewardId == $reward->id) {
+                if ($this->rewardId == $reward["id"]) {
 
-                    if ($this->rewardAmount < $reward->amount) {
-                        $this->rewardAmount = $reward->amount;
+                    if ($this->rewardAmount < $reward["amount"]) {
+                        $this->rewardAmount = $this->currency->getAmountValue($reward["amount"]);
 
                         $paymentSession->step1 = false;
                     }

@@ -69,5 +69,3 @@ echo $layout->render($this->layoutData);
     </form>
 </div>
 <?php echo $this->loadTemplate("tmpl");?>
-<div class="clearfix">&nbsp;</div>
-<?php echo $this->version->backlink;?>

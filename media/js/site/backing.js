@@ -1,5 +1,6 @@
 jQuery(document).ready(function() {
-	
+    "use strict";
+
 	jQuery(".js-reward-amount").on("click", function() {
 		
 		var elements  	  = jQuery(this).find(".js-reward-amount-radio");

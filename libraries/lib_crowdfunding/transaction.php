@@ -32,6 +32,9 @@ class CrowdFundingTransaction
     protected $receiver_id;
     protected $service_provider;
     protected $reward_state;
+    protected $fee;
+
+    protected $allowedStatuses = array('pending', 'completed', 'canceled', 'refunded', 'failed');
 
     /**
      * Database driver.
@@ -94,16 +97,16 @@ class CrowdFundingTransaction
             ->select(
                 "a.id, a.txn_date, a.txn_amount, a.txn_currency, a.txn_status, a.txn_id, a.parent_txn_id, " .
                 "a.extra_data, a.status_reason, a.project_id, a.reward_id, a.investor_id, a.receiver_id, " .
-                "a.service_provider, a.reward_state"
+                "a.service_provider, a.reward_state, a.fee"
             )
             ->from($this->db->quoteName("#__crowdf_transactions", "a"));
 
-        if (!is_array($keys)) {
-            $query->where("a.id = " . (int)$keys);
-        } else {
+        if (is_array($keys) and !empty($keys)) {
             foreach ($keys as $key => $value) {
                 $query->where($this->db->quoteName("a.".$key) . "=" . $this->db->quote($value));
             }
+        } else {
+            $query->where("a.id = " . (int)$keys);
         }
 
         $this->db->setQuery($query);
@@ -197,6 +200,7 @@ class CrowdFundingTransaction
             ->set($this->db->quoteName("receiver_id") . "=" . $this->db->quote($this->receiver_id))
             ->set($this->db->quoteName("service_provider") . "=" . $this->db->quote($this->service_provider))
             ->set($this->db->quoteName("reward_state") . "=" . $this->db->quote($this->reward_state))
+            ->set($this->db->quoteName("fee") . "=" . $this->db->quote($this->fee))
             ->where($this->db->quoteName("id") ."=". (int)$this->id);
 
         $this->db->setQuery($query);
@@ -226,7 +230,8 @@ class CrowdFundingTransaction
             ->set($this->db->quoteName("investor_id") . "=" . $this->db->quote($this->investor_id))
             ->set($this->db->quoteName("receiver_id") . "=" . $this->db->quote($this->receiver_id))
             ->set($this->db->quoteName("service_provider") . "=" . $this->db->quote($this->service_provider))
-            ->set($this->db->quoteName("reward_state") . "=" . $this->db->quote($this->reward_state));
+            ->set($this->db->quoteName("reward_state") . "=" . $this->db->quote($this->reward_state))
+            ->set($this->db->quoteName("fee") . "=" . $this->db->quote($this->fee));
 
         $this->db->setQuery($query);
         $this->db->execute();
@@ -318,6 +323,56 @@ class CrowdFundingTransaction
     public function getStatus()
     {
         return $this->txn_status;
+    }
+
+    /**
+     * Set a transaction status.
+     *
+     * <code>
+     * $transactionId  = 1;
+     * $status  = "completed";
+     *
+     * $transaction    = new CrowdFundingTransaction(JFactory::getDbo());
+     * $transaction->load($transactionId);
+     *
+     * $transaction->setStatus($status);
+     * </code>
+     *
+     * @param string $status A transaction status - 'pending', 'completed', 'canceled', 'refunded', 'failed'.
+     *
+     * @return self
+     */
+    public function setStatus($status)
+    {
+        if (in_array($status, $this->allowedStatuses)) {
+            $this->txn_status = $status;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set a status reason.
+     *
+     * <code>
+     * $transactionId  = 1;
+     * $reason  = "preapproval";
+     *
+     * $transaction    = new CrowdFundingTransaction(JFactory::getDbo());
+     * $transaction->load($transactionId);
+     *
+     * $transaction->setStatusReason($reason);
+     * </code>
+     *
+     * @param string $reason
+     *
+     * @return self
+     */
+    public function setStatusReason($reason)
+    {
+        $this->status_reason = (string)$reason;
+
+        return $this;
     }
 
     /**
@@ -416,6 +471,49 @@ class CrowdFundingTransaction
     }
 
     /**
+     * Return a fee that has been receiver from the site owner.
+     *
+     * <code>
+     * $transactionId  = 1;
+     *
+     * $transaction    = new CrowdFundingTransaction(JFactory::getDbo());
+     * $transaction->load($transactionId);
+     *
+     * $fee = $transaction->getFee();
+     * </code>
+     *
+     * @return float
+     */
+    public function getFee()
+    {
+        return $this->fee;
+    }
+
+    /**
+     * Set a fee that has been receiver from the site owner.
+     *
+     * <code>
+     * $transactionId  = 1;
+     * $fee  = 4.5;
+     *
+     * $transaction    = new CrowdFundingTransaction(JFactory::getDbo());
+     * $transaction->load($transactionId);
+     *
+     * $transaction->setFee($fee);
+     * $transaction->store();
+     * </code>
+     *
+     * @param float $fee
+     * @return self
+     */
+    public function setFee($fee)
+    {
+        $this->fee = $fee;
+
+        return $this;
+    }
+
+    /**
      * Return extra data about transaction that comes from payment gateway.
      *
      * <code>
@@ -442,6 +540,88 @@ class CrowdFundingTransaction
         }
 
         return $extraData;
+    }
+
+    /**
+     * Include some extra data to existing one.
+     *
+     * <code>
+     * $date = new JDate();
+     * $trackingKey = $date->toUnix();
+     *
+     * $extraData = array(
+     *    $trackingKey => array(
+     *        "Acknowledgement Status" => "....",
+     *        "Timestamp" => "....",
+     *        "Correlation ID" => "....",
+     *        "NOTE" => "...."
+     *     )
+     * );
+     *
+     * $transactionId  = 1;
+     *
+     * $transaction    = new CrowdFundingTransaction(JFactory::getDbo());
+     * $transaction->load($transactionId);
+     *
+     * $extraData = $transaction->addExtraData($extraData);
+     * </code>
+     *
+     * @param array $data
+     *
+     * @return array
+     */
+    public function addExtraData($data)
+    {
+        if (is_array($data)) {
+            $extraData = $this->getExtraData();
+
+            foreach ($data as $key => $value) {
+                $extraData[$key] = $value;
+            }
+
+            $this->extra_data = json_encode($extraData);
+        }
+    }
+
+    /**
+     * Update an extra data record in the database.
+     *
+     * <code>
+     * $date = new JDate();
+     * $trackingKey = $date->toUnix();
+     *
+     * $extraData = array(
+     *    $trackingKey => array(
+     *        "Acknowledgement Status" => "....",
+     *        "Timestamp" => "....",
+     *        "Correlation ID" => "....",
+     *        "NOTE" => "...."
+     *     )
+     * );
+     *
+     * $transactionId  = 1;
+     *
+     * $transaction    = new CrowdFundingTransaction(JFactory::getDbo());
+     * $transaction->load($transactionId);
+     *
+     * $transaction->addExtraData($extraData);
+     * $transaction->updateExtraData();
+     * </code>
+     */
+    public function updateExtraData()
+    {
+        // Prepare extra data value.
+        $extraData = (!$this->extra_data) ? "NULL" : $this->db->quote($this->extra_data);
+
+        $query = $this->db->getQuery(true);
+
+        $query
+            ->update($this->db->quoteName("#__crowdf_transactions"))
+            ->set($this->db->quoteName("extra_data") . " = " . $extraData)
+            ->where($this->db->quoteName("id") . " = " . (int)$this->id);
+
+        $this->db->setQuery($query);
+        $this->db->execute();
     }
 
     /**
@@ -500,6 +680,32 @@ class CrowdFundingTransaction
             ->set($this->db->quoteName("reward_state") . " = " . (int)$state)
             ->where($this->db->quoteName("id") . " = " . (int)$this->id)
             ->where($this->db->quoteName("receiver_id") . " = " . (int)$this->receiver_id);
+
+        $this->db->setQuery($query);
+        $this->db->execute();
+    }
+
+    /**
+     * Update a transaction status in the database record.
+     *
+     * <code>
+     * $transactionId  = 1;
+     *
+     * $transaction    = new CrowdFundingTransaction(JFactory::getDbo());
+     * $transaction->load($transactionId);
+     *
+     * $transaction->setStatus("completed");
+     * $transaction->updateStatus();
+     * </code>
+     */
+    public function updateStatus()
+    {
+        $query = $this->db->getQuery(true);
+
+        $query
+            ->update($this->db->quoteName("#__crowdf_transactions"))
+            ->set($this->db->quoteName("txn_status") . " = " . $this->db->quote($this->txn_status))
+            ->where($this->db->quoteName("id") . " = " . (int)$this->id);
 
         $this->db->setQuery($query);
         $this->db->execute();

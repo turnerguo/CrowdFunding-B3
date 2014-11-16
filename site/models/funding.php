@@ -30,7 +30,7 @@ class CrowdFundingModelFunding extends CrowdFundingModelProject
     {
         // Get the form.
         $form = $this->loadForm($this->option . '.funding', 'funding', array('control' => 'jform', 'load_data' => $loadData));
-        /** @var $form JForm * */
+        /** @var $form JForm */
 
         if (empty($form)) {
             return false;

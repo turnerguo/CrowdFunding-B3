@@ -27,7 +27,7 @@ defined('_JEXEC') or die;
     
     <div class="clearfix"></div>
     <button type="submit" class="btn btn-primary"><?php echo JText::_("COM_CROWDFUNDING_SEND")?></button>
-    <button type="submit" class="btn" id="cf-comments-reset"><?php echo JText::_("COM_CROWDFUNDING_RESET")?></button>
+    <button type="submit" class="btn" id="js-cfcomments-btn-reset"><?php echo JText::_("COM_CROWDFUNDING_RESET")?></button>
     
 </form>
 <div class="hr margin-tb-15px"></div>
@@ -61,8 +61,8 @@ defined('_JEXEC') or die;
             		</div>
                 	<?php if($this->userId == $item->user_id ) {?>
                 	<div class="pull-right">
-                		<a href="javascript: void(0);" class="btn btn-mini comedit_btn" data-id="<?php echo $item->id;?>"><?php echo JText::_("COM_CROWDFUNDING_EDIT");?></a>
-                		<a href="javascript: void(0);" class="btn btn-mini btn-danger comremove_btn" data-id="<?php echo $item->id;?>"><?php echo JText::_("COM_CROWDFUNDING_DELETE");?></a>
+                		<a href="javascript: void(0);" class="btn btn-mini js-cfcomments-btn-edit" data-id="<?php echo $item->id;?>"><?php echo JText::_("COM_CROWDFUNDING_EDIT");?></a>
+                		<a href="javascript: void(0);" class="btn btn-mini btn-danger js-cfcomments-btn-remove" data-id="<?php echo $item->id;?>"><?php echo JText::_("COM_CROWDFUNDING_DELETE");?></a>
                 	</div>
                 	<?php }?>
                 	

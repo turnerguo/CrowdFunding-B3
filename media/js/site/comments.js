@@ -1,17 +1,18 @@
 jQuery(document).ready(function() {
-	
-	jQuery(".comremove_btn").bind("click", function(event) {
+    "use strict";
+
+	jQuery(".js-cfcomments-btn-remove").bind("click", function(event) {
 		
 		event.preventDefault();
 		
 		var question  = jQuery("#cf-hidden-question").val();
 		
-		$answer 	  = confirm(question);
-		if( false == $answer ) {
+		var $answer   = window.confirm(question);
+		if( false === $answer ) {
 			return;
 		}
 		
-		var id 		  = jQuery(this).data("id");
+		var id 		  = parseInt(jQuery(this).data("id"));
 		var elementId = "comment"+id;
 		
 		var data 	  = {"id": id};
@@ -34,8 +35,8 @@ jQuery(document).ready(function() {
 				}
 				
 				// Reset form data if the element has been loaded for editing.
-				var currentElementId = jQuery("#jform_id").val();
-				if(id == currentElementId) {
+				var currentElementId = parseInt(jQuery("#jform_id").val());
+				if(id === currentElementId) {
 					jQuery("#jform_comment").val("");
 					jQuery("#jform_id").val("");
 				}
@@ -46,7 +47,7 @@ jQuery(document).ready(function() {
 	});
 	
 	
-	jQuery(".comedit_btn").bind("click", function(event) {
+	jQuery(".js-cfcomments-btn-edit").bind("click", function(event) {
 		
 		event.preventDefault();
 		
@@ -72,7 +73,7 @@ jQuery(document).ready(function() {
 	});
 	
 	
-	jQuery("#cf-comments-reset").bind("click", function(event) {
+	jQuery("#js-cfcomments-btn-reset").bind("click", function(event) {
 		
 		event.preventDefault();
 		

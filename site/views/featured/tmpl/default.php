@@ -40,12 +40,12 @@ $itemSpan = (!empty($this->numberInRow)) ? round(12 / $this->numberInRow) : 4;
                         <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($item->slug, $item->catslug)); ?>">
                             <?php if (!$item->image) { ?>
                                 <img src="<?php echo "media/com_crowdfunding/images/no_image.png"; ?>"
-                                     alt="<?php echo $item->title; ?>" width="<?php echo $this->imageWidth; ?>"
-                                     height="<?php echo $this->imageHeight; ?>">
+                                     alt="<?php echo $this->escape($item->title); ?>" width="<?php echo $this->imageWidth; ?>"
+                                     height="<?php echo $this->imageHeight; ?>" />
                             <?php } else { ?>
                                 <img src="<?php echo $this->imageFolder . "/" . $item->image; ?>"
-                                     alt="<?php echo $item->title; ?>" width="<?php echo $this->imageWidth; ?>"
-                                     height="<?php echo $this->imageHeight; ?>">
+                                     alt="<?php echo $this->escape($item->title); ?>" width="<?php echo $this->imageWidth; ?>"
+                                     height="<?php echo $this->imageHeight; ?>" />
                             <?php } ?>
                         </a>
 
@@ -102,4 +102,3 @@ $itemSpan = (!empty($this->numberInRow)) ? round(12 / $this->numberInRow) : 4;
     <div class="clearfix">&nbsp;</div>
 </div>
 <div class="clearfix">&nbsp;</div>
-<?php echo $this->version->backlink;?>

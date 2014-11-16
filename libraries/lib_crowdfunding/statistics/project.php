@@ -279,4 +279,72 @@ class CrowdFundingStatisticsProject
 
         return $result;
     }
+
+    /**
+     * Return information about amounts by transaction statuses.
+     *
+     * <code>
+     * $projectId    = 1;
+     *
+     * $statistics   = new CrowdFundingStatisticsProject(JFactory::getDbo(), $projectId);
+     * $payoutInformation = $statistics->getPayoutInformation();
+     * </code>
+     *
+     * @return array
+     */
+    public function getTransactionsStatusStatistics()
+    {
+        // Create a new query object.
+        $query = $this->db->getQuery(true);
+
+        $query
+            ->select("a.project_id, a.txn_status, COUNT(id) AS transactions, SUM(txn_amount) AS amount, SUM(fee) AS fee_amount")
+            ->from($this->db->quoteName("#__crowdf_transactions", "a"))
+            ->group("a.txn_status")
+            ->where("a.project_id = " . (int)$this->id);
+
+        $this->db->setQuery($query);
+
+        $result = $this->db->loadAssocList("txn_status");
+
+        if (!$result) {
+            $result = array();
+        }
+
+        return $result;
+    }
+
+    /**
+     * Return information about amounts by transaction statuses.
+     *
+     * <code>
+     * $projectId    = 1;
+     *
+     * $statistics   = new CrowdFundingStatisticsProject(JFactory::getDbo(), $projectId);
+     * $payoutInformation = $statistics->getPayoutInformation();
+     * </code>
+     *
+     * @return array
+     */
+    public function getPayoutStatistics()
+    {
+        // Create a new query object.
+        $query = $this->db->getQuery(true);
+
+        $query
+            ->select("a.txn_status, SUM(txn_amount) AS amount")
+            ->from($this->db->quoteName("#__crowdf_transactions", "a"))
+            ->group("a.txn_status")
+            ->where("a.project_id = " . (int)$this->id);
+
+        $this->db->setQuery($query);
+
+        $result = $this->db->loadAssocList("txn_status");
+
+        if (!$result) {
+            $result = array();
+        }
+
+        return $result;
+    }
 }

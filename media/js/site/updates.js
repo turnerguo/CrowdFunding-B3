@@ -1,17 +1,19 @@
 jQuery(document).ready(function() {
-	
-	jQuery(".upremove_btn").bind("click", function(event) {
+	"use strict";
+
+    // Remove an update record.
+	jQuery(".js-cfupdates-btn-remove").bind("click", function(event) {
 		
 		event.preventDefault();
 		
 		var question  = jQuery("#cf-hidden-question").val();
-		
-		$answer 	  = confirm(question);
-		if( false == $answer ) {
+
+		var $answer = window.confirm(question);
+		if( false === $answer ) {
 			return;
 		}
 		
-		var id 		  = jQuery(this).data("id");
+		var id 		  = parseInt(jQuery(this).data("id"));
 		var elementId = "update"+id;
 		
 		var data 	  = {"id": id};
@@ -34,8 +36,8 @@ jQuery(document).ready(function() {
 				}
 				
 				// Reset form data if the element has been loaded for editing.
-				var currentElementId = jQuery("#jform_id").val();
-				if(id == currentElementId) {
+				var currentElementId = parseInt(jQuery("#jform_id").val());
+				if(id === currentElementId) {
 					jQuery("#jform_title").val("");
 					jQuery("#jform_description").val("");
 					jQuery("#jform_id").val("");
@@ -47,12 +49,12 @@ jQuery(document).ready(function() {
 	});
 	
 	
-	jQuery(".upedit_btn").bind("click", function(event) {
+	jQuery(".js-cfupdates-btn-edit").bind("click", function(event) {
 		
 		event.preventDefault();
 		
 		var id 		  = jQuery(this).data("id");
-		
+
 		jQuery.ajax({
 			url: "index.php?option=com_crowdfunding&format=raw&task=update.getdata&id="+id,
 			type: "GET",
@@ -74,15 +76,15 @@ jQuery(document).ready(function() {
 	});
 	
 	
-	jQuery("#cf-updates-reset").bind("click", function(event) {
+	jQuery("#js-cfupdates-btn-reset").bind("click", function(event) {
 		
 		event.preventDefault();
-		
+
 		jQuery("#jform_title").val("");
 		jQuery("#jform_description").val("");
 		jQuery("#jform_id").val("");
-		
+
 	});
-	
+
 });
 	

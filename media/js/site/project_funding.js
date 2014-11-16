@@ -1,5 +1,6 @@
 jQuery(document).ready(function() {
-	
+    "use strict";
+
 	// Disable input of date and hide calendar icon
 	if(jQuery('#js-funding-duration-days').is(':checked')) {
 		disableDate();
@@ -11,24 +12,24 @@ jQuery(document).ready(function() {
 	}
 	
 	// Event for days
-	jQuery("#js-funding-duration-days").on("click", function(event) {
+	jQuery("#js-funding-duration-days").on("click", function() {
 		disableDate();
 	});
 	
 	// Event for date
-	jQuery("#js-funding-duration-date").on("click", function(event) {
+	jQuery("#js-funding-duration-date").on("click", function() {
 		disableDays();
 	});
 	
 	
 	// Event for label dayse
-	jQuery("#jform_funding_days-lbl").on("click", function(event) {
+	jQuery("#jform_funding_days-lbl").on("click", function() {
 		jQuery('#js-funding-duration-days').prop("checked", true);
 		disableDate();
 	});
 	
 	// Event for date
-	jQuery("#jform_funding_end-lbl").on("click", function(event) {
+	jQuery("#jform_funding_end-lbl").on("click", function() {
 		jQuery('#js-funding-duration-date').prop("checked", true);
 		disableDays();
 	});

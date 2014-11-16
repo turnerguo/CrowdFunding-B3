@@ -33,6 +33,8 @@ class plgContentCrowdFundingAdminMail extends JPlugin
      */
     public $params;
 
+    protected $name = "Content - CrowdFunding - Admin Mail";
+
     public function init()
     {
         // Prepare log object
@@ -61,6 +63,9 @@ class plgContentCrowdFundingAdminMail extends JPlugin
     /**
      * This method sends notification mail to the administrator when project owner publish a project.
      *
+     * If I return NULL, an message will not be displayed in the browser.
+     * If I return FALSE, an error message will be displayed in the browser.
+     *
      * @param string $context
      * @param array $ids
      * @param int $state
@@ -87,6 +92,11 @@ class plgContentCrowdFundingAdminMail extends JPlugin
         // when user publish a project.
         $emailId = $this->params->get("send_when_published", 0);
         if (!$emailId) {
+            $this->log->add(
+                JText::sprintf("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_INVALID_EMAIL_TEMPLATE", $this->name),
+                "PLG_CONTENT_ADMIN_EMAIL_ERROR",
+                JText::_("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_INVALID_EMAIL_TEMPLATE_NOTE")
+            );
             return null;
         }
 
@@ -95,8 +105,12 @@ class plgContentCrowdFundingAdminMail extends JPlugin
         if (!empty($ids) and $state == CrowdFundingConstants::PUBLISHED) {
 
             $projects = $this->getProjectsData($ids);
-
             if (!$projects) {
+                $this->log->add(
+                    JText::sprintf("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_INVALID_PROJECTS", $this->name),
+                    "PLG_CONTENT_ADMIN_EMAIL_ERROR",
+                    JText::_("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_INVALID_PROJECTS_NOTE")
+                );
                 return false;
             }
 
@@ -110,7 +124,7 @@ class plgContentCrowdFundingAdminMail extends JPlugin
 
                 // Check for error.
                 if ($result !== true) {
-                    return false;
+                    return null;
                 }
             }
         }
@@ -120,6 +134,9 @@ class plgContentCrowdFundingAdminMail extends JPlugin
 
     /**
      * This method sends notification mail to the administrator when someone create a project.
+     *
+     * If I return NULL, an message will not be displayed in the browser.
+     * If I return FALSE, an error message will be displayed in the browser.
      *
      * @param string                   $context
      * @param CrowdFundingTableProject $project
@@ -147,6 +164,11 @@ class plgContentCrowdFundingAdminMail extends JPlugin
         // when user create a project.
         $emailId = $this->params->get("send_when_create", 0);
         if (!$emailId) {
+            $this->log->add(
+                JText::sprintf("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_INVALID_EMAIL_TEMPLATE", $this->name),
+                "PLG_CONTENT_ADMIN_EMAIL_ERROR",
+                JText::_("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_INVALID_EMAIL_TEMPLATE_NOTE")
+            );
             return null;
         }
 
@@ -160,7 +182,12 @@ class plgContentCrowdFundingAdminMail extends JPlugin
 
             // Check for error.
             if ($return !== true) {
-                return false;
+                $this->log->add(
+                    JText::sprintf("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_INVALID_PROJECTS", $this->name),
+                    "PLG_CONTENT_ADMIN_EMAIL_ERROR",
+                    JText::_("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_INVALID_PROJECTS_NOTE")
+                );
+                return null;
             }
         }
 
@@ -235,6 +262,8 @@ class plgContentCrowdFundingAdminMail extends JPlugin
 
         // Prepare recipient data.
         $componentParams = JComponentHelper::getParams("com_crowdfunding");
+        /** @var  $componentParams Joomla\Registry\Registry */
+
         $recipientId = $componentParams->get("administrator_id");
         if (!empty($recipientId)) {
             $recipient = JFactory::getUser($recipientId);
@@ -265,10 +294,11 @@ class plgContentCrowdFundingAdminMail extends JPlugin
         // Log the error.
         if ($result !== true) {
             $this->log->add(
-                JText::sprintf("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_SEND_MAIL_ADMIN", $mailer->ErrorInfo),
-                "PLG_CONTENT_ADMIN_EMAIL_ERROR"
+                JText::sprintf("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_SEND_MAIL", $this->name),
+                "PLG_CONTENT_ADMIN_EMAIL_ERROR",
+                JText::sprintf("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_SEND_MAIL_NOTE", $mailer->ErrorInfo)
             );
-
+            
             return false;
         }
 

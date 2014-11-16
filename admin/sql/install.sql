@@ -55,9 +55,9 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_intentions` (
   `project_id` int(10) unsigned NOT NULL,
   `reward_id` int(10) unsigned NOT NULL,
   `record_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `txn_id` varchar(64) DEFAULT '' COMMENT 'It is a transaction ID provided by some Payment Gateways.',
-  `token` varchar(64) NOT NULL DEFAULT '' COMMENT 'A token used in the process of payment.',
+  `unique_key` varchar(32) NOT NULL DEFAULT '' COMMENT 'A unique key from a gateway.',
   `gateway` varchar(32) NOT NULL DEFAULT '' COMMENT 'It is the name of the Payment Service.',
+  `gateway_data` varchar(2048) DEFAULT NULL COMMENT 'Contains a specific data for some gateways.',
   `auser_id` varchar(32) NOT NULL DEFAULT '' COMMENT 'It is a hash ID of an anonymous user.',
   `session_id` varchar(32) NOT NULL DEFAULT '' COMMENT 'Session ID of the payment process.',
   PRIMARY KEY (`id`),
@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_logs` (
   `type` varchar(64) NOT NULL,
   `record_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__crowdf_payment_sessions` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -91,10 +91,11 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_payment_sessions` (
   `project_id` int(10) unsigned NOT NULL,
   `reward_id` int(10) unsigned NOT NULL,
   `record_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `txn_id` varchar(64) DEFAULT '' COMMENT 'It is a transaction ID provided by some Payment Gateways.',
-  `token` varchar(64) NOT NULL DEFAULT '' COMMENT 'A token used in the process of payment.',
+  `unique_key` varchar(32) NOT NULL DEFAULT '' COMMENT 'A unique key from a gateway.',
   `gateway` varchar(32) NOT NULL DEFAULT '' COMMENT 'It is the name of the Payment Service.',
+  `gateway_data` varchar(2048) DEFAULT NULL COMMENT 'Contains a specific data for some gateways.',
   `auser_id` varchar(32) NOT NULL DEFAULT '' COMMENT 'It is a hash ID of an anonymous user.',
+  `session_id` varchar(32) NOT NULL DEFAULT '' COMMENT 'Session ID of the payment process.',
   `intention_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `intention_id` (`intention_id`)
@@ -168,6 +169,7 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_transactions` (
   `receiver_id` int(10) unsigned NOT NULL COMMENT 'The owner of the project.',
   `service_provider` varchar(32) NOT NULL,
   `reward_state` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `fee` decimal(10,2) unsigned NOT NULL DEFAULT '0.00',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 

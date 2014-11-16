@@ -10,9 +10,6 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.categories');
-jimport('joomla.application.component.view');
-
 class CrowdFundingViewProject extends JViewLegacy
 {
     /**
@@ -150,8 +147,6 @@ class CrowdFundingViewProject extends JViewLegacy
 
         $this->prepareDebugMode();
         $this->prepareDocument();
-
-        $this->version    = new CrowdFundingVersion();
 
         parent::display($tpl);
     }

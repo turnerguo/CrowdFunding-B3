@@ -10,8 +10,6 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.view');
-
 class CrowdFundingViewDiscover extends JViewLegacy
 {
     /**
@@ -79,7 +77,7 @@ class CrowdFundingViewDiscover extends JViewLegacy
         /** @var @model CrowdFundingModelDiscover */
 
         $this->numberInRow = $this->params->get("discover_items_row", 3);
-        $this->items       = $model->prepareItems($this->items);
+        $this->items       = $model->prepareItems($this->items, $this->numberInRow);
 
         // Get the folder with images
         $this->imageFolder = $params->get("images_directory", "images/crowdfunding");
@@ -93,12 +91,11 @@ class CrowdFundingViewDiscover extends JViewLegacy
 
         // Prepare integration. Load avatars and profiles.
         if (!empty($this->displayCreator)) {
+
             $this->prepareIntegration($this->items, $this->params);
         }
 
         $this->prepareDocument();
-
-        $this->version    = new CrowdFundingVersion();
 
         parent::display($tpl);
     }
@@ -186,8 +183,10 @@ class CrowdFundingViewDiscover extends JViewLegacy
     {
         // Get users IDs
         $usersIds = array();
-        foreach ($items as $item) {
-            $usersIds[] = $item->user_id;
+        foreach ($items as $row) {
+            foreach ($row as $item) {
+                $usersIds[] = $item->user_id;
+            }
         }
 
         $this->socialProfiles = null;
@@ -200,10 +199,16 @@ class CrowdFundingViewDiscover extends JViewLegacy
         // Get a social platform for integration
         $socialPlatform = $params->get("integration_social_platform");
 
-        // Load the class
-        if (!empty($socialPlatform)) {
-            jimport("itprism.integrate.profiles");
-            $this->socialProfiles = ITPrismIntegrateProfiles::factory($socialPlatform, $usersIds);
-        }
+        $options = array(
+            "social_platform" => $socialPlatform,
+            "users_ids" => $usersIds
+        );
+
+        jimport("itprism.integrate.profiles.builder");
+        $profileBuilder = new ITPrismIntegrateProfilesBuilder($options);
+        $profileBuilder->build();
+
+        $this->socialProfiles = $profileBuilder->getProfiles();
+
     }
 }

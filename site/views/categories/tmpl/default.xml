@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+    <layout title="COM_CROWDFUNDING_VIEW_CATEGORIES">
+        <message>
+            <![CDATA[COM_CROWDFUNDING_VIEW_CATEGORIES_DESC]]>
+        </message>
+    </layout>
+
+    <!-- Add fields to the parameters object for the layout. -->
+    <fields name="params">
+        <!-- Basic options. -->
+        <fieldset name="basic" label="COM_MENUS_BASIC_FIELDSET_LABEL">
+            <field name="categories_layout" type="list" default="grid" label="COM_CROWDFUNDING_LAYOUT" description="COM_CROWDFUNDING_LAYOUT_DESC">
+                <option value="grid">COM_CROWDFUNDING_GRID</option>
+                <option value="list">COM_CROWDFUNDING_LIST</option>
+            </field>
+            <field name="categories_items_row" type="text" default="3" label="COM_CROWDFUNDING_ITEMS_ROW" description="COM_CROWDFUNDING_ITEMS_ROW_DESC" />
+            <field name="categories_items_limit" type="text" default="20" label="COM_CROWDFUNDING_ITEMS_LIMIT" description="COM_CROWDFUNDING_ITEMS_LIMIT_DESC" />
+            <field name="categories_order" type="list" default="title" label="COM_CROWDFUNDING_ITEMS_ORDER" description="COM_CROWDFUNDING_ITEMS_ORDER_DESC">
+                <option value="ordering">COM_CROWDFUNDING_ORDERING</option>
+                <option value="created_time">COM_CROWDFUNDING_CREATED_TIME</option>
+                <option value="title">COM_CROWDFUNDING_TITLE</option>
+            </field>
+            <field name="categories_dirn" type="list" default="desc" label="COM_CROWDFUNDING_ITEMS_ORDER_DIRECTION" description="COM_CROWDFUNDING_ITEMS_ORDER_DIRECTION_DESC">
+                <option value="asc">COM_CROWDFUNDING_ASCENDING</option>
+                <option value="desc">COM_CROWDFUNDING_DESCENDING</option>
+            </field>
+            <field name="categories_display_projects_number" type="radio" default="0" label="COM_CROWDFUNDING_DISPLAY_PROJECTS_NUMBER" description="COM_CROWDFUNDING_DISPLAY_PROJECTS_NUMBER_DESC" class="btn-group">
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+            <field name="categories_display_description" type="radio" default="1" label="COM_CROWDFUNDING_DISPLAY_DESCRIPTION" description="COM_CROWDFUNDING_DISPLAY_DESCRIPTION_DESC" class="btn-group">
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+            <field name="categories_description_length" type="text" default="256" label="COM_CROWDFUNDING_DESCRIPTION_LENGTH" description="COM_CROWDFUNDING_DESCRIPTION_LENGTH_DESC" />
+        </fieldset>
+    </fields>
+</metadata>

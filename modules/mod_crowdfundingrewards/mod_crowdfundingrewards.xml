@@ -6,8 +6,8 @@
 	<license>http://www.gnu.org/copyleft/gpl.html</license>
 	<authorEmail>todor@itprism.com</authorEmail>
 	<authorUrl>http://itprism.com</authorUrl>
-	<version>1.8.1</version>
-	<creationDate>01 October, 2014</creationDate>
+	<version>1.9</version>
+	<creationDate>16 November, 2014</creationDate>
 	<description><![CDATA[
     <p>CrowdFunding Rewards is a module that displays project rewards.</p>
     <p><a href="http://itprism.com/" target="_blank">Subscribe for the newsletter</a> to receive <strong>gifts</strong>, <strong>discount codes</strong>, information about <strong>updates</strong> and information about <strong>new ITPrism extensions</strong>.</p>
@@ -27,6 +27,32 @@
 	
 	<config>
 		<fields name="params">
+            <fieldset name="basic">
+                <field name="display_funders" type="radio" class="btn-group"
+                       label="MOD_CROWDFUNDINGREWARDS_DISPLAY_FUNDERS"
+                       description="MOD_CROWDFUNDINGREWARDS_DISPLAY_FUNDERS_DESC"
+                       default="0">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field name="display_claimed" type="radio" class="btn-group"
+                       label="MOD_CROWDFUNDINGREWARDS_DISPLAY_CLAIMED"
+                       description="MOD_CROWDFUNDINGREWARDS_DISPLAY_CLAIMED_DESC"
+                       default="0">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field name="display_delivery_date" type="radio" class="btn-group"
+                       label="MOD_CROWDFUNDINGREWARDS_DISPLAY_DELIVERY_DATE"
+                       description="MOD_CROWDFUNDINGREWARDS_DISPLAY_DELIVERY_DATE_DESC"
+                       default="0">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+            </fieldset>
+
 			<fieldset name="advanced">
                 <field
                         name="layout"

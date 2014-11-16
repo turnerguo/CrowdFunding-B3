@@ -77,5 +77,3 @@ echo $layout->render($this->layoutData);
         
     </form>
 </div>
-    <div class="clearfix">&nbsp;</div>
-<?php echo $this->version->backlink;?>

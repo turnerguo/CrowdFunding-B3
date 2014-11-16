@@ -30,6 +30,8 @@ class plgContentCrowdFundingUserMail extends JPlugin
      */
     public $params;
 
+    protected $name = "Content - CrowdFunding - User Mail";
+
     public function init()
     {
         jimport('itprism.init');
@@ -60,6 +62,8 @@ class plgContentCrowdFundingUserMail extends JPlugin
 
     /**
      * Send notification mail to a user when his project be approved.
+     * If I return NULL, an message will not be displayed in the browser.
+     * If I return FALSE, an error message will be displayed in the browser.
      *
      * @param string $context
      * @param array $ids
@@ -87,6 +91,11 @@ class plgContentCrowdFundingUserMail extends JPlugin
         // when administrator approve project.
         $emailId = $this->params->get("send_when_approved", 0);
         if (!$emailId) {
+            $this->log->add(
+                JText::sprintf("PLG_CONTENT_CROWDFUNDINGUSERMAIL_ERROR_INVALID_EMAIL_TEMPLATE", $this->name),
+                "PLG_CONTENT_USERE_MAIL_ERROR",
+                JText::_("PLG_CONTENT_CROWDFUNDINGUSERMAIL_ERROR_INVALID_EMAIL_TEMPLATE_NOTE")
+            );
             return false;
         }
 
@@ -97,6 +106,11 @@ class plgContentCrowdFundingUserMail extends JPlugin
             $projects = $this->getProjectsData($ids);
 
             if (!$projects) {
+                $this->log->add(
+                    JText::sprintf("PLG_CONTENT_CROWDFUNDINGUSERMAIL_ERROR_INVALID_PROJECTS", $this->name),
+                    "PLG_CONTENT_USERE_MAIL_ERROR",
+                    JText::_("PLG_CONTENT_CROWDFUNDINGUSERMAIL_ERROR_INVALID_PROJECTS_NOTE")
+                );
                 return false;
             }
 
@@ -108,7 +122,8 @@ class plgContentCrowdFundingUserMail extends JPlugin
                 // Send email to the administrator.
                 $return = $this->sendMail($project, $emailId);
 
-                // Check for error.
+                // If there is an error, stop the loop.
+                // Let the administrator to look the errors.
                 if ($return !== true) {
                     return false;
                 }
@@ -223,8 +238,9 @@ class plgContentCrowdFundingUserMail extends JPlugin
         // Log the error.
         if ($result !== true) {
             $this->log->add(
-                JText::sprintf("PLG_CONTENT_CROWDFUNDINGUSERMAIL_ERROR_SEND_MAIL_USER", $mailer->ErrorInfo),
-                "PLG_CONTENT_USERE_MAIL_ERROR"
+                JText::sprintf("PLG_CONTENT_CROWDFUNDINGUSERMAIL_ERROR_SEND_MAIL", $this->name),
+                "PLG_CONTENT_USERE_MAIL_ERROR",
+                JText::sprintf("PLG_CONTENT_CROWDFUNDINGUSERMAIL_ERROR_SEND_MAIL_NOTE", $mailer->ErrorInfo)
             );
 
             return false;

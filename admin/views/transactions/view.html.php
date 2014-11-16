@@ -34,7 +34,7 @@ class CrowdFundingViewTransactions extends JViewLegacy
     protected $pagination;
 
     protected $currencies;
-    protected $enabledSpeceficPlugins;
+    protected $enabledSpecificPlugins;
 
     protected $option;
 
@@ -51,7 +51,7 @@ class CrowdFundingViewTransactions extends JViewLegacy
      *
      * @var array
      */
-    protected $speceficPlugins = array("paypalexpress");
+    protected $specificPlugins = array("paypalexpress", "paypaladaptive");
 
     public function __construct($config)
     {
@@ -74,15 +74,19 @@ class CrowdFundingViewTransactions extends JViewLegacy
         }
 
         if (!empty($currencies)) {
+            $options = new JRegistry;
+            $options->set("locale_intl", $this->params->get("locale_intl"));
+            $options->set("amount_format", $this->params->get("amount_format"));
+
             jimport("crowdfunding.currencies");
-            $this->currencies = new CrowdFundingCurrencies(JFactory::getDbo());
+            $this->currencies = new CrowdFundingCurrencies(JFactory::getDbo(), $options);
             $this->currencies->loadByAbbr($currencies);
         }
 
         // Get enabled specefic plugins.
         jimport("itprism.extensions");
-        $extensions                   = new ITPrismExtensions(JFactory::getDbo(), $this->speceficPlugins);
-        $this->enabledSpeceficPlugins = $extensions->getEnabled();
+        $extensions                   = new ITPrismExtensions(JFactory::getDbo(), $this->specificPlugins);
+        $this->enabledSpecificPlugins = $extensions->getEnabled();
 
         // Add submenu
         CrowdFundingHelper::addSubmenu($this->getName());
@@ -171,8 +175,8 @@ class CrowdFundingViewTransactions extends JViewLegacy
         JToolbarHelper::title(JText::_('COM_CROWDFUNDING_TRANSACTIONS_MANAGER'));
         JToolbarHelper::editList('transaction.edit');
 
-        // Add actions used for specefic payment plugins.
-        if (!empty($this->enabledSpeceficPlugins)) {
+        // Add actions used for specific payment plugins.
+        if (!empty($this->enabledSpecificPlugins)) {
             JToolbarHelper::divider();
 
             // Add custom buttons

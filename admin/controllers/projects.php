@@ -78,6 +78,11 @@ class CrowdFundingControllerProjects extends ITPrismControllerAdmin
 
             $model->approve($cid, $value);
 
+        } catch (RuntimeException $e) {
+
+            $this->displayWarning($e->getMessage(), $redirectOptions);
+            return;
+
         } catch (Exception $e) {
             JLog::add($e->getMessage());
             throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));

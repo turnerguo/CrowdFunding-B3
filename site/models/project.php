@@ -10,8 +10,6 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.modelform');
-
 class CrowdFundingModelProject extends JModelForm
 {
     protected $item;
@@ -248,7 +246,7 @@ class CrowdFundingModelProject extends JModelForm
         $results = $dispatcher->trigger("onContentAfterSave", array($context, &$project, $isNew));
 
         if (in_array(false, $results, true)) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_DURING_PROJECT_CREATING_PROCESS"));
+            throw new RuntimeException(JText::_("COM_CROWDFUNDING_ERROR_DURING_PROJECT_CREATING_PROCESS"));
         }
     }
 
@@ -530,5 +528,4 @@ class CrowdFundingModelProject extends JModelForm
         $row->set("image_square", "");
         $row->store();
     }
-
 }

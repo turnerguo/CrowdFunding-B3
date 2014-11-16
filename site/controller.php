@@ -14,7 +14,7 @@ jimport('joomla.application.component.controller');
 
 class CrowdFundingController extends JControllerLegacy
 {
-    protected $cacheableViews = array("details", "discover", "featured", "projects", "transactions");
+    protected $cacheableViews = array("discover", "featured", "projects", "transactions");
 
     /**
      * Method to display a view.

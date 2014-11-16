@@ -23,8 +23,6 @@
 
         init: function() {
         	
-        	var self = this;
-            
         	$(this.element).on("click", function(event) {
         		event.preventDefault();
         		
@@ -42,11 +40,10 @@
     			}).done(function(response){
     				
     			});
-        		
-        		
+
         	});
         	
-        },
+        }
         
     };
 

@@ -115,7 +115,7 @@ class CrowdFundingModelTransactions extends JModelList
         $query->select(
             $this->getState(
                 'list.select',
-                'a.id, a.txn_amount, a.txn_date, a.txn_currency, a.txn_id, a.txn_status, a.status_reason, ' .
+                'a.id, a.txn_amount, a.txn_date, a.txn_currency, a.txn_id, a.txn_status, a.status_reason, a.fee, ' .
                 'a.parent_txn_id, a.project_id, a.reward_id, a.receiver_id, a.service_provider, a.reward_state, ' .
                 'b.name AS beneficiary, ' .
                 'c.title AS project, ' .

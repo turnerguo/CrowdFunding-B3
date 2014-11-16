@@ -23,12 +23,20 @@ class CrowdFundingPaymentSession
     protected $project_id;
     protected $reward_id;
     protected $record_date;
-    protected $txn_id;
-    protected $token;
     protected $gateway;
+    protected $gateway_data;
     protected $auser_id;
+    protected $session_id;
 
     protected $intention_id;
+
+    /**
+     * This is a unique string where is stored a unique key from a payment gateway.
+     * That can be transaction ID, token,...
+     *
+     * @var mixed
+     */
+    protected $unique_key;
 
     /**
      * Database object.
@@ -97,7 +105,7 @@ class CrowdFundingPaymentSession
         $query
             ->select(
                 "a.id, a.user_id, a.project_id, a.reward_id, a.record_date, " .
-                "a.txn_id, a.token, a.gateway, a.auser_id, a.intention_id"
+                "a.unique_key, a.gateway, a.gateway_data, a.auser_id, a.session_id, a.intention_id"
             )
             ->from($this->db->quoteName("#__crowdf_payment_sessions", "a"));
 
@@ -171,6 +179,9 @@ class CrowdFundingPaymentSession
     {
         $recordDate   = (!$this->record_date) ? "NULL" : $this->db->quote($this->record_date);
 
+        // Encode the gateway data to JSON format.
+        $gatewayData = $this->encodeDataToJson();
+
         $query = $this->db->getQuery(true);
         $query
             ->insert($this->db->quoteName("#__crowdf_payment_sessions"))
@@ -178,10 +189,11 @@ class CrowdFundingPaymentSession
             ->set($this->db->quoteName("project_id") . "=" . $this->db->quote($this->project_id))
             ->set($this->db->quoteName("reward_id") . "=" . $this->db->quote($this->reward_id))
             ->set($this->db->quoteName("record_date") . "=" . $recordDate)
-            ->set($this->db->quoteName("txn_id") . "=" . $this->db->quote($this->txn_id))
-            ->set($this->db->quoteName("token") . "=" . $this->db->quote($this->token))
+            ->set($this->db->quoteName("unique_key") . "=" . $this->db->quote($this->unique_key))
             ->set($this->db->quoteName("gateway") . "=" . $this->db->quote($this->gateway))
+            ->set($this->db->quoteName("gateway_data") . "=" . $this->db->quote($gatewayData))
             ->set($this->db->quoteName("auser_id") . "=" . $this->db->quote($this->auser_id))
+            ->set($this->db->quoteName("session_id") . "=" . $this->db->quote($this->session_id))
             ->set($this->db->quoteName("intention_id") . "=" . $this->db->quote($this->intention_id));
 
         $this->db->setQuery($query);
@@ -192,22 +204,35 @@ class CrowdFundingPaymentSession
 
     protected function updateObject()
     {
+        // Encode the gateway data to JSON format.
+        $gatewayData = $this->encodeDataToJson();
+
         $query = $this->db->getQuery(true);
+
         $query
             ->update($this->db->quoteName("#__crowdf_payment_sessions"))
             ->set($this->db->quoteName("user_id") . "=" . $this->db->quote($this->user_id))
             ->set($this->db->quoteName("project_id") . "=" . $this->db->quote($this->project_id))
             ->set($this->db->quoteName("reward_id") . "=" . $this->db->quote($this->reward_id))
             ->set($this->db->quoteName("record_date") . "=" . $this->db->quote($this->record_date))
-            ->set($this->db->quoteName("txn_id") . "=" . $this->db->quote($this->txn_id))
-            ->set($this->db->quoteName("token") . "=" . $this->db->quote($this->token))
+            ->set($this->db->quoteName("unique_key") . "=" . $this->db->quote($this->unique_key))
             ->set($this->db->quoteName("gateway") . "=" . $this->db->quote($this->gateway))
+            ->set($this->db->quoteName("gateway_data") . "=" . $this->db->quote($gatewayData))
             ->set($this->db->quoteName("auser_id") . "=" . $this->db->quote($this->auser_id))
+            ->set($this->db->quoteName("session_id") . "=" . $this->db->quote($this->session_id))
             ->set($this->db->quoteName("intention_id") . "=" . $this->db->quote($this->intention_id))
             ->where($this->db->quoteName("id") . "=" . $this->db->quote($this->id));
 
         $this->db->setQuery($query);
         $this->db->execute();
+    }
+
+    protected function encodeDataToJson()
+    {
+        if (!is_array($this->gateway_data)) {
+            $this->gateway_data = array();
+        }
+        return json_encode($this->gateway_data);
     }
 
     /**
@@ -589,46 +614,136 @@ class CrowdFundingPaymentSession
     }
 
     /**
-     * Set a token of transaction that comes from a payment gateway.
+     * Return gateway data.
      *
      * <code>
-     * $paymentSessionId = 1;
-     * $token = "TOKEN12345";
+     * $paymentSessionId  = 1;
      *
-     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession    = new CrowdFundingPaymentSession();
+     * $paymentSession->setDb(JFactory::getDbo());
      * $paymentSession->load($paymentSessionId);
      *
-     * $paymentSession->setToken($token);
+     * $gatewayData = $paymentSession->getGatewayData();
+     * </code>
+     */
+    public function getGatewayData()
+    {
+        return $this->gateway_data;
+    }
+
+    /**
+     * Set a gateway data.
+     *
+     * <code>
+     * $paymentSessionId  = 1;
+     * $data        = array(
+     *    "token" => "TOKEN1234"
+     * );
+     *
+     * $paymentSession    = new CrowdFundingPaymentSession();
+     * $paymentSession->setDb(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $paymentSession->setGatewayData($data);
      * </code>
      *
-     * @param string $token
+     * @param array $data
      *
      * @return self
      */
-    public function setToken($token)
+    public function setGatewayData(array $data)
     {
-        $this->token = $token;
+        $this->gateway_data = $data;
 
         return $this;
     }
 
     /**
-     * Return a token that comes from payment service.
+     * Return a value of a gateway data.
      *
      * <code>
-     * $paymentSessionId = 1;
+     * $paymentSessionId  = 1;
      *
-     * $paymentSession   = new CrowdFundingPaymentSession(JFactory::getDbo());
+     * $paymentSession    = new CrowdFundingPaymentSession();
+     * $paymentSession->setDb(JFactory::getDbo());
      * $paymentSession->load($paymentSessionId);
      *
-     * $token = $paymentSession->getToken();
+     * $gateway = $paymentSession->getData("token");
+     * </code>
+     */
+    public function getData($key, $default = null)
+    {
+        return (!isset($this->gateway_data[$key])) ? $default : $this->gateway_data[$key];
+    }
+
+    /**
+     * Set a gateway data value.
+     *
+     * <code>
+     * $paymentSessionId  = 1;
+     * $token        = "TOKEN1234";
+     *
+     * $paymentSession    = new CrowdFundingPaymentSession();
+     * $paymentSession->setDb(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $paymentSession->setData("token", $token);
      * </code>
      *
-     * @return string
+     * @param string $key
+     * @param mixed $value
+     *
+     * @return self
      */
-    public function getToken()
+    public function setData($key, $value)
     {
-        return $this->token;
+        $this->gateway_data[$key] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Return a unique key that comes from a payment gateway.
+     * That can be transaction ID, token,...
+     *
+     * <code>
+     * $paymentSessionId  = 1;
+     *
+     * $paymentSession    = new CrowdFundingPaymentSession();
+     * $paymentSession->setDb(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $uniqueKey = $intention->getUniqueKey();
+     * </code>
+     */
+    public function getUniqueKey()
+    {
+        return $this->unique_key;
+    }
+
+    /**
+     * Set unique key that comes from a payment gateway.
+     * That can be transaction ID, token,...
+     *
+     * <code>
+     * $paymentSessionId  = 1;
+     * $token        = "TOKEN1234";
+     *
+     * $paymentSession    = new CrowdFundingPaymentSession();
+     * $paymentSession->setDb(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $paymentSession->setUniqueKey($token);
+     * </code>
+     *
+     * @param string $key
+     * @return self
+     */
+    public function setUniqueKey($key)
+    {
+        $this->unique_key = $key;
+
+        return $this;
     }
 
     /**
@@ -672,6 +787,48 @@ class CrowdFundingPaymentSession
     public function getIntentionId()
     {
         return (int)$this->intention_id;
+    }
+
+    /**
+     * Return session ID.
+     *
+     * <code>
+     * $paymentSessionId = 1;
+     *
+     * $paymentSession    = new CrowdFundingPaymentSession();
+     * $paymentSession->setDb(JFactory::getDbo());
+     * $paymentSession->load($intentionId);
+     *
+     * $sessionId = $paymentSession->getSessionId();
+     * </code>
+     */
+    public function getSessionId()
+    {
+        return $this->session_id;
+    }
+
+    /**
+     * Set session ID.
+     *
+     * <code>
+     * $paymentSessionId = 1;
+     * $sessionId        = "SESSION_ID_1234";
+     *
+     * $paymentSession    = new CrowdFundingPaymentSession();
+     * $paymentSession->setDb(JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $paymentSession->setSessionId($sessionId);
+     * </code>
+     *
+     * @param string $sessionId
+     * @return self
+     */
+    public function setSessionId($sessionId)
+    {
+        $this->session_id = $sessionId;
+
+        return $this;
     }
 
     /**

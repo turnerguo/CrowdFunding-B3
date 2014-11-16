@@ -1,6 +1,16 @@
 CrowdFunding Release Notes
 ==========================
 
+###v1.9
+* Added option project owners to provide payout information - PayPal account, IBAN and Bank Account,...
+* Added functionality project owners to receive their amounts to their PayPal accounts instantly.
+* It was done the PayPal Adaptive payment plugin.
+* It was fixed the plugins "Content - CrowdFunding - User Mail" and "Content - CrowdFunding - Admin Mail".
+* Added option to display number of funders, delivery date and claimed rewards on the module "CrowdFunding Rewards".
+* Added a view "Categories".
+* Improved
+* Fixed some issues.
+
 ###v1.8.1
 * Fixed import functionality for currencies, countries, locations and states.
 
