@@ -75,7 +75,20 @@ class CrowdFundingModelRewards extends JModelLegacy
 
         $filter = JFilterInput::getInstance();
 
+        $params = JComponentHelper::getParams("com_crowdfunding");
+        /** @var  $params Joomla\Registry\Registry */
+
+        // Create a currency object.
+        $currencyId     = $params->get("project_currency");
+        $currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $params);
+
+        // Create the object "amount".
+        $amount = new CrowdFundingAmount();
+        $amount->setCurrency($currency);
+
         foreach ($data as $key => $item) {
+
+            $item["amount"] = $amount->setValue($item["amount"])->parse();
 
             // Filter data
             if (!is_numeric($item["amount"])) {

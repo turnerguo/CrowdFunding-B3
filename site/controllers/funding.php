@@ -62,6 +62,9 @@ class CrowdFundingControllerFunding extends ITPrismControllerFormFrontend
             "id"     => $itemId
         );
 
+        // Parse formatted amount.
+        $data["goal"] = CrowdFundingHelper::parseAmount($data["goal"]);
+
         $model = $this->getModel();
         /** @var $model CrowdFundingModelFunding */
 

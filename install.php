@@ -247,5 +247,17 @@ class pkg_crowdFundingInstallerScript
         if (!class_exists("ITPrismVersion")) {
             echo JText::_("COM_CROWDFUNDING_MESSAGE_INSTALL_ITPRISM_LIBRARY");
         }
+
+        // This patch removes category.php.
+        $this->patch19();
+    }
+
+    private function patch19()
+    {
+        $file = JPATH_ROOT . "/components/com_crowdfunding/helpers/category.php";
+
+        if (JFile::exists($file)) {
+            JFile::delete($file);
+        }
     }
 }

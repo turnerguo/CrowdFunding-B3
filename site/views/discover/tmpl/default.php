@@ -40,6 +40,7 @@ $itemSpan = (!empty($this->numberInRow)) ? round(12 / $this->numberInRow) : 4;
                 ?>
                 <li class="span<?php echo $itemSpan; ?>">
                     <div class="thumbnail cf-project <?php echo $projectStateCSS; ?> ">
+                        <?php if($this->params->get("discover_include_badge_element", 0)) {?><div class="cf-badge"></div><?php } ?>
                         <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($item->slug, $item->catslug)); ?>">
                             <?php if (!$item->image) { ?>
                                 <img src="<?php echo "media/com_crowdfunding/images/no_image.png"; ?>"

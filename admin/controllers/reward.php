@@ -37,7 +37,6 @@ class CrowdFundingControllerReward extends ITPrismControllerFormBackend
         return $model;
     }
 
-
     /**
      * Save an item
      */
@@ -55,6 +54,9 @@ class CrowdFundingControllerReward extends ITPrismControllerFormBackend
             "task" => $this->getTask(),
             "id"   => $itemId
         );
+
+        // Parse formatted amount.
+        $data["amount"] = CrowdFundingHelper::parseAmount($data["amount"]);
 
         $model = $this->getModel();
         /** @var $model CrowdFundingModelReward */

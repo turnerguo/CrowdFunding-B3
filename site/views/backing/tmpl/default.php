@@ -34,7 +34,7 @@ defined('_JEXEC') or die;
 			<form method="post" action="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug));?>" class="bs-docs-example cfbf" id="form-pledge" autocomplete="off">
 				<fieldset>
     				<legend><?php echo JText::_("COM_CROWDFUNDING_ENTER_YOUR_INVESTMENT_AMOUNT");?></legend>
-    				<?php echo JHtml::_("crowdfunding.inputAmount", $this->rewardAmount, $this->currency, array("name"=>"amount", "id"=>"js-current-amount")); ?>
+    				<?php echo JHtml::_("crowdfunding.inputAmount", $this->rewardAmount, $this->amount, array("name"=>"amount", "id"=>"js-current-amount")); ?>
     				<?php 
     				if($this->params->get("backing_terms", 0)) {
     				    $termsUrl = $this->params->get("backing_terms_url", "");

@@ -33,6 +33,8 @@ JLoader::register("CrowdFundingHelperRoute", CROWDFUNDING_PATH_COMPONENT_SITE . 
 JLoader::register("CrowdFundingCategories", CROWDFUNDING_PATH_LIBRARY . "/categories.php");
 JLoader::register("CrowdFundingDate", CROWDFUNDING_PATH_LIBRARY . "/date.php");
 JLoader::register("CrowdFundingEmail", CROWDFUNDING_PATH_LIBRARY . "/email.php");
+JLoader::register("CrowdFundingCurrency", CROWDFUNDING_PATH_LIBRARY . "/currency.php");
+JLoader::register("CrowdFundingAmount", CROWDFUNDING_PATH_LIBRARY . "/amount.php");
 
 // Register some Joomla! classes
 JLoader::register('JHtmlString', JPATH_LIBRARIES . "/joomla/html/html/string.php");

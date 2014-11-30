@@ -84,15 +84,15 @@
     </fieldset>
 
     <fieldset addfieldpath="/administrator/components/com_categories/models/fields" name="funding">
-        <field name="goal" type="text"
+        <field name="goal" type="goal"
                label="COM_CROWDFUNDING_GOAL"
                description="COM_CROWDFUNDING_FIELD_GOAL_DESC"
                 />
 
-        <field name="funded" type="text"
+        <field name="funded" type="cfamount"
                label="COM_CROWDFUNDING_FUNDED"
                description="COM_CROWDFUNDING_FIELD_FUNDED_DESC"
-                />
+               />
 
         <field name="funding_type" type="list"
                label="COM_CROWDFUNDING_FUNDING_TYPE"

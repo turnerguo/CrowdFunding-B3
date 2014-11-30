@@ -9,7 +9,6 @@
 
 defined('_JEXEC') or die;
 
-jimport('joomla.application.categories');
 jimport("crowdfunding.init");
 
 /**

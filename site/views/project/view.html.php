@@ -66,6 +66,7 @@ class CrowdFundingViewProject extends JViewLegacy
     protected $images;
     protected $extraImagesUri;
     protected $rewards;
+    protected $amount;
 
     protected $imageWidth;
     protected $imageHeight;
@@ -413,9 +414,12 @@ class CrowdFundingViewProject extends JViewLegacy
         }
 
         // Create a currency object.
-        jimport("crowdfunding.currency");
         $currencyId     = $this->params->get("project_currency");
         $this->currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $this->params);
+
+        // Create the object "amount".
+        $this->amount = new CrowdFundingAmount();
+        $this->amount->setCurrency($this->currency);
 
         // Get date format
         $this->dateFormat         = CrowdFundingHelper::getDateFormat();

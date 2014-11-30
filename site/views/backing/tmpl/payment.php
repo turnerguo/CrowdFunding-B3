@@ -33,7 +33,7 @@ defined('_JEXEC') or die;
 			<h2><?php echo JText::_("COM_CROWDFUNDING_INVESTMENT_SUMMARY");?></h2>
 			<div class="bs-docs-example">
 				<p><?php 
-				$amount = $this->currency->getAmountString($this->amount);
+				$amount = $this->amount->setValue($this->paymentAmount)->format();
 				echo JText::sprintf("COM_CROWDFUNDING_INVESTMENT_AMOUNT", $amount); ?></p>
 				<p><?php echo JText::_("COM_CROWDFUNDING_FUNDING_TYPE_".JString::strtoupper($this->item->funding_type));?></p>
 				<p class="sticky"><?php

@@ -1,6 +1,11 @@
 CrowdFunding Release Notes
 ==========================
 
+###v1.9.1
+* Fixed an issue with the router and old category class.
+* Improved amount formatting.
+* Added a badge element.
+
 ###v1.9
 * Added option project owners to provide payout information - PayPal account, IBAN and Bank Account,...
 * Added functionality project owners to receive their amounts to their PayPal accounts instantly.

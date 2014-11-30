@@ -160,7 +160,7 @@ defined('_JEXEC') or die;
                     alt="<?php echo JText::_("COM_CROWDFUNDING_PRODUCT"); ?>"/></a>
 
             <p><?php echo JText::_("COM_CROWDFUNDING_YOUR_VOTE"); ?></p>
-            <p><?php echo JText::_("COM_CROWDFUNDING_SPONSORSHIP"); ?></p>
+
             <p><?php echo JText::_("COM_CROWDFUNDING_SUBSCRIPTION"); ?></p>
             <table class="table table-striped">
                 <tbody>

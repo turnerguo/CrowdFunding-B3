@@ -96,6 +96,7 @@ class CrowdFundingControllerRewards extends ITPrismControllerAdmin
         try {
 
             $validData  = $model->validate($data);
+
             $rewardsIds = $model->save($validData, $projectId);
 
             $imagesAllowed = $params->get("rewards_images", 0);

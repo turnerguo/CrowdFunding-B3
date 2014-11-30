@@ -139,7 +139,7 @@ class CrowdFundingControllerBacking extends JControllerLegacy
         $rewardId = $this->input->getInt('rid', 0);
 
         // Get amount
-        $amount   = $this->input->get("amount", 0, "float");
+        $amount = CrowdFundingHelper::parseAmount($this->input->getString("amount"));
 
         // Get user ID
         $user   = JFactory::getUser();

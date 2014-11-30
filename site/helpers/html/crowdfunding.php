@@ -56,13 +56,15 @@ abstract class JHtmlCrowdFunding
      * Display an input field for amount.
      *
      * @param float  $value
-     * @param object $currency
+     * @param CrowdFundingAmount $amount
      * @param array  $options
      *
      * @return string
      */
-    public static function inputAmount($value, $currency, $options)
+    public static function inputAmount($value, CrowdFundingAmount $amount, $options)
     {
+        $currency     = $amount->getCurrency();
+
         $class        = "";
         $symbol       = $currency->getSymbol();
         $currencyCode = $currency->getAbbr();
@@ -94,7 +96,7 @@ abstract class JHtmlCrowdFunding
             $class = 'class="' . JArrayHelper::getValue($options, "class") . '"';
         }
 
-        $html .= '<input type="text" name="' . $name . '" value="' . $value . '" ' . $id . ' ' . $class . ' />';
+        $html .= '<input type="text" name="' . $name . '" value="' . $amount->setValue($value)->format(). '" ' . $id . ' ' . $class . ' />';
 
         if (!empty($currencyCode)) {
             $html .= '<span class="add-on">' . $currencyCode . '</span>';

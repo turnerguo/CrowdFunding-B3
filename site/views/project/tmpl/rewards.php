@@ -23,7 +23,7 @@ echo $layout->render($this->layoutData);
         
         <div id="rewards_wrapper">
         <?php 
-        if(!$this->items) { // Display first form
+        if (!$this->items) { // Display first form
             $this->formItem  = array();
             $this->formIndex = 1;
             echo $this->loadTemplate("form");
@@ -32,8 +32,11 @@ echo $layout->render($this->layoutData);
             
             $this->formIndex = 1;
             
-            foreach($this->items as $item) {
+            foreach ($this->items as $item) {
+
+                $item["amount"] = $this->amount->setValue($item["amount"])->format();
                 $this->formItem  = $item;
+                
                 echo $this->loadTemplate("form");
                 $this->formIndex++; 
             }
@@ -52,19 +55,28 @@ echo $layout->render($this->layoutData);
         
         <?php if(!$this->rewardsEnabled) {?>
             <p class="sticky"><?php echo JText::_("COM_CROWDFUNDING_NOTE_REWARDS_CREATING_NOT_ALLOWED");?></p>
-        <?php }?>
-        
-        <div class="cf-rewards-submit-btn">
-            <button class="btn" <?php echo $this->disabledButton;?> name="btn_submit" value="save" type="submit">
-                <i class="icon-ok icon-white"></i>
-                <?php echo JText::_("COM_CROWDFUNDING_SAVE_REWARDS");?>
-            </button>
 
-            <button class="btn" <?php echo $this->disabledButton;?> name="btn_submit" value="save_continue" type="submit">
-                <i class="icon-ok icon-white"></i>
-                <?php echo JText::_("COM_CROWDFUNDING_SAVE_AND_CONTINUE");?>
-            </button>
-        </div>
+            <div class="cf-rewards-submit-btn">
+                <a class="btn" href="<?php echo JRoute::_(CrowdFundingHelperRoute::getFormRoute($this->item->id, "manager")); ?>">
+                    <i class="icon-circle-arrow-right icon-white"></i>
+                    <?php echo JText::_("COM_CROWDFUNDING_CONTINUE");?>
+                </a>
+            </div>
+
+        <?php } else { ?>
+        
+            <div class="cf-rewards-submit-btn">
+                <button class="btn" <?php echo $this->disabledButton;?> name="btn_submit" value="save" type="submit">
+                    <i class="icon-ok icon-white"></i>
+                    <?php echo JText::_("COM_CROWDFUNDING_SAVE_REWARDS");?>
+                </button>
+
+                <button class="btn" <?php echo $this->disabledButton;?> name="btn_submit" value="save_continue" type="submit">
+                    <i class="icon-ok icon-white"></i>
+                    <?php echo JText::_("COM_CROWDFUNDING_SAVE_AND_CONTINUE");?>
+                </button>
+            </div>
+        <?php } ?>
 
     </form>
 </div>

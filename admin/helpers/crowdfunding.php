@@ -551,4 +551,28 @@ abstract class CrowdFundingHelper
 
         return $dateFormat;
     }
+
+    /**
+     * Prepare an amount, parsing it from formatted string to decimal value.
+     * This is most used when a user post a data via form.
+     *
+     * @param float $value
+     *
+     * @return string|float
+     */
+    public static function parseAmount($value)
+    {
+        $params = JComponentHelper::getParams("com_crowdfunding");
+        /** @var  $params Joomla\Registry\Registry */
+
+        // Get currency
+        $currencyId     = $params->get("project_currency");
+        $currency       = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $params);
+
+        // Parse the goal amount.
+        $amount = new CrowdFundingAmount($value);
+        $amount->setCurrency($currency);
+
+        return $amount->parse();
+    }
 }

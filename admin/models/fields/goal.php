@@ -37,14 +37,16 @@ class JFormFieldGoal extends JFormField
         $class     = (!empty($this->element['class'])) ? ' class="' . (string)$this->element['class'] . '"' : "";
         $required  = $this->required ? ' required aria-required="true"' : '';
 
-        // Get currency
+        // Prepare currency object.
         $params     = JComponentHelper::getParams("com_crowdfunding");
         /** @var  $params Joomla\Registry\Registry */
 
         $currencyId = $params->get("project_currency");
-
-        jimport("crowdfunding.currency");
         $currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $params);
+
+        // Prepare amount object.
+        $amount = new CrowdFundingAmount($this->value);
+        $amount->setCurrency($currency);
 
         if ($currency->getSymbol()) { // Prepended
             $html = '<div class="input-prepend input-append"><span class="add-on">' . $currency->getSymbol() . '</span>';
@@ -52,7 +54,7 @@ class JFormFieldGoal extends JFormField
             $html = '<div class="input-append">';
         }
 
-        $html .= '<input type="text" name="' . $this->name . '" id="' . $this->id . '"' . ' value="' . htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '"' . $class . $size . $disabled . $readonly . $maxLength . $required . '/>';
+        $html .= '<input type="text" name="' . $this->name . '" id="' . $this->id . '"' . ' value="' . $amount->format() . '"' . $class . $size . $disabled . $readonly . $maxLength . $required . '/>';
 
         // Appended
         $html .= '<span class="add-on">' . $currency->getAbbr() . '</span></div>';

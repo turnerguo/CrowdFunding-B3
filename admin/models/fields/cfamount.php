@@ -39,13 +39,16 @@ class JFormFieldCfAmount extends JFormField
         // Initialize JavaScript field attributes.
         $onchange = $this->element['onchange'] ? ' onchange="' . (string)$this->element['onchange'] . '"' : '';
 
+        // Prepare currency object.
         $params     = JComponentHelper::getParams("com_crowdfunding");
         /** @var  $params Joomla\Registry\Registry */
 
         $currencyId = $params->get("project_currency");
-
-        jimport("crowdfunding.currency");
         $currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $params);
+
+        // Prepare amount object.
+        $amount = new CrowdFundingAmount($this->value);
+        $amount->setCurrency($currency);
 
         if ($currency->getSymbol()) { // Prepended
             $html = '<div class="input-prepend input-append"><span class="add-on">' . $currency->getSymbol() . '</span>';
@@ -53,7 +56,7 @@ class JFormFieldCfAmount extends JFormField
             $html = '<div class="input-append">';
         }
 
-        $html .= '<input type="text" name="' . $this->name . '" id="' . $this->id . '"' . ' value="' . htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '"' .
+        $html .= '<input type="text" name="' . $this->name . '" id="' . $this->id . '"' . ' value="' . $amount->format() . '"' .
             $class . $size . $disabled . $readonly . $onchange . $maxLength . '/>';
 
         // Appended

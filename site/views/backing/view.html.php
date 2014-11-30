@@ -46,6 +46,11 @@ class CrowdFundingViewBacking extends JViewLegacy
     protected $rewards;
     protected $rewardAmount;
     protected $reward;
+    protected $paymentAmount;
+
+    /**
+     * @var CrowdFundingAmount
+     */
     protected $amount;
 
     protected $option;
@@ -109,9 +114,11 @@ class CrowdFundingViewBacking extends JViewLegacy
         $this->imageFolder = $this->params->get("images_directory", "images/crowdfunding");
 
         // Get currency
-        jimport("crowdfunding.currency");
         $currencyId     = $this->params->get("project_currency");
         $this->currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $this->params);
+
+        $this->amount   = new CrowdFundingAmount();
+        $this->amount->setCurrency($this->currency);
 
         // Set a link that points to project page
         $filter    = JFilterInput::getInstance();
@@ -223,7 +230,7 @@ class CrowdFundingViewBacking extends JViewLegacy
         }
 
         // Get amount from session
-        $this->rewardAmount = (!$paymentSession->amount) ? 0 : $this->currency->getAmountValue($paymentSession->amount);
+        $this->rewardAmount = (!$paymentSession->amount) ? 0 : $paymentSession->amount;
 
         // Get rewards
         jimport("crowdfunding.rewards");
@@ -238,7 +245,7 @@ class CrowdFundingViewBacking extends JViewLegacy
                 if ($this->rewardId == $reward["id"]) {
 
                     if ($this->rewardAmount < $reward["amount"]) {
-                        $this->rewardAmount = $this->currency->getAmountValue($reward["amount"]);
+                        $this->rewardAmount = $reward["amount"];
 
                         $paymentSession->step1 = false;
                     }
@@ -315,9 +322,11 @@ class CrowdFundingViewBacking extends JViewLegacy
             }
         }
 
-        // Validate amount
-        $this->amount = $paymentSession->amount;
-        if (!$this->amount) {
+        // Set the amount that will be displayed in the view.
+        $this->paymentAmount = $paymentSession->amount;
+
+        // Validate the amount.
+        if (!$this->paymentAmount) {
 
             // Reset the flag for step 1
             $paymentSession->step1 = false;
@@ -348,8 +357,8 @@ class CrowdFundingViewBacking extends JViewLegacy
 
     protected function prepareShare(&$paymentSession)
     {
-        // Get amount from session
-        $this->amount = $paymentSession->amount;
+        // Get amount from session that will be displayed in the view.
+        $this->paymentAmount = $paymentSession->amount;
 
         // Get reward
         $this->reward = null;

@@ -22,6 +22,23 @@ jimport('itprism.controller.form.backend');
 class CrowdFundingControllerProject extends ITPrismControllerFormBackend
 {
     /**
+     * Method to get a model object, loading it if required.
+     *
+     * @param    string $name   The model name. Optional.
+     * @param    string $prefix The class prefix. Optional.
+     * @param    array  $config Configuration array for model. Optional.
+     *
+     * @return    object    The model.
+     * @since    1.5
+     */
+    public function getModel($name = 'Project', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    {
+        $model = parent::getModel($name, $prefix, $config);
+
+        return $model;
+    }
+
+    /**
      * Save an item
      */
     public function save($key = null, $urlVar = null)
@@ -36,11 +53,15 @@ class CrowdFundingControllerProject extends ITPrismControllerFormBackend
             "id"   => $itemId
         );
 
+        // Parse formatted goal and funded amounts.
+        $data["goal"] = CrowdFundingHelper::parseAmount($data["goal"]);
+        $data["funded"] = CrowdFundingHelper::parseAmount($data["funded"]);
+
         $model = $this->getModel();
         /** @var $model CrowdFundingModelProject */
 
         $form = $model->getForm($data, false);
-        /** @var $form JForm * */
+        /** @var $form JForm */
 
         if (!$form) {
             throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"), 500);

@@ -81,7 +81,8 @@ class CrowdFundingCurrency
 
             if (!is_null($options) and ($options instanceof JRegistry)) {
                 $item->setOption("intl", $options->get("locale_intl", false));
-                $item->setOption("format", $options->get("amount_format", false));
+                $item->setOption("format", $options->get("amount_format", ""));
+                $item->setOption("fraction_digits", $options->get("fraction_digits", 2));
             }
 
             self::$instances[$id] = $item;
@@ -270,19 +271,39 @@ class CrowdFundingCurrency
      * echo $currency->getAmountValue(25.000);
      * </code>
      *
-     * @param mixed  $amount This is a value used in the amount string. This can be float, integer,...
+     * @param mixed  $value This is a value used in the amount string. This can be float, integer,...
      *
      * @return string
      */
-    public function getAmountValue($amount)
+    public function getAmountValue($value)
     {
-        $format = $this->options->get("format");
+        $intl             = (bool)$this->options->get("intl", false);
+        $fractionDigits   = abs($this->options->get("fraction_digits", 2));
 
-        if (!empty($format)) {
-            $amount = $this->formatAmount($amount);
+        // Format the amount by function number_format.
+        $format           = $this->options->get("format");
+        if (!$intl and !empty($format)) {
+            return $this->formatAmount($value);
         }
 
-        return $amount;
+        // Use PHP Intl library to format the amount.
+        if ($intl and extension_loaded('intl')) { // Generate currency string using PHP NumberFormatter ( Internationalization Functions )
+
+            $locale = $this->options->get("locale");
+
+            // Get current locale code.
+            if (!$locale) {
+                $lang   = JFactory::getLanguage();
+                $locale = str_replace("-", "_", $lang->getTag());
+            }
+
+            $numberFormat = new NumberFormatter($locale, NumberFormatter::DECIMAL);
+            $numberFormat->setAttribute(NumberFormatter::FRACTION_DIGITS, $fractionDigits);
+            return $numberFormat->format($value, NumberFormatter::TYPE_DOUBLE);
+            
+        }
+
+        return $value;
     }
 
     /**
@@ -363,6 +384,29 @@ class CrowdFundingCurrency
     public function setOption($key, $value)
     {
         $this->options->set($key, $value);
+    }
+
+    /**
+     * Return an option value.
+     *
+     * <code>
+     * $currencyId = 1;
+     *
+     * $currency   = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $options);
+     *
+     * if ($currency->getOption("intl")) {
+     * ....
+     * }
+     * </code>
+     *
+     * @param string $key
+     * @param mixed $default
+     *
+     * @return mixed
+     */
+    public function getOption($key, $default = null)
+    {
+        return $this->options->get($key, $default);
     }
 
     protected function formatAmount($value)
