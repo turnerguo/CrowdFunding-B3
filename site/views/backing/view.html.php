@@ -76,11 +76,8 @@ class CrowdFundingViewBacking extends JViewLegacy
         parent::__construct($config);
 
         $this->app    = JFactory::getApplication();
-
         $this->option = $this->app->input->get("option");
-
         $this->layoutsBasePath = JPath::clean(JPATH_COMPONENT_ADMINISTRATOR . DIRECTORY_SEPARATOR . "layouts");
-
     }
 
     public function display($tpl = null)
@@ -203,7 +200,7 @@ class CrowdFundingViewBacking extends JViewLegacy
     {
         // Trigger the event on step 2 and display the content.
         $dispatcher = JEventDispatcher::getInstance();
-        $results    = $dispatcher->trigger('onPaymentDisplay', array('com_crowdfunding.payment.step2', &$this->item, &$this->params));
+        $results    = $dispatcher->trigger('onPaymentExtras', array('com_crowdfunding.payment.step2', &$this->item, &$this->params));
 
         $result                 = (string)array_pop($results);
 
@@ -336,6 +333,8 @@ class CrowdFundingViewBacking extends JViewLegacy
             $this->app->redirect(JRoute::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug), false));
         }
 
+        // Events
+
         $item = new stdClass();
 
         $item->id           = $this->item->id;
@@ -346,13 +345,24 @@ class CrowdFundingViewBacking extends JViewLegacy
         $item->amount       = $paymentSession->amount;
         $item->currencyCode = $this->currency->getAbbr();
 
-        // Events
+        $this->item->event  = new stdClass();
+
+        // onBeforePaymentAuthorize
         JPluginHelper::importPlugin('crowdfundingpayment');
         $dispatcher = JEventDispatcher::getInstance();
-        $results    = $dispatcher->trigger('onProjectPayment', array('com_crowdfunding.payment', &$item, &$this->params));
+        $results    = $dispatcher->trigger('onBeforePaymentAuthorize', array('com_crowdfunding.before.payment.authorize', &$item, &$this->amount, &$this->params));
 
-        $this->item->event                   = new stdClass();
-        $this->item->event->onProjectPayment = trim(implode("\n", $results));
+        if (!empty($results)) {
+
+            $this->item->event->onBeforePaymentAuthorize = trim(implode("\n", $results));
+
+        } else { // onProjectPayment
+
+            $results    = $dispatcher->trigger('onProjectPayment', array('com_crowdfunding.payment', &$item, &$this->params));
+            $this->item->event->onProjectPayment = trim(implode("\n", $results));
+
+        }
+
     }
 
     protected function prepareShare(&$paymentSession)

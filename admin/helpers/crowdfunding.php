@@ -190,45 +190,6 @@ abstract class CrowdFundingHelper
     }
 
     /**
-     * Calculate days left.
-     *
-     * @param int    $fundingDays
-     * @param string $fundingStart
-     * @param string $fundingEnd
-     *
-     * @return int
-     * @deprecated since v1.8. Use CrowdFundingDate object.
-     */
-    public static function calcualteDaysLeft($fundingDays, $fundingStart, $fundingEnd)
-    {
-        // Calculate days left
-        $today = new DateTime("today");
-        if (!empty($fundingDays)) {
-
-            // Validate starting date.
-            // If there is not starting date, set number of day.
-            if (!self::isValidDate($fundingStart)) {
-                return (int)$fundingDays;
-            }
-
-            $endingDate = new DateTime($fundingStart);
-            $endingDate->modify("+" . (int)$fundingDays . " days");
-
-        } else {
-            $endingDate = new DateTime($fundingEnd);
-        }
-
-        $interval = $today->diff($endingDate);
-        $daysLeft = $interval->format("%r%a");
-
-        if ($daysLeft < 0) {
-            $daysLeft = 0;
-        }
-
-        return $daysLeft;
-    }
-
-    /**
      * Calculate end date
      *
      * @param string $fundingStart This is starting date
@@ -574,5 +535,122 @@ abstract class CrowdFundingHelper
         $amount->setCurrency($currency);
 
         return $amount->parse();
+    }
+
+    public static function prepareCategories($items, $numberInRow)
+    {
+        $result = array();
+
+        if (!empty($items)) {
+            $i = 0;
+            $row = 1;
+
+            foreach ($items as $key => $item) {
+
+                $result[$row][$key] = $item;
+
+                // Decode parameters
+                if (!empty($item->params)) {
+                    $item->params = json_decode($item->params, true);
+
+                    // Generate a link to the picture.
+                    if (is_array($item->params)) {
+                        $image = JArrayHelper::getValue($item->params, "image");
+                        if (!empty($image)) {
+                            $item->image_link = JUri::base().$image;
+                        }
+                    }
+                }
+
+                // Generate lines by number of items in a row.
+                $result[$row][$key] = $item;
+
+                $i++;
+                if ($i == $numberInRow) {
+                    $row++;
+                    $i = 0;
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    public static function prepareItems($items, $numberInRow)
+    {
+        $result = array();
+
+        if (!empty($items)) {
+            $i = 0;
+            $row = 1;
+            foreach ($items as $key => $item) {
+
+                $result[$row][$key] = $item;
+
+                // Calculate funding end date
+                if (!empty($item->funding_days)) {
+
+                    $fundingStartDate = new CrowdFundingDate($item->funding_start);
+                    $endDate = $fundingStartDate->calculateEndDate($item->funding_days);
+                    $result[$row][$key]->funding_end = $endDate->format("Y-m-d");
+
+                }
+
+                // Calculate funded percentage.
+                $percent = new ITPrismMath();
+                $percent->calculatePercentage($item->funded, $item->goal, 0);
+                $result[$row][$key]->funded_percents = (string)$percent;
+
+                // Calculate days left
+                $today = new CrowdFundingDate();
+                $result[$row][$key]->days_left       = $today->calculateDaysLeft($item->funding_days, $item->funding_start, $item->funding_end);
+
+                $i++;
+                if ($i == $numberInRow) {
+                    $row++;
+                    $i = 0;
+                }
+
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Prepare social profiles for a grid view.
+     *
+     * @param array     $items
+     * @param Joomla\Registry\Registry $params
+     *
+     * @return null|array
+     */
+    public static function prepareIntegrationGrid($items, $params)
+    {
+        // Get users IDs
+        $usersIds = array();
+        foreach ($items as $row) {
+            foreach ($row as $item) {
+                $usersIds[] = $item->user_id;
+            }
+        }
+
+        // If there is now users, do not continue.
+        if (!$usersIds) {
+            return null;
+        }
+
+        $socialProfiles = null;
+
+        // Get a social platform for integration
+        $socialPlatform = $params->get("integration_social_platform");
+
+        // Load the class
+        if (!empty($socialPlatform)) {
+            jimport("itprism.integrate.profiles");
+            $socialProfiles = ITPrismIntegrateProfiles::factory($socialPlatform, $usersIds);
+        }
+
+        return $socialProfiles;
     }
 }

@@ -45,6 +45,10 @@ class plgContentCrowdFundingValidator extends JPlugin
      */
     public function onContentValidate($context, &$data, &$params)
     {
+        if (!in_array($context, $this->allowedContexts)) {
+            return null;
+        }
+
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
 
@@ -58,10 +62,6 @@ class plgContentCrowdFundingValidator extends JPlugin
         // Check document type
         $docType = $doc->getType();
         if (strcmp("html", $docType) != 0) {
-            return null;
-        }
-
-        if (!in_array($context, $this->allowedContexts)) {
             return null;
         }
 

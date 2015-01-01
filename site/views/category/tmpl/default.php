@@ -15,13 +15,16 @@ defined('_JEXEC') or die;
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php } ?>
 
+    <?php if (empty($this->items)) { ?>
+        <p class="alert alert-warning"><?php echo JText::_("COM_CROWDFUNDING_NO_ITEMS_MATCHING_QUERY"); ?></p>
+    <?php } ?>
+
     <?php if (!empty($this->items)) {
         $layout      = new JLayoutFile('items_grid', $this->layoutsBasePath);
         echo $layout->render($this->layoutData);
     } ?>
 
     <div class="pagination">
-
         <?php if ($this->params->def('show_pagination_results', 1)) { ?>
             <p class="counter">
                 <?php echo $this->pagination->getPagesCounter(); ?>
@@ -30,6 +33,11 @@ defined('_JEXEC') or die;
 
         <?php echo $this->pagination->getPagesLinks(); ?>
     </div>
-    <div class="clearfix">&nbsp;</div>
+
+    <?php
+    if (!empty($this->displaySubcategories) and !empty($this->categories)) { ?>
+        <h4><?php echo JText::_("COM_CROWDFUNDING_SUBCATEGORIES"); ?></h4>
+        <?php echo $this->loadTemplate("categories");
+    } ?>
 </div>
 <div class="clearfix">&nbsp;</div>

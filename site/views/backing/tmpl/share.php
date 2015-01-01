@@ -38,7 +38,9 @@ defined('_JEXEC') or die;
 				$amount = $this->amount->setValue($this->paymentAmount)->format();
 				echo JText::sprintf("COM_CROWDFUNDING_INVESTMENT_AMOUNT", $amount); ?></p>
 				<p><?php echo JText::sprintf("COM_CROWDFUNDING_FUNDING_TYPE", $this->item->funding_type);?></p>
-				<p class="sticky"><?php
+				<p class="alert alert-info">
+					<i class="icon-info-sign"></i>
+					<?php
 				$endDate = JHtml::_('date', $this->item->funding_end, JText::_('DATE_FORMAT_LC3'));
             	if($this->item->funding_type == "FIXED") {
                     $goal    = $this->currency->getAmountString($this->item->goal);

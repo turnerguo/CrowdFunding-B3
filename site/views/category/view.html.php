@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingViewFeatured extends JViewLegacy
+class CrowdFundingViewCategory extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -35,10 +35,19 @@ class CrowdFundingViewFeatured extends JViewLegacy
      */
     protected $currency;
 
-    protected $numberInRow;
+    protected $itemsInRow;
     protected $imageFolder;
     protected $displayCreator;
+    protected $filterPaginationLimit;
+    protected $displayFilters;
     protected $socialProfiles;
+
+    protected $categories;
+    protected $displaySubcategories;
+    protected $subcategoriesPerRow;
+    protected $displayProjectsNumber;
+    protected $projectsNumber;
+
     protected $layoutsBasePath;
     protected $layoutData;
 
@@ -65,8 +74,14 @@ class CrowdFundingViewFeatured extends JViewLegacy
         $this->params = $this->state->get("params");
         /** @var  $this->params Joomla\Registry\Registry */
 
-        $this->numberInRow = $this->params->get("featured_items_row", 3);
-        $this->items       = CrowdFundingHelper::prepareItems($this->items, $this->numberInRow);
+        // Prepare subcategories.
+        $this->displaySubcategories = $this->params->get("display_subcategories", 0);
+        if (!empty($this->displaySubcategories)) {
+            $this->prepareSubcategories();
+        }
+
+        $this->itemsInRow  = $this->params->get("items_row", 3);
+        $this->items       = CrowdFundingHelper::prepareItems($this->items, $this->itemsInRow);
 
         // Get the folder with images
         $this->imageFolder = $this->params->get("images_directory", "images/crowdfunding");
@@ -91,7 +106,7 @@ class CrowdFundingViewFeatured extends JViewLegacy
             "imageFolder" => $this->imageFolder,
             "titleLength" => $this->params->get("discover_title_length", 0),
             "descriptionLength" => $this->params->get("discover_description_length", 0),
-            "span"  => (!empty($this->numberInRow)) ? round(12 / $this->numberInRow) : 4
+            "span"  => (!empty($this->itemsInRow)) ? round(12 / $this->itemsInRow) : 4
         );
 
         $this->prepareDocument();
@@ -146,7 +161,7 @@ class CrowdFundingViewFeatured extends JViewLegacy
         if ($menu) {
             $this->params->def('page_heading', $this->params->get('page_title', $menu->title));
         } else {
-            $this->params->def('page_heading', JText::_('COM_CROWDFUNDING_FEaTURED_DEFAULT_PAGE_TITLE'));
+            $this->params->def('page_heading', JText::_('COM_CROWDFUNDING_CATEGORY_DEFAULT_PAGE_TITLE'));
         }
     }
 
@@ -168,5 +183,34 @@ class CrowdFundingViewFeatured extends JViewLegacy
         }
 
         $this->document->setTitle($title);
+    }
+
+    private function prepareSubcategories()
+    {
+        $app = JFactory::getApplication();
+
+        $categoryId = $app->input->getInt("id");
+
+        $categories = new CrowdFundingCategories();
+        $category   = $categories->get($categoryId);
+
+        $this->categories = $category->getChildren();
+
+        $this->subcategoriesPerRow = $this->params->get("categories_items_row", 3);
+        $this->displayProjectsNumber = $this->params->get("categories_display_projects_number", 0);
+
+        // Load projects number.
+        if ($this->displayProjectsNumber) {
+            $ids = array();
+            foreach ($this->items as $item) {
+                $ids[] = $item->id;
+            }
+
+            $categories->setDb(JFactory::getDbo());
+
+            $this->projectsNumber = $categories->getProjectsNumber($ids, array("state" => 1));
+        }
+
+        $this->categories = CrowdFundingHelper::prepareCategories($this->categories, $this->subcategoriesPerRow);
     }
 }

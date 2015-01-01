@@ -68,9 +68,9 @@ class CrowdFundingModelEmbed extends JModelItem
                     "a.id, a.title, a.short_desc, a.image,  " .
                     "a.funded, a.goal, a.user_id, " .
                     "a.funding_start, a.funding_end, a.funding_days,  " .
-                    $query->concatenate(array("a.id", "a.alias"), "-") . ' AS slug, ' .
+                    $query->concatenate(array("a.id", "a.alias"), ":") . ' AS slug, ' .
                     "b.name AS user_name, " .
-                    $query->concatenate(array("c.id", "c.alias"), "-") . ' AS catslug '
+                    $query->concatenate(array("c.id", "c.alias"), ":") . ' AS catslug '
                 )
                 ->from($db->quoteName("#__crowdf_projects", "a"))
                 ->innerJoin($db->quoteName('#__users', 'b') . ' ON a.user_id = b.id')

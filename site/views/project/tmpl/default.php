@@ -44,7 +44,7 @@ echo $layout->render($this->layoutData);
             <?php echo $this->form->getLabel('image'); ?>
             <div class="fileupload fileupload-new" data-provides="fileupload">
                 <span class="btn btn-file">
-                    <i class="icon-upload"></i>
+                    <i class="icon-folder-open icon-white"></i>
                     <span class="fileupload-new"><?php echo JText::_("COM_CROWDFUNDING_SELECT_FILE");?></span>
                     <span class="fileupload-exists">
                         <?php echo JText::_("COM_CROWDFUNDING_CHANGE");?>
@@ -71,7 +71,7 @@ echo $layout->render($this->layoutData);
             <?php echo JHtml::_('form.token'); ?>
             
             <div class="clearfix"></div>
-            <button type="submit" class="btn margin-tb-15px" <?php echo $this->disabledButton;?>>
+            <button type="submit" class="btn mtb_15_0" <?php echo $this->disabledButton;?>>
             	<i class="icon-ok icon-white"></i>
                 <?php echo JText::_("COM_CROWDFUNDING_SAVE_AND_CONTINUE")?>
             </button>

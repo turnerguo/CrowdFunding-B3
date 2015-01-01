@@ -73,7 +73,8 @@ class CrowdFundingViewProjects extends JViewLegacy
     }
 
     /**
-     * Prepare document
+     * Prepare document.
+     *
      */
     protected function prepareDocument()
     {

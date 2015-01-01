@@ -65,6 +65,8 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin
         $cancelUrl = $this->getCancelUrl($item->slug, $item->catslug);
 
         $html   = array();
+        $html[] = '<div class="well">';
+
         $html[] = '<h4><img src="' . $pluginURI . '/images/paypal_icon.png" width="36" height="32" alt="PayPal" />' . JText::_($this->textPrefix . "_TITLE") . '</h4>';
 
         // Prepare payment receiver.
@@ -138,8 +140,10 @@ class plgCrowdFundingPaymentPayPal extends CrowdFundingPaymentPlugin
 
         // Display a sticky note if the extension works in sandbox mode.
         if ($this->params->get('paypal_sandbox', 1)) {
-            $html[] = '<p class="sticky">' . JText::_($this->textPrefix . "_WORKS_SANDBOX") . '</p>';
+            $html[] = '<div class="alert alert-info"><i class="icon-info-sign"></i> ' . JText::_($this->textPrefix . "_WORKS_SANDBOX") . '</div>';
         }
+
+        $html[] = '</div>';
 
         return implode("\n", $html);
     }

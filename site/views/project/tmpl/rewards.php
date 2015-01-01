@@ -38,7 +38,7 @@ echo $layout->render($this->layoutData);
                 $this->formItem  = $item;
                 
                 echo $this->loadTemplate("form");
-                $this->formIndex++; 
+                $this->formIndex++;
             }
         }?>
         </div>
@@ -49,12 +49,15 @@ echo $layout->render($this->layoutData);
         <div class="clearfix"></div>
         
         <input type="hidden" name="items_number" id="items_number" value="<?php echo (0 == count($this->items)) ? 1 : count($this->items);?>" />
-        <?php if(!$this->debugMode) {?>
+        <?php if(!$this->debugMode and $this->rewardsEnabled) {?>
         <button class="btn btn-large btn-block" type="button" id="cf_add_new_reward"><?php echo JText::_("COM_CROWDFUNDING_REWARDS_ADD_REWARD");?></button>
         <?php }?>
         
         <?php if(!$this->rewardsEnabled) {?>
-            <p class="sticky"><?php echo JText::_("COM_CROWDFUNDING_NOTE_REWARDS_CREATING_NOT_ALLOWED");?></p>
+            <p class="alert alert-info mt10">
+                <i class="icon-info-sign"></i>
+                <?php echo JText::_("COM_CROWDFUNDING_NOTE_REWARDS_CREATING_NOT_ALLOWED");?>
+            </p>
 
             <div class="cf-rewards-submit-btn">
                 <a class="btn" href="<?php echo JRoute::_(CrowdFundingHelperRoute::getFormRoute($this->item->id, "manager")); ?>">
@@ -67,7 +70,7 @@ echo $layout->render($this->layoutData);
         
             <div class="cf-rewards-submit-btn">
                 <button class="btn" <?php echo $this->disabledButton;?> name="btn_submit" value="save" type="submit">
-                    <i class="icon-ok icon-white"></i>
+                    <i class="icon-save icon-white"></i>
                     <?php echo JText::_("COM_CROWDFUNDING_SAVE_REWARDS");?>
                 </button>
 

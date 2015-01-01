@@ -259,6 +259,8 @@ class CrowdFundingPaymentPlugin extends JPlugin
 
             // Prepare recipient data.
             $componentParams = JComponentHelper::getParams("com_crowdfunding");
+            /** @var  $componentParams Joomla\Registry\Registry */
+
             $recipientId = $componentParams->get("administrator_id");
             if (!empty($recipientId)) {
                 $recipient = JFactory::getUser($recipientId);

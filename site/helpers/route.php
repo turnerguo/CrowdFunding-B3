@@ -26,6 +26,7 @@ jimport("crowdfunding.init");
 abstract class CrowdFundingHelperRoute
 {
     protected static $projects = array();
+    protected static $projectsAliases = array();
     protected static $lookup;
 
     /**
@@ -42,11 +43,11 @@ abstract class CrowdFundingHelperRoute
         /**
          *
          * # category
-         * We will check for view category first. If find a menu item with view "category" and "id" eqallity of the key,
+         * We will check for view category first. If find a menu item with view "category" and "id" equality of the key,
          * we will get that menu item ( Itemid ).
          *
          * # categories view
-         * If miss a menu item with view "category" we continue with searchin but now for view "categories".
+         * If miss a menu item with view "category" we continue with searching but now for view "categories".
          * It is assumed view "categories" will be in the first level of the menu.
          * The view "categories" won't contain category ID so it has to contain 0 for ID key.
          */
@@ -54,18 +55,20 @@ abstract class CrowdFundingHelperRoute
             'details' => array((int)$id),
         );
 
+        $catid = intval($catid);
+
         //Create the link
         $link = 'index.php?option=com_crowdfunding&view=details&id=' . $id;
         if ($catid > 1) {
 
             $options = array("published" => 2);
 
-            $categories = JCategories::getInstance('crowdfunding', $options);
+            $categories = CrowdFundingCategories::getInstance('CrowdFunding', $options);
             $category   = $categories->get($catid);
 
             if ($category) {
-                $needles['discover']   = array_reverse($category->getPath());
-                $needles['discover'][] = 0;
+                $needles['category']   = array_reverse($category->getPath());
+                $needles['categories'][] = 0;
                 $link .= '&catid=' . $catid;
             }
         }
@@ -173,7 +176,7 @@ abstract class CrowdFundingHelperRoute
          * The view "categories" won't contain category ID so it has to contain 0 for ID key.
          */
         $needles = array(
-            'backing' => array((int)$id)
+            'details' => array((int)$id)
         );
 
         //Create the link
@@ -183,8 +186,8 @@ abstract class CrowdFundingHelperRoute
             $category   = $categories->get($catid);
 
             if ($category) {
-                $needles['discover']   = array_reverse($category->getPath());
-                $needles['discover'][] = 0;
+                $needles['category']   = array_reverse($category->getPath());
+                $needles['categories'][] = 0;
                 $link .= '&catid=' . $catid;
             }
         }
@@ -228,7 +231,7 @@ abstract class CrowdFundingHelperRoute
          * The view "categories" won't contain category ID so it has to contain 0 for ID key.
          */
         $needles = array(
-            'embed' => array((int)$id)
+            'details' => array((int)$id)
         );
 
         //Create the link
@@ -238,8 +241,8 @@ abstract class CrowdFundingHelperRoute
             $category   = $categories->get($catid);
 
             if ($category) {
-                $needles['discover']   = array_reverse($category->getPath());
-                $needles['discover'][] = 0;
+                $needles['category']   = array_reverse($category->getPath());
+                $needles['categories'][] = 0;
                 $link .= '&catid=' . $catid;
             }
         }
@@ -320,31 +323,33 @@ abstract class CrowdFundingHelperRoute
      */
     public static function getCategoryRoute($categoryId = 0)
     {
-        $needles = array(
-            'discover' => array($categoryId)
-        );
+        if ($categoryId instanceof JCategoryNode) {
+            $id       = $categoryId->id;
+            $category = $categoryId;
+        } else {
+            $id       = (int) $categoryId;
+            $category = JCategories::getInstance('CrowdFunding')->get($id);
+        }
 
-        //Create the link
-        $link = 'index.php?option=com_crowdfunding&view=discover';
+        if ($id < 1 or !($category instanceof JCategoryNode)) {
+            $link = "";
+        } else {
 
-        $item = self::findItem($needles);
-        if (!$item and !empty($categoryId)) {
+            //Create the link
+            $link = 'index.php?option=com_crowdfunding&view=category&id='.(int)$id;
 
-            $link .= "&id=".$categoryId;
+            $ids = array_reverse($category->getPath());
 
             $needles = array(
-                'discover' => array(0)
+                'category'   => $ids,
+                'categories' => $ids
             );
-            $item = self::findItem($needles);
-        }
 
-        // Looking for menu item (Itemid)
-        if ($item) {
-            $link .= '&Itemid=' . $item;
-        } elseif ($item = self::findItem()) { // Get the menu item (Itemid) from the active (current) item.
-            $link .= '&Itemid=' . $item;
+            // Looking for menu item (Itemid)
+            if ($item    = self::findItem($needles)) {
+                $link .= '&Itemid=' . $item;
+            }
         }
-
 
         return $link;
     }
@@ -414,33 +419,57 @@ abstract class CrowdFundingHelperRoute
 
     /**
      *
-     * Prepeare categories path to the segments.
+     * Prepare categories path to the segments.
      * We use this method in the router "CrowdFundingParseRoute".
      *
-     * @param integer $catId Category Id
+     * @param integer $categoryId Category Id
      * @param array   $segments
-     * @param integer $mId   Id parameter from the menu item query
+     * @param object $menuItem
+     * @param bool $menuItemGiven
+     *
+     * @return array
      */
-    public static function prepareCategoriesSegments($catId, &$segments, $mId = null)
+    public static function prepareCategoriesSegments($categoryId, $segments, $menuItem, $menuItemGiven)
     {
-        $categories = JCategories::getInstance('CrowdFunding');
-        $category   = $categories->get($catId);
-
-        if ($category) {
-            //TODO Throw error that the category either not exists or is unpublished
-            $path = $category->getPath();
-            $path = array_reverse($path);
-
-            $array = array();
-            foreach ($path as $id) {
-                if ((int)$id == (int)$mId) {
-                    break;
-                }
-
-                $array[] = $id;
-            }
-            $segments = array_merge($segments, array_reverse($array));
+        if ($menuItemGiven and isset($menuItem->query['id'])) {
+            $menuCategoryId = $menuItem->query['id'];
+        } else {
+            $menuCategoryId = 0;
         }
+
+        $categories = CrowdFundingCategories::getInstance('CrowdFunding');
+        $category   = $categories->get($categoryId);
+
+        if (!$category) {
+            // We couldn't find the category we were given.
+            return $segments;
+        }
+
+        $path = array_reverse($category->getPath());
+
+        $array = array();
+
+        // If a category ID match with an ID in a menu item,
+        // we cannot generate an array with subcategories (aliases).
+        foreach ($path as $id) {
+
+            // Is an ID match with an ID in a menu item?
+            if ((int)$id == (int)$menuCategoryId) {
+                break;
+            }
+
+            // Add the item to the array with category aliases.
+            /*list($tmp, $id) = explode(':', $id, 2);
+            $array[] = $id;*/
+
+            $array[] = str_replace(":", "-", $id);
+        }
+
+        $array = array_reverse($array);
+
+        $segments = array_merge($segments, $array);
+
+        return $segments;
     }
 
     /**
@@ -454,6 +483,7 @@ abstract class CrowdFundingHelperRoute
     public static function getProject($id)
     {
         $result = array();
+        $id     = (int)$id;
 
         // Check for valid ID.
         if (!$id) {
@@ -483,5 +513,48 @@ abstract class CrowdFundingHelperRoute
         self::$projects[$id] = $result;
 
         return self::$projects[$id];
+    }
+
+    /**
+     * Load the project alias from database.
+     * We use this method in the router "CrowdFundingParseRoute".
+     *
+     * @param int $id
+     *
+     * @return array
+     */
+    public static function getProjectAlias($id)
+    {
+        $result = "";
+        $id     = (int)$id;
+
+        // Check for valid ID.
+        if (!$id) {
+            return $result;
+        }
+
+        // Return cached data.
+        if (isset(self::$projectsAliases[$id])) {
+            return self::$projectsAliases[$id];
+        }
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select("a.alias")
+            ->from($query->quoteName("#__crowdf_projects", "a"))
+            ->where("a.id = " . (int)$id);
+
+        $db->setQuery($query, 0, 1);
+        $result = $db->loadResult();
+
+        if (!$result) {
+            $result = "";
+        }
+
+        self::$projectsAliases[$id] = $result;
+
+        return self::$projectsAliases[$id];
     }
 }

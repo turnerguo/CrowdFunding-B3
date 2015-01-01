@@ -10,12 +10,10 @@
 // no direct access
 defined('_JEXEC') or die;
 
-// HC
-$itemSpan = (!empty($this->numberInRow)) ? round(12 / $this->numberInRow) : 4;
+$itemSpan = (!empty($this->subcategoriesPerRow)) ? round(12 / $this->subcategoriesPerRow) : 4;
 ?>
 
-<?php if (!empty($this->items)) { ?>
-<?php foreach ($this->items as $row) { ?>
+<?php foreach ($this->categories as $row) { ?>
 <ul class="thumbnails">
     <?php foreach ($row as $item) { ?>
 
@@ -38,18 +36,18 @@ $itemSpan = (!empty($this->numberInRow)) ? round(12 / $this->numberInRow) : 4;
                     </a>
                     <?php
                     if ($this->displayProjectsNumber) {
-                        $number = (!isset($this->projectsNumber[$item->id])) ? 0 : $this->projectsNumber[$item->id]["number"];
-                    ?>
-                        <?php echo "( ".$number. " )"; ?>
+                        $number = (!isset($this->projectsNumber[$item->id])) ? 0 : $this->projectsNumber[$item->id][0];
+                        ?>
+                        <?php echo "( ". $number . " )"; ?>
                     <?php } ?>
                 </h3>
-                <?php if ($this->params->get("categories_display_description", true)) { ?>
-                    <p><?php echo JHtmlString::truncate($item->description, $this->descriptionLength, true, false); ?></p>
+                <?php
+                if ($this->params->get("categories_display_description", true)) { ?>
+                    <p><?php echo JHtmlString::truncate($item->description, $this->params->get("categories_description_length", 0), true, false); ?></p>
                 <?php } ?>
             </div>
         </div>
     </li>
     <?php } ?>
 </ul>
-<?php } ?>
 <?php } ?>

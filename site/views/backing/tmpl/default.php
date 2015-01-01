@@ -31,7 +31,7 @@ defined('_JEXEC') or die;
 	<div class="row-fluid">
 		<div class="span12">
 			
-			<form method="post" action="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug));?>" class="bs-docs-example cfbf" id="form-pledge" autocomplete="off">
+			<form method="post" action="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($this->item->slug, $this->item->catslug));?>" class="bs-docs-example mt_0" id="form-pledge" autocomplete="off">
 				<fieldset>
     				<legend><?php echo JText::_("COM_CROWDFUNDING_ENTER_YOUR_INVESTMENT_AMOUNT");?></legend>
     				<?php echo JHtml::_("crowdfunding.inputAmount", $this->rewardAmount, $this->amount, array("name"=>"amount", "id"=>"js-current-amount")); ?>

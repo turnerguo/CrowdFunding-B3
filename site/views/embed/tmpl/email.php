@@ -16,7 +16,7 @@ defined('_JEXEC') or die;
     	<div class="span11">
     	    <h2><?php echo JText::_("COM_CROWDFUNDING_SEND_TO_FRIEND"); ?></h2>
             <p><?php echo JText::_("COM_CROWDFUNDING_SEND_TO_FRIEND_HELP"); ?></p>
-            <form method="post" action="<?php echo JRoute::_(CrowdFundingHelperRoute::getEmbedRoute($this->item->slug, $this->item->catslug)."&task=friendmail.send");?>" class="bs-docs-example cfbf" id="form-send-to-friend" autocomplete="off">
+            <form method="post" action="<?php echo JRoute::_(CrowdFundingHelperRoute::getEmbedRoute($this->item->slug, $this->item->catslug)."&task=friendmail.send");?>" class="bs-docs-example mt_0" id="form-send-to-friend" autocomplete="off">
             		
             		<?php echo $this->form->getLabel('subject'); ?>
                     <?php echo $this->form->getInput('subject'); ?>

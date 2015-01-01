@@ -70,9 +70,9 @@ class CrowdFundingModelProjectItem extends JModelItem
                 'a.id, a.title, a.alias, a.short_desc, a.description, a.image, a.image_square, a.image_small, a.location, ' .
                 'a.goal, a.funded, a.funding_type, a.funding_start, a.funding_end, a.funding_days, ' .
                 'a.pitch_video, a.pitch_image, a.hits, a.created, a.featured, a.published, a.approved, a.ordering, a.catid, a.type_id, a.user_id, ' .
-                $query->concatenate(array("a.id", "a.alias"), "-") . ' AS slug, ' .
+                $query->concatenate(array("a.id", "a.alias"), ":") . ' AS slug, ' .
                 'b.name AS user_name, ' .
-                $query->concatenate(array("c.id", "c.alias"), "-") . " AS catslug"
+                $query->concatenate(array("c.id", "c.alias"), ":") . " AS catslug"
             );
 
             $query->from($db->quoteName('#__crowdf_projects', 'a'));

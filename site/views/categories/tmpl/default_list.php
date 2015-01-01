@@ -33,8 +33,11 @@ defined('_JEXEC') or die;?>
                             <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getCategoryRoute($item->slug)); ?>">
                                 <?php echo $this->escape($item->title); ?>
                             </a>
-                            <?php if ($this->displayProejctsNumber and isset($this->projectsNumber[$item->id])) { ?>
-                                <?php echo "( ". $this->projectsNumber[$item->id]["number"] . " )"; ?>
+                            <?php
+                            if ($this->displayProejctsNumber) {
+                                $number = (!isset($this->projectsNumber[$item->id])) ? 0 : $this->projectsNumber[$item->id]["number"];
+                                ?>
+                                <?php echo "( ". $number . " )"; ?>
                             <?php } ?>
                         </h3>
                         <?php if ($this->params->get("categories_display_description", true)) { ?>

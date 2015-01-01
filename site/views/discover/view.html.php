@@ -35,8 +35,6 @@ class CrowdFundingViewDiscover extends JViewLegacy
      */
     protected $currency;
 
-    protected $imageWidth;
-    protected $imageHeight;
     protected $numberInRow;
     protected $imageFolder;
     protected $displayCreator;
@@ -45,6 +43,8 @@ class CrowdFundingViewDiscover extends JViewLegacy
     protected $socialProfiles;
     protected $titleLength;
     protected $descriptionLength;
+    protected $layoutsBasePath;
+    protected $layoutData;
 
     protected $option;
 
@@ -54,6 +54,8 @@ class CrowdFundingViewDiscover extends JViewLegacy
     {
         parent::__construct($config);
         $this->option = JFactory::getApplication()->input->getCmd("option");
+
+        $this->layoutsBasePath = JPath::clean(JPATH_COMPONENT_ADMINISTRATOR . "/layouts");
     }
 
     public function display($tpl = null)
@@ -64,23 +66,14 @@ class CrowdFundingViewDiscover extends JViewLegacy
         $this->pagination = $this->get('Pagination');
 
         // Get params
-        /** @var  $params Joomla\Registry\Registry */
-        $params = $this->state->get("params");
-        $this->params = $params;
+        $this->params = $this->state->get("params");
+        /** @var  $this->params Joomla\Registry\Registry */
 
-        $this->imageWidth  = $this->params->get("image_width", 200);
-        $this->imageHeight = $this->params->get("image_height", 200);
-        $this->titleLength       = $this->params->get("discover_title_length", 0);
-        $this->descriptionLength = $this->params->get("discover_description_length", 0);
-
-        $model = $this->getModel();
-        /** @var @model CrowdFundingModelDiscover */
-
-        $this->numberInRow = $this->params->get("discover_items_row", 3);
-        $this->items       = $model->prepareItems($this->items, $this->numberInRow);
+        $this->numberInRow       = $this->params->get("items_row", 3);
+        $this->items             = CrowdFundingHelper::prepareItems($this->items, $this->numberInRow);
 
         // Get the folder with images
-        $this->imageFolder = $params->get("images_directory", "images/crowdfunding");
+        $this->imageFolder = $this->params->get("images_directory", "images/crowdfunding");
 
         // Get currency
         jimport("crowdfunding.currency");
@@ -91,9 +84,19 @@ class CrowdFundingViewDiscover extends JViewLegacy
 
         // Prepare integration. Load avatars and profiles.
         if (!empty($this->displayCreator)) {
-
-            $this->prepareIntegration($this->items, $this->params);
+            $this->socialProfiles = CrowdFundingHelper::prepareIntegrationGrid($this->items, $this->params);
         }
+
+        $this->layoutData = array(
+            "items" => $this->items,
+            "params" => $this->params,
+            "currency" => $this->currency,
+            "socialProfiles" => $this->socialProfiles,
+            "imageFolder" => $this->imageFolder,
+            "titleLength" => $this->params->get("discover_title_length", 0),
+            "descriptionLength" => $this->params->get("discover_description_length", 0),
+            "span"  => (!empty($this->numberInRow)) ? round(12 / $this->numberInRow) : 4
+        );
 
         $this->prepareDocument();
 
@@ -169,46 +172,5 @@ class CrowdFundingViewDiscover extends JViewLegacy
         }
 
         $this->document->setTitle($title);
-    }
-
-    /**
-     * Prepare social profiles
-     *
-     * @param array     $items
-     * @param Joomla\Registry\Registry $params
-     *
-     * @todo Move it to a trait when traits become mass.
-     */
-    protected function prepareIntegration($items, $params)
-    {
-        // Get users IDs
-        $usersIds = array();
-        foreach ($items as $row) {
-            foreach ($row as $item) {
-                $usersIds[] = $item->user_id;
-            }
-        }
-
-        $this->socialProfiles = null;
-
-        // If there is now users, do not continue.
-        if (!$usersIds) {
-            return;
-        }
-
-        // Get a social platform for integration
-        $socialPlatform = $params->get("integration_social_platform");
-
-        $options = array(
-            "social_platform" => $socialPlatform,
-            "users_ids" => $usersIds
-        );
-
-        jimport("itprism.integrate.profiles.builder");
-        $profileBuilder = new ITPrismIntegrateProfilesBuilder($options);
-        $profileBuilder->build();
-
-        $this->socialProfiles = $profileBuilder->getProfiles();
-
     }
 }

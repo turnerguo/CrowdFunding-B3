@@ -79,8 +79,13 @@ class CrowdFundingControllerBacking extends JControllerLegacy
         $paymentSessionContext    = CrowdFundingConstants::PAYMENT_SESSION_CONTEXT . $item->id;
         $paymentSession           = $app->getUserState($paymentSessionContext);
 
-        $paymentSession->amount   = $this->input->get("amount", 0, "float");
+        $paymentSession->amount   = $this->input->getFloat("amount", 0.0);
         $paymentSession->rewardId = $this->input->getInt('rid', 0);
+
+        // Set the value of terms to the session.
+        if ($params->get("backing_terms", 0)) {
+            $paymentSession->terms = $this->input->getInt('terms', 0);
+        }
 
         $app->setUserState($paymentSessionContext, $paymentSession);
         
@@ -100,7 +105,7 @@ class CrowdFundingControllerBacking extends JControllerLegacy
      */
     protected function isAuthorisedStep2($item, $params, $user)
     {
-        $authorisedStep2 = false;
+        $authorisedStep2 = true;
 
         // Trigger the event of a plugin that authorize step 2.
         JPluginHelper::importPlugin('crowdfundingpayment');
@@ -108,8 +113,8 @@ class CrowdFundingControllerBacking extends JControllerLegacy
         $results    = $dispatcher->trigger('onPaymentAuthorize', array('com_crowdfunding.payment.authorize', &$item, &$params, &$user));
 
         foreach ($results as $result) {
-            if (!is_null($result)) {
-                $authorisedStep2 = (bool)$result;
+            if (false === $result) {
+                $authorisedStep2 = false;
                 break;
             }
         }

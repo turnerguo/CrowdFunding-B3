@@ -29,7 +29,7 @@ defined('_JEXEC') or die;
         <button type="submit" class="btn btn-primary"><?php echo JText::_("JSAVE")?></button>
         <button type="submit" class="btn" id="js-cfupdates-btn-reset"><?php echo JText::_("COM_CROWDFUNDING_RESET")?></button>
 </form>
-<div class="hr margin-tb-15px"></div>
+<div class="hr mtb_15_0"></div>
 <?php }?>
 <?php if(!empty($this->items)) {
     $socialProfile  = (!$this->socialProfiles) ? null : $this->socialProfiles->getLink($this->item->user_id); 

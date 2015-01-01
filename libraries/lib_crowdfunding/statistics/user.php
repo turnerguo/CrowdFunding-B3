@@ -42,6 +42,10 @@ class CrowdFundingStatisticsUser
     {
         $this->db = $db;
         $this->id = (int)$id;
+
+        if (!$this->id) {
+            throw new InvalidArgumentException(JText::_("LIB_CROWDFUNDING_INVALID_USER"));
+        }
     }
 
     /**
@@ -58,11 +62,6 @@ class CrowdFundingStatisticsUser
      */
     public function getProjectsNumber()
     {
-        // If there are no IDs, return empty array.
-        if (!$this->id) {
-            return array();
-        }
-
         // Create a new query object.
         $query = $this->db->getQuery(true);
 
@@ -96,11 +95,6 @@ class CrowdFundingStatisticsUser
      */
     public function getAmounts()
     {
-        // If there are no IDs, return empty array.
-        if (!$this->id) {
-            return array();
-        }
-
         $statistics = array(
             "invested" => array(),
             "received" => array()
@@ -141,5 +135,135 @@ class CrowdFundingStatisticsUser
         $statistics["received"] = $results;
 
         return $statistics;
+    }
+
+    /**
+     * Count the number of payments.
+     *
+     * <code>
+     * $usersId = 1;
+     * $projectId = 2;
+     *
+     * $statistics         = new CrowdFundingStatisticsUsers(JFactory::getDbo(), $usersId);
+     * $paymentsPerProject = $statistics->getNumberOfPayments($projectId);
+     * </code>
+     *
+     * @param int $projectId
+     *
+     * @return int
+     */
+    public function getNumberOfPayments($projectId = 0)
+    {
+        $query = $this->db->getQuery(true);
+        $query
+            ->select("COUNT(*) AS number")
+            ->from($this->db->quoteName("#__crowdf_transactions", "a"))
+            ->where("a.investor_id = ". (int)$this->id);
+
+        if (!empty($projectId)) {
+            $query->where("a.project_id = " . (int)$projectId);
+        }
+
+        $this->db->setQuery($query, 0, 1);
+
+        $result = $this->db->loadResult();
+
+        if (!$result) {
+            $result = 0;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Count the number of active campaigns.
+     *
+     * <code>
+     * $usersId = 1;
+     *
+     * $statistics      = new CrowdFundingStatisticsUsers(JFactory::getDbo(), $usersId);
+     * $activeCampaigns = $statistics->getNumberOfActiveCampaigns();
+     * </code>
+     *
+     * @return int
+     */
+    public function getNumberOfActiveCampaigns()
+    {
+        $query = $this->db->getQuery(true);
+        $query
+            ->select("COUNT(*) AS number")
+            ->from($this->db->quoteName("#__crowdf_projects", "a"))
+            ->where("a.user_id = ". (int)$this->id)
+            ->where("a.published = 1")
+            ->where("a.approved = 1");
+
+        $this->db->setQuery($query, 0, 1);
+
+        $result = $this->db->loadResult();
+
+        if (!$result) {
+            $result = 0;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Count the number of campaigns in a period.
+     * If star date and end date are not provides, the system will get default values.
+     * The default values will be the beginning of the year and the end of the year.
+     *
+     * <code>
+     * $usersId = 1;
+     *
+     * $statistics        = new CrowdFundingStatisticsUsers(JFactory::getDbo(), $usersId);
+     * $numberOfCampaigns = $statistics->getNumberOfActiveCampaigns();
+     * </code>
+     *
+     * @param string $startDate
+     * @param string $endDate
+     *
+     * @return int
+     */
+    public function getNumberOfCampaignsInPeriod($startDate = null, $endDate = null)
+    {
+        jimport("itprism.date");
+
+        // Set default start date.
+        if (!(int)$startDate) {
+            $date = new ITPrismDate();
+            $date = $date->getBeginOfYear();
+
+            $startDate = $date->toSql();
+        }
+
+        // Set default end date.
+        if (!(int)$endDate) {
+            $date = new ITPrismDate();
+            $date = $date->getEndOfYear();
+
+            $endDate = $date->toSql();
+        }
+
+        $startDate = new JDate($startDate);
+        $endDate   = new JDate($endDate);
+
+        $query = $this->db->getQuery(true);
+        $query
+            ->select("COUNT(*) AS number")
+            ->from($this->db->quoteName("#__crowdf_projects", "a"))
+            ->where("a.user_id = ". (int)$this->id)
+            ->where("a.funding_start >= " . $this->db->quote($startDate->toSql()))
+            ->where("a.funding_start <= " . $this->db->quote($endDate->toSql()));
+
+        $this->db->setQuery($query, 0, 1);
+
+        $result = $this->db->loadResult();
+
+        if (!$result) {
+            $result = 0;
+        }
+
+        return $result;
     }
 }

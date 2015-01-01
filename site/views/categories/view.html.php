@@ -33,7 +33,7 @@ class CrowdFundingViewCategories extends JViewLegacy
     protected $allowedLayouts = array("grid", "list");
     protected $templateView;
     protected $descriptionLength;
-    protected $displayProejctsNumber;
+    protected $displayProjectsNumber;
     protected $projectsNumber;
     protected $numberInRow;
 
@@ -59,27 +59,28 @@ class CrowdFundingViewCategories extends JViewLegacy
 
         $this->params     = $this->state->get("params");
 
-        $this->displayProejctsNumber = $this->params->get("categories_display_projects_number", 0);
+        $this->displayProjectsNumber = $this->params->get("categories_display_projects_number", 0);
         $this->numberInRow = $this->params->get("categories_items_row", 3);
 
         // Get description length
         $this->descriptionLength = $this->params->get("categories_description_length", 128);
 
         // Load projects number.
-        if ($this->displayProejctsNumber) {
+        if ($this->displayProjectsNumber) {
             $ids = array();
             foreach ($this->items as $item) {
                 $ids[] = $item->id;
             }
+
             $categories = new CrowdFundingCategories();
             $categories->setDb(JFactory::getDbo());
+
             $this->projectsNumber = $categories->getProjectsNumber($ids, array("state" => 1));
         }
 
         // Prepare items parameters.
-        $model = $this->getModel();
         if (!empty($this->items)) {
-            $this->items = $model->prepareItems($this->items, $this->numberInRow);
+            $this->items = CrowdFundingHelper::prepareCategories($this->items, $this->numberInRow);
         }
 
 

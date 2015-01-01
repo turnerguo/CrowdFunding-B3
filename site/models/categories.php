@@ -111,7 +111,7 @@ class CrowdFundingModelCategories extends JModelList
             $this->getState(
                 'list.select',
                 'a.id, a.title, a.description, a.params, ' .
-                $query->concatenate(array("a.id", "a.alias"), "-") . ' AS slug'
+                $query->concatenate(array("a.id", "a.alias"), ":") . " AS slug"
             )
         );
 
@@ -179,44 +179,5 @@ class CrowdFundingModelCategories extends JModelList
         $orderString = $orderCol . ' ' . $orderDirn;
 
         return $orderString;
-    }
-
-    public function prepareItems(&$items, $numberInRow)
-    {
-        $result = array();
-
-        if (!empty($items)) {
-            $i = 0;
-            $row = 1;
-
-            foreach ($items as $key => $item) {
-
-                $result[$row][$key] = $item;
-
-                // Decode parameters
-                if (!empty($item->params)) {
-                    $item->params = json_decode($item->params, true);
-
-                    // Generate a link to the picture.
-                    if (is_array($item->params)) {
-                        $image = JArrayHelper::getValue($item->params, "image");
-                        if (!empty($image)) {
-                            $item->image_link = JUri::base().$image;
-                        }
-                    }
-                }
-
-                // Generate lines by number of items in a row.
-                $result[$row][$key] = $item;
-
-                $i++;
-                if ($i == $numberInRow) {
-                    $row++;
-                    $i = 0;
-                }
-            }
-        }
-
-        return $result;
     }
 }

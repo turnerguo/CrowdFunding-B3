@@ -54,25 +54,29 @@ jQuery(document).ready(function() {
 		// Remove image
 		jQuery('#js-extra-images-rows').on("click", ".js-extra-image-remove", function(event) {
 			event.preventDefault();
-			
-			var imageId = jQuery(this).data("image-id");
-			
-			var _self   = this;
-			
-			jQuery.ajax({
-				url: "index.php?option=com_crowdfunding&task=story.removeExtraImage",
-				type: "POST",
-				data: { format: "raw", id: imageId },
-				dataType: "text json"
-			}).done( function( response ) {
-				
-				if(!response.success) {
-                    ITPrismUIHelper.displayMessageFailure(response.title, response.text);
-				} else {
-					jQuery(_self).parent().parent().remove();
-				}
-    	    	
-			});
+
+			if (confirm(Joomla.JText._('COM_CROWDFUNDING_QUESTION_REMOVE_IMAGE'))) {
+
+				var imageId = jQuery(this).data("image-id");
+
+				var _self = this;
+
+				jQuery.ajax({
+					url: "index.php?option=com_crowdfunding&task=story.removeExtraImage",
+					type: "POST",
+					data: {format: "raw", id: imageId},
+					dataType: "text json"
+				}).done(function (response) {
+
+					if (!response.success) {
+						ITPrismUIHelper.displayMessageFailure(response.title, response.text);
+					} else {
+						jQuery(_self).parent().parent().remove();
+					}
+
+				});
+
+			}
 			
 		});
 	}

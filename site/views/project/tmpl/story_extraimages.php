@@ -33,7 +33,10 @@ defined('_JEXEC') or die;
             <img src="<?php echo $this->extraImagesUri."/".$extraImage->thumb;?>" />
         </div>
         <div class="span2">
-            <a href="javascript: void(0);" class="btn btn-danger js-extra-image-remove" data-image-id="<?php echo (int)$extraImage->id; ?>"><?php echo JText::_("COM_CROWDFUNDING_REMOVE")?></a>
+            <a href="javascript: void(0);" class="btn btn-danger js-extra-image-remove" data-image-id="<?php echo (int)$extraImage->id; ?>">
+                <i class="icon-trash icon-white"></i>
+                <?php echo JText::_("COM_CROWDFUNDING_REMOVE")?>
+            </a>
         </div>
     </div>
 
@@ -46,6 +49,9 @@ defined('_JEXEC') or die;
         <img src="" class="js-extra-img" />
     </div>
     <div class="span2">
-        <a href="javascript: void(0);" class="btn btn-danger js-extra-image-remove"><?php echo JText::_("COM_CROWDFUNDING_REMOVE")?></a>
+        <a href="javascript: void(0);" class="btn btn-danger js-extra-image-remove">
+            <i class="icon-trash icon-white"></i>
+            <?php echo JText::_("COM_CROWDFUNDING_REMOVE")?>
+        </a>
     </div>
 </div>

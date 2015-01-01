@@ -34,7 +34,7 @@ class plgContentCrowdFundingShare extends JPlugin
     private $currentTask = "";
     private $currentOption = "";
 
-    public function onContentAfterDisplayMedia($context, &$article, &$params, $page = 0)
+    public function onContentAfterDisplayMedia($context, &$article, &$params)
     {
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
@@ -88,7 +88,7 @@ class plgContentCrowdFundingShare extends JPlugin
         return $content;
     }
 
-    public function onContentAfterDisplay($context, &$article, &$params, $page = 0)
+    public function onContentAfterDisplay($context, &$article, &$params)
     {
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
@@ -98,7 +98,7 @@ class plgContentCrowdFundingShare extends JPlugin
         }
 
         $doc = JFactory::getDocument();
-        /**  @var $doc JDocumentHtml * */
+        /**  @var $doc JDocumentHtml */
 
         // Check document type
         $docType = $doc->getType();

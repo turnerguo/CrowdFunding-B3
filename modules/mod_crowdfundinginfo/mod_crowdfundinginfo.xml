@@ -6,20 +6,19 @@
 	<license>http://www.gnu.org/copyleft/gpl.html</license>
 	<authorEmail>todor@itprism.com</authorEmail>
 	<authorUrl>http://itprism.com</authorUrl>
-	<version>1.9.1</version>
-	<creationDate>30 November, 2014</creationDate>
+	<version>1.10</version>
+	<creationDate>31 December, 2014</creationDate>
 	<description><![CDATA[
     <p>CrowdFunding Info is a module that displays information about current state of a project.</p>
     <p><a href='http://itprism.com/' target='_blank'>Subscribe for the newsletter</a> to receive <strong>gifts</strong>, <strong>discount codes</strong>, information about <strong>updates</strong> and information about <strong>new ITPrism extensions</strong>.</p>
-    <p>Please, <a href='http://extensions.joomla.org/extensions/e-commerce/donations/23876' target='_blank'>vote for the extension</a> on Joomla! Extensions Directory</p>
+    <p>Please, <a href='http://extensions.joomla.org/extensions/extension/e-commerce/donations/crowdfunding' target='_blank'>vote for the extension</a> on Joomla! Extensions Directory</p>
     ]]></description>
 	
     <help url="MOD_CROWDFUNDINGINFO_HELP_URL"/>
 
 	<files>
 	   <filename module="mod_crowdfundinginfo">mod_crowdfundinginfo.php</filename>
-		<filename>index.html</filename>
-        
+
         <folder>language</folder>
 		<folder>tmpl</folder>
 	</files>

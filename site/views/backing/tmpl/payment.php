@@ -36,7 +36,9 @@ defined('_JEXEC') or die;
 				$amount = $this->amount->setValue($this->paymentAmount)->format();
 				echo JText::sprintf("COM_CROWDFUNDING_INVESTMENT_AMOUNT", $amount); ?></p>
 				<p><?php echo JText::_("COM_CROWDFUNDING_FUNDING_TYPE_".JString::strtoupper($this->item->funding_type));?></p>
-				<p class="sticky"><?php
+				<p class="alert alert-info">
+					<i class="icon-info-sign"></i>
+				<?php
 				$endDate = JHtml::_('date', $this->item->funding_end, JText::_('DATE_FORMAT_LC3'));
             	if($this->item->funding_type == "FIXED") {
                     $goal    = $this->currency->getAmountString($this->item->goal);
@@ -58,11 +60,21 @@ defined('_JEXEC') or die;
 			<?php } ?>
 			</div>
 			<?php } ?>
-			
+
+			<?php if(!empty($this->item->event->onBeforePaymentAuthorize)) { ?>
+				<h2><?php echo JText::_("COM_CROWDFUNDING_PAYMENTS_NOT_ALLOWED");?></h2>
+				<div class="well">
+					<?php echo $this->item->event->onBeforePaymentAuthorize;?>
+				</div>
+			<?php } ?>
+
+			<?php if(!empty($this->item->event->onProjectPayment)) { ?>
 			<h2><?php echo JText::_("COM_CROWDFUNDING_PAYMENT_METHODS");?></h2>
 			<div class="bs-docs-example">
 				<?php echo $this->item->event->onProjectPayment;?>
 			</div>
+			<?php } ?>
+
     	</div>
 	</div>
 </div>

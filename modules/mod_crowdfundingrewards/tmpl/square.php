@@ -55,7 +55,9 @@ $height = $componentParams->get("rewards_image_square_height", 50);
 
                 <?php if ($additionalInfo) { ?>
                     <hr />
-                    <?php if ($params->get("display_funders", 0)) { ?>
+                    <?php if ($params->get("display_funders", 0)) {
+                        $reward["funders"] = (empty($reward["funders"])) ? 0 : (int)$reward["funders"];
+                        ?>
                         <div class="cf-rewards-backers"><?php echo JText::plural("MOD_CROWDFUNDINGREWARDS_BACKERS", $reward["funders"]); ?></div>
                     <?php } ?>
 

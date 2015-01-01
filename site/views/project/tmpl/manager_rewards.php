@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 ?>
-<h4 class="cf-m-0 cf-pl-5 cf-bg-color-brown"><?php echo JText::_("COM_CROWDFUNDING_REWARDS"); ?></h4>
+<h4 class="cf-m-0 pl5 cf-bg-color-brown"><?php echo JText::_("COM_CROWDFUNDING_REWARDS"); ?></h4>
 <table class="table table-striped">
     <thead>
     <tr>

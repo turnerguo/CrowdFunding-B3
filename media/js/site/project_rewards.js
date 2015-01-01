@@ -126,7 +126,7 @@ jQuery(document).ready(function() {
     var imageWrappers = jQuery(".js-reward-image-wrapper");
     if (imageWrappers.length > 0) {
         // Style file input
-        jQuery(":file").filestyle({buttonText: Joomla.JText._('COM_CROWDFUNDING_SELECT_IMAGE')});
+        jQuery(".js-reward-image").filestyle({buttonText: Joomla.JText._('COM_CROWDFUNDING_SELECT_IMAGE')});
     }
 	
 	jQuery("#rewards_wrapper").on("click", ".js-btn-remove-reward-image", function(event) {

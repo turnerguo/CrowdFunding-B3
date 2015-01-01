@@ -19,7 +19,8 @@ defined('_JEXEC') or die;
         <i class="icon-ok-circle icon-white"></i>
         <?php echo JText::_("COM_CROWDFUNDING_LAUNCH");?>
     </a>
-    <p class="sticky">
+    <p class="alert alert-info mt10">
+        <i class="icon-info-sign"></i>
         <?php echo JText::_("COM_CROWDFUNDING_NOTE_LAUNCH_PROJECT"); ?>
     </p>
 <?php } else { ?>

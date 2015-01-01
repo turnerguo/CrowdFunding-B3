@@ -147,8 +147,8 @@ class CrowdFundingProject
                 "a.location, a.goal, a.funded, a.funding_type, a.funding_start, a.funding_end, a.funding_days, " .
                 "a.pitch_video, a.pitch_image, a.hits, a.created, a.featured, a.published, a.approved, " .
                 "a.ordering, a.catid, a.type_id, a.user_id, " .
-                $query->concatenate(array("a.id", "a.alias"), "-") . " AS slug, " .
-                $query->concatenate(array("b.id", "b.alias"), "-") . " AS catslug"
+                $query->concatenate(array("a.id", "a.alias"), ":") . " AS slug, " .
+                $query->concatenate(array("b.id", "b.alias"), ":") . " AS catslug"
             )
             ->from($this->db->quoteName("#__crowdf_projects", "a"))
             ->leftJoin($this->db->quoteName("#__categories", "b") . " ON a.catid = b.id")

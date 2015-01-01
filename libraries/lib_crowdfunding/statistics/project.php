@@ -191,13 +191,23 @@ class CrowdFundingStatisticsProject
             return $data;
         }
 
+        // Get currency
+        $params = JComponentHelper::getParams("com_crowdfunding");
+        /** @var  $params Joomla\Registry\Registry */
+
+        $currencyId = $params->get("project_currency");
+        $currency   = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $params);
+
+        $amount = new CrowdFundingAmount();
+        $amount->setCurrency($currency);
+
         $data["goal"] = array(
-            "label"  => JText::_("LIB_CROWDFUNDING_GOAL"),
+            "label"  => JText::sprintf("COM_CROWDFUNDINGFINANCE_GOAL_S", $amount->setValue($result->goal)->formatCurrency()),
             "amount" => (float)$result->goal
         );
 
         $data["funded"] = array(
-            "label"  => JText::_("LIB_CROWDFUNDING_FUNDED"),
+            "label"  => JText::sprintf("COM_CROWDFUNDINGFINANCE_FUNDED_S", $amount->setValue($result->funded)->formatCurrency()),
             "amount" => (float)$result->funded
         );
 
@@ -207,7 +217,7 @@ class CrowdFundingStatisticsProject
         }
 
         $data["remaining"] = array(
-            "label"  => JText::_("LIB_CROWDFUNDING_REMAINING"),
+            "label"  => JText::sprintf("COM_CROWDFUNDINGFINANCE_REMAINING_S", $amount->setValue($remaining)->formatCurrency()),
             "amount" => $remaining
         );
 

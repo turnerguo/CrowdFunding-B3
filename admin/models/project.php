@@ -97,6 +97,7 @@ class CrowdFundingModelProject extends JModelAdmin
         $published = JArrayHelper::getValue($data, "published", 0, "int");
         $approved  = JArrayHelper::getValue($data, "approved", 0, "int");
         $shortDesc = JArrayHelper::getValue($data, "short_desc");
+        $created   = JArrayHelper::getValue($data, "created");
 
         $goal        = JArrayHelper::getValue($data, "goal");
         $funded      = JArrayHelper::getValue($data, "funded");
@@ -118,6 +119,7 @@ class CrowdFundingModelProject extends JModelAdmin
         $row->set("published", $published);
         $row->set("approved", $approved);
         $row->set("short_desc", $shortDesc);
+        $row->set("created", $created);
 
         $row->set("goal", $goal);
         $row->set("funded", $funded);

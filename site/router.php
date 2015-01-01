@@ -28,35 +28,55 @@ function CrowdFundingBuildRoute(&$query)
 
     // we need a menu item.  Either the one specified in the query, or the current active one if none specified
     if (empty($query['Itemid'])) {
-        $menuItem = $menu->getActive();
+        $menuItem      = $menu->getActive();
+        $menuItemGiven = false;
     } else {
-        $menuItem = $menu->getItem($query['Itemid']);
+        $menuItem      = $menu->getItem($query['Itemid']);
+        $menuItemGiven = true;
     }
 
-    $mOption = (empty($menuItem->query['option'])) ? null : $menuItem->query['option'];
+    // Check again
+    if ($menuItemGiven and isset($menuItem) and strcmp("com_crowdfunding", $menuItem->component) != 0) {
+        $menuItemGiven = false;
+        unset($query['Itemid']);
+    }
+
     $mView   = (empty($menuItem->query['view'])) ? null : $menuItem->query['view'];
-    $mCatid  = (empty($menuItem->query['catid'])) ? null : $menuItem->query['catid'];
     $mId     = (empty($menuItem->query['id'])) ? null : $menuItem->query['id'];
+    $mOption = (empty($menuItem->query['option'])) ? null : $menuItem->query['option'];
+    $mCatid  = (empty($menuItem->query['catid'])) ? null : $menuItem->query['catid'];
 
     // If is set view and Itemid missing, we have to put the view to the segments
     if (isset($query['view'])) {
         $view = $query['view'];
-
+        /*
         if (empty($query['Itemid']) or ($mOption !== "com_crowdfunding")) {
             $segments[] = $query['view'];
         }
 
-        // We need to keep the view for forms since they never have their own menu item
+        // We need to keep the view for forms because they have never own menu item.
         if ($view != 'form') {
             unset($query['view']);
         }
-    };
+        */
+    } else {
 
-    // are we dealing with a category that is attached to a menu item?
-    if (isset($view) and ($mView == $view) and (isset($query['id'])) and ($mId == intval($query['id']))) {
+        return $segments;
+    }
+
+    // Are we dealing with a category that is attached to a menu item?
+    if (($menuItem instanceof stdClass) and isset($view) and ($mView == $view) and (isset($query['id'])) and ($mId == (int)$query['id'])) {
 
         unset($query['view']);
-        unset($query['catid']);
+
+        if (isset($query['catid'])) {
+            unset($query['catid']);
+        }
+
+        if (isset($query['layout'])) {
+            unset($query['layout']);
+        }
+
         unset($query['id']);
 
         return $segments;
@@ -67,130 +87,89 @@ function CrowdFundingBuildRoute(&$query)
 
         switch ($view) {
 
-            case "backing":
+            case "category":
 
-                $id    = JArrayHelper::getValue($query, "id");
-                $catId = JArrayHelper::getValue($query, "catid", 0, "int");
-
-                if (!$catId or (false === strpos($id, "-"))) {
-                    $projectData = CrowdFundingHelperRoute::getProject($id);
+                if (!$menuItemGiven) {
+                    $segments[] = $view;
                 }
+                unset($query['view']);
 
-                // Get project slug if it is missing.
-                if (!empty($id)) {
-                    if (false === strpos($id, "-")) {
-                        $id = JArrayHelper::getValue($projectData, "slug");
-                    }
+                if (isset($query['id'])) {
+                    $categoryId = $query['id'];
                 } else {
-                    $id = 0;
+                    // We should have id set for this view.  If we don't, it is an error.
+                    return $segments;
                 }
 
-                // Get category ID if it is missing.
-                $catId = ($catId) ?: JArrayHelper::getValue($projectData, "catid");
-
-                CrowdFundingHelperRoute::prepareCategoriesSegments($catId, $segments, $mId);
-
-                $segments[] = $id;
+                $segments = CrowdFundingHelperRoute::prepareCategoriesSegments($categoryId, $segments, $menuItem, $menuItemGiven);
 
                 unset($query['id']);
-                unset($query['catid']);
-
-                $segments[] = "backing";
 
                 break;
 
+            case "backing":
+            case "embed":
             case "details":
 
-                $id    = JArrayHelper::getValue($query, "id");
-                $catId = JArrayHelper::getValue($query, "catid");
-
-                if (!$catId or (false === strpos($id, "-"))) {
-                    $projectData = CrowdFundingHelperRoute::getProject($id);
+                if (!$menuItemGiven) {
+                    $segments[] = $view;
                 }
+                unset($query['view']);
 
-                // Get project slug if it is missing.
-                if (!empty($id)) {
-                    if (false === strpos($id, "-")) {
-                        $id = JArrayHelper::getValue($projectData, "slug");
-                    }
+                // If a project is assigned to a menu item.
+                if ($menuItemGiven and (strcmp("details", $menuItem->query["view"]) == 0) and ($menuItem->query["id"] == (int)$query['id'])) {
+
                 } else {
-                    $id = 0;
-                }
 
-                // Get category ID if it is missing.
-                $catId = ($catId) ?: JArrayHelper::getValue($projectData, "catid");
+                    // If a project is NOT assigned to a menu item.
+                    if (isset($query['id']) and isset($query['catid']) and !empty($query['catid'])) {
+                        $categoryId = (int)$query['catid'];
 
-                CrowdFundingHelperRoute::prepareCategoriesSegments($catId, $segments, $mId);
-
-                $segments[] = $id;
-
-                unset($query['id']);
-                unset($query['catid']);
-                break;
-
-            case "embed":
-
-                $id    = JArrayHelper::getValue($query, "id");
-                $catId = JArrayHelper::getValue($query, "catid", 0, "int");
-
-                if (!$catId or (false === strpos($id, "-"))) {
-                    $projectData = CrowdFundingHelperRoute::getProject($id);
-                }
-
-                // Get project slug if it is missing.
-                if (!empty($id)) {
-                    if (false === strpos($id, "-")) {
-                        $id = JArrayHelper::getValue($projectData, "slug");
+                        if (false === strpos($query['id'], ":")) {
+                            $alias       = CrowdFundingHelperRoute::getProjectAlias($query['id']);
+                            $query['id'] = $query['id'] . ":" . $alias;
+                        }
+                    } else {
+                        // We should have these two set for this view.  If we don't, it is an error.
+                        return $segments;
                     }
-                } else {
-                    $id = 0;
+
+                    $segments = CrowdFundingHelperRoute::prepareCategoriesSegments($categoryId, $segments, $menuItem, $menuItemGiven);
+
+                    $segments[] = $query['id'];
                 }
-
-                // Get category ID if it is missing.
-                $catId = ($catId) ?: JArrayHelper::getValue($projectData, "catid");
-
-                CrowdFundingHelperRoute::prepareCategoriesSegments($catId, $segments, $mId);
-
-                $segments[] = $id;
 
                 unset($query['id']);
                 unset($query['catid']);
 
-                $segments[] = "embed";
+                if (strcmp("backing", $view) == 0) {
+                    $segments[] = "backing";
+                }
+
+                if (strcmp("embed", $view) == 0) {
+                    $segments[] = "embed";
+                }
 
                 break;
 
-            case "discover":
             case "categories":
-
-                $id    = JArrayHelper::getValue($query, "id");
-
-                $segments[] = $id;
-
-                unset($query['id']);
-
-                break;
-
+            case "discover":
+            case "transactions":
+            case "projects":
             case "project": // Form for adding projects
 
-                if ($menuItem->query["view"] == $view) {
+                if (isset($query['view'])) {
                     unset($query['view']);
                 }
-
                 break;
 
-            case "reward": // Form for adding projects
-
-                $query['view'] = "reward";
-
-                break;
         }
 
     }
 
     // Layout
     if (isset($query['layout'])) {
-        if (!empty($query['Itemid']) && isset($menuItem->query['layout'])) {
+        if ($menuItemGiven and isset($menuItem->query['layout'])) {
             if ($query['layout'] == $menuItem->query['layout']) {
                 unset($query['layout']);
             }
@@ -199,12 +178,18 @@ function CrowdFundingBuildRoute(&$query)
                 unset($query['layout']);
             }
         }
-    };
+    }
 
     // Screen
     if (isset($query["screen"])) {
         $segments[] = $query["screen"];
         unset($query['screen']);
+    }
+
+    $total = count($segments);
+
+    for ($i = 0; $i < $total; $i++) {
+        $segments[$i] = str_replace(':', '-', $segments[$i]);
     }
 
     return $segments;
@@ -214,11 +199,17 @@ function CrowdFundingBuildRoute(&$query)
  * Method to parse Route
  *
  * @param array $segments
+ *
  * @return array
  */
 function CrowdFundingParseRoute($segments)
 {
+    $total = count($segments);
     $vars = array();
+
+    for ($i = 0; $i < $total; $i++) {
+        $segments[$i] = preg_replace('/-/', ':', $segments[$i], 1);
+    }
 
     //Get the active menu item.
     $app  = JFactory::getApplication();
@@ -232,40 +223,58 @@ function CrowdFundingParseRoute($segments)
     // the first segment is the view and the last segment is the id of the details, category or payment.
     if (!isset($item)) {
         $vars['view']  = $segments[0];
-        $vars['catid'] = $segments[$count - 1];
+        $vars['id']    = $segments[$count - 1];
 
         return $vars;
     }
 
-
     // COUNT == 1
 
-    // Category ( Discover )
+    // Category
     if ($count == 1) {
 
-        // we check to see if an alias is given.  If not, we assume it is a project,
+        // We check to see if an alias is given.  If not, we assume it is a project,
         // because categories have always alias.
+        // If it is a menu item "Details" that could be one of its specific views - backing, embed,...
         if (false == strpos($segments[0], ':')) {
-            $vars['view'] = 'details';
-            $vars['id']   = (int)$segments[0];
+
+            switch ($segments[0]) {
+
+                case "backing":
+                case "embed":
+
+                    $id = $item->query["id"];
+                    $project = CrowdFundingHelperRoute::getProject($id);
+
+                    $vars['view']   = $segments[0];
+                    $vars['catid']  = (int)$project["catid"];
+                    $vars['id']     = (int)$project["id"];
+
+                    break;
+
+                default:
+                    $vars['view'] = 'details';
+                    $vars['id']   = (int)$segments[0];
+                    break;
+            }
 
             return $vars;
         }
 
         list($id, $alias) = explode(':', $segments[0], 2);
+        $alias = str_replace(":", "-", $alias);
 
         // first we check if it is a category
         $category = JCategories::getInstance('CrowdFunding')->get($id);
 
         if ($category and (strcmp($category->alias, $alias) == 0)) {
-            $vars['view'] = 'discover';
+            $vars['view'] = 'category';
             $vars['id']   = $id;
 
             return $vars;
         } else {
             $project = CrowdFundingHelperRoute::getProject($id);
             if (!empty($project)) {
-
                 if ($project["alias"] == $alias) {
 
                     $vars['view']  = 'details';

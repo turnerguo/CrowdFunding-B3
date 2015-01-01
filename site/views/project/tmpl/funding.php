@@ -74,7 +74,7 @@ echo $layout->render($this->layoutData);
             <?php echo JHtml::_('form.token'); ?>
             
             <div class="clearfix"></div>
-            <button type="submit" class="btn margin-tb-15px" <?php echo $this->disabledButton;?>>
+            <button type="submit" class="btn mtb_15_0" <?php echo $this->disabledButton;?>>
             	<i class="icon-ok icon-white"></i>
                 <?php echo JText::_("COM_CROWDFUNDING_SAVE_AND_CONTINUE")?>
             </button>

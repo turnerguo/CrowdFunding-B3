@@ -62,10 +62,11 @@ class CrowdFundingCategories extends JCategories
      * </code>
      *
      * @param array $ids
+     * @param array $options
      *
      * @return array
      */
-    public function getChildNumber($ids)
+    public function getChildNumber($ids, $options = array())
     {
         JArrayHelper::toInteger($ids);
 
@@ -80,6 +81,14 @@ class CrowdFundingCategories extends JCategories
             ->from($this->db->quoteName("#__categories", "a"))
             ->group("a.parent_id")
             ->where("a.parent_id IN (". implode(",", $ids) .")");
+
+        // Filter by state.
+        $state = JArrayHelper::getValue($options, "state");
+        if (!is_null($state)) {
+            $query->where("a.published = ". (int)$state);
+        } else {
+            $query->where("a.published IN (0,1)");
+        }
 
         $this->db->setQuery($query);
 

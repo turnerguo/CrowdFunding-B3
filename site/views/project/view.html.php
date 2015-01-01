@@ -93,7 +93,11 @@ class CrowdFundingViewProject extends JViewLegacy
     }
 
     /**
-     * Display the view
+     * Display the view.
+     *
+     * @param mixed $tpl
+     *
+     * @return string
      */
     public function display($tpl = null)
     {
@@ -256,7 +260,6 @@ class CrowdFundingViewProject extends JViewLegacy
         $this->imageSmall  = $this->item->get("image_small");
 
         $this->pathwayName = JText::_("COM_CROWDFUNDING_STEP_BASIC");
-
     }
 
     protected function prepareFunding()
@@ -277,6 +280,11 @@ class CrowdFundingViewProject extends JViewLegacy
         // Get item
         $itemId     = $this->state->get('funding.id');
         $this->item = $model->getItem($itemId, $this->userId);
+
+        // Check if the item exists.
+        if (!$this->isValid()) {
+            return;
+        }
 
         $this->form = $model->getForm();
 
@@ -356,6 +364,11 @@ class CrowdFundingViewProject extends JViewLegacy
         $itemId     = $this->state->get('story.id');
         $this->item = $model->getItem($itemId, $this->userId);
 
+        // Check if the item exists.
+        if (!$this->isValid()) {
+            return;
+        }
+
         $this->form   = $model->getForm();
 
         $this->imageFolder = $this->params->get("images_directory", "images/crowdfunding");
@@ -366,7 +379,6 @@ class CrowdFundingViewProject extends JViewLegacy
 
         // Prepare extra images folder
         if ($this->params->get("extra_images", 0) and !empty($this->userId)) {
-
             jimport('joomla.filesystem.folder');
 
             $userDestinationFolder = CrowdFundingHelper::getImagesFolder($this->userId);
@@ -409,8 +421,10 @@ class CrowdFundingViewProject extends JViewLegacy
         $project = $project->getProperties();
 
         $this->item = JArrayHelper::toObject($project);
-        if (!$this->item->id or ($this->item->user_id != $this->userId)) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"));
+
+        // Check if the item exists.
+        if (!$this->isValid()) {
+            return;
         }
 
         // Create a currency object.
@@ -425,7 +439,7 @@ class CrowdFundingViewProject extends JViewLegacy
         $this->dateFormat         = CrowdFundingHelper::getDateFormat();
         $this->dateFormatCalendar = CrowdFundingHelper::getDateFormat(true);
         $js                       = '
-	        // Rewards calendar date format.
+            // Rewards calendar date format.
             var projectWizard = {
                 dateFormat: "' . $this->dateFormatCalendar . '"
             };
@@ -479,13 +493,8 @@ class CrowdFundingViewProject extends JViewLegacy
 
         $this->item = $model->getItem($itemId, $this->userId);
 
-        if (empty($this->item->id)) {
-
-            $app = JFactory::getApplication();
-            /** $app JApplicationSite */
-
-            $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_SOMETHING_WRONG"), "notice");
-            $app->redirect(JRoute::_(CrowdFundingHelperRoute::getDiscoverRoute()));
+        // Check if the item exists.
+        if (!$this->isValid()) {
             return;
         }
 
@@ -522,7 +531,12 @@ class CrowdFundingViewProject extends JViewLegacy
         // Get item
         $itemId     = $this->state->get('extras.id');
         $this->item = $model->getItem($itemId, $this->userId);
-        
+
+        // Check if the item exists.
+        if (!$this->isValid()) {
+            return;
+        }
+
         $this->pathwayName = JText::_("COM_CROWDFUNDING_STEP_EXTRAS");
 
         // Events
@@ -561,13 +575,18 @@ class CrowdFundingViewProject extends JViewLegacy
         $title = $menu->title;
         if (!$title) {
             $title = $app->get('sitename');
-        } elseif ($app->get('sitename_pagetitles', 0)) { // Set site name if it is necessary ( the option 'sitename' = 1 )
+
+        // Set site name if it is necessary ( the option 'sitename' = 1 )
+        } elseif ($app->get('sitename_pagetitles', 0)) {
             $title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
-        } else { // Item title to the browser title.
+
+        // Item title to the browser title.
+        } else {
             if (!empty($this->item)) {
                 $title .= " | " . $this->escape($this->item->title);
             }
         }
+
         $this->document->setTitle($title);
 
         // Meta Description
@@ -588,14 +607,13 @@ class CrowdFundingViewProject extends JViewLegacy
         }
 
         // Scripts
+        JHtml::_('behavior.core');
+        JHtml::_('behavior.keepalive');
         JHtml::_('bootstrap.framework');
-//        JHtml::_('bootstrap.tooltip');
 
         if ($this->params->get("enable_chosen", 1)) {
             JHtml::_('formbehavior.chosen', '.cf-advanced-select');
         }
-
-        JHtml::_('behavior.keepalive');
 
         switch ($this->layout) {
 
@@ -631,6 +649,9 @@ class CrowdFundingViewProject extends JViewLegacy
 
                 // Scripts
                 JHtml::_('itprism.ui.bootstrap_fileuploadstyle');
+
+                // Include translation of the confirmation question for image removing.
+                JText::script('COM_CROWDFUNDING_QUESTION_REMOVE_IMAGE');
 
                 if ($this->params->get("extra_images", 0)) {
                     JHtml::_('itprism.ui.fileupload');
@@ -669,5 +690,24 @@ class CrowdFundingViewProject extends JViewLegacy
                 JText::script('COM_CROWDFUNDING_THIS_VALUE_IS_REQUIRED');
                 break;
         }
+    }
+
+    /**
+     * Check if item exists.
+     *
+     * @return bool
+     */
+    protected function isValid()
+    {
+        if (!$this->item->id or ($this->item->user_id != $this->userId)) {
+            $app = JFactory::getApplication();
+            /** $app JApplicationSite */
+
+            $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_SOMETHING_WRONG"), "notice");
+            $app->redirect(JRoute::_(CrowdFundingHelperRoute::getDiscoverRoute()));
+            return false;
+        }
+
+        return true;
     }
 }

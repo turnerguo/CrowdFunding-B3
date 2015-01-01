@@ -66,6 +66,10 @@ class CrowdFundingModelBacking extends JModelLegacy
     /**
      * Return the context,
      * used to for storing project data in this model.
+     *
+     * @param int $projectId
+     *
+     * @return string
      */
     public function getProjectContext($projectId)
     {
@@ -97,8 +101,8 @@ class CrowdFundingModelBacking extends JModelLegacy
                     "a.funding_start, a.funding_end, a.funding_days, " .
                     "a.funding_type, a.user_id,  a.type_id, " .
                     "b.name AS user_name, " .
-                    $query->concatenate(array("a.id", "a.alias"), "-") . ' AS slug, ' .
-                    $query->concatenate(array("c.id", "c.alias"), "-") . ' AS catslug'
+                    $query->concatenate(array("a.id", "a.alias"), ":") . ' AS slug, ' .
+                    $query->concatenate(array("c.id", "c.alias"), ":") . ' AS catslug'
                 )
                 ->from($db->quoteName("#__crowdf_projects", "a"))
                 ->innerJoin($db->quoteName('#__users', 'b') .' ON a.user_id = b.id')

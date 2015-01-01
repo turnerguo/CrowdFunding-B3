@@ -30,7 +30,7 @@ defined('_JEXEC') or die;
     <button type="submit" class="btn" id="js-cfcomments-btn-reset"><?php echo JText::_("COM_CROWDFUNDING_RESET")?></button>
     
 </form>
-<div class="hr margin-tb-15px"></div>
+<div class="hr mtb_15_0"></div>
 <?php } ?>
 <?php if(!empty($this->items)) {
     

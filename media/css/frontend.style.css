@@ -53,10 +53,6 @@ div.info-mini {
    margin-right: auto;
 }
 
-.padding-left-10 {
-	padding-left: 10px;
-}
-
 .reward-form {
 	background-color: #f2f2f2;
 	border: thin solid #6c6c6c;
@@ -101,9 +97,15 @@ div.info-mini {
 }
 
 /* START Project Thumbnail Styles */
+
 .cf-project {
-	height: 450px;
+	min-height: 480px;
 	position: relative;
+}
+
+.cf-thumnails-thumb {
+   display: block;
+	min-height: 200px;
 }
 
 .cf-caption-info {
@@ -212,8 +214,9 @@ div.info-mini {
 
 }
 
-.cfrewards > div > a {
+.cfrewards a, .cfrewards a:hover {
 	display: block;
+	text-decoration: none;
 }
 
 .nav-tabs.nav-stacked > li > a:hover, .nav-tabs.nav-stacked > li > a:focus {
@@ -264,16 +267,8 @@ div.reward:hover  {
 	height: 150px;
 }
 
-.ml10 {
-	margin-left: 10px;
-}
-
 .bl {
 	border-left: thin solid #b2b2b2;
-}
-
-.pl10 {
-	padding-left: 10px;
 }
 
 .tac {
@@ -286,11 +281,61 @@ div.reward:hover  {
 	font-weight: bold;
 }
 
+/* Padding and Margin */
+
+.pl5 {
+	padding-left: 5px;
+}
+
+.pl10 {
+	padding-left: 10px;
+}
+
 .pt5 {
 	padding-top: 5px;
 }
 
+.mt5 {
+	margin-top: 5px;
+}
+
+.mt10 {
+	margin-top: 10px;
+}
+
+.ml10 {
+	margin-left: 10px;
+}
+
+.m10 {
+	margin: 5px;   
+}
+
+.mtb_15_0 {
+	margin: 15px 0;
+}
+
+.mtb_25_0 {
+	margin: 25px 0;
+}
+
+.cf-m-0 {
+	margin: 0;
+}
+
+.mt_0 {
+	margin-top: 0;
+}
+
 /* Backing */
+
+.cfbr{
+	margin-left: 0 !important;
+}
+
+.cfbr > li {
+	padding-left: 0 !important;
+}
 
 .cfbr > li:first-child > a {
 	text-transform: uppercase;
@@ -298,13 +343,6 @@ div.reward:hover  {
 	text-align: left;
    color: #6c6c6c;
    cursor: text;
-}
-
-.cfbr{
-	margin-left: 0 !important;
-}
-.cfbr > li {
-	padding-left: 0 !important;
 }
 
 .bs-docs-example {
@@ -333,10 +371,6 @@ form.bs-docs-example {
     top: -1px;
 }
 
-.cfbf {
-	margin-top: 0 !important;
-}
-
 #form-pledge button{
 	display: block;
 	margin-top: 20px;
@@ -360,17 +394,6 @@ form.bs-docs-example {
 .hr {
 	border-bottom: thin dashed #afafaf;
 	width: 100%;
-}
-.padding-tb-5px {
-	padding: 5px 0 !important;
-}
-
-.margin-tb-15px {
-	margin: 15px 0 !important;
-}
-
-.margin-tb-25px {
-	margin: 25px 0 !important;
 }
 
 .cf-update-item, .cf-comment-item {
@@ -428,14 +451,6 @@ form.bs-docs-example {
     transition: all 0.2s ease-in-out 0s;
 }
 
-.cf-pl-5 {
-	padding-left: 5px;
-}
-
-.cf-m-0 {
-	margin: 0;
-}
-
 .cf-font-small {
 	font-size: smaller;
 }
@@ -466,6 +481,7 @@ form.bs-docs-example {
 .cf-manager h4, .cf-manager h5 {
 	padding-left: 10px;
 }
+
 .cf-pm-toolbar {
     background: -moz-linear-gradient(center top , #FFFFFF 0%, #EDEDED 100%) repeat scroll 0 0 transparent;
     border-top: 1px solid #D3D3D3;
@@ -475,13 +491,18 @@ form.bs-docs-example {
     text-shadow: 0 1px 0 #FFFFFF;
 }
 
+#jform_pitch_video-lbl:after, #jform_pitch_image-lbl:after {
+	content: " *";
+}
+
 
 .parsley-error-list li{
 	color: red;
 }
 
+/* Rewards */
 .cf-rewards-submit-btn {
-	margin:15px 0 50px !important;
+	margin:15px 0 50px;
 }
 
 .cf-fm {
@@ -505,10 +526,6 @@ form.bs-docs-example {
 	background: #eaeaea;
 }
 
-#jform_pitch_video-lbl:after, #jform_pitch_image-lbl:after {
-	content: " *";
-}
-
 .js-reward-image-wrapper {
 	position: absolute;
 	top: 0;
@@ -524,8 +541,10 @@ form.bs-docs-example {
 	display: block;
 }
 
-.js-reward-image-wrapper .js-btn-remove-reward-image {
-	margin-top: 10px;
+/* Padding classes */
+.cf-p10-border{
+    border: thin solid #d1d1d1;
+    margin-top: 10px;
 }
 
 /* YouTube Responsive */
@@ -597,7 +616,6 @@ ul.cf-cat-thumbnails, ul.cf-cat-thumbnails li {
     margin-left: 30px;
 }
 
-
 .cf-cat-thumbnail {
     border: 1px solid #ddd;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.055);
@@ -613,7 +631,6 @@ ul.cf-cat-thumbnails, ul.cf-cat-thumbnails li {
 	max-height: 200px;
 	max-width: 200px;
 	width: 20%; 
-	
 }
 
 .cf-cat-thumbnail-pic img {

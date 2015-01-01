@@ -34,6 +34,7 @@ defined('_JEXEC') or die;
 
 <?php echo $this->form->getControlGroup('published'); ?>
 <?php echo $this->form->getControlGroup('approved'); ?>
+<?php echo $this->form->getControlGroup('created'); ?>
 <?php echo $this->form->getControlGroup('user_id'); ?>
 <?php echo $this->form->getControlGroup('id'); ?>
 <?php echo $this->form->getControlGroup('short_desc'); ?>

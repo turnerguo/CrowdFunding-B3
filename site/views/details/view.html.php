@@ -78,17 +78,17 @@ class CrowdFundingViewDetails extends JViewLegacy
             return;
         }
 
-        // Get rewards of the project
+        // Get the path to the images.
         $this->imageFolder = $this->params->get("images_directory", "images/crowdfunding");
 
-        // Prepare the link that points to project page
+        // Prepare the link that points to project page.
         $host             = JUri::getInstance()->toString(array("scheme", "host"));
         $this->item->link = $host . JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug));
 
-        // Prepare the link that points to project image
+        // Prepare the link that points to project image.
         $this->item->link_image = $host . "/" . $this->imageFolder . "/" . $this->item->image;
 
-        // Get the current screen
+        // Get the current screen.
         $this->screen = $app->input->getCmd("screen", "home");
 
         $this->prepareDocument();
@@ -230,7 +230,7 @@ class CrowdFundingViewDetails extends JViewLegacy
     protected function prepareDocument()
     {
         $app = JFactory::getApplication();
-        /** @var $app JApplicationSite * */
+        /** @var $app JApplicationSite */
 
         // Escape strings for HTML output
         $this->pageclass_sfx = htmlspecialchars($this->params->get('pageclass_sfx'));

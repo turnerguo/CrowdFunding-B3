@@ -9,8 +9,8 @@
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <packager>ITPrism</packager>
     <packagerurl>http://itprism.com</packagerurl>
-    <version>1.9.1</version>
-    <creationDate>30 November, 2014</creationDate>
+    <version>1.10</version>
+    <creationDate>31 December, 2014</creationDate>
     <description>CrowdFunding Library</description>
     <files>
         <folder>image</folder>
@@ -31,7 +31,6 @@
         <file>email.php</file>
         <file>filters.php</file>
         <file>images.php</file>
-        <file>index.html</file>
         <file>init.php</file>
         <file>intention.php</file>
         <file>location.php</file>

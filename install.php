@@ -248,16 +248,22 @@ class pkg_crowdFundingInstallerScript
             echo JText::_("COM_CROWDFUNDING_MESSAGE_INSTALL_ITPRISM_LIBRARY");
         }
 
-        // This patch removes category.php.
-        $this->patch19();
+        // Remove the files that the system does not use anymore.
+        $this->removeUnusedFiles();
     }
 
-    private function patch19()
+    private function removeUnusedFiles()
     {
-        $file = JPATH_ROOT . "/components/com_crowdfunding/helpers/category.php";
+        $files = array(
+            "/components/com_crowdfunding/helpers/category.php"
+        );
 
-        if (JFile::exists($file)) {
-            JFile::delete($file);
+        foreach ($files as $file) {
+            $file = JPath::clean(JPATH_ROOT . $file);
+
+            if (JFile::exists($file)) {
+                JFile::delete($file);
+            }
         }
     }
 }

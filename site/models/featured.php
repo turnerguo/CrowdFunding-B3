@@ -60,7 +60,7 @@ class CrowdFundingModelFeatured extends JModelList
         $this->setState('params', $params);
 
         // Set limit
-        $value = $params->get("featured_items_limit", $app->get('list_limit', 20));
+        $value = $params->get("items_limit", $app->get('list_limit', 20));
         $this->setState('list.limit', $value);
 
         $value = $app->input->getInt('limitstart', 0);
@@ -108,9 +108,9 @@ class CrowdFundingModelFeatured extends JModelList
                 'list.select',
                 'a.id, a.title, a.short_desc, a.image, a.user_id, a.catid, a.featured, ' .
                 'a.goal, a.funded, a.funding_start, a.funding_end, a.funding_days, a.funding_type, ' .
-                $query->concatenate(array("a.id", "a.alias"), "-") . ' AS slug, ' .
+                $query->concatenate(array("a.id", "a.alias"), ":") . ' AS slug, ' .
                 'b.name AS user_name, ' .
-                $query->concatenate(array("c.id", "c.alias"), "-") . " AS catslug"
+                $query->concatenate(array("c.id", "c.alias"), ":") . " AS catslug"
             )
         );
         $query->from($db->quoteName('#__crowdf_projects', 'a'));
@@ -138,8 +138,8 @@ class CrowdFundingModelFeatured extends JModelList
     protected function getOrderString()
     {
         $params    = $this->getState("params");
-        $order     = $params->get("featured_order", "start_date");
-        $orderDirn = $params->get("featured_dirn", "desc");
+        $order     = $params->get("items_order", "start_date");
+        $orderDirn = $params->get("items_order_direction", "desc");
 
         $allowedDirns = array("asc", "desc");
         if (!in_array($orderDirn, $allowedDirns)) {

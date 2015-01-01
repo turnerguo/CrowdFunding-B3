@@ -29,7 +29,7 @@ defined('_JEXEC') or die;
     </div>
     
     <?php if (!$this->debugMode) {?>
-    <input type="file" name="images[<?php echo (int)$this->formItem["id"]?>]" value="" />
+    <input type="file" class="js-reward-image" name="images[<?php echo (int)$this->formItem["id"]?>]" value="" />
     
 	<a href="javascript: void(0);" class="btn btn-danger js-btn-remove-reward-image" <?php echo $displayRemoveButton; ?> data-reward-id="<?php echo $rewardId;?>">
     	<i class="icon-trash icon-white"></i> 

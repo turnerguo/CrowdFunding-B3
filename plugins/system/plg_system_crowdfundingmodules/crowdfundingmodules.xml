@@ -6,57 +6,20 @@
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <authorEmail>todor@itprism.com</authorEmail>
     <authorUrl>http://itprism.com</authorUrl>
-    <version>1.9.1</version>
-    <creationDate>30 November, 2014</creationDate>
+    <version>1.10</version>
+    <creationDate>31 December, 2014</creationDate>
 	<description><![CDATA[
     <p>CrowdFunding Modules manages the loading of some modules.</p>
     <p><a href="http://itprism.com/" target="_blank">Subscribe for the newsletter</a> to receive information about updates and new ITPrism extensions.</p>
-    <p>Please, <a href="http://extensions.joomla.org/extensions/site-management/seo-a-metadata/meta-data/15861" target="_blank">vote for the extension</a> on Joomla! Extensions Directory</p>
+    <p>Please, <a href="http://extensions.joomla.org/extensions/extension/e-commerce/donations/crowdfunding" target="_blank">vote for the extension</a> on Joomla! Extensions Directory</p>
     ]]></description>
 	
     <help url="PLG_SYSTEM_CROWDFUNDINGMODULES_HELP_URL" />
     
 	<files>
 		<filename plugin="crowdfundingmodules">crowdfundingmodules.php</filename>
-		<filename>index.html</filename>
-        
         <folder>language</folder>
 	</files>
 	
-	<config>
-        <fields name="params">
-            <fieldset name="basic">
-                <field name="module_info_details_page" type="radio" default="1" label="PLG_SYSTEM_CROWDFUNDINGMODULES_INFO_ONLY_DETAILS" description="PLG_SYSTEM_CROWDFUNDINGMODULES_INFO_ONLY_DETAILS_DESC" class="btn-group">
-		            <option value="0">JNO</option>
-		            <option value="1">JYES</option>
-		        </field>
-		        
-		        <field name="module_rewards_details_page" type="radio" default="1" label="PLG_SYSTEM_CROWDFUNDINGMODULES_REWARDS_ONLY_DETAILS" description="PLG_SYSTEM_CROWDFUNDINGMODULES_REWARDS_ONLY_DETAILS_DESC" class="btn-group">
-                    <option value="0">JNO</option>
-                    <option value="1">JYES</option>
-                </field>
-                
-                <field name="module_details_backing_page" type="radio" default="1" label="PLG_SYSTEM_CROWDFUNDINGMODULES_DETAILS_ONLY_BACKING" description="PLG_SYSTEM_CROWDFUNDINGMODULES_DETAILS_ONLY_BACKING_DESC" class="btn-group">
-                    <option value="0">JNO</option>
-                    <option value="1">JYES</option>
-                </field>
-                
-                <field name="module_details_embed_page" type="radio" default="1" label="PLG_SYSTEM_CROWDFUNDINGMODULES_DETAILS_ONLY_EMBED" description="PLG_SYSTEM_CROWDFUNDINGMODULES_DETAILS_ONLY_EMBED_DESC" class="btn-group">
-                    <option value="0">JNO</option>
-                    <option value="1">JYES</option>
-                </field>
-                
-                <field name="module_profile_details_page" type="radio" default="1" label="PLG_SYSTEM_CROWDFUNDINGMODULES_PROFILE_ONLY_DETAILS" description="PLG_SYSTEM_CROWDFUNDINGMODULES_PROFILE_ONLY_DETAILS_DESC" class="btn-group">
-                    <option value="0">JNO</option>
-                    <option value="1">JYES</option>
-                </field>
-                
-                <field name="module_filters_discover_page" type="radio" default="1" label="PLG_SYSTEM_CROWDFUNDINGMODULES_FILTERS_ONLY_DISCOVER" description="PLG_SYSTEM_CROWDFUNDINGMODULES_FILTERS_ONLY_DISCOVER_DESC" class="btn-group">
-                    <option value="0">JNO</option>
-                    <option value="1">JYES</option>
-                </field>
-                
-	        </fieldset>
-        </fields>
-    </config>
+	<config />
 </extension>

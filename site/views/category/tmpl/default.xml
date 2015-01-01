@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <metadata>
-    <layout title="COM_CROWDFUNDING_VIEW_FEATURED_TITLE">
+    <layout title="COM_CROWDFUNDING_VIEW_CATEGORY_TITLE">
         <message>
-            <![CDATA[COM_CROWDFUNDING_VIEW_FEATURED_DESC]]>
+            <![CDATA[COM_CROWDFUNDING_VIEW_CATEGORY_DESC]]>
         </message>
     </layout>
+    
+    <!-- Add fields to the request variables for the layout. -->
+    <fields name="request">
+        <fieldset name="request">
+        
+	        <field name="id" type="category"
+	            default="0"
+	            label="COM_CROWDFUNDING_FIELD_SELECT_CATEGORY_LABEL"
+	            extension="com_crowdfunding"
+	            required="true"
+	            show_root="1"
+	        />
+	        
+        </fieldset>
+    </fields>
     
     <!-- Add fields to the parameters object for the layout. -->
     <fields name="params">
@@ -22,6 +37,7 @@
                 <option value="desc">COM_CROWDFUNDING_DESCENDING</option>
             </field>
         </fieldset>
+
     </fields>
     
 </metadata>

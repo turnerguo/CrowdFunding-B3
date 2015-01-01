@@ -62,6 +62,11 @@
                required="true"
                />
 
+        <field name="created" type="calendar"
+               label="COM_CROWDFUNDING_CREATED"
+               description="COM_CROWDFUNDING_FIELD_CREATED_DESC"
+               default="now" />
+
         <field name="id" type="text" class="readonly"
                label="JGLOBAL_FIELD_ID_LABEL"
                description="JGLOBAL_FIELD_ID_DESC"

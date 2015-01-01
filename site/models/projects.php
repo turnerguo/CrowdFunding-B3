@@ -106,10 +106,10 @@ class CrowdFundingModelProjects extends JModelList
                 'list.select',
                 'a.id, a.title, a.image_square, a.goal, a.funded, ' .
                 'a.funding_end, a.funding_days, a.funding_start, ' .
-                $query->concatenate(array("a.id", "a.alias"), "-") . ' AS slug, ' .
+                $query->concatenate(array("a.id", "a.alias"), ":") . ' AS slug, ' .
                 'a.published, a.approved, ' .
                 'b.published AS catstate, ' .
-                $query->concatenate(array("b.id", "b.alias"), "-") . " AS catslug"
+                $query->concatenate(array("b.id", "b.alias"), ":") . " AS catslug"
             )
         );
         $query->from($db->quoteName('#__crowdf_projects', "a"));

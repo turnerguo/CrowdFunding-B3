@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingModelDiscover extends JModelList
+class CrowdFundingModelCategory extends JModelList
 {
     protected $items = null;
     protected $numbers = null;
@@ -79,16 +79,6 @@ class CrowdFundingModelDiscover extends JModelList
         $catId = $app->input->get("id", 0, "uint");
         $this->setState($this->context . '.category_id', $catId);
 
-        // It is a discovery page and I can filter it by category.
-        // If it is a subcategory page, there is a category ID
-        if (!$catId) {
-            // Filter by category
-            $value = $app->input->get("filter_category");
-            $this->setState($this->context . '.category_id', $value);
-        } else {
-            $app->input->set("filter_category", (int)$catId);
-        }
-
         // Set limit
         $value = $app->input->getInt("limit");
         if (!$value) {
@@ -98,7 +88,6 @@ class CrowdFundingModelDiscover extends JModelList
 
         $value = $app->input->getInt('limitstart', 0);
         $this->setState('list.start', $value);
-
     }
 
     /**
@@ -233,46 +222,5 @@ class CrowdFundingModelDiscover extends JModelList
         $orderString = $orderCol . ' ' . $orderDirn;
 
         return $orderString;
-    }
-
-    public function prepareItems($items, $numberInRow)
-    {
-        $result = array();
-
-        if (!empty($items)) {
-            $i = 0;
-            $row = 1;
-            foreach ($items as $key => $item) {
-
-                $result[$row][$key] = $item;
-
-                // Calculate funding end date
-                if (!empty($item->funding_days)) {
-
-                    $fundingStartDate = new CrowdFundingDate($item->funding_start);
-                    $endDate = $fundingStartDate->calculateEndDate($item->funding_days);
-                    $result[$row][$key]->funding_end = $endDate->format("Y-m-d");
-
-                }
-
-                // Calculate funded percentage.
-                $percent = new ITPrismMath();
-                $percent->calculatePercentage($item->funded, $item->goal, 0);
-                $result[$row][$key]->funded_percents = (string)$percent;
-
-                // Calculate days left
-                $today = new CrowdFundingDate();
-                $result[$row][$key]->days_left       = $today->calculateDaysLeft($item->funding_days, $item->funding_start, $item->funding_end);
-
-                $i++;
-                if ($i == $numberInRow) {
-                    $row++;
-                    $i = 0;
-                }
-
-            }
-        }
-
-        return $result;
     }
 }

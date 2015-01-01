@@ -1,6 +1,15 @@
 CrowdFunding Release Notes
 ==========================
 
+###v1.10
+* Renamed the plugin event onPaymentDisplay to onPaymentExtras.
+* Fixed a bug with payment wizard in four steps when terms of use are enabled.
+* Added a new view "Category".
+* It was improved the URI routing. Now, the projects are not assigned to "Discover" page. They can be part from "Discover", "Categories", "Category" or "Details" view. You have to assign the [specific modules] (http://itprism.com/help/95-crowdfunding-documentation-faq#specific_modules) to one of those menu items.
+* Added a new event "onBeforePaymentAuthorize".
+* It was removed the options of the plugin "System - CrowdFunding Modules". Now, all specific modules will be managed by default.
+* Improved usability.
+
 ###v1.9.1
 * Fixed an issue with the router and old category class.
 * Improved amount formatting.
