@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -46,14 +46,27 @@ class CrowdFundingViewTransactions extends JViewLegacy
 
     protected $pageclass_sfx;
 
+    /**
+     * @var JApplicationSite
+     */
+    protected $app;
+
     public function __construct($config)
     {
         parent::__construct($config);
-        $this->option = JFactory::getApplication()->input->get("option");
+        $this->app    = JFactory::getApplication();
+        $this->option = $this->app->input->get("option");
     }
 
     public function display($tpl = null)
     {
+        $userId = JFactory::getUser()->get("id");
+        if (!$userId) {
+            $this->app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_NOT_LOG_IN"), "notice");
+            $this->app->redirect(JRoute::_("index.php?option=com_users&view=login", false));
+            return;
+        }
+
         $this->items      = $this->get('Items');
         $this->state      = $this->get('State');
         $this->pagination = $this->get('Pagination');
@@ -117,12 +130,9 @@ class CrowdFundingViewTransactions extends JViewLegacy
 
     private function preparePageHeading()
     {
-        $app = JFactory::getApplication();
-        /** @var $app JApplicationSite */
-
         // Because the application sets a default page title,
         // we need to get it from the menu item itself
-        $menus = $app->getMenu();
+        $menus = $this->app->getMenu();
         $menu  = $menus->getActive();
 
         // Prepare page heading
@@ -136,19 +146,16 @@ class CrowdFundingViewTransactions extends JViewLegacy
 
     private function preparePageTitle()
     {
-        $app = JFactory::getApplication();
-        /** @var $app JApplicationSite */
-
         // Prepare page title
         $title = $this->params->get('page_title', '');
 
         // Add title before or after Site Name
         if (!$title) {
-            $title = $app->get('sitename');
-        } elseif ($app->get('sitename_pagetitles', 0) == 1) {
-            $title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
-        } elseif ($app->get('sitename_pagetitles', 0) == 2) {
-            $title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
+            $title = $this->app->get('sitename');
+        } elseif ($this->app->get('sitename_pagetitles', 0) == 1) {
+            $title = JText::sprintf('JPAGETITLE', $this->app->get('sitename'), $title);
+        } elseif ($this->app->get('sitename_pagetitles', 0) == 2) {
+            $title = JText::sprintf('JPAGETITLE', $title, $this->app->get('sitename'));
         }
 
         $this->document->setTitle($title);

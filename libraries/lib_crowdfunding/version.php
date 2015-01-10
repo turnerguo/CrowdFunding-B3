@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Version
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -36,7 +36,7 @@ class CrowdFundingVersion
      *
      * @var integer
      */
-    public $devLevel = '10';
+    public $devLevel = '10.1';
 
     /**
      * Release Type
@@ -57,7 +57,7 @@ class CrowdFundingVersion
      *
      * @var string
      */
-    public $releaseDate = '31 December, 2014';
+    public $releaseDate = '10 January, 2015';
 
     /**
      * License
@@ -71,7 +71,7 @@ class CrowdFundingVersion
      *
      * @var string
      */
-    public $copyright = '&copy; 2014 ITPrism. All rights reserved.';
+    public $copyright = '&copy; 2015 ITPrism. All rights reserved.';
 
     /**
      * URL to the extension page.

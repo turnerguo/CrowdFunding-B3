@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -84,10 +84,17 @@ class CrowdFundingViewProject extends JViewLegacy
 
     protected $pageclass_sfx;
 
+    /**
+     * @var JApplicationSite
+     */
+    protected $app;
+
     public function __construct($config)
     {
         parent::__construct($config);
-        $this->option = JFactory::getApplication()->input->getCmd("option");
+
+        $this->app    = JFactory::getApplication();
+        $this->option = $this->app->input->getCmd("option");
 
         $this->layoutsBasePath = JPath::clean(JPATH_COMPONENT_ADMINISTRATOR . "/layouts");
     }
@@ -161,9 +168,6 @@ class CrowdFundingViewProject extends JViewLegacy
      */
     protected function prepareDebugMode()
     {
-        $app = JFactory::getApplication();
-        /** @var $app JApplicationSite */
-
         // Check for maintenance (debug) state
         $params          = $this->state->get("params");
         $this->debugMode = $params->get("debug_project_adding_disabled", 0);
@@ -172,7 +176,7 @@ class CrowdFundingViewProject extends JViewLegacy
             if (!$msg) {
                 $msg = JText::_("COM_CROWDFUNDING_DEBUG_MODE_DEFAULT_MSG");
             }
-            $app->enqueueMessage($msg, "notice");
+            $this->app->enqueueMessage($msg, "notice");
 
             $this->disabledButton = 'disabled="disabled"';
         }
@@ -553,13 +557,10 @@ class CrowdFundingViewProject extends JViewLegacy
      */
     protected function prepareDocument()
     {
-        $app = JFactory::getApplication();
-        /** @var $app JApplicationSite */
-
         // Prepare page suffix
         $this->pageclass_sfx = htmlspecialchars($this->params->get('pageclass_sfx'));
 
-        $menus = $app->getMenu();
+        $menus = $this->app->getMenu();
 
         // Because the application sets a default page title,
         // we need to get it from the menu item itself
@@ -574,11 +575,11 @@ class CrowdFundingViewProject extends JViewLegacy
         // Prepare page title
         $title = $menu->title;
         if (!$title) {
-            $title = $app->get('sitename');
+            $title = $this->app->get('sitename');
 
         // Set site name if it is necessary ( the option 'sitename' = 1 )
-        } elseif ($app->get('sitename_pagetitles', 0)) {
-            $title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
+        } elseif ($this->app->get('sitename_pagetitles', 0)) {
+            $title = JText::sprintf('JPAGETITLE', $this->app->get('sitename'), $title);
 
         // Item title to the browser title.
         } else {
@@ -596,7 +597,7 @@ class CrowdFundingViewProject extends JViewLegacy
         $this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
 
         // Add current layout into breadcrumbs.
-        $pathway = $app->getPathway();
+        $pathway = $this->app->getPathway();
         $pathway->addItem($this->pathwayName);
 
         // Styles
@@ -700,11 +701,8 @@ class CrowdFundingViewProject extends JViewLegacy
     protected function isValid()
     {
         if (!$this->item->id or ($this->item->user_id != $this->userId)) {
-            $app = JFactory::getApplication();
-            /** $app JApplicationSite */
-
-            $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_SOMETHING_WRONG"), "notice");
-            $app->redirect(JRoute::_(CrowdFundingHelperRoute::getDiscoverRoute()));
+            $this->app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_SOMETHING_WRONG"), "notice");
+            $this->app->redirect(JRoute::_(CrowdFundingHelperRoute::getDiscoverRoute()));
             return false;
         }
 

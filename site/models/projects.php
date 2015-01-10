@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -55,7 +55,7 @@ class CrowdFundingModelProjects extends JModelList
         $state = $this->getUserStateFromRequest($this->context . '.filter.state', 'filter_state', '', 'string');
         $this->setState('filter.state', $state);
 
-        $value = JFactory::getUser()->id;
+        $value = JFactory::getUser()->get("id");
         $this->setState('filter.user_id', $value);
 
         // Load the component parameters.
@@ -124,7 +124,7 @@ class CrowdFundingModelProjects extends JModelList
         }
 
         $userId = $this->getState('filter.user_id');
-        $query->where('a.user_id=' . (int)$userId);
+        $query->where('a.user_id = ' . (int)$userId);
 
         // Add the list ordering clause.
         $orderString = $this->getOrderString();

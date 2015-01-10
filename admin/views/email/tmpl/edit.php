@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -68,12 +68,16 @@ defined('_JEXEC') or die;
             <dd><?php echo JText::_("COM_CROWDFUNDING_EMAIL_RECIPIENT_NAME"); ?></dd>
             <dt>{RECIPIENT_EMAIL}</dt>
             <dd><?php echo JText::_("COM_CROWDFUNDING_EMAIL_RECIPIENT_EMAIL"); ?></dd>
+            <dt>{PAYER_NAME}</dt>
+            <dd><?php echo JText::_("COM_CROWDFUNDING_EMAIL_PAYER_NAME"); ?></dd>
+            <dt>{PAYER_EMAIL}</dt>
+            <dd><?php echo JText::_("COM_CROWDFUNDING_EMAIL_PAYER_EMAIL"); ?></dd>
             <dt>{AMOUNT}</dt>
             <dd><?php echo JText::_("COM_CROWDFUNDING_EMAIL_AMOUNT"); ?></dd>
             <dt>{TRANSACTION_ID}</dt>
             <dd><?php echo JText::_("COM_CROWDFUNDING_EMAIL_TRANSACTION_ID"); ?></dd>
         </dl>
 
-        <p class="small"><?php echo JText::_("COM_CROWDFUNDING_EMAIL_EXTRA_LINE"); ?></p>
+        <p class="small alert"><?php echo JText::_("COM_CROWDFUNDING_EMAIL_EXTRA_LINE"); ?></p>
     </div>
 </div>

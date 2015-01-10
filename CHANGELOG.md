@@ -1,6 +1,11 @@
 CrowdFunding Release Notes
 ==========================
 
+###v1.10.1
+* Fixed bugs on views "Projects" and "Transactions".
+* Improved view "Categories".
+* Added new placeholders to the e-mail templates - {PAYER_NAME} and {PAYER_EMAIL}.
+
 ###v1.10
 * Renamed the plugin event onPaymentDisplay to onPaymentExtras.
 * Fixed a bug with payment wizard in four steps when terms of use are enabled.

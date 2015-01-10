@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_logs` (
   `type` varchar(64) NOT NULL,
   `record_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__crowdf_payment_sessions` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,

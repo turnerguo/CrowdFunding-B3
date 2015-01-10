@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 
 $itemSpan = (!empty($this->subcategoriesPerRow)) ? round(12 / $this->subcategoriesPerRow) : 4;
 ?>
-
+<div id="cf-categories-grid">
 <?php foreach ($this->categories as $row) { ?>
 <ul class="thumbnails">
     <?php foreach ($row as $item) { ?>
@@ -29,7 +29,7 @@ $itemSpan = (!empty($this->subcategoriesPerRow)) ? round(12 / $this->subcategori
                 <?php } ?>
             </a>
 
-            <div class="caption cf-category-caption absolute-bottom">
+            <div class="caption cf-height-150px absolute-bottom">
                 <h3>
                     <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getCategoryRoute($item->slug)); ?>">
                         <?php echo $this->escape($item->title); ?>
@@ -50,4 +50,5 @@ $itemSpan = (!empty($this->subcategoriesPerRow)) ? round(12 / $this->subcategori
     </li>
     <?php } ?>
 </ul>
+</div>
 <?php } ?>

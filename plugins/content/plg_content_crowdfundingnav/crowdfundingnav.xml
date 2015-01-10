@@ -2,12 +2,12 @@
 <extension version="3.3" type="plugin" group="content" method="upgrade">
     <name>PLG_CONTENT_CROWDFUNDINGNAV</name>
     <author>Todor Iliev</author>
-    <copyright>Copyright (C) 2014 Todor Iliev ( ITPrism.com ). All rights reserved.</copyright>
+    <copyright>Copyright (C) 2015 Todor Iliev ( ITPrism.com ). All rights reserved.</copyright>
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <authorEmail>todor@itprism.com</authorEmail>
     <authorUrl>http://itprism.com</authorUrl>
-    <version>1.10</version>
-    <creationDate>31 December, 2014</creationDate>
+    <version>1.10.1</version>
+    <creationDate>10 January, 2015</creationDate>
     <description><![CDATA[
     <p>CrowdFunding - Navigation is a plugin that adds navigation on the page of project details.</p>
     <p><a href="http://itprism.com/" target="_blank">Subscribe for the newsletter</a> to receive information about updates and new ITPrism extensions.</p>

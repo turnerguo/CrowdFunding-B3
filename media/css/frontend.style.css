@@ -596,36 +596,31 @@ form.bs-docs-example {
 	padding-left: 20px;
 }
 
-.cf-category {
+/* Heights */
+.cf-height-150px {
+	height: 150px;
+}
+
+/* Categories */
+
+/* Categories Layout Grid */
+#cf-categories-grid .cf-category {
     height: 350px;
     position: relative;
 }
 
-.cf-category-caption  {
-	height: 150px;
-}
-
-ul.cf-cat-thumbnails, ul.cf-cat-thumbnails li {
-    background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
-}
-.cf-cat-thumbnails > li {
-    margin-bottom: 20px;
-    margin-left: 20px;
-}
-.cf-cat-thumbnails > li {
-    margin-left: 30px;
-}
-
-.cf-cat-thumbnail {
+/* Categories Layout List */
+#cf-categories-list > .cf-category {
     border: 1px solid #ddd;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.055);
     display: block;
     line-height: 20px;
     padding: 4px;
     transition: all 0.2s ease-in-out 0s;
+    margin-top: 15px;
 }
 
-.cf-cat-thumbnail-pic {
+#cf-categories-list .cf-category-thumbnail {
 	float: left;
 	display: block;
 	max-height: 200px;
@@ -633,12 +628,12 @@ ul.cf-cat-thumbnails, ul.cf-cat-thumbnails li {
 	width: 20%; 
 }
 
-.cf-cat-thumbnail-pic img {
+#cf-categories-list .cf-category-thumbnail > img {
 	margin: 0 auto;
 	display: block;
 }
 
-.cf-cat-thumnail-content {
+#cf-categories-list .cf-category-content {
 	float: left;
 	display: block;
 	padding-left: 20px;

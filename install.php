@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -111,7 +111,7 @@ class pkg_crowdFundingInstallerScript
         }
         CrowdFundingInstallHelper::addRow($title, $result, $info);
 
-        // Display result about verification for writeable folder
+        // Display result about verification for writable folder
         $title = JText::_("COM_CROWDFUNDING_WRITABLE_FOLDER");
         $info  = $this->imagesFolder;
         if (!is_writable($this->imagesPath)) {

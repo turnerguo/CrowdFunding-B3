@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Plugins
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -231,7 +231,7 @@ class CrowdFundingPaymentPlugin extends JPlugin
         $currencyId = $params->get("project_currency");
         $currency   = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $params);
 
-        // Prepare data for parsing
+        // Prepare data for parsing.
         $data = array(
             "site_name"      => $app->get("sitename"),
             "site_url"       => JUri::root(),
@@ -240,6 +240,13 @@ class CrowdFundingPaymentPlugin extends JPlugin
             "amount"         => $currency->getAmountString($transaction->txn_amount),
             "transaction_id" => $transaction->txn_id
         );
+
+        // Prepare data about payer if he is NOT anonymous ( is registered user with profile ).
+        if (!empty($transaction->investor_id)) {
+            $investor = JFactory::getUser($transaction->investor_id);
+            $data["payer_email"] = $investor->get("email");
+            $data["payer_name"]  = $investor->get("name");
+        }
 
         // Send mail to the administrator
         $emailId = $this->params->get("admin_mail_id", 0);
@@ -295,7 +302,7 @@ class CrowdFundingPaymentPlugin extends JPlugin
 
         }
 
-        // Send mail to project owner
+        // Send mail to project owner.
         $emailId = $this->params->get("creator_mail_id", 0);
         if (!empty($emailId)) {
 
@@ -345,10 +352,9 @@ class CrowdFundingPaymentPlugin extends JPlugin
             }
         }
 
-        // Send mail to backer
+        // Send mail to backer.
         $emailId    = $this->params->get("user_mail_id", 0);
-        $investorId = $transaction->investor_id;
-        if (!empty($emailId) and !empty($investorId)) {
+        if (!empty($emailId) and !empty($transaction->investor_id)) {
 
             $email = new CrowdFundingEmail();
             $email->setDb(JFactory::getDbo());
@@ -361,7 +367,7 @@ class CrowdFundingPaymentPlugin extends JPlugin
                 $email->setSenderEmail($app->get("mailfrom"));
             }
 
-            $user          = JFactory::getUser($investorId);
+            $user          = JFactory::getUser($transaction->investor_id);
             $recipientName = $user->get("name");
             $recipientMail = $user->get("email");
 

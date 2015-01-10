@@ -3,7 +3,7 @@
  * @package      CrowdFunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -14,7 +14,7 @@ jimport('joomla.application.component.controller');
 
 class CrowdFundingController extends JControllerLegacy
 {
-    protected $cacheableViews = array("discover", "featured", "projects", "transactions");
+    protected $cacheableViews = array("discover", "featured", "categories", "category");
 
     /**
      * Method to display a view.

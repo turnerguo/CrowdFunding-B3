@@ -25,7 +25,7 @@
 	<property name="cfg.mediaSourceDir" location="${cfg.sourceDir}/media" />
 	<property name="cfg.librariesSourceDir" location="${cfg.sourceDir}/libraries" />
 
-	<!-- plugins source -->
+	<!-- plug-ins source -->
     <property name="cfg.pluginsSourceDir" location="${cfg.sourceDir}/plugins" />
 	
 	<!-- modules source -->
@@ -63,7 +63,7 @@
 		<mkdir dir="${cfg.pkgDir}/modules" />
 		<mkdir dir="${cfg.pkgDir}/plugins" />
 		
-		<!-- plugins -->
+		<!-- plug-ins -->
 		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundingnav" />
 		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundingshare" />
 		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundingadminmail" />
@@ -225,17 +225,17 @@
 		<!-- build library -->
 		<zip destfile="${cfg.pkgDir}/packages/lib_${cfg.name}.zip" basedir="${cfg.librariesDestDir}/lib_${cfg.name}" />
 		
-		<!-- build content plugins -->
+		<!-- build content plug-ins -->
 		<zip destfile="${cfg.pkgDir}/packages/plg_content_crowdfundingnav.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingnav" />
 		<zip destfile="${cfg.pkgDir}/packages/plg_content_crowdfundingshare.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingshare" />
 		<zip destfile="${cfg.pkgDir}/packages/plg_content_crowdfundingadminmail.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingadminmail" />
 		<zip destfile="${cfg.pkgDir}/packages/plg_content_crowdfundingusermail.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingusermail" />
 		<zip destfile="${cfg.pkgDir}/packages/plg_content_crowdfundingvalidator.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingvalidator" />
 		
-	    <!-- build system pugins -->
+	    <!-- build system plug-ins -->
 		<zip destfile="${cfg.pkgDir}/packages/plg_system_crowdfundingmodules.zip" basedir="${cfg.pluginsDestDir}/system/plg_system_crowdfundingmodules" />
 	    
-	    <!-- build payment pugins -->
+	    <!-- build payment plug-ins -->
 	    <zip destfile="${cfg.pkgDir}/packages/plg_crowdfundingpayment_paypal.zip" basedir="${cfg.pluginsDestDir}/crowdfundingpayment/plg_crowdfundingpayment_paypal" />
 		
 	    <!-- build modules -->
