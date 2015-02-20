@@ -47,6 +47,7 @@ class CrowdFundingViewCategory extends JViewLegacy
     protected $subcategoriesPerRow;
     protected $displayProjectsNumber;
     protected $projectsNumber;
+    protected $item;
 
     protected $layoutsBasePath;
     protected $layoutData;
@@ -65,6 +66,9 @@ class CrowdFundingViewCategory extends JViewLegacy
 
     public function display($tpl = null)
     {
+        $app = JFactory::getApplication();
+        /** @var $app JApplicationSite */
+
         // Initialise variables
         $this->state      = $this->get("State");
         $this->items      = $this->get('Items');
@@ -108,6 +112,11 @@ class CrowdFundingViewCategory extends JViewLegacy
             "descriptionLength" => $this->params->get("discover_description_length", 0),
             "span"  => (!empty($this->itemsInRow)) ? round(12 / $this->itemsInRow) : 4
         );
+
+        // Get current category
+        $categoryId = $app->input->getInt("id");
+        $categories = CrowdFundingCategories::getInstance("crowdfunding");
+        $this->item = $categories->get($categoryId);
 
         $this->prepareDocument();
 
@@ -161,7 +170,7 @@ class CrowdFundingViewCategory extends JViewLegacy
         if ($menu) {
             $this->params->def('page_heading', $this->params->get('page_title', $menu->title));
         } else {
-            $this->params->def('page_heading', JText::_('COM_CROWDFUNDING_CATEGORY_DEFAULT_PAGE_TITLE'));
+            $this->params->def('page_heading', $this->item->title);
         }
     }
 
@@ -170,8 +179,17 @@ class CrowdFundingViewCategory extends JViewLegacy
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
 
+        // Because the application sets a default page title,
+        // we need to get it from the menu item itself
+        $menus = $app->getMenu();
+        $menu  = $menus->getActive();
+
         // Prepare page title
-        $title = $this->params->get('page_title', '');
+        if (!$menu) {
+            $title = $this->item->title;
+        } else {
+            $title = $this->params->get('page_title', '');
+        }
 
         // Add title before or after Site Name
         if (!$title) {
@@ -211,6 +229,6 @@ class CrowdFundingViewCategory extends JViewLegacy
             $this->projectsNumber = $categories->getProjectsNumber($ids, array("state" => 1));
         }
 
-        $this->categories = CrowdFundingHelper::prepareCategories($this->categories, $this->subcategoriesPerRow);
+        $this->categories = CrowdFundingHelper::prepareCategories($this->categories);
     }
 }

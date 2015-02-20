@@ -39,16 +39,8 @@
                label="COM_CROWDFUNDING_FIELD_PROJECT_TYPE"
                />
 
-        <field
-                name="image"
-                type="file"
-                label="COM_CROWDFUNDING_FIELD_IMAGE"
-                description="COM_CROWDFUNDING_FIELD_IMAGE_DESC"
-                size="40"
-                />
-
         <field name="id" type="hidden" filter="int"/>
-        <field name="location" type="hidden" filter="int"/>
+        <field name="location_id" type="hidden" filter="int"/>
 
     </fieldset>
 </form>

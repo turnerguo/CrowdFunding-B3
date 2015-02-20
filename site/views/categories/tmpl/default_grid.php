@@ -14,9 +14,8 @@ $itemSpan = (!empty($this->numberInRow)) ? round(12 / $this->numberInRow) : 4;
 ?>
 <?php if (!empty($this->items)) { ?>
 <div id="cf-categories-grid">
-    <?php foreach ($this->items as $row) { ?>
     <ul class="thumbnails">
-        <?php foreach ($row as $item) { ?>
+        <?php foreach ($this->items as $item) { ?>
 
         <li class="span<?php echo $itemSpan; ?>">
             <div class="thumbnail cf-category">
@@ -30,7 +29,7 @@ $itemSpan = (!empty($this->numberInRow)) ? round(12 / $this->numberInRow) : 4;
                     <?php } ?>
                 </a>
 
-                <div class="caption cf-height-150px absolute-bottom">
+                <div class="caption height-150px absolute-bottom">
                     <h3>
                         <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getCategoryRoute($item->slug)); ?>">
                             <?php echo $this->escape($item->title); ?>
@@ -38,9 +37,8 @@ $itemSpan = (!empty($this->numberInRow)) ? round(12 / $this->numberInRow) : 4;
                         <?php
                         if ($this->displayProjectsNumber) {
                             $number = (!isset($this->projectsNumber[$item->id])) ? 0 : $this->projectsNumber[$item->id]["number"];
-                        ?>
-                            <?php echo "( ".$number. " )"; ?>
-                        <?php } ?>
+                            echo "( ".$number. " )";
+                        } ?>
                     </h3>
                     <?php if ($this->params->get("categories_display_description", true)) { ?>
                         <p><?php echo JHtmlString::truncate($item->description, $this->descriptionLength, true, false); ?></p>
@@ -50,6 +48,5 @@ $itemSpan = (!empty($this->numberInRow)) ? round(12 / $this->numberInRow) : 4;
         </li>
         <?php } ?>
     </ul>
-    <?php } ?>
 </div>
 <?php } ?>

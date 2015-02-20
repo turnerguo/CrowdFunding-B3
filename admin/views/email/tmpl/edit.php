@@ -76,6 +76,10 @@ defined('_JEXEC') or die;
             <dd><?php echo JText::_("COM_CROWDFUNDING_EMAIL_AMOUNT"); ?></dd>
             <dt>{TRANSACTION_ID}</dt>
             <dd><?php echo JText::_("COM_CROWDFUNDING_EMAIL_TRANSACTION_ID"); ?></dd>
+            <dt>{REPORT_SUBJECT}</dt>
+            <dd><?php echo JText::_("COM_CROWDFUNDING_EMAIL_REPORT_SUBJECT"); ?></dd>
+            <dt>{REPORT_DESCRIPTION}</dt>
+            <dd><?php echo JText::_("COM_CROWDFUNDING_EMAIL_REPORT_DESCRIPTION"); ?></dd>
         </dl>
 
         <p class="small alert"><?php echo JText::_("COM_CROWDFUNDING_EMAIL_EXTRA_LINE"); ?></p>

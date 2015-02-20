@@ -26,23 +26,23 @@ jQuery(document).ready(function() {
 	        	if(!response.result.success) {
 
                     ITPrismUIHelper.displayMessageFailure(response.result.title, response.result.text);
-	        		
+
 	        	} else {
-	        		
+
 	        		// Get data
 	        		var data 		= response.result.data;
-	        		
+
 	        		// Clone the templates of the row
 	        		var extraImage  = jQuery("#js-extra-img-row").clone().removeClass("hide");
 	        		jQuery(extraImage).removeAttr("id");
-	        		
+
 	        		// Set the thumbnail to the image element
 	        		var imgSrc = jQuery(extraImage).find(".js-extra-img");
 	        		jQuery(imgSrc).attr("src", data.thumb);
-	        		
+
 	        		var btnRemove = jQuery(extraImage).find(".js-extra-image-remove");
 	        		jQuery(btnRemove).attr("data-image-id", data.id);
-	        		
+
 	        		jQuery("#js-extra-images-rows").prepend(extraImage);
 	        	}
 	        	

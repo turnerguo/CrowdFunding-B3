@@ -60,12 +60,12 @@ class CrowdFundingModelProject extends JModelAdmin
         if (empty($data)) {
             $data = $this->getItem();
 
-            if (!empty($data->location)) {
+            if (!empty($data->location_id)) {
 
                 // Load location from database.
                 jimport("crowdfunding.location");
                 $location = new CrowdFundingLocation(JFactory::getDbo());
-                $location->load($data->location);
+                $location->load($data->location_id);
                 $locationName = $location->getName(true);
 
                 // Set the name to the form element.
@@ -87,17 +87,17 @@ class CrowdFundingModelProject extends JModelAdmin
      */
     public function save($data)
     {
-        $id        = JArrayHelper::getValue($data, "id", 0, "int");
-        $title     = JArrayHelper::getValue($data, "title");
-        $alias     = JArrayHelper::getValue($data, "alias");
-        $catId     = JArrayHelper::getValue($data, "catid", 0, "int");
-        $typeId    = JArrayHelper::getValue($data, "type_id", 0, "int");
-        $userId    = JArrayHelper::getValue($data, "user_id", 0, "int");
-        $location  = JArrayHelper::getValue($data, "location");
-        $published = JArrayHelper::getValue($data, "published", 0, "int");
-        $approved  = JArrayHelper::getValue($data, "approved", 0, "int");
-        $shortDesc = JArrayHelper::getValue($data, "short_desc");
-        $created   = JArrayHelper::getValue($data, "created");
+        $id          = JArrayHelper::getValue($data, "id", 0, "int");
+        $title       = JArrayHelper::getValue($data, "title");
+        $alias       = JArrayHelper::getValue($data, "alias");
+        $catId       = JArrayHelper::getValue($data, "catid", 0, "int");
+        $typeId      = JArrayHelper::getValue($data, "type_id", 0, "int");
+        $userId      = JArrayHelper::getValue($data, "user_id", 0, "int");
+        $locationId  = JArrayHelper::getValue($data, "location_id");
+        $published   = JArrayHelper::getValue($data, "published", 0, "int");
+        $approved    = JArrayHelper::getValue($data, "approved", 0, "int");
+        $shortDesc   = JArrayHelper::getValue($data, "short_desc");
+        $created     = JArrayHelper::getValue($data, "created");
 
         $goal        = JArrayHelper::getValue($data, "goal");
         $funded      = JArrayHelper::getValue($data, "funded");
@@ -115,7 +115,7 @@ class CrowdFundingModelProject extends JModelAdmin
         $row->set("catid", $catId);
         $row->set("type_id", $typeId);
         $row->set("user_id", $userId);
-        $row->set("location", $location);
+        $row->set("location_id", $locationId);
         $row->set("published", $published);
         $row->set("approved", $approved);
         $row->set("short_desc", $shortDesc);

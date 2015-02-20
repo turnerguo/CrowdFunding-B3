@@ -63,7 +63,7 @@ class CrowdFundingModelCategories extends JModelList
         // Set limit
         $value = $app->input->getInt("limit");
         if (!$value) {
-            $value = $params->get("categories_items_limit", $app->get('list_limit', 20));
+            $value = $params->get("categories_categories_limit", $app->get('list_limit', 20));
         }
         $this->setState('list.limit', $value);
 
@@ -113,9 +113,7 @@ class CrowdFundingModelCategories extends JModelList
                 'a.id, a.title, a.description, a.params, ' .
                 $query->concatenate(array("a.id", "a.alias"), ":") . " AS slug"
             )
-        );
-
-        $query
+        )
             ->from($db->quoteName('#__categories', 'a'))
             ->where('a.extension = ' . $db->quote("com_crowdfunding"))
             ->where('a.published = 1')

@@ -43,24 +43,13 @@ function CrowdFundingBuildRoute(&$query)
 
     $mView   = (empty($menuItem->query['view'])) ? null : $menuItem->query['view'];
     $mId     = (empty($menuItem->query['id'])) ? null : $menuItem->query['id'];
-    $mOption = (empty($menuItem->query['option'])) ? null : $menuItem->query['option'];
-    $mCatid  = (empty($menuItem->query['catid'])) ? null : $menuItem->query['catid'];
+//    $mOption = (empty($menuItem->query['option'])) ? null : $menuItem->query['option'];
+//    $mCatid  = (empty($menuItem->query['catid'])) ? null : $menuItem->query['catid'];
 
     // If is set view and Itemid missing, we have to put the view to the segments
     if (isset($query['view'])) {
         $view = $query['view'];
-        /*
-        if (empty($query['Itemid']) or ($mOption !== "com_crowdfunding")) {
-            $segments[] = $query['view'];
-        }
-
-        // We need to keep the view for forms because they have never own menu item.
-        if ($view != 'form') {
-            unset($query['view']);
-        }
-        */
     } else {
-
         return $segments;
     }
 
@@ -150,6 +139,12 @@ function CrowdFundingBuildRoute(&$query)
                     $segments[] = "embed";
                 }
 
+                break;
+
+            case "report":
+                if ($menuItemGiven and (strcmp("report", $menuItem->query["view"]) == 0) and isset($query['view'])) {
+                    unset($query['view']);
+                }
                 break;
 
             case "categories":

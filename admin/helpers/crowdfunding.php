@@ -37,12 +37,6 @@ abstract class CrowdFundingHelper
         );
 
         JHtmlSidebar::addEntry(
-            JText::_('COM_CROWDFUNDING_CATEGORIES'),
-            'index.php?option=com_categories&extension=' . self::$extension . '',
-            $vName == 'categories'
-        );
-
-        JHtmlSidebar::addEntry(
             JText::_('COM_CROWDFUNDING_PROJECTS'),
             'index.php?option=' . self::$extension . '&view=projects',
             $vName == 'projects'
@@ -55,9 +49,15 @@ abstract class CrowdFundingHelper
         );
 
         JHtmlSidebar::addEntry(
-            JText::_('COM_CROWDFUNDING_LOCATIONS'),
-            'index.php?option=' . self::$extension . '&view=locations',
-            $vName == 'locations'
+            JText::_('COM_CROWDFUNDING_CATEGORIES'),
+            'index.php?option=com_categories&extension=' . self::$extension . '',
+            $vName == 'categories'
+        );
+
+        JHtmlSidebar::addEntry(
+            JText::_('COM_CROWDFUNDING_COMMENTS'),
+            'index.php?option=' . self::$extension . '&view=comments',
+            $vName == 'comments'
         );
 
         JHtmlSidebar::addEntry(
@@ -73,15 +73,27 @@ abstract class CrowdFundingHelper
         );
 
         JHtmlSidebar::addEntry(
-            JText::_('COM_CROWDFUNDING_UPDATES'),
-            'index.php?option=' . self::$extension . '&view=updates',
-            $vName == 'updates'
+            JText::_('COM_CROWDFUNDING_EMAILS'),
+            'index.php?option=' . self::$extension . '&view=emails',
+            $vName == 'emails'
         );
 
         JHtmlSidebar::addEntry(
-            JText::_('COM_CROWDFUNDING_COMMENTS'),
-            'index.php?option=' . self::$extension . '&view=comments',
-            $vName == 'comments'
+            JText::_('COM_CROWDFUNDING_LOCATIONS'),
+            'index.php?option=' . self::$extension . '&view=locations',
+            $vName == 'locations'
+        );
+
+        JHtmlSidebar::addEntry(
+            JText::_('COM_CROWDFUNDING_LOGS'),
+            'index.php?option=' . self::$extension . '&view=logs',
+            $vName == 'logs'
+        );
+
+        JHtmlSidebar::addEntry(
+            JText::_('COM_CROWDFUNDING_REPORTS'),
+            'index.php?option=' . self::$extension . '&view=reports',
+            $vName == 'reports'
         );
 
         JHtmlSidebar::addEntry(
@@ -91,21 +103,15 @@ abstract class CrowdFundingHelper
         );
 
         JHtmlSidebar::addEntry(
-            JText::_('COM_CROWDFUNDING_EMAILS'),
-            'index.php?option=' . self::$extension . '&view=emails',
-            $vName == 'emails'
-        );
-
-        JHtmlSidebar::addEntry(
             JText::_('COM_CROWDFUNDING_USERS'),
             'index.php?option=' . self::$extension . '&view=users',
             $vName == 'users'
         );
 
         JHtmlSidebar::addEntry(
-            JText::_('COM_CROWDFUNDING_LOGS'),
-            'index.php?option=' . self::$extension . '&view=logs',
-            $vName == 'logs'
+            JText::_('COM_CROWDFUNDING_UPDATES'),
+            'index.php?option=' . self::$extension . '&view=updates',
+            $vName == 'updates'
         );
 
         JHtmlSidebar::addEntry(
@@ -437,21 +443,23 @@ abstract class CrowdFundingHelper
     }
 
     /**
-     * Create a folder and index.html file.
+     * Generate a path to the temporary images folder.
      *
-     * @param string $folder
+     * @param string $path   A base path to the folder. It can be JPATH_BASE, JPATH_ROOT, JPATH_SITE,... Default is JPATH_ROOT.
      *
      * @return string
      */
-    public static function createFolder($folder)
+    public static function getTemporaryImagesFolder($path = JPATH_ROOT)
     {
-        JFolder::create($folder);
+        jimport('joomla.filesystem.path');
+        jimport('joomla.filesystem.folder');
 
-        $folderIndex = JPath::clean($folder . DIRECTORY_SEPARATOR . "index.html");
-        $buffer      = "<!DOCTYPE html><title></title>";
+        $params = JComponentHelper::getParams(self::$extension);
+        /** @var $params Joomla\Registry\Registry */
 
-        jimport('joomla.filesystem.file');
-        JFile::write($folderIndex, $buffer);
+        $folder = $path .DIRECTORY_SEPARATOR. $params->get("images_directory", "images/crowdfunding") .DIRECTORY_SEPARATOR. "temporary";
+
+        return JPath::clean($folder);
     }
 
     /**
@@ -476,6 +484,39 @@ abstract class CrowdFundingHelper
     }
 
     /**
+     * Generate a URI path to the temporary images folder.
+     *
+     * @return string
+     */
+    public static function getTemporaryImagesFolderUri()
+    {
+        $params = JComponentHelper::getParams(self::$extension);
+        /** @var $params Joomla\Registry\Registry */
+
+        $uriImages = $params->get("images_directory", "images/crowdfunding") . "/temporary";
+
+        return $uriImages;
+    }
+
+    /**
+     * Create a folder and index.html file.
+     *
+     * @param string $folder
+     *
+     * @return string
+     */
+    public static function createFolder($folder)
+    {
+        JFolder::create($folder);
+
+        $folderIndex = JPath::clean($folder . DIRECTORY_SEPARATOR . "index.html");
+        $buffer      = "<!DOCTYPE html><title></title>";
+
+        jimport('joomla.filesystem.file');
+        JFile::write($folderIndex, $buffer);
+    }
+
+    /**
      * Generate a URI string by a given list of parameters.
      *
      * @param array $params
@@ -486,7 +527,7 @@ abstract class CrowdFundingHelper
     {
         $result = "";
         foreach ($params as $key => $param) {
-            $result .= "&" . $key . "=" . $param;
+            $result .= "&" . rawurlencode($key) . "=" . rawurlencode($param);
         }
 
         return $result;
@@ -537,17 +578,13 @@ abstract class CrowdFundingHelper
         return $amount->parse();
     }
 
-    public static function prepareCategories($items, $numberInRow)
+    public static function prepareCategories($items)
     {
         $result = array();
 
         if (!empty($items)) {
-            $i = 0;
-            $row = 1;
 
             foreach ($items as $key => $item) {
-
-                $result[$row][$key] = $item;
 
                 // Decode parameters
                 if (!empty($item->params)) {
@@ -563,54 +600,39 @@ abstract class CrowdFundingHelper
                 }
 
                 // Generate lines by number of items in a row.
-                $result[$row][$key] = $item;
-
-                $i++;
-                if ($i == $numberInRow) {
-                    $row++;
-                    $i = 0;
-                }
+                $result[$key] = $item;
             }
         }
 
         return $result;
     }
 
-    public static function prepareItems($items, $numberInRow)
+    public static function prepareItems($items)
     {
         $result = array();
 
         if (!empty($items)) {
-            $i = 0;
-            $row = 1;
             foreach ($items as $key => $item) {
-
-                $result[$row][$key] = $item;
 
                 // Calculate funding end date
                 if (!empty($item->funding_days)) {
 
                     $fundingStartDate = new CrowdFundingDate($item->funding_start);
                     $endDate = $fundingStartDate->calculateEndDate($item->funding_days);
-                    $result[$row][$key]->funding_end = $endDate->format("Y-m-d");
+                    $item->funding_end = $endDate->format("Y-m-d");
 
                 }
 
                 // Calculate funded percentage.
                 $percent = new ITPrismMath();
                 $percent->calculatePercentage($item->funded, $item->goal, 0);
-                $result[$row][$key]->funded_percents = (string)$percent;
+                $item->funded_percents = (string)$percent;
 
                 // Calculate days left
                 $today = new CrowdFundingDate();
-                $result[$row][$key]->days_left       = $today->calculateDaysLeft($item->funding_days, $item->funding_start, $item->funding_end);
+                $item->days_left = $today->calculateDaysLeft($item->funding_days, $item->funding_start, $item->funding_end);
 
-                $i++;
-                if ($i == $numberInRow) {
-                    $row++;
-                    $i = 0;
-                }
-
+                $result[$key] = $item;
             }
         }
 
@@ -629,10 +651,8 @@ abstract class CrowdFundingHelper
     {
         // Get users IDs
         $usersIds = array();
-        foreach ($items as $row) {
-            foreach ($row as $item) {
-                $usersIds[] = $item->user_id;
-            }
+        foreach ($items as $item) {
+            $usersIds[] = $item->user_id;
         }
 
         // If there is now users, do not continue.

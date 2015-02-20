@@ -201,17 +201,18 @@ class CrowdFundingFilters
      * $options = $filters->getCountries();
      * </code>
      *
-     * @param string $value This is a column that will be used as a value of an option. Possible values: id, code or code4.
+     * @param string $index This is a column that will be used as a value of an option. Possible values: id, code or code4.
+     * @param bool $force Force loading data.
      *
      * @return array
      */
-    public function getCountries($value = "id")
+    public function getCountries($index = "id", $force = false)
     {
-        if (!isset($this->options["countries"])) {
+        if (!isset($this->options["countries"]) or $force) {
 
             $query = $this->db->getQuery(true);
 
-            switch ($value) {
+            switch ($index) {
 
                 case "code":
                     $query->select("a.code AS value, a.name AS text");

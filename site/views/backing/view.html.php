@@ -102,7 +102,7 @@ class CrowdFundingViewBacking extends JViewLegacy
         $paymentSession              = $this->app->getUserState($this->paymentSessionContext);
 
         // Create payment session object.
-        if (!$paymentSession) {
+        if (!$paymentSession or !isset($paymentSession->step1)) {
             $paymentSession        = new JData();
             $paymentSession->step1 = false;
         }
@@ -337,13 +337,16 @@ class CrowdFundingViewBacking extends JViewLegacy
 
         $item = new stdClass();
 
-        $item->id           = $this->item->id;
-        $item->title        = $this->item->title;
-        $item->slug         = $this->item->slug;
-        $item->catslug      = $this->item->catslug;
-        $item->rewardId     = $paymentSession->rewardId;
-        $item->amount       = $paymentSession->amount;
-        $item->currencyCode = $this->currency->getAbbr();
+        $item->id             = $this->item->id;
+        $item->title          = $this->item->title;
+        $item->slug           = $this->item->slug;
+        $item->catslug        = $this->item->catslug;
+        $item->rewardId       = $paymentSession->rewardId;
+        $item->amount         = $paymentSession->amount;
+        $item->currencyCode   = $this->currency->getAbbr();
+
+        $item->amountFormated = $this->amount->setValue($item->amount)->format();
+        $item->amountCurrency = $this->amount->setValue($item->amount)->formatCurrency();
 
         $this->item->event  = new stdClass();
 

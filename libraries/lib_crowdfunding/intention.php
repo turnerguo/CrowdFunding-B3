@@ -403,6 +403,30 @@ class CrowdFundingIntention
     }
 
     /**
+     * Set gateway name.
+     *
+     * <code>
+     * $intentionId  = 1;
+     *
+     * $intention    = new CrowdFundingIntention();
+     * $intention->setDb(JFactory::getDbo());
+     * $intention->load($intentionId);
+     *
+     * $intention->setGateway("PayPal");
+     * </code>
+     *
+     * @param string $name
+     *
+     * @return self
+     */
+    public function setGateway($name)
+    {
+        $this->gateway = $name;
+
+        return $this;
+    }
+
+    /**
      * Return gateway name.
      *
      * <code>
@@ -549,6 +573,38 @@ class CrowdFundingIntention
     public function setUniqueKey($key)
     {
         $this->unique_key = $key;
+
+        return $this;
+    }
+
+    /**
+     * Store the unique key into database.
+     *
+     * <code>
+     * $intentionId  = 1;
+     * $token        = "TOKEN1234";
+     *
+     * $intention    = new CrowdFundingIntention();
+     * $intention->setDb(JFactory::getDbo());
+     * $intention->load($intentionId);
+     *
+     * $intention->setUniqueKey($token);
+     * $intention->storeUniqueKey();
+     * </code>
+     *
+     * @return self
+     */
+    public function storeUniqueKey()
+    {
+        $query = $this->db->getQuery(true);
+
+        $query
+            ->update($this->db->quoteName("#__crowdf_intentions"))
+            ->set($this->db->quoteName("unique_key") ."=". $this->db->quote($this->unique_key))
+            ->where($this->db->quoteName("id") ."=". (int)$this->id);
+
+        $this->db->setQuery($query);
+        $this->db->execute();
 
         return $this;
     }

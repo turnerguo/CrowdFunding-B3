@@ -671,4 +671,42 @@ abstract class JHtmlCrowdFunding
 
         return implode("", $html);
     }
+
+    public static function profileName($name, $link = "", $verified = false)
+    {
+        $html = array();
+
+        if (!empty($link)) {
+            $html[] = '<a href="' . $link . '">';
+            $html[] = htmlspecialchars($name, ENT_QUOTES, "UTF-8");
+            $html[] = '</a>';
+        } else {
+            $html[] = htmlspecialchars($name, ENT_QUOTES, "UTF-8");
+        }
+
+        if ($verified) {
+            $html[] = '<i class="icon-ok-sign hasTooltip cursor_pointer" title="'.JText::_("COM_CROWDFUNDING_TOOLTIP_PROFILE_VERIFIED").'"></i>';
+        }
+
+        return implode("\n", $html);
+    }
+
+    public static function profileAvatar($avatar, $link = "", $options = array())
+    {
+        $class = (isset($options["class"])) ? 'class="'.$options["class"].'"' : "";
+
+        $html = array();
+
+        if (!empty($link)) {
+            $html[] = '<a href="' . $link . '" '.$class.'>';
+            $html[] = '<img class="media-object" src="'.$avatar.'" />';
+            $html[] = '</a>';
+        } else {
+            $html[] = '<a href="javascript: void(0);" '.$class.' />';
+            $html[] = '<img class="media-object" src="'.$avatar.'" />';
+            $html[] = '</a>';
+        }
+
+        return implode("\n", $html);
+    }
 }

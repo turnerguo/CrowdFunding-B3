@@ -28,14 +28,13 @@ class CrowdFundingControllerPayments extends JControllerLegacy
     protected $paymentProcess;
 
     protected $projectId;
-    protected $currency;
 
     public function __construct($config = array())
     {
         parent::__construct($config);
 
         $app = JFactory::getApplication();
-        /** @var $app JApplicationSite * */
+        /** @var $app JApplicationSite */
 
         // Get project id.
         $this->projectId = $this->input->getUint("pid");
@@ -66,13 +65,12 @@ class CrowdFundingControllerPayments extends JControllerLegacy
      * @param    string $prefix The class prefix. Optional.
      * @param    array  $config Configuration array for model. Optional.
      *
-     * @return    object    The model.
+     * @return    CrowdFundingModelPayments    The model.
      * @since    1.5
      */
-    public function getModel($name = 'Payments', $prefix = '', $config = array('ignore_request' => true))
+    public function getModel($name = 'Payments', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
-
         return $model;
     }
 
@@ -113,7 +111,9 @@ class CrowdFundingControllerPayments extends JControllerLegacy
         // Trigger the event
         try {
 
-            $item = $this->prepareItem($this->projectId, $params);
+            // Prepare project object.
+            $model   = $this->getModel();
+            $item    = $model->prepareItem($this->projectId, $params, $this->paymentProcess);
 
             $context = 'com_crowdfunding.payments.checkout.' . JString::strtolower($paymentService);
 
@@ -155,14 +155,19 @@ class CrowdFundingControllerPayments extends JControllerLegacy
         }
 
         $redirectUrl = JArrayHelper::getValue($output, "redirect_url");
+        $message     = JArrayHelper::getValue($output, "message");
         if (!$redirectUrl) {
             throw new UnexpectedValueException(JText::_("COM_CROWDFUNDING_ERROR_INVALID_REDIRECT_URL"));
         }
 
-        // Store the name of the payment service to session.
+        // Store the payment process data into the session.
         $app->setUserState($this->paymentProcessContext, $this->paymentProcess);
 
-        $this->setRedirect($redirectUrl);
+        if (!$message) {
+            $this->setRedirect($redirectUrl);
+        } else {
+            $this->setRedirect($redirectUrl, $message, "notice");
+        }
 
     }
 
@@ -185,8 +190,9 @@ class CrowdFundingControllerPayments extends JControllerLegacy
         // Trigger the event
         try {
 
-            // Create project object.
-            $item = $this->prepareItem($this->projectId, $params);
+            // Prepare project object.
+            $model   = $this->getModel();
+            $item    = $model->prepareItem($this->projectId, $params, $this->paymentProcess);
 
             $context = 'com_crowdfunding.payments.docheckout.' . JString::strtolower($paymentService);
 
@@ -211,7 +217,6 @@ class CrowdFundingControllerPayments extends JControllerLegacy
 
             $this->setMessage($e->getMessage(), "notice");
             $this->setRedirect(JRoute::_(CrowdFundingHelperRoute::getDiscoverRoute(), false));
-
             return;
 
         } catch (Exception $e) {
@@ -224,7 +229,6 @@ class CrowdFundingControllerPayments extends JControllerLegacy
             );
 
             throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_SYSTEM"));
-
         }
 
         $redirectUrl = JArrayHelper::getValue($output, "redirect_url");
@@ -233,47 +237,5 @@ class CrowdFundingControllerPayments extends JControllerLegacy
         }
 
         $this->setRedirect($redirectUrl);
-
-    }
-
-    /**
-     * @param int $projectId
-     * @param Joomla\Registry\Registry $params
-     *
-     * @return stdClass
-     * @throws UnexpectedValueException
-     */
-    protected function prepareItem($projectId, $params)
-    {
-        jimport("crowdfunding.project");
-        $project = new CrowdFundingProject(JFactory::getDbo());
-        $project->load($projectId);
-
-        if (!$project->getId()) {
-            throw new UnexpectedValueException(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"));
-        }
-
-        if ($project->isCompleted()) {
-            throw new UnexpectedValueException(JText::_("COM_CROWDFUNDING_ERROR_COMPLETED_PROJECT"));
-        }
-
-        // Get currency
-        jimport("crowdfunding.currency");
-        $currencyId     = $params->get("project_currency");
-        $this->currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $params);
-
-        $item = new stdClass();
-
-        $item->id       = $project->getId();
-        $item->title    = $project->getTitle();
-        $item->slug     = $project->getSlug();
-        $item->catslug  = $project->getCatSlug();
-        $item->rewardId = $this->paymentProcess->rewardId;
-        $item->amount   = $this->paymentProcess->amount;
-        $item->currency = $this->currency->getAbbr();
-        $item->starting_date = $project->getFundingStart();
-        $item->ending_date   = $project->getFundingEnd();
-
-        return $item;
     }
 }

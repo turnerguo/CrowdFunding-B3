@@ -186,5 +186,6 @@ defined('_JEXEC') or die;
                 </tr>
                 </tbody>
             </table>
+            <p class="alert alert-info cf-upgrade-info"><i class="icon-info"></i> <?php echo JText::_("COM_CROWDFUNDING_HOW_TO_UPGRADE"); ?></p>
         </div>
     </div>

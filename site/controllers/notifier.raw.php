@@ -48,7 +48,7 @@ class CrowdFundingControllerNotifier extends JControllerLegacy
         $fileName  = $registry->get("logger.file");
         $tableName = $registry->get("logger.table");
 
-        $file = JPath::clean(JFactory::getApplication()->get("log_path") . DIRECTORY_SEPARATOR . $fileName);
+        $file = JPath::clean($app->get("log_path") . DIRECTORY_SEPARATOR . $fileName);
 
         $this->log = new ITPrismLog();
         $this->log->addWriter(new ITPrismLogWriterDatabase(JFactory::getDbo(), $tableName));
@@ -96,17 +96,18 @@ class CrowdFundingControllerNotifier extends JControllerLegacy
         if ($this->params->get("debug_payment_disabled", 0)) {
             $error = JText::_("COM_CROWDFUNDING_ERROR_PAYMENT_HAS_BEEN_DISABLED");
             $error .= "\n" . JText::sprintf("COM_CROWDFUNDING_TRANSACTION_DATA", var_export($_REQUEST, true));
-            $this->log->add($error, "CONTROLLER_NOTIFIER_AJAX_ERROR");
+            $this->log->add($error, "CONTROLLER_NOTIFIER_ERROR");
             return;
         }
 
         // Get model object.
         $model = $this->getModel();
 
-        $transaction    = null;
-        $project        = null;
-        $reward         = null;
-        $paymentSession = null;
+        $transaction        = null;
+        $project            = null;
+        $reward             = null;
+        $paymentSession     = null;
+        $responseToService  = null;
 
         // Save data
         try {
@@ -121,10 +122,11 @@ class CrowdFundingControllerNotifier extends JControllerLegacy
             if (!empty($results)) {
                 foreach ($results as $result) {
                     if (!empty($result) and isset($result["transaction"])) {
-                        $transaction    = JArrayHelper::getValue($result, "transaction");
-                        $project        = JArrayHelper::getValue($result, "project");
-                        $reward         = JArrayHelper::getValue($result, "reward");
-                        $paymentSession = JArrayHelper::getValue($result, "payment_session");
+                        $transaction        = JArrayHelper::getValue($result, "transaction");
+                        $project            = JArrayHelper::getValue($result, "project");
+                        $reward             = JArrayHelper::getValue($result, "reward");
+                        $paymentSession     = JArrayHelper::getValue($result, "payment_session");
+                        $responseToService  = JArrayHelper::getValue($result, "response");
                         break;
                     }
                 }
@@ -133,10 +135,8 @@ class CrowdFundingControllerNotifier extends JControllerLegacy
             // If there is no transaction data, the status might be pending or another one.
             // So, we have to stop the script execution.
             if (empty($transaction)) {
-
                 // Remove the record of the payment session from database.
                 $model->closePaymentSession($paymentSession);
-
                 return;
             }
 
@@ -145,9 +145,9 @@ class CrowdFundingControllerNotifier extends JControllerLegacy
 
         } catch (Exception $e) {
 
-            $error = "ERROR MESSAGE: " .$e->getMessage() ."\n";
-            $error .= "INPUT:" . var_export($app->input, true) . "\n";
-            $this->log->add($error, "CONTROLLER_NOTIFIER_AJAX_ERROR");
+            $error     = "NOTIFIER ERROR: " .$e->getMessage() ."\n";
+            $errorData = "INPUT:" . var_export($app->input, true) . "\n";
+            $this->log->add($error, "CONTROLLER_NOTIFIER_AJAX_ERROR", $errorData);
 
             // Send notification about the error to the administrator.
             $model = $this->getModel();
@@ -158,6 +158,14 @@ class CrowdFundingControllerNotifier extends JControllerLegacy
         // Remove the record of the payment session from database.
         $model = $this->getModel();
         $model->closePaymentSession($paymentSession);
+
+        // Send a specific response to a payment service.
+        if (!empty($responseToService) and is_string($responseToService)) {
+            echo $responseToService;
+        }
+
+        // Stop the execution of the script.
+        $app->close();
     }
 
     /**
@@ -165,6 +173,9 @@ class CrowdFundingControllerNotifier extends JControllerLegacy
      */
     public function notifyAjax()
     {
+        $app = JFactory::getApplication();
+        /** @var $app JApplicationSite */
+
         jimport('itprism.response.json');
         $response = new ITPrismResponseJson();
 
@@ -183,7 +194,7 @@ class CrowdFundingControllerNotifier extends JControllerLegacy
                 ->failure();
 
             echo $response;
-            JFactory::getApplication()->close();
+            $app->close();
         }
 
         // Get model object.
@@ -234,7 +245,7 @@ class CrowdFundingControllerNotifier extends JControllerLegacy
                     ->failure();
 
                 echo $response;
-                JFactory::getApplication()->close();
+                $app->close();
             }
 
             // Trigger the event onAfterPayment
@@ -246,7 +257,10 @@ class CrowdFundingControllerNotifier extends JControllerLegacy
         } catch (Exception $e) {
 
             // Store log data to the database.
-            $this->log->add(JText::_("COM_CROWDFUNDING_ERROR_SYSTEM"), "CONTROLLER_NOTIFIER_AJAX_ERROR", $e->getMessage());
+            $error     = "AJAX NOTIFIER ERROR: " .$e->getMessage() ."\n";
+            $errorData = "INPUT:" . var_export($app->input, true) . "\n";
+
+            $this->log->add($error, "CONTROLLER_NOTIFIER_AJAX_ERROR", $errorData);
 
             // Remove the record of the payment session from database.
             $model->closePaymentSession($paymentSession);
@@ -261,7 +275,7 @@ class CrowdFundingControllerNotifier extends JControllerLegacy
             $model->sendMailToAdministrator();
 
             echo $response;
-            JFactory::getApplication()->close();
+            $app->close();
 
         }
 
@@ -283,6 +297,6 @@ class CrowdFundingControllerNotifier extends JControllerLegacy
             ->setRedirectUrl($redirectUrl);
 
         echo $response;
-        JFactory::getApplication()->close();
+        $app->close();
     }
 }

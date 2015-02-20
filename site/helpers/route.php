@@ -68,7 +68,8 @@ abstract class CrowdFundingHelperRoute
 
             if ($category) {
                 $needles['category']   = array_reverse($category->getPath());
-                $needles['categories'][] = 0;
+                $needles['categories'] = array(0);
+                $needles['discover']   = array(0);
                 $link .= '&catid=' . $catid;
             }
         }
@@ -155,6 +156,36 @@ abstract class CrowdFundingHelperRoute
     }
 
     /**
+     * This method route item in the view "report".
+     *
+     * @param int $id
+     *
+     * @return string
+     */
+    public static function getReportRoute($id = 0)
+    {
+        $needles = array(
+            'report' => array(0),
+        );
+
+        //Create the link
+        $link = 'index.php?option=com_crowdfunding&view=report';
+
+        if ($id) {
+            $link .= "&id=".(int)$id;
+        }
+
+        // Looking for menu item (Itemid)
+        if ($item = self::findItem($needles)) {
+            $link .= '&Itemid=' . $item;
+        } elseif ($item = self::findItem()) { // Get the menu item (Itemid) from the active (current) item.
+            $link .= '&Itemid=' . $item;
+        }
+
+        return $link;
+    }
+
+    /**
      * @param    int    $id    The id of the item.
      * @param    int    $catid The id of the category.
      * @param    string $layout
@@ -187,7 +218,8 @@ abstract class CrowdFundingHelperRoute
 
             if ($category) {
                 $needles['category']   = array_reverse($category->getPath());
-                $needles['categories'][] = 0;
+                $needles['categories'] = array(0);
+                $needles['discover']   = array(0);
                 $link .= '&catid=' . $catid;
             }
         }
@@ -236,13 +268,15 @@ abstract class CrowdFundingHelperRoute
 
         //Create the link
         $link = 'index.php?option=com_crowdfunding&view=embed&id=' . $id;
+
         if ($catid > 1) {
             $categories = JCategories::getInstance('crowdfunding');
             $category   = $categories->get($catid);
 
             if ($category) {
                 $needles['category']   = array_reverse($category->getPath());
-                $needles['categories'][] = 0;
+                $needles['categories'] = array(0);
+                $needles['discover']   = array(0);
                 $link .= '&catid=' . $catid;
             }
         }
@@ -293,9 +327,11 @@ abstract class CrowdFundingHelperRoute
     /**
      * Prepare a link to discover page.
      *
+     * @param array $params Parameters that should be added to the URI.
+     *
      * @return string
      */
-    public static function getDiscoverRoute()
+    public static function getDiscoverRoute($params = array())
     {
         $needles = array(
             'discover' => array(0)
@@ -303,6 +339,10 @@ abstract class CrowdFundingHelperRoute
 
         //Create the link
         $link = 'index.php?option=com_crowdfunding&view=discover';
+
+        if (!empty($params)) {
+            $link .= CrowdFundingHelper::generateUrlParams($params);
+        }
 
         // Looking for menu item (Itemid)
         if ($item = self::findItem($needles)) {
@@ -556,5 +596,9 @@ abstract class CrowdFundingHelperRoute
         self::$projectsAliases[$id] = $result;
 
         return self::$projectsAliases[$id];
+    }
+
+    public function prepareParameters() {
+
     }
 }

@@ -25,12 +25,16 @@ defined('_JEXEC') or die;
                 </div>
             <?php } ?>
         </td>
-        <td class="hidden-phone"><?php echo JHtml::_("crowdfunding.name", $item->sender); ?></td>
-        <td class="hidden-phone"><?php echo $this->escape($item->beneficiary); ?></td>
         <td class="hidden-phone">
             <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=transactions&filter_search=pid:" . $item->project_id); ?>">
                 <?php echo JHtmlString::truncate(strip_tags($item->project), 53); ?>
             </a>
+        </td>
+        <td class="hidden-phone">
+            <?php echo JHtml::_("crowdfundingbackend.name", $item->sender, $item->investor_id); ?>
+        </td>
+        <td class="hidden-phone">
+            <?php echo JHtml::_("crowdfundingbackend.name", $item->beneficiary, $item->receiver_id); ?>
         </td>
         <td><?php echo JHtml::_('crowdfundingbackend.transactionAmount', $item, $this->currencies); ?></td>
         <td class="hidden-phone"><?php echo $item->txn_date; ?></td>

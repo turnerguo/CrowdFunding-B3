@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_logs` (
   `type` varchar(64) NOT NULL,
   `record_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__crowdf_payment_sessions` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_projects` (
   `image` varchar(64) NOT NULL DEFAULT '',
   `image_square` varchar(64) NOT NULL DEFAULT '',
   `image_small` varchar(64) NOT NULL DEFAULT '',
-  `location` int(10) unsigned NOT NULL DEFAULT '0',
+  `location_id` int(10) unsigned NOT NULL DEFAULT '0',
   `goal` decimal(10,3) unsigned NOT NULL DEFAULT '0.000',
   `funded` decimal(10,3) unsigned NOT NULL DEFAULT '0.000',
   `funding_type` enum('FIXED','FLEXIBLE') NOT NULL DEFAULT 'FIXED',
@@ -132,7 +132,18 @@ CREATE TABLE IF NOT EXISTS `#__crowdf_projects` (
   KEY `catid` (`catid`),
   KEY `user_id` (`user_id`),
   KEY `alias` (`alias`),
-  KEY `location` (`location`)
+  KEY `location` (`location_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `#__crowdf_reports` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `subject` varchar(128) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `email` varchar(128) DEFAULT NULL,
+  `record_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `user_id` int(11) NOT NULL DEFAULT '0',
+  `project_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__crowdf_rewards` (

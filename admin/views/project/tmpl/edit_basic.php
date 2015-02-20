@@ -38,4 +38,4 @@ defined('_JEXEC') or die;
 <?php echo $this->form->getControlGroup('user_id'); ?>
 <?php echo $this->form->getControlGroup('id'); ?>
 <?php echo $this->form->getControlGroup('short_desc'); ?>
-<?php echo $this->form->getControlGroup('location'); ?>
+<?php echo $this->form->getControlGroup('location_id'); ?>

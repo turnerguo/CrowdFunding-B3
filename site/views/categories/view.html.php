@@ -60,7 +60,7 @@ class CrowdFundingViewCategories extends JViewLegacy
         $this->params     = $this->state->get("params");
 
         $this->displayProjectsNumber = $this->params->get("categories_display_projects_number", 0);
-        $this->numberInRow = $this->params->get("categories_items_row", 3);
+        $this->numberInRow = $this->params->get("categories_categories_row", 3);
 
         // Get description length
         $this->descriptionLength = $this->params->get("categories_description_length", 128);
@@ -75,7 +75,7 @@ class CrowdFundingViewCategories extends JViewLegacy
             $categories = new CrowdFundingCategories();
             $categories->setDb(JFactory::getDbo());
 
-            $this->projectsNumber = $categories->getProjectsNumber($ids, array("state" => 1));
+            $this->projectsNumber = $categories->getProjectsNumber($ids, array("state" => CrowdFundingConstants::PUBLISHED, "approved" => CrowdFundingConstants::APPROVED));
         }
 
         // Prepare items parameters.

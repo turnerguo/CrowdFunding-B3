@@ -63,18 +63,15 @@ class CrowdFundingViewDetails extends JViewLegacy
         $this->item   = $this->get("Item");
 
         // Get params
-        /** @var  $params Joomla\Registry\Registry */
-        $params = $this->state->get("params");
-        $this->params = $params;
+        $this->params = $this->state->get("params");
+        /** @var  $this->params Joomla\Registry\Registry */
 
         $model  = $this->getModel();
         $userId = JFactory::getUser()->get("id");
 
         if (!$this->item or $model->isRestricted($this->item, $userId)) {
-
             $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"), "notice");
             $app->redirect(JRoute::_('index.php?option=com_crowdfunding&view=discover', false));
-
             return;
         }
 
@@ -217,7 +214,7 @@ class CrowdFundingViewDetails extends JViewLegacy
         if ($this->displayAmounts) {
             jimport("crowdfunding.currency");
             $currencyId = $this->params->get("project_currency");
-            $this->currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId);
+            $this->currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $this->params);
         }
 
         // Prepare integration. Load avatars and profiles.

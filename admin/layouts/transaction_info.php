@@ -30,7 +30,7 @@ defined('_JEXEC') or die;
             <tr>
                 <th><?php echo $this->escape($k); ?></th>
                 <?php if (!is_array($v)) {?>
-                <td><?php echo $this->escape($v); ?></td>
+                <td><?php echo (is_bool($v)) ? (!$v) ? "false" : "true" : $this->escape($v); ?></td>
                 <?php } else { ?>
                 <td>
                     <pre>

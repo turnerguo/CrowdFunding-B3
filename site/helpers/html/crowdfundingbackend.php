@@ -295,4 +295,23 @@ abstract class JHtmlCrowdFundingBackend
 
         return $output;
     }
+
+    public static function name($name, $userId = 0)
+    {
+        $output = array();
+
+        if (!empty($name)) {
+            if (!empty($userId)) {
+                $output[] = '<a href="' . JRoute::_("index.php?option=com_crowdfunding&view=users&filter_search=id:" . (int)$userId) . '">';
+                $output[] = htmlspecialchars($name, ENT_QUOTES, "UTF-8");
+                $output[] = '</a>';
+            } else {
+                $output[] = htmlspecialchars($name, ENT_QUOTES, "UTF-8");
+            }
+        } else {
+            $output[] = JText::_("COM_CROWDFUNDING_ANONYMOUS");
+        }
+
+        return implode("\n", $output);
+    }
 }

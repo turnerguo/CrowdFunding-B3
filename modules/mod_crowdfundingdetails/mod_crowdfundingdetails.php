@@ -15,13 +15,10 @@ jimport("crowdfunding.init");
 
 $moduleclassSfx = htmlspecialchars($params->get('moduleclass_sfx'));
 
-$app = JFactory::getApplication();
-/** @var $app JApplicationSite */
-
 $option = $app->input->get("option");
 $view   = $app->input->get("view");
 
-$allowedViews = array("backing", "embed");
+$allowedViews = array("backing", "embed", "report");
 
 // If option is not "com_crowdfunding" and view is not one of allowed,
 // do not display anything.
@@ -32,7 +29,6 @@ if ((strcmp($option, "com_crowdfunding") != 0) or (!in_array($view, $allowedView
 
 $projectId = $app->input->getInt("id");
 if (!$projectId) {
-    echo JText::_("MOD_CROWDFUNDINGDETAILS_ERROR_INVALID_PROJECT");
     return;
 }
 
@@ -41,7 +37,6 @@ jimport("crowdfunding.project");
 $project = CrowdFundingProject::getInstance(JFactory::getDbo(), $projectId);
 
 if (!$project->getId()) {
-    echo JText::_("MOD_CROWDFUNDINGDETAILS_ERROR_INVALID_PROJECT");
     return;
 }
 

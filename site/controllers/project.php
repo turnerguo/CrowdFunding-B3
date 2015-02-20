@@ -20,8 +20,6 @@ jimport('itprism.controller.form.frontend');
  */
 class CrowdFundingControllerProject extends ITPrismControllerFormFrontend
 {
-    protected $isNew;
-
     /**
      * Method to get a model object, loading it if required.
      *
@@ -43,6 +41,9 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend
     {
         // Check for request forgeries.
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+        $app = JFactory::getApplication();
+        /** @var $app JApplicationSite */
 
         $userId = JFactory::getUser()->get("id");
         if (!$userId) {
@@ -79,8 +80,6 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend
 
         // Test if the data is valid.
         $validData = $model->validate($form, $data);
-
-        // Check for errors.
         if ($validData === false) {
             $this->displayNotice($form->getErrors(), $redirectOptions);
             return;
@@ -96,8 +95,6 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend
                 $this->displayWarning(JText::_('COM_CROWDFUNDING_ERROR_INVALID_PROJECT'), $redirectOptions);
                 return;
             }
-
-            $this->isNew = false;
 
         } else { // Verify terms of use during the process of creating a project.
 
@@ -127,29 +124,34 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend
 
         try {
 
-            // Get image
-            $image = $this->input->files->get('jform', array(), 'array');
-            $image = JArrayHelper::getValue($image, "image");
-
-            // Upload image
-            if (!empty($image['name'])) {
-
-                $imageNames = $model->uploadImage($image);
-                if (!empty($imageNames["image"])) {
-                    $validData = array_merge($validData, $imageNames);
-                }
-
-            }
-
+            // Store the project data.
             $itemId = $model->save($validData);
 
+            // Set the project ID to redirect options.
             $redirectOptions["id"] = $itemId;
+
+            // Get the images from the session.
+            $images = $app->getUserState(CrowdFundingConstants::CROPPED_IMAGES_CONTEXT);
+
+            // Store the images to the project record.
+            if (!empty($images) and !empty($itemId)) {
+
+                // Get the folder where the images will be stored
+                $temporaryFolder = CrowdFundingHelper::getTemporaryImagesFolder();
+
+                // Move the pictures from the temporary folder to the images folder.
+                // Store the names of the pictures in project record.
+                $model->updateImages($itemId, $images, $temporaryFolder);
+
+                // Remove the pictures from the session.
+                $app->setUserState(CrowdFundingConstants::CROPPED_IMAGES_CONTEXT, null);
+            }
 
         } catch (RuntimeException $e) {
             $this->displayWarning($e->getMessage(), $redirectOptions);
             return;
         } catch (InvalidArgumentException $e) {
-            $this->displayWarning(JText::_("COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED"), $redirectOptions);
+            $this->displayWarning($e->getMessage(), $redirectOptions);
             return;
         } catch (Exception $e) {
             JLog::add($e->getMessage());

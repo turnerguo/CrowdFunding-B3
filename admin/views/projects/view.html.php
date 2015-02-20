@@ -217,8 +217,8 @@ class CrowdFundingViewProjects extends JViewLegacy
         $this->document->setTitle(JText::_('COM_CROWDFUNDING_PROJECTS_MANAGER'));
 
         // Scripts
-        JHtml::_('behavior.multiselect');
         JHtml::_('bootstrap.tooltip');
+        JHtml::_('behavior.multiselect');
 
         JHtml::_('formbehavior.chosen', 'select');
 

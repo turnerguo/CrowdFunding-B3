@@ -36,7 +36,7 @@ defined('_JEXEC') or die;
 	</div>
 	<div class="clearfix"></div>
     <div class="cfinfo-funding-type">
-        <?php echo JText::_("MOD_CROWDFUNDINGINFO_FUNDING_TYPE_".JString::strtoupper($project->getFundingType())); ?>
+        <?php echo JText::_("MOD_CROWDFUNDINGINFO_FUNDING_TYPE_". JString::strtoupper($project->getFundingType())); ?>
     </div>
     
 	<?php if($project->isCompleted()) {?>

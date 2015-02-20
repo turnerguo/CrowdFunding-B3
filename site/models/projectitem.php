@@ -67,7 +67,7 @@ class CrowdFundingModelProjectItem extends JModelItem
 
             // Select the required fields from the table.
             $query->select(
-                'a.id, a.title, a.alias, a.short_desc, a.description, a.image, a.image_square, a.image_small, a.location, ' .
+                'a.id, a.title, a.alias, a.short_desc, a.description, a.image, a.image_square, a.image_small, a.location_id, ' .
                 'a.goal, a.funded, a.funding_type, a.funding_start, a.funding_end, a.funding_days, ' .
                 'a.pitch_video, a.pitch_image, a.hits, a.created, a.featured, a.published, a.approved, a.ordering, a.catid, a.type_id, a.user_id, ' .
                 $query->concatenate(array("a.id", "a.alias"), ":") . ' AS slug, ' .

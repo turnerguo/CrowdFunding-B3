@@ -90,7 +90,7 @@ class CrowdFundingModelComments extends JModelList
     protected function getListQuery()
     {
         $db = $this->getDbo();
-        /** @var $db JDatabaseMySQLi * */
+        /** @var $db JDatabaseDriver */
 
         // Create a new query object.
         $query = $db->getQuery(true);

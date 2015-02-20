@@ -13,9 +13,9 @@
             <field name="items_row" type="text" default="3" label="COM_CROWDFUNDING_ITEMS_ROW" description="COM_CROWDFUNDING_ITEMS_ROW_DESC" />
             <field name="items_limit" type="text" default="20" label="COM_CROWDFUNDING_ITEMS_LIMIT" description="COM_CROWDFUNDING_ITEMS_LIMIT_DESC" />
             <field name="items_order" type="list" default="ordering" label="COM_CROWDFUNDING_ITEMS_ORDER" description="COM_CROWDFUNDING_ITEMS_ORDER_DESC">
-                <option value="ordering">COM_CROWDFUNDING_ORDERING</option>
-                <option value="start_date">COM_CROWDFUNDING_START_DATE</option>
-                <option value="added">COM_CROWDFUNDING_ADDED</option>
+                <option value="0">COM_CROWDFUNDING_ORDERING</option>
+                <option value="2">COM_CROWDFUNDING_ADDED</option>
+                <option value="3">COM_CROWDFUNDING_START_DATE</option>
             </field>
             <field name="items_order_direction" type="list" default="desc" label="COM_CROWDFUNDING_ITEMS_ORDER_DIRECTION" description="COM_CROWDFUNDING_ITEMS_ORDER_DIRECTION_DESC">
                 <option value="asc">COM_CROWDFUNDING_ASCENDING</option>

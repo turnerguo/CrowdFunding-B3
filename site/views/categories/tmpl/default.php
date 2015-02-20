@@ -18,9 +18,7 @@ defined('_JEXEC') or die;?>
         <p class="alert alert-warning"><?php echo JText::_("COM_CROWDFUNDING_NO_ITEMS_MATCHING_QUERY"); ?></p>
     <?php } ?>
 
-    <div class="row-fluid">
     <?php echo $this->loadTemplate($this->templateView); ?>
-    </div>
 
 </div>
 <div class="clearfix"></div>

@@ -19,8 +19,6 @@ JLoader::register(
 
 $moduleclassSfx = htmlspecialchars($params->get('moduleclass_sfx'));
 
-$app = JFactory::getApplication();
-
 $option = $app->input->get("option");
 $view   = $app->input->get("view");
 

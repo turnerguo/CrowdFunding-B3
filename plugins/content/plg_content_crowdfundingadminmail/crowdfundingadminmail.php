@@ -10,11 +10,6 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.plugin.plugin');
-
-jimport('itprism.init');
-jimport('crowdfunding.init');
-
 /**
  * This plugin send notification mails to the administrator.
  *
@@ -33,10 +28,13 @@ class plgContentCrowdFundingAdminMail extends JPlugin
      */
     public $params;
 
-    protected $name = "Content - CrowdFunding - Admin Mail";
+    protected $name = "Content - CrowdFunding Admin Mail";
 
     public function init()
     {
+        jimport('itprism.init');
+        jimport('crowdfunding.init');
+
         // Prepare log object
         $registry = JRegistry::getInstance("com_crowdfunding");
         /** @var $registry Joomla\Registry\Registry */
@@ -67,8 +65,8 @@ class plgContentCrowdFundingAdminMail extends JPlugin
      * If I return FALSE, an error message will be displayed in the browser.
      *
      * @param string $context
-     * @param array $ids
-     * @param int $state
+     * @param array  $ids
+     * @param int    $state
      *
      * @return bool|null
      */
@@ -97,6 +95,7 @@ class plgContentCrowdFundingAdminMail extends JPlugin
                 "PLG_CONTENT_ADMIN_EMAIL_ERROR",
                 JText::_("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_INVALID_EMAIL_TEMPLATE_NOTE")
             );
+
             return null;
         }
 
@@ -111,6 +110,7 @@ class plgContentCrowdFundingAdminMail extends JPlugin
                     "PLG_CONTENT_ADMIN_EMAIL_ERROR",
                     JText::_("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_INVALID_PROJECTS_NOTE")
                 );
+
                 return false;
             }
 
@@ -120,7 +120,7 @@ class plgContentCrowdFundingAdminMail extends JPlugin
             foreach ($projects as $project) {
 
                 // Send email to the administrator.
-                $result = $this->sendMail($project, $emailId);
+                $result = $this->sendProjectMail($project, $emailId);
 
                 // Check for error.
                 if ($result !== true) {
@@ -138,22 +138,22 @@ class plgContentCrowdFundingAdminMail extends JPlugin
      * If I return NULL, an message will not be displayed in the browser.
      * If I return FALSE, an error message will be displayed in the browser.
      *
-     * @param string                   $context
-     * @param CrowdFundingTableProject $project
-     * @param boolean                  $isNew
+     * @param string  $context
+     * @param CrowdFundingTableProject  $project
+     * @param boolean $isNew
      *
      * @return null|boolean
      */
     public function onContentAfterSave($context, &$project, $isNew)
     {
+        if (strcmp("com_crowdfunding.basic", $context) != 0) {
+            return null;
+        }
+
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
 
         if ($app->isAdmin()) {
-            return null;
-        }
-
-        if (strcmp("com_crowdfunding.project", $context) != 0) {
             return null;
         }
 
@@ -169,6 +169,7 @@ class plgContentCrowdFundingAdminMail extends JPlugin
                 "PLG_CONTENT_ADMIN_EMAIL_ERROR",
                 JText::_("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_INVALID_EMAIL_TEMPLATE_NOTE")
             );
+
             return null;
         }
 
@@ -178,7 +179,7 @@ class plgContentCrowdFundingAdminMail extends JPlugin
             jimport("crowdfunding.email");
 
             // Send email to the administrator.
-            $return = $this->sendMail($project, $emailId);
+            $return = $this->sendProjectMail($project, $emailId);
 
             // Check for error.
             if ($return !== true) {
@@ -187,6 +188,70 @@ class plgContentCrowdFundingAdminMail extends JPlugin
                     "PLG_CONTENT_ADMIN_EMAIL_ERROR",
                     JText::_("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_INVALID_PROJECTS_NOTE")
                 );
+
+                return null;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * This method sends notification mail to the administrator when someone reports a project.
+     *
+     * If I return NULL, an message will not be displayed in the browser.
+     * If I return FALSE, an error message will be displayed in the browser.
+     *
+     * @param string  $context
+     * @param CrowdFundingTableReport  $report
+     *
+     * @return null|boolean
+     */
+    public function onContentAfterReport($context, &$report)
+    {
+        if (strcmp("com_crowdfunding.report", $context) != 0) {
+            return null;
+        }
+
+        $app = JFactory::getApplication();
+        /** @var $app JApplicationSite */
+
+        if ($app->isAdmin()) {
+            return null;
+        }
+
+        // Initialize plugin
+        $this->init();
+
+        // Check for enabled option for sending mail
+        // when user reports a project.
+        $emailId = $this->params->get("send_when_report", 0);
+        if (!$emailId) {
+            $this->log->add(
+                JText::sprintf("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_INVALID_EMAIL_TEMPLATE", $this->name),
+                "PLG_CONTENT_ADMIN_EMAIL_ERROR",
+                JText::_("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_INVALID_EMAIL_TEMPLATE_NOTE")
+            );
+
+            return null;
+        }
+
+        if (!empty($report->id)) {
+
+            // Load class CrowdFundingEmail.
+            jimport("crowdfunding.email");
+
+            // Send email to the administrator.
+            $return = $this->sendReportMail($report, $emailId);
+
+            // Check for error.
+            if ($return !== true) {
+                $this->log->add(
+                    JText::sprintf("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_INVALID_PROJECTS", $this->name),
+                    "PLG_CONTENT_ADMIN_EMAIL_ERROR",
+                    JText::_("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_INVALID_PROJECTS_NOTE")
+                );
+
                 return null;
             }
         }
@@ -225,7 +290,7 @@ class plgContentCrowdFundingAdminMail extends JPlugin
         return $results;
     }
 
-    protected function sendMail($project, $emailId)
+    protected function sendProjectMail($project, $emailId)
     {
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
@@ -266,7 +331,7 @@ class plgContentCrowdFundingAdminMail extends JPlugin
 
         $recipientId = $componentParams->get("administrator_id");
         if (!empty($recipientId)) {
-            $recipient = JFactory::getUser($recipientId);
+            $recipient     = JFactory::getUser($recipientId);
             $recipientName = $recipient->get("name");
             $recipientMail = $recipient->get("email");
         } else {
@@ -298,7 +363,92 @@ class plgContentCrowdFundingAdminMail extends JPlugin
                 "PLG_CONTENT_ADMIN_EMAIL_ERROR",
                 JText::sprintf("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_SEND_MAIL_NOTE", $mailer->ErrorInfo)
             );
-            
+
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function sendReportMail($report, $emailId)
+    {
+        $app = JFactory::getApplication();
+        /** @var $app JApplicationSite */
+
+        // Send mail to the administrator
+        if (!$emailId) {
+            return false;
+        }
+
+        // Get website
+        $uri     = JUri::getInstance();
+        $website = $uri->toString(array("scheme", "host"));
+
+        $emailMode = $this->params->get("email_mode", "plain");
+
+        // Get project
+        $project = CrowdFundingProject::getInstance(JFactory::getDbo(), $report->project_id);
+
+        // Prepare data for parsing
+        $data = array(
+            "site_name"  => $app->get("sitename"),
+            "site_url"   => JUri::root(),
+            "item_title" => $project->getTitle(),
+            "item_url"   => $website . JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($project->getSlug(), $project->getCatSlug())),
+            "report_subject"     => $report->subject,
+            "report_description" => $report->description
+        );
+
+        $email = new CrowdFundingEmail();
+        $email->setDb(JFactory::getDbo());
+        $email->load($emailId);
+
+        if (!$email->getSenderName()) {
+            $email->setSenderName($app->get("fromname"));
+        }
+        if (!$email->getSenderEmail()) {
+            $email->setSenderEmail($app->get("mailfrom"));
+        }
+
+        // Prepare recipient data.
+        $componentParams = JComponentHelper::getParams("com_crowdfunding");
+        /** @var  $componentParams Joomla\Registry\Registry */
+
+        $recipientId = $componentParams->get("administrator_id");
+        if (!empty($recipientId)) {
+            $recipient     = JFactory::getUser($recipientId);
+            $recipientName = $recipient->get("name");
+            $recipientMail = $recipient->get("email");
+        } else {
+            $recipientName = $app->get("fromname");
+            $recipientMail = $app->get("mailfrom");
+        }
+
+        // Prepare data for parsing
+        $data["sender_name"]     = $email->getSenderName();
+        $data["sender_email"]    = $email->getSenderEmail();
+        $data["recipient_name"]  = $recipientName;
+        $data["recipient_email"] = $recipientMail;
+
+        $email->parse($data);
+        $subject = $email->getSubject();
+        $body    = $email->getBody($emailMode);
+
+        $mailer = JFactory::getMailer();
+        if (strcmp("html", $emailMode) == 0) { // Send as HTML message
+            $result = $mailer->sendMail($email->getSenderEmail(), $email->getSenderName(), $recipientMail, $subject, $body, CrowdFundingConstants::MAIL_MODE_HTML);
+        } else { // Send as plain text.
+            $result = $mailer->sendMail($email->getSenderEmail(), $email->getSenderName(), $recipientMail, $subject, $body, CrowdFundingConstants::MAIL_MODE_PLAIN);
+        }
+
+        // Log the error.
+        if ($result !== true) {
+            $this->log->add(
+                JText::sprintf("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_SEND_MAIL", $this->name),
+                "PLG_CONTENT_ADMIN_EMAIL_ERROR",
+                JText::sprintf("PLG_CONTENT_CROWDFUNDINGADMINMAIL_ERROR_SEND_MAIL_NOTE", $mailer->ErrorInfo)
+            );
+
             return false;
         }
 

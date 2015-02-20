@@ -17,6 +17,11 @@ defined('JPATH_PLATFORM') or die;
  */
 class CrowdFundingProjects implements Iterator, Countable, ArrayAccess
 {
+    /**
+     * An array that contains the items.
+     *
+     * @var array
+     */
     protected $items = array();
 
     /**
@@ -62,7 +67,7 @@ class CrowdFundingProjects implements Iterator, Countable, ArrayAccess
     }
 
     /**
-     * Load projects from database.
+     * Load projects from database by IDs.
      *
      * <code>
      * $ids = array(1,2,3);
@@ -85,28 +90,112 @@ class CrowdFundingProjects implements Iterator, Countable, ArrayAccess
      * @param array $ids
      * @param array $options
      *
+     * @return array
+     *
      * @throws UnexpectedValueException
      */
-    public function load($ids = array(), $options = array())
+    public function load(array $ids, $options = array())
     {
-        // Set the newest ids.
-        if (!is_array($ids)) {
-            throw new UnexpectedValueException(JText::_("LIB_CROWDFUNDING_PROJECTS_IDS_ARRAY"));
-        }
-
         JArrayHelper::toInteger($ids);
         if (!$ids) {
             return;
         }
 
+        // Prepare and return main query.
+        $query = $this->getQuery();
+
+        // Prepare the query to load project by IDs.
+        $query->where("a.id IN ( " . implode(",", $ids) . " )");
+
+        // Prepare project states in the query.
+        $this->prepareQueryStates($query, $options);
+
+        $this->db->setQuery($query);
+        $results = $this->db->loadObjectList();
+
+        if (!$results) {
+            $results = array();
+        }
+
+        $this->items = $results;
+    }
+
+    /**
+     * Load projects from database.
+     *
+     * <code>
+     * $phrase  = "Gamification";
+     *
+     * $options = array(
+     *  "published" => CrowdFundingConstants::PUBLISHED,
+     *  "approved" => CrowdFundingConstants::APPROVED
+     * );
+     *
+     * $projects    = new CrowdFundingProjects();
+     * $projects->setDb(JFactory::getDbo());
+     * $projects->loadByString($phrase, $options);
+     *
+     * foreach ($projects as $project) {
+     *      echo $project->title;
+     *      echo $project->funding_start;
+     * }
+     * </code>
+     *
+     * @param string $phrase
+     * @param array $options
+     *
+     * @return array
+     */
+    public function loadByString($phrase, $options = array())
+    {
+        // Prepare and return main query.
+        $query = $this->getQuery();
+
+        // Prepare LIKE filter.
+        $escaped = $this->db->escape($phrase, true);
+        $quoted  = $this->db->quote("%" . $escaped . "%", false);
+        $query->where("a.title LIKE ". $quoted);
+
+        // Prepare project states in the query.
+        $this->prepareQueryStates($query, $options);
+
+        $query->order("a.title ASC");
+
+        $this->db->setQuery($query);
+        $results = $this->db->loadObjectList();
+
+        if (!$results) {
+            $results = array();
+        }
+
+        $this->items = $results;
+    }
+
+    /**
+     * Prepare the main query.
+     *
+     * @return JDatabaseQuery
+     */
+    protected function getQuery()
+    {
         // Load project data
         $query = $this->db->getQuery(true);
 
         $query
             ->select("a.id, a.title, a.alias")
-            ->from($this->db->quoteName("#__crowdf_projects", "a"))
-            ->where("a.id IN ( " . implode(",", $ids) . " )");
+            ->from($this->db->quoteName("#__crowdf_projects", "a"));
 
+        return $query;
+    }
+
+    /**
+     * Prepare the state of the project in where clause of the query.
+     *
+     * @param JDatabaseQuery $query
+     * @param array $options
+     */
+    protected function prepareQueryStates(&$query, $options = array())
+    {
         // Filter by state published.
         $published = JArrayHelper::getValue($options, "published", 0, "int");
         if (!empty($published)) {
@@ -118,15 +207,6 @@ class CrowdFundingProjects implements Iterator, Countable, ArrayAccess
         if (!empty($approved)) {
             $query->where("a.approved = " . (int)$approved);
         }
-
-        $this->db->setQuery($query);
-        $results = $this->db->loadObjectList();
-
-        if (!$results) {
-            $results = array();
-        }
-
-        $this->items = $results;
     }
 
     public function rewind()
@@ -284,5 +364,40 @@ class CrowdFundingProjects implements Iterator, Countable, ArrayAccess
         }
 
         return $results;
+    }
+
+    /**
+     * Prepare an array that will be used as options in drop down form element.
+     *
+     * <code>
+     * $phrase  = "Gamification";
+     *
+     * $options = array(
+     *  "published" => CrowdFundingConstants::PUBLISHED,
+     *  "approved" => CrowdFundingConstants::APPROVED
+     * );
+     *
+     * $projects    = new CrowdFundingProjects();
+     * $projects->setDb(JFactory::getDbo());
+     * $projects->loadByString($phrase, $options);
+     *
+     * $formOptions = $projects->toOptions();
+     *
+     * </code>
+     *
+     * @return array
+     */
+    public function toOptions()
+    {
+        $options = array();
+
+        foreach ($this->items as $item) {
+            $options[] = array(
+                "id"   => $item->id,
+                "name" => $item->title
+            );
+        }
+
+        return $options;
     }
 }

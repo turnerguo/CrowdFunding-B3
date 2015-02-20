@@ -44,7 +44,6 @@ class CrowdFundingViewProject extends JViewLegacy
     protected $article;
     protected $pathwayName;
     protected $numberOfTypes;
-    protected $image;
     protected $isNew;
     protected $imageFolder;
     protected $minAmount;
@@ -73,6 +72,9 @@ class CrowdFundingViewProject extends JViewLegacy
     protected $titleLength;
     protected $descriptionLength;
     protected $returnUrl;
+    protected $isImageExists = false;
+    protected $imagePath;
+    protected $displayRemoveButton = "none";
 
     protected $wizardType;
     protected $layoutsBasePath;
@@ -233,14 +235,12 @@ class CrowdFundingViewProject extends JViewLegacy
         /** @var $model CrowdFundingModelProject */
 
         // Get state
-        /** @var  $state Joomla\Registry\Registry */
-        $state = $model->getState();
-        $this->state = $state;
+        $this->state = $model->getState();
+        /** @var  $this->state Joomla\Registry\Registry */
 
         // Get params
-        /** @var  $params Joomla\Registry\Registry */
-        $params = $this->state->get("params");
-        $this->params = $params;
+        $this->params = $this->state->get("params");
+        /** @var  $this->params Joomla\Registry\Registry */
 
         // Get item
         $itemId     = $this->state->get('project.id');
@@ -261,9 +261,20 @@ class CrowdFundingViewProject extends JViewLegacy
 
         // Prepare images
         $this->imageFolder = $this->params->get("images_directory", "images/crowdfunding");
-        $this->imageSmall  = $this->item->get("image_small");
+
+        if (!$this->item->get("image")) {
+            $this->imagePath     = "media/com_crowdfunding/images/no_image.png";
+            $this->displayRemoveButton = "none";
+        } else {
+            $this->imagePath     = $this->imageFolder."/".$this->item->get("image");
+            $this->displayRemoveButton = "inline";
+        }
 
         $this->pathwayName = JText::_("COM_CROWDFUNDING_STEP_BASIC");
+
+        // Remove the temporary pictures if they exists.
+        $this->removeTemporaryImages($model);
+
     }
 
     protected function prepareFunding()
@@ -469,9 +480,8 @@ class CrowdFundingViewProject extends JViewLegacy
         $this->state = $model->getState();
 
         // Get params
-        /** @var  $params Joomla\Registry\Registry */
-        $params = $this->state->get("params");
-        $this->params = $params;
+        /** @var  $this->params Joomla\Registry\Registry */
+        $this->params = $this->state->get("params");
 
         $this->imageWidth  = $this->params->get("image_width", 200);
         $this->imageHeight = $this->params->get("image_height", 200);
@@ -479,7 +489,7 @@ class CrowdFundingViewProject extends JViewLegacy
         $this->descriptionLength = $this->params->get("discover_description_length", 0);
 
         // Get the folder with images
-        $this->imageFolder = $params->get("images_directory", "images/crowdfunding");
+        $this->imageFolder = $this->params->get("images_directory", "images/crowdfunding");
 
         // Filter the URL.
         $uri = JUri::getInstance();
@@ -681,14 +691,30 @@ class CrowdFundingViewProject extends JViewLegacy
             default: // Basic
 
                 // Scripts
-                JHtml::_('itprism.ui.bootstrap_fileuploadstyle');
                 JHtml::_('itprism.ui.bootstrap_maxlength');
                 JHtml::_('itprism.ui.bootstrap_typeahead');
                 JHtml::_('itprism.ui.parsley');
+                JHtml::_('itprism.ui.cropper');
+                JHtml::_('itprism.ui.fileupload');
+                JHtml::_('itprism.ui.pnotify');
+                JHtml::_("itprism.ui.joomla_helper");
+
                 $this->document->addScript('media/' . $this->option . '/js/site/project_basic.js');
 
                 // Load language string in JavaScript
                 JText::script('COM_CROWDFUNDING_THIS_VALUE_IS_REQUIRED');
+                JText::script('COM_CROWDFUNDING_QUESTION_REMOVE_IMAGE');
+
+                // Provide image size.
+                $js = "
+                    var cfImageWidth = ". $this->params->get("image_width", 200).";
+                    var cfImageHeight = ". $this->params->get("image_height", 200).";
+
+                    var cfFormToken = '".JSession::getFormToken()."';
+                ";
+
+                $this->document->addScriptDeclaration($js);
+
                 break;
         }
     }
@@ -707,5 +733,40 @@ class CrowdFundingViewProject extends JViewLegacy
         }
 
         return true;
+    }
+
+    /**
+     * Remove the temporary images if a user upload or crop a picture,
+     * but he does not store it or reload the page.
+     *
+     * @param CrowdFundingModelProject $model
+     */
+    protected function removeTemporaryImages($model)
+    {
+        $app = JFactory::getApplication();
+        /** @var $app JApplicationSite */
+
+        // Remove old image if it exists.
+        $oldImage = $app->getUserState(CrowdFundingConstants::TEMPORARY_IMAGE_CONTEXT);
+        if (!empty($oldImage)) {
+            $temporaryFolder = CrowdFundingHelper::getTemporaryImagesFolder();
+            $oldImage = JPath::clean($temporaryFolder . "/" . basename($oldImage));
+            if (JFile::exists($oldImage)) {
+                JFile::delete($oldImage);
+            }
+        }
+
+        // Set the name of the image in the session.
+        $app->setUserState(CrowdFundingConstants::TEMPORARY_IMAGE_CONTEXT, null);
+
+        // Remove the temporary images if they exist.
+        $temporaryImages = $app->getUserState(CrowdFundingConstants::CROPPED_IMAGES_CONTEXT);
+        if (!empty($temporaryImages)) {
+            $temporaryFolder = CrowdFundingHelper::getTemporaryImagesFolder();
+            $model->removeTemporaryImages($temporaryImages, $temporaryFolder);
+        }
+
+        // Reset the temporary images.
+        $app->setUserState(CrowdFundingConstants::CROPPED_IMAGES_CONTEXT, null);
     }
 }

@@ -15,9 +15,6 @@ defined('_JEXEC') or die;
  */
 class pkg_crowdFundingInstallerScript
 {
-    protected $imagesFolder;
-    protected $imagesPath;
-
     /**
      * Method to install the component.
      *
@@ -87,12 +84,20 @@ class pkg_crowdFundingInstallerScript
         $params             = JComponentHelper::getParams("com_crowdfunding");
         /** @var $params Joomla\Registry\Registry */
 
-        $this->imagesFolder = JFolder::makeSafe($params->get("images_directory", "images/crowdfunding"));
-        $this->imagesPath   = JPath::clean(JPATH_SITE . DIRECTORY_SEPARATOR . $this->imagesFolder);
+        // Prepare images folders.
+        $imagesFolder = JFolder::makeSafe($params->get("images_directory", "images/crowdfunding"));
+        $temporaryImagesFolder = $imagesFolder . "/temporary";
 
-        // Create images folder
-        if (!is_dir($this->imagesPath)) {
-            CrowdFundingInstallHelper::createFolder($this->imagesPath);
+        // Create images folder.
+        $imagesPath   = JPath::clean(JPATH_SITE . DIRECTORY_SEPARATOR . $imagesFolder);
+        if (!is_dir($imagesPath)) {
+            CrowdFundingInstallHelper::createFolder($imagesPath);
+        }
+
+        // Create temporary images folder
+        $temporaryImagesPath  = JPath::clean(JPATH_SITE . DIRECTORY_SEPARATOR . $temporaryImagesFolder);
+        if (!is_dir($temporaryImagesPath)) {
+            CrowdFundingInstallHelper::createFolder($temporaryImagesPath);
         }
 
         // Start table with the information
@@ -103,8 +108,8 @@ class pkg_crowdFundingInstallerScript
 
         // Display result about verification for existing folder
         $title = JText::_("COM_CROWDFUNDING_IMAGE_FOLDER");
-        $info  = $this->imagesFolder;
-        if (!is_dir($this->imagesPath)) {
+        $info  = $imagesFolder;
+        if (!is_dir($imagesPath)) {
             $result = array("type" => "important", "text" => JText::_("JNO"));
         } else {
             $result = array("type" => "success", "text" => JText::_("JYES"));
@@ -112,9 +117,29 @@ class pkg_crowdFundingInstallerScript
         CrowdFundingInstallHelper::addRow($title, $result, $info);
 
         // Display result about verification for writable folder
-        $title = JText::_("COM_CROWDFUNDING_WRITABLE_FOLDER");
-        $info  = $this->imagesFolder;
-        if (!is_writable($this->imagesPath)) {
+        $title = JText::_("COM_CROWDFUNDING_IMAGE_WRITABLE_FOLDER");
+        $info  = $imagesFolder;
+        if (!is_writable($imagesPath)) {
+            $result = array("type" => "important", "text" => JText::_("JNO"));
+        } else {
+            $result = array("type" => "success", "text" => JText::_("JYES"));
+        }
+        CrowdFundingInstallHelper::addRow($title, $result, $info);
+
+        // Display result about verification for existing folder
+        $title = JText::_("COM_CROWDFUNDING_TEMPORARY_IMAGE_FOLDER");
+        $info  = $temporaryImagesFolder;
+        if (!is_dir($temporaryImagesPath)) {
+            $result = array("type" => "important", "text" => JText::_("JNO"));
+        } else {
+            $result = array("type" => "success", "text" => JText::_("JYES"));
+        }
+        CrowdFundingInstallHelper::addRow($title, $result, $info);
+
+        // Display result about verification for writable folder
+        $title = JText::_("COM_CROWDFUNDING_TEMPORARY_IMAGE_WRITABLE_FOLDER");
+        $info  = $temporaryImagesFolder;
+        if (!is_writable($temporaryImagesPath)) {
             $result = array("type" => "important", "text" => JText::_("JNO"));
         } else {
             $result = array("type" => "success", "text" => JText::_("JYES"));

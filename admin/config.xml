@@ -37,17 +37,27 @@
     </fieldset>
 
     <fieldset name="categories" label="COM_CROWDFUNDING_CATEGORIES" description="COM_CROWDFUNDING_CATEGORIES_PARAMS">
-        <field name="categories_items_row" type="text" default="3" label="COM_CROWDFUNDING_CATEGORIES_ROW" description="COM_CROWDFUNDING_CATEGORIES_ROW_DESC" />
+        <field name="categories_layout" type="list" default="grid" label="COM_CROWDFUNDING_LAYOUT" description="COM_CROWDFUNDING_LAYOUT_DESC">
+            <option value="grid">COM_CROWDFUNDING_GRID</option>
+            <option value="list">COM_CROWDFUNDING_LIST</option>
+        </field>
+        <field name="categories_categories_row" type="text" default="3" label="COM_CROWDFUNDING_CATEGORIES_ROW" description="COM_CROWDFUNDING_CATEGORIES_ROW_DESC" />
+        <field name="categories_categories_limit" type="text" default="20" label="COM_CROWDFUNDING_CATEGORIES_LIMIT" description="COM_CROWDFUNDING_CATEGORIES_LIMIT_DESC" />
+        <field name="categories_description_length" type="text" default="256" label="COM_CROWDFUNDING_DESCRIPTION_LENGTH" description="COM_CROWDFUNDING_DESCRIPTION_LENGTH_DESC" />
+        <field name="categories_order" type="list" default="title" label="COM_CROWDFUNDING_ITEMS_ORDER" description="COM_CROWDFUNDING_ITEMS_ORDER_DESC">
+            <option value="ordering">COM_CROWDFUNDING_ORDERING</option>
+            <option value="created_time">COM_CROWDFUNDING_CREATED_TIME</option>
+            <option value="title">COM_CROWDFUNDING_TITLE</option>
+        </field>
+        <field name="categories_dirn" type="list" default="desc" label="COM_CROWDFUNDING_ITEMS_ORDER_DIRECTION" description="COM_CROWDFUNDING_ITEMS_ORDER_DIRECTION_DESC">
+            <option value="asc">COM_CROWDFUNDING_ASCENDING</option>
+            <option value="desc">COM_CROWDFUNDING_DESCENDING</option>
+        </field>
         <field name="categories_display_projects_number" type="radio" default="0" label="COM_CROWDFUNDING_DISPLAY_PROJECTS_NUMBER" description="COM_CROWDFUNDING_DISPLAY_PROJECTS_NUMBER_DESC" class="btn-group">
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
-        <field name="categories_display_description" type="radio" default="1" label="COM_CROWDFUNDING_DISPLAY_DESCRIPTION" description="COM_CROWDFUNDING_DISPLAY_DESCRIPTION_DESC" class="btn-group">
-            <option value="0">JNO</option>
-            <option value="1">JYES</option>
-        </field>
-        <field name="categories_description_length" type="text" default="256" label="COM_CROWDFUNDING_DESCRIPTION_LENGTH" description="COM_CROWDFUNDING_DESCRIPTION_LENGTH_DESC" />
-        <field name="display_subcategories" type="radio" default="0" label="COM_CROWDFUNDING_DISPLAY_SUBCATEGORIES" description="COM_CROWDFUNDING_DISPLAY_SUBCATEGORIES_DESC" class="btn-group">
+        <field name="categories_display_description" type="radio" default="1" label="COM_CROWDFUNDING_DISPLAY_DESCRIPTION" description="COM_CROWDFUNDING_FIELD_DISPLAY_CATEGORY_DESCRIPTION_DESC" class="btn-group">
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
@@ -77,11 +87,6 @@
         <field name="extra_image_thumb_width" type="text" default="100" label="COM_CROWDFUNDING_EXTRA_IMAGE_THUMB_WIDTH" description="COM_CROWDFUNDING_EXTRA_IMAGE_THUMB_WIDTH_DESC"/>
         <field name="extra_image_thumb_height" type="text" default="100" label="COM_CROWDFUNDING_EXTRA_IMAGE_THUMB_HEIGHT" description="COM_CROWDFUNDING_EXTRA_IMAGE_THUMB_HEIGHT_DESC"/>
 
-        <field name="extra_images_thumb_scale" type="list" default="2" label="COM_CROWDFUNDING_EXTRA_IMAGES_SCALE" description="COM_CROWDFUNDING_EXTRA_IMAGES_SCALE_DESC" class="btn-group">
-            <option value="1">COM_CROWDFUNDING_FILL</option>
-            <option value="2">COM_CROWDFUNDING_INSIDE</option>
-            <option value="3">COM_CROWDFUNDING_OUTSIDE</option>
-        </field>
         <field name="spacer2" type="spacer" label="COM_CROWDFUNDING_REWARDS_IMAGES_OPTIONS"/>
         <field name="rewards_images" type="radio" default="0" label="COM_CROWDFUNDING_REWARDS_IMAGES"
                description="COM_CROWDFUNDING_REWARDS_IMAGES_DESC" class="btn-group">
@@ -93,7 +98,15 @@
         <field name="rewards_image_square_width" type="text" default="50" label="COM_CROWDFUNDING_REWARD_IMAGE_SQUARE_WIDTH" description="COM_CROWDFUNDING_REWARD_IMAGE_SQUARE_WIDTH_DESC"/>
         <field name="rewards_image_square_height" type="text" default="50" label="COM_CROWDFUNDING_REWARD_IMAGE_SQUARE_HEIGHT" description="COM_CROWDFUNDING_REWARD_IMAGE_SQUARE_HEIGHT_DESC"/>
 
-        <field name="spacer3" type="spacer" label="COM_CROWDFUNDING_VIDEO_OPTIONS"/>
+        <field name="spacer3" type="spacer" label="COM_CROWDFUNDING_IMAGES_RESIZING_OPTIONS"/>
+        <field name="image_resizing_scale" type="list" default="2" label="COM_CROWDFUNDING_EXTRA_IMAGES_SCALE" description="COM_CROWDFUNDING_EXTRA_IMAGES_SCALE_DESC" class="btn-group">
+            <option value="1">COM_CROWDFUNDING_FILL</option>
+            <option value="2">COM_CROWDFUNDING_INSIDE</option>
+            <option value="3">COM_CROWDFUNDING_OUTSIDE</option>
+            <option value="6">COM_CROWDFUNDING_FIT</option>
+        </field>
+
+        <field name="spacer4" type="spacer" label="COM_CROWDFUNDING_VIDEO_OPTIONS"/>
         <field name="video_responsive" type="radio" default="0" label="COM_CROWDFUNDING_VIDEO_RESPONSIVE" description="COM_CROWDFUNDING_VIDEO_RESPONSIVE_DESC" class="btn-group">
             <option value="0">JNO</option>
             <option value="1">JYES</option>
@@ -283,7 +296,7 @@
             <option value="1">JYES</option>
         </field>
         <field name="fraction_digits" type="text" default="2" label="COM_CROWDFUNDING_INTL_FRACTION_DIGITS" description="COM_CROWDFUNDING_INTL_FRACTION_DIGITS_DESC" />
-        <field name="amount_format" type="text" default="" label="COM_CROWDFUNDING_AMOUNT_FORMAT"
+        <field name="amount_format" type="text" default="2/,/." label="COM_CROWDFUNDING_AMOUNT_FORMAT"
                description="COM_CROWDFUNDING_AMOUNT_FORMAT_DESC"/>
         <field name="project_date_format" type="text" default="%Y-%m-%d" label="COM_CROWDFUNDING_DATE_FORMAT"
                description="COM_CROWDFUNDING_DATE_FORMAT_DESC"/>

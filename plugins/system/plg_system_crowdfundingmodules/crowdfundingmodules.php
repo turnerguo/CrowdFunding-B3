@@ -64,12 +64,14 @@ class plgSystemCrowdFundingModules extends JPlugin
         $isDetailsPage           = (strcmp($option, "com_crowdfunding") == 0 and strcmp($view, "details") == 0);
 
         // Allowed views for the module CrowdFunding Details
-        $allowedViewsModuleDetails = array("backing", "embed");
+        $allowedViewsModuleDetails = array("backing", "embed", "report");
         $allowedViewsModuleFilters = array("discover", "category");
 
-        // Module CrowdFunding Info (mod_crowdfundinginfo).
+        // Hide some modules if it is not details page.
         if (!$isDetailsPage) {
             $this->hideModule("mod_crowdfundinginfo");
+            $this->hideModule("mod_crowdfundingprofile");
+            $this->hideModule("mod_crowdfundingreporting");
         }
 
         // Module CrowdFunding Rewards (mod_crowdfundingrewards).
@@ -93,11 +95,6 @@ class plgSystemCrowdFundingModules extends JPlugin
                     $this->hideModule("mod_crowdfundingrewards");
                 }
             }
-        }
-
-        // Module CrowdFunding Profile.
-        if (!$isDetailsPage) {
-            $this->hideModule("mod_crowdfundingprofile");
         }
 
         // Module CrowdFunding Details (mod_crowdfundingdetails) on backing and embed pages.

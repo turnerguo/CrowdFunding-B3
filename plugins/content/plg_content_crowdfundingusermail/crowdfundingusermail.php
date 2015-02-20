@@ -10,8 +10,6 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.plugin.plugin');
-
 /**
  * CrowdFunding User Mail Plugin
  *
@@ -30,7 +28,7 @@ class plgContentCrowdFundingUserMail extends JPlugin
      */
     public $params;
 
-    protected $name = "Content - CrowdFunding - User Mail";
+    protected $name = "Content - CrowdFunding User Mail";
 
     public function init()
     {

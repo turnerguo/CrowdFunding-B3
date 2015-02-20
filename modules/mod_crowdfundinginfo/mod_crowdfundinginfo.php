@@ -15,9 +15,6 @@ jimport("crowdfunding.init");
 
 $moduleclassSfx = htmlspecialchars($params->get('moduleclass_sfx'));
 
-$app = JFactory::getApplication();
-/** @var $app JApplicationSite */
-
 $option = $app->input->get("option");
 $view   = $app->input->get("view");
 

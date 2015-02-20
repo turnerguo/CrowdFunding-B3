@@ -100,19 +100,17 @@ class CrowdFundingControllerStory extends JControllerLegacy
             $thumbHeight = 50;
         }
 
-        $scale = $app->input->post->get("extra_images_thumb_scale", JImage::SCALE_INSIDE);
         $images = array();
 
         try {
 
             // Get the folder where the images will be stored
-            $destination = CrowdFundingHelper::getImagesFolder($userId);
 
             $options = array(
-                "thumb_width"  => $thumbWidth,
-                "thumb_height" => $thumbHeight,
-                "thumb_scale"  => $scale,
-                "destination"  => $destination,
+                "width"        => $thumbWidth,
+                "height"       => $thumbHeight,
+                "scale"        => $params->get("image_resizing_scale", JImage::SCALE_INSIDE),
+                "destination"  => CrowdFundingHelper::getImagesFolder($userId),
             );
 
             // Get the folder where the images will be stored

@@ -300,7 +300,7 @@ class CrowdFundingCurrency
             $numberFormat = new NumberFormatter($locale, NumberFormatter::DECIMAL);
             $numberFormat->setAttribute(NumberFormatter::FRACTION_DIGITS, $fractionDigits);
             return $numberFormat->format($value, NumberFormatter::TYPE_DOUBLE);
-            
+
         }
 
         return $value;

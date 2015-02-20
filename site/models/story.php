@@ -135,11 +135,12 @@ class CrowdFundingModelStory extends CrowdFundingModelProject
      * Upload an image
      *
      * @param  array $image
+     * @param  string $destination
      *
      * @throws Exception
      * @return array
      */
-    public function uploadImage($image)
+    public function uploadImage($image, $destination)
     {
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
@@ -151,8 +152,6 @@ class CrowdFundingModelStory extends CrowdFundingModelProject
         // Load parameters.
         $params     = JComponentHelper::getParams($this->option);
         /** @var  $params Joomla\Registry\Registry */
-
-        $destFolder = $params->get("images_directory", "images/crowdfunding");
 
         $tmpFolder = $app->get("tmp_path");
 
@@ -206,7 +205,7 @@ class CrowdFundingModelStory extends CrowdFundingModelProject
         $generatedName = new ITPrismString();
         $generatedName->generateRandomString(32);
 
-        $tmpDestFile = $tmpFolder . DIRECTORY_SEPARATOR . $generatedName . "." . $ext;
+        $tmpDestFile = JPath::clean($tmpFolder . DIRECTORY_SEPARATOR . $generatedName . "." . $ext);
 
         // Prepare uploader object.
         $uploader = new ITPrismFileUploaderLocal($uploadedFile);
@@ -232,12 +231,15 @@ class CrowdFundingModelStory extends CrowdFundingModelProject
         }
 
         $imageName = $generatedName . "_pimage.png";
-        $imageFile = $destFolder . DIRECTORY_SEPARATOR . $imageName;
+        $imageFile = $destination . DIRECTORY_SEPARATOR . $imageName;
+
+        // Get the scale method.
+        $scaleMethod = $params->get("image_resizing_scale", JImage::SCALE_INSIDE);
 
         // Create main image
         $width  = $params->get("pitch_image_width", 600);
         $height = $params->get("pitch_image_height", 400);
-        $image->resize($width, $height, false);
+        $image->resize($width, $height, false, $scaleMethod);
         $image->toFile($imageFile, IMAGETYPE_PNG);
 
         // Remove the temporary file.

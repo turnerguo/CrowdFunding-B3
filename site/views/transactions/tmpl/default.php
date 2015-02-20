@@ -50,7 +50,7 @@ defined('_JEXEC') or die;?>
             			<?php echo JHtmlString::truncate(strip_tags($item->project), 64); ?>
             		    </a>
                         <?php if(!empty($item->txn_id)) { ?>
-                        <div class="cf-font-small">
+                        <div class="font-smaller">
                             <?php echo JText::sprintf("COM_CROWDFUNDING_TRANSACTION_ID_S", $item->txn_id); ?>
                         </div>
                         <?php } ?>

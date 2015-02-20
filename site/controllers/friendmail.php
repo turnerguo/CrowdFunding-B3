@@ -50,7 +50,6 @@ class CrowdFundingControllerFriendMail extends ITPrismControllerFormFrontend
 
         if (!$params->get("security_display_friend_form", 0)) {
             $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_CANT_SEND_MAIL'), $redirectOptions);
-
             return;
         }
 
@@ -84,7 +83,6 @@ class CrowdFundingControllerFriendMail extends ITPrismControllerFormFrontend
         // Check for validation errors.
         if ($validData === false) {
             $this->displayNotice($form->getErrors(), $redirectOptions);
-
             return;
         }
 

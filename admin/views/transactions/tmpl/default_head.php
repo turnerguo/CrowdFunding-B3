@@ -18,13 +18,13 @@ defined('_JEXEC') or die;
         <?php echo JText::_('COM_CROWDFUNDING_TXN_ID'); ?>
     </th>
     <th width="10%" class="nowrap hidden-phone">
+        <?php echo JHtml::_('grid.sort', 'COM_CROWDFUNDING_PROJECT', 'c.title', $this->listDirn, $this->listOrder); ?>
+    </th>
+    <th width="10%" class="nowrap hidden-phone">
         <?php echo JHtml::_('grid.sort', 'COM_CROWDFUNDING_SENDER', 'e.name', $this->listDirn, $this->listOrder); ?>
     </th>
     <th width="10%" class="nowrap hidden-phone">
         <?php echo JHtml::_('grid.sort', 'COM_CROWDFUNDING_BENEFICIARY', 'b.name', $this->listDirn, $this->listOrder); ?>
-    </th>
-    <th width="10%" class="nowrap hidden-phone">
-        <?php echo JHtml::_('grid.sort', 'COM_CROWDFUNDING_PROJECT', 'c.title', $this->listDirn, $this->listOrder); ?>
     </th>
     <th width="10%" class="nowrap">
         <?php echo JHtml::_('grid.sort', 'COM_CROWDFUNDING_AMOUNT', 'a.txn_amount', $this->listDirn, $this->listOrder); ?>

@@ -311,6 +311,7 @@ class CrowdFundingModelRewards extends JModelLegacy
                 $options     = array(
                     "width"       => $params->get("rewards_image_thumb_width", 200),
                     "height"      => $params->get("rewards_image_thumb_height", 200),
+                    "scale"       => $params->get("image_resizing_scale", JImage::SCALE_INSIDE),
                     "destination" => JPath::clean($destFolder . DIRECTORY_SEPARATOR . $generatedName . "." . $ext)
                 );
                 $thumbSource = $file->createThumbnail($options);
@@ -320,6 +321,7 @@ class CrowdFundingModelRewards extends JModelLegacy
                 $options      = array(
                     "width"       => $params->get("rewards_image_square_width", 50),
                     "height"      => $params->get("rewards_image_square_height", 50),
+                    "scale"       => $params->get("image_resizing_scale", JImage::SCALE_INSIDE),
                     "destination" => JPath::clean($destFolder . DIRECTORY_SEPARATOR . $generatedName . "." . $ext)
                 );
                 $squareSource = $file->createThumbnail($options);

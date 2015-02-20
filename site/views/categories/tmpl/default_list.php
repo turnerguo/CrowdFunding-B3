@@ -9,13 +9,9 @@
 
 // no direct access
 defined('_JEXEC') or die;?>
-
 <?php if (!empty($this->items)) { ?>
-
     <div id="cf-categories-list">
-    <?php foreach ($this->items as $row) { ?>
-        <?php foreach ($row as $item) { ?>
-
+    <?php foreach ($this->items as $item) { ?>
         <div class="cf-category">
             <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getCategoryRoute($item->slug)); ?>" class="cf-category-thumbnail">
                 <?php if (!empty($item->image_link)) { ?>
@@ -35,9 +31,8 @@ defined('_JEXEC') or die;?>
                     <?php
                     if ($this->displayProjectsNumber) {
                         $number = (!isset($this->projectsNumber[$item->id])) ? 0 : $this->projectsNumber[$item->id]["number"];
-                        ?>
-                        <?php echo "( ". $number . " )"; ?>
-                    <?php } ?>
+                        echo "( ". $number . " )";
+                    } ?>
                 </h3>
                 <?php if ($this->params->get("categories_display_description", true)) { ?>
                     <p><?php echo JHtmlString::truncate($item->description, $this->descriptionLength, true, false); ?></p>
@@ -45,7 +40,6 @@ defined('_JEXEC') or die;?>
             </div>
             <div class="clearfix"></div>
         </div>
-        <?php } ?>
     <?php } ?>
     </div>
 <?php } ?>

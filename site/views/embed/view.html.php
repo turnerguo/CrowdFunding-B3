@@ -68,8 +68,7 @@ class CrowdFundingViewEmbed extends JViewLegacy
 
         if (!$this->item) {
             $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"), "notice");
-            $app->redirect(JRoute::_('index.php?option=com_crowdfunding&view=discover', false));
-
+            $app->redirect(JRoute::_(CrowdFundingHelperRoute::getDiscoverRoute(), false));
             return;
         }
 
@@ -203,7 +202,7 @@ class CrowdFundingViewEmbed extends JViewLegacy
         $pathway->addItem($currentBreadcrumb, '');
 
         // Add scripts
-        JHtml::_('behavior.framework');
+        JHtml::_('jquery.framework');
     }
 
     private function preparePageHeading()
@@ -227,7 +226,7 @@ class CrowdFundingViewEmbed extends JViewLegacy
     private function preparePageTitle()
     {
         $app = JFactory::getApplication();
-        /** @var $app JApplicationSite * */
+        /** @var $app JApplicationSite */
 
         // Prepare page title
         $layout = $this->getLayout();

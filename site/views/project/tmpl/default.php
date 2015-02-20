@@ -41,20 +41,6 @@ echo $layout->render($this->layoutData);
                 <input type="hidden" name="jform[type_id]" value="0" />
             <?php }?>
             
-            <?php echo $this->form->getLabel('image'); ?>
-            <div class="fileupload fileupload-new" data-provides="fileupload">
-                <span class="btn btn-file">
-                    <i class="icon-folder-open icon-white"></i>
-                    <span class="fileupload-new"><?php echo JText::_("COM_CROWDFUNDING_SELECT_FILE");?></span>
-                    <span class="fileupload-exists">
-                        <?php echo JText::_("COM_CROWDFUNDING_CHANGE");?>
-                    </span>
-                <?php echo $this->form->getInput('image'); ?>
-                </span>
-                <span class="fileupload-preview"></span>
-                <a href="#" class="close fileupload-exists" data-dismiss="fileupload" style="float: none">×</a>
-            </div>
-            
             <?php 
 			if($this->params->get("project_terms", 0) AND $this->isNew) {
 			    $termsUrl = $this->params->get("project_terms_url", "");
@@ -65,7 +51,7 @@ echo $layout->render($this->layoutData);
             <?php }?>
             
             <?php echo $this->form->getInput('id'); ?>
-            <?php echo $this->form->getInput('location'); ?>
+            <?php echo $this->form->getInput('location_id'); ?>
             
             <input type="hidden" name="task" value="project.save" />
             <?php echo JHtml::_('form.token'); ?>
@@ -77,16 +63,47 @@ echo $layout->render($this->layoutData);
             </button>
         </form>
     </div>
-    <?php if($this->imageSmall) {?>
+
     <div class="span6">
-    	<img src="<?php echo $this->imageFolder."/".$this->imageSmall; ?>" class="img-polaroid" />
-    	<?php if(!$this->debugMode) {?>
-    	<div class="clearfix">&nbsp;</div>
-    	<a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=project.removeImage&id=".$this->item->id."&".JSession::getFormToken()."=1");?>" class="btn btn-mini btn-danger" >
-    		<i class="icon-trash icon-white"></i> 
-    		<?php echo JText::_("COM_CROWDFUNDING_REMOVE_IMAGE");?>
-		</a>
-    	<?php }?>
+        <?php if(!$this->debugMode) {?>
+        <div class="mb_15">
+            <span class="btn fileinput-button">
+                <i class="icon-upload"></i>
+                <span><?php echo JText::_("COM_CROWDFUNDING_UPLOAD_IMAGE");?></span>
+                <!-- The file input field used as target for the file upload widget -->
+                <input id="js-thumb-fileupload" type="file" name="project_image" data-url="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=project.uploadImage&format=raw");?>"/>
+            </span>
+
+            <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=project.removeImage&id=".$this->item->id."&".JSession::getFormToken()."=1");?>" id="js-btn-remove-image" class="btn btn-danger" style="display: <?php echo $this->displayRemoveButton; ?>">
+                <i class="icon-trash icon-white"></i>
+                <?php echo JText::_("COM_CROWDFUNDING_REMOVE_IMAGE");?>
+            </a>
+
+            <img src="/media/com_crowdfunding/images/ajax-loader.gif" width="16" height="16" id="js-thumb-fileupload-loader" style="display: none;" />
+
+            <div class="clearfix"></div>
+            <div id="js-image-tools" class="mt10" style="display: none;">
+                <a href="javascript: void(0);" class="btn btn-primary" id="js-crop-btn">
+                    <i class="icon-ok-circle icon-white"></i>
+                    <?php echo JText::_("COM_CROWDFUNDING_CROP_IMAGE");?>
+                </a>
+
+                <a href="javascript: void(0);" class="btn" id="js-crop-btn-cancel">
+                    <i class="icon-ban-circle icon-white"></i>
+                    <?php echo JText::_("COM_CROWDFUNDING_CANCEL");?>
+                </a>
+            </div>
+
+        </div>
+        <form action="<?php echo JRoute::_("index.php?option=com_crowdfunding");?>" method="post" id="js-image-tools-form">
+            <input type="hidden" name="<?php echo JSession::getFormToken(); ?>" value="1" />
+        </form>
+        <?php }?>
+
+        <div id="js-fixed-dragger-cropper">
+            <img src="<?php echo $this->imagePath; ?>" class="img-polaroid" id="js-thumb-img" />
+        </div>
+
     </div>
-    <?php }?>
+
 </div>

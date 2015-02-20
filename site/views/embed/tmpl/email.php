@@ -16,29 +16,22 @@ defined('_JEXEC') or die;
     	<div class="span11">
     	    <h2><?php echo JText::_("COM_CROWDFUNDING_SEND_TO_FRIEND"); ?></h2>
             <p><?php echo JText::_("COM_CROWDFUNDING_SEND_TO_FRIEND_HELP"); ?></p>
-            <form method="post" action="<?php echo JRoute::_(CrowdFundingHelperRoute::getEmbedRoute($this->item->slug, $this->item->catslug)."&task=friendmail.send");?>" class="bs-docs-example mt_0" id="form-send-to-friend" autocomplete="off">
-            		
-            		<?php echo $this->form->getLabel('subject'); ?>
-                    <?php echo $this->form->getInput('subject'); ?>
-                    
-            		<?php echo $this->form->getLabel('sender_name'); ?>
-                    <?php echo $this->form->getInput('sender_name'); ?>
-                    
-                    <?php echo $this->form->getLabel('sender'); ?>
-                    <?php echo $this->form->getInput('sender'); ?>
-                    
-                    <?php echo $this->form->getLabel('receiver'); ?>
-                    <?php echo $this->form->getInput('receiver'); ?>
-                    
-                    <?php echo $this->form->getLabel('message'); ?>
-                    <?php echo $this->form->getInput('message'); ?>
-                    
-                    <?php echo $this->form->getLabel('captcha'); ?>
-                    <?php echo $this->form->getInput('captcha'); ?>
-            		
-            		<?php echo $this->form->getInput('id'); ?>
-            		<?php echo JHtml::_('form.token'); ?> 
-            		<button type="submit" class="button button-large"><?php echo JText::_("COM_CROWDFUNDING_SEND");?></button>
+            <form method="post" action="<?php echo JRoute::_("index.php?option=com_crowdfunding");?>" class="bs-docs-example mt_0" id="form-send-to-friend" autocomplete="off">
+
+                <?php echo $this->form->getControlGroup('subject'); ?>
+                <?php echo $this->form->getControlGroup('sender_name'); ?>
+                <?php echo $this->form->getControlGroup('sender'); ?>
+                <?php echo $this->form->getControlGroup('receiver'); ?>
+                <?php echo $this->form->getControlGroup('message'); ?>
+                <?php echo $this->form->getControlGroup('captcha'); ?>
+
+                <?php echo $this->form->getInput('id'); ?>
+                <?php echo JHtml::_('form.token'); ?>
+
+                <input type="hidden" name="task" value="friendmail.send" />
+                <button type="submit" class="btn btn-primary">
+                    <?php echo JText::_("COM_CROWDFUNDING_SEND");?>
+                </button>
             		
             </form>
         	
@@ -47,4 +40,3 @@ defined('_JEXEC') or die;
 	</div>
 	
 </div>
-<div class="clearfix">&nbsp;</div>

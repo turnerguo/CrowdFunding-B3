@@ -15,16 +15,16 @@ defined('_JEXEC') or die;
         <td class="hidden-phone">
             <?php echo JHtml::_('grid.id', $i, $item->id); ?>
         </td>
-        <td class="center hidden-phone">
-            <a class="btn js-preview-log" data-item-id="<?php echo $item->id; ?>"
-               href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=log&layout=preview&format=raw&id=" . (int)$item->id); ?>">
-                <i class="icon-eye-open"></i>
-            </a>
-        </td>
         <td>
             <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=log&layout=view&id=" . (int)$item->id); ?>"
                id="js-title<?php echo $item->id; ?>">
                 <?php echo $this->escape($item->title); ?>
+            </a>
+        </td>
+        <td class="center hidden-phone">
+            <a class="btn js-preview-log" data-item-id="<?php echo $item->id; ?>"
+               href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=log&layout=preview&format=raw&id=" . (int)$item->id); ?>">
+                <i class="icon-eye-open"></i>
             </a>
         </td>
         <td class="center hidden-phone">

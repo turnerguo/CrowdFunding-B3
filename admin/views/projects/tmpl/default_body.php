@@ -47,6 +47,9 @@ defined('_JEXEC') or die;
                 <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=rewards&pid=" . $item->id); ?>">
                     <?php echo JText::sprintf("COM_CROWDFUNDING_REWARDS_N", $numberOfRewards); ?>
                 </a>
+                <div>
+                    <?php echo JText::sprintf("COM_CROWDFUNDING_CATEGORY_S", $item->category); ?>
+                </div>
             </div>
         </td>
         <td class="hidden-phone"><?php echo $this->currency->getAmountString($item->goal); ?></td>

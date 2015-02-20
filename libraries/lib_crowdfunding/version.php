@@ -36,7 +36,7 @@ class CrowdFundingVersion
      *
      * @var integer
      */
-    public $devLevel = '10.1';
+    public $devLevel = '11';
 
     /**
      * Release Type
@@ -57,7 +57,7 @@ class CrowdFundingVersion
      *
      * @var string
      */
-    public $releaseDate = '10 January, 2015';
+    public $releaseDate = '20 February, 2015';
 
     /**
      * License

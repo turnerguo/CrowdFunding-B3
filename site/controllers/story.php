@@ -119,7 +119,9 @@ class CrowdFundingControllerStory extends ITPrismControllerFormFrontend
             // Upload image
             if (!empty($image['name'])) {
 
-                $imageName = $model->uploadImage($image);
+                $destination = CrowdFundingHelper::getImagesFolder();
+
+                $imageName = $model->uploadImage($image, $destination);
                 if (!empty($imageName)) {
                     $validData["pitch_image"] = $imageName;
                 }

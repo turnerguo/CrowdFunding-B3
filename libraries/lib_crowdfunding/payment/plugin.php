@@ -33,6 +33,14 @@ class CrowdFundingPaymentPlugin extends JPlugin
     protected $debugType;
 
     /**
+     * This property contains keys of response data
+     * that will be used to be generated an array with extra data.
+     *
+     * @var array
+     */
+    protected $extraDataKeys = array();
+
+    /**
      * @var Joomla\Registry\Registry
      */
     public $params;
@@ -573,5 +581,97 @@ class CrowdFundingPaymentPlugin extends JPlugin
         }
 
         return (float)$result;
+    }
+
+    protected function getCallbackUrl($htmlEncoded = false)
+    {
+        $page   = JString::trim($this->params->get('callback_url'));
+
+        $uri    = JUri::getInstance();
+        $domain = $uri->toString(array("host"));
+
+        // Encode to valid HTML.
+        if ($htmlEncoded) {
+            $page = str_replace("&", "&amp;", $page);
+        }
+
+        // Add the domain to the URL.
+        if (false == strpos($page, $domain)) {
+            $page = JUri::root() . $page;
+        }
+
+        return $page;
+    }
+
+    protected function getReturnUrl($slug, $catslug)
+    {
+        $page = JString::trim($this->params->get('return_url'));
+        if (!$page) {
+            $uri  = JUri::getInstance();
+            $page = $uri->toString(array("scheme", "host")) . JRoute::_(CrowdFundingHelperRoute::getBackingRoute($slug, $catslug, "share"), false);
+        }
+
+        return $page;
+    }
+
+    protected function getCancelUrl($slug, $catslug)
+    {
+        $page = JString::trim($this->params->get('cancel_url'));
+        if (!$page) {
+            $uri  = JUri::getInstance();
+            $page = $uri->toString(array("scheme", "host")) . JRoute::_(CrowdFundingHelperRoute::getBackingRoute($slug, $catslug, "default"), false);
+        }
+
+        return $page;
+    }
+
+    /**
+     * Prepare extra data.
+     *
+     * @param array $data
+     * @param string $note
+     *
+     * @return array
+     */
+    protected function prepareExtraData($data, $note = "")
+    {
+        $date        = new JDate();
+        $trackingKey = $date->toUnix();
+
+        $extraData = array(
+            $trackingKey => array()
+        );
+
+        foreach ($this->extraDataKeys as $key) {
+            if (isset($data[$key])) {
+                $extraData[$trackingKey][$key] = $data[$key];
+            }
+        }
+
+        // Set a note.
+        if (!empty($note)) {
+            $extraData[$trackingKey]["NOTE"] = $note;
+        }
+
+        return $extraData;
+    }
+
+    /**
+     * Check for valid payment gateway.
+     *
+     * @param string $gateway
+     *
+     * @return bool
+     */
+    protected function isValidPaymentGateway($gateway)
+    {
+        $value1 = JString::strtolower($this->paymentService);
+        $value2 = JString::strtolower($gateway);
+
+        if (JString::strcmp($value1, $value2) != 0) {
+            return false;
+        }
+
+        return true;
     }
 }

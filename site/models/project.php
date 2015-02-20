@@ -85,7 +85,7 @@ class CrowdFundingModelProject extends JModelForm
     protected function loadFormData()
     {
         $app = JFactory::getApplication();
-        /** @var $app JApplicationSite * */
+        /** @var $app JApplicationSite */
 
         $data = $app->getUserState($this->option . '.edit.project.data', array());
         if (!$data) {
@@ -95,12 +95,12 @@ class CrowdFundingModelProject extends JModelForm
 
             $data = $this->getItem($itemId, $userId);
 
-            if (!empty($data->location)) {
+            if (!empty($data->location_id)) {
 
                 // Load location from database.
                 jimport("crowdfunding.location");
                 $location = new CrowdFundingLocation(JFactory::getDbo());
-                $location->load($data->location);
+                $location->load($data->location_id);
                 $locationName = $location->getName(true);
 
                 // Set the name to the form element.
@@ -179,12 +179,12 @@ class CrowdFundingModelProject extends JModelForm
      */
     public function save($data)
     {
-        $id        = JArrayHelper::getValue($data, "id");
-        $title     = JArrayHelper::getValue($data, "title");
-        $shortDesc = JArrayHelper::getValue($data, "short_desc");
-        $catId     = JArrayHelper::getValue($data, "catid");
-        $location  = JArrayHelper::getValue($data, "location");
-        $typeId    = JArrayHelper::getValue($data, "type_id");
+        $id          = JArrayHelper::getValue($data, "id");
+        $title       = JArrayHelper::getValue($data, "title");
+        $shortDesc   = JArrayHelper::getValue($data, "short_desc");
+        $catId       = JArrayHelper::getValue($data, "catid");
+        $locationId  = JArrayHelper::getValue($data, "location_id");
+        $typeId      = JArrayHelper::getValue($data, "type_id");
 
         // Load a record from the database
         $row = $this->getTable();
@@ -201,7 +201,7 @@ class CrowdFundingModelProject extends JModelForm
         $row->set("title", $title);
         $row->set("short_desc", $shortDesc);
         $row->set("catid", $catId);
-        $row->set("location", $location);
+        $row->set("location_id", $locationId);
         $row->set("type_id", $typeId);
 
         $this->prepareTable($row, $data);
@@ -295,39 +295,6 @@ class CrowdFundingModelProject extends JModelForm
             }
         }
 
-        if (!empty($data["image"])) {
-
-            // Delete old image if I upload a new one
-            if ($table->get("image")) {
-
-                $params       = JComponentHelper::getParams($this->option);
-                /** @var  $params Joomla\Registry\Registry */
-
-                $imagesFolder = $params->get("images_directory", "images/crowdfunding");
-
-                // Remove an image from the filesystem
-                $fileImage  = $imagesFolder . DIRECTORY_SEPARATOR . $table->get("image");
-                $fileSmall  = $imagesFolder . DIRECTORY_SEPARATOR . $table->get("image_small");
-                $fileSquare = $imagesFolder . DIRECTORY_SEPARATOR . $table->get("image_square");
-
-                if (is_file($fileImage)) {
-                    JFile::delete($fileImage);
-                }
-
-                if (is_file($fileSmall)) {
-                    JFile::delete($fileSmall);
-                }
-
-                if (is_file($fileSquare)) {
-                    JFile::delete($fileSquare);
-                }
-
-            }
-            $table->set("image", $data["image"]);
-            $table->set("image_small", $data["image_small"]);
-            $table->set("image_square", $data["image_square"]);
-        }
-
         // If an alias does not exist, I will generate the new one using the title.
         if (!$table->get("alias")) {
             $table->set("alias", $table->get("title"));
@@ -336,18 +303,19 @@ class CrowdFundingModelProject extends JModelForm
     }
 
     /**
-     * Upload and resize the image
+     * Upload and resize the image.
      *
      * @param array $image
+     * @param string $destination
      *
      * @throws Exception
      *
      * @return array
      */
-    public function uploadImage($image)
+    public function uploadImage($image, $destination)
     {
         $app = JFactory::getApplication();
-        /** @var $app JApplicationSite * */
+        /** @var $app JApplicationSite */
 
         $uploadedFile = JArrayHelper::getValue($image, 'tmp_name');
         $uploadedName = JArrayHelper::getValue($image, 'name');
@@ -356,10 +324,6 @@ class CrowdFundingModelProject extends JModelForm
         // Load parameters.
         $params     = JComponentHelper::getParams($this->option);
         /** @var  $params Joomla\Registry\Registry */
-
-        $destFolder = JPath::clean(JPATH_ROOT . DIRECTORY_SEPARATOR . $params->get("images_directory", "images/crowdfunding"));
-
-        $tmpFolder  = $app->get("tmp_path");
 
         // Joomla! media extension parameters
         $mediaParams = JComponentHelper::getParams("com_media");
@@ -370,6 +334,10 @@ class CrowdFundingModelProject extends JModelForm
         jimport("itprism.file.validator.size");
         jimport("itprism.file.validator.image");
         jimport("itprism.file.validator.server");
+        jimport("itprism.file.validator.image");
+        jimport("itprism.file.validator.image.size");
+        jimport("itprism.file.validator.server");
+        jimport("itprism.string");
 
         $file = new ITPrismFile();
 
@@ -379,7 +347,7 @@ class CrowdFundingModelProject extends JModelForm
         $uploadMaxSize = $mediaParams->get("upload_maxsize") * $KB;
 
         // Prepare file size validator
-        $sizeValidator = new ITPrismFileValidatorSize($fileSize, $uploadMaxSize);
+        $fileSizeValidator = new ITPrismFileValidatorSize($fileSize, $uploadMaxSize);
 
         // Prepare server validator.
         $serverValidator = new ITPrismFileValidatorServer($errorCode, array(UPLOAD_ERR_NO_FILE));
@@ -395,10 +363,16 @@ class CrowdFundingModelProject extends JModelForm
         $imageExtensions = explode(",", $mediaParams->get("image_extensions"));
         $imageValidator->setImageExtensions($imageExtensions);
 
+        // Prepare image size validator.
+        $imageSizeValidator = new ITPrismFileValidatorImageSize($uploadedFile);
+        $imageSizeValidator->setMinWidth($params->get("image_width", 200));
+        $imageSizeValidator->setMinHeight($params->get("image_height", 200));
+
         $file
-            ->addValidator($sizeValidator)
+            ->addValidator($fileSizeValidator)
+            ->addValidator($serverValidator)
             ->addValidator($imageValidator)
-            ->addValidator($serverValidator);
+            ->addValidator($imageSizeValidator);
 
         // Validate the file
         if (!$file->isValid()) {
@@ -410,13 +384,13 @@ class CrowdFundingModelProject extends JModelForm
 
         jimport("itprism.string");
         $generatedName = new ITPrismString();
-        $generatedName->generateRandomString(32);
+        $generatedName->generateRandomString(16);
 
-        $tmpDestFile = $tmpFolder . DIRECTORY_SEPARATOR . $generatedName . "." . $ext;
+        $temporaryFile = $destination . DIRECTORY_SEPARATOR . $generatedName . "." . $ext;
 
         // Prepare uploader object.
         $uploader = new ITPrismFileUploaderLocal($uploadedFile);
-        $uploader->setDestination($tmpDestFile);
+        $uploader->setDestination($temporaryFile);
 
         // Upload temporary file
         $file->setUploader($uploader);
@@ -424,32 +398,62 @@ class CrowdFundingModelProject extends JModelForm
         $file->upload();
 
         // Get file
-        $tmpDestFile = JPath::clean($file->getFile());
+        $temporaryFile = JPath::clean($file->getFile());
 
-        if (!is_file($tmpDestFile)) {
+        if (!is_file($temporaryFile)) {
             throw new RuntimeException(JText::_('COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED'));
         }
 
+        return $temporaryFile;
+    }
+
+    /**
+     * Crop the image and generates smaller ones.
+     *
+     * @param string $file
+     * @param array $options
+     *
+     * @throws Exception
+     *
+     * @return array
+     */
+    public function cropImage($file, $options)
+    {
         // Resize image
         $image = new JImage();
-        $image->loadFile($tmpDestFile);
+        $image->loadFile($file);
         if (!$image->isLoaded()) {
-            throw new RuntimeException(JText::sprintf('COM_CROWDFUNDING_ERROR_FILE_NOT_FOUND', $tmpDestFile));
+            throw new Exception(JText::sprintf('COM_CROWDFUNDING_ERROR_FILE_NOT_FOUND', $file));
         }
+
+        $destinationFolder  = JArrayHelper::getValue($options, "destination");
+
+        // Generate temporary file name
+        jimport("itprism.string");
+        $generatedName = new ITPrismString();
+        $generatedName->generateRandomString(32);
 
         $imageName  = $generatedName . "_image.png";
         $smallName  = $generatedName . "_small.png";
         $squareName = $generatedName . "_square.png";
 
-        $imageFile  = $destFolder . DIRECTORY_SEPARATOR . $imageName;
-        $smallFile  = $destFolder . DIRECTORY_SEPARATOR . $smallName;
-        $squareFile = $destFolder . DIRECTORY_SEPARATOR . $squareName;
+        $imageFile  = $destinationFolder . DIRECTORY_SEPARATOR . $imageName;
+        $smallFile  = $destinationFolder . DIRECTORY_SEPARATOR . $smallName;
+        $squareFile = $destinationFolder . DIRECTORY_SEPARATOR . $squareName;
 
         // Create main image
-        $width  = $params->get("image_width", 200);
-        $height = $params->get("image_height", 200);
-        $image->resize($width, $height, false);
+        $width  = JArrayHelper::getValue($options, "width", 200);
+        $width  = ($width < 25) ? 50 : $width;
+        $height = JArrayHelper::getValue($options, "height", 200);
+        $height = ($height < 25) ? 50 : $height;
+        $left   = JArrayHelper::getValue($options, "x", 0);
+        $top    = JArrayHelper::getValue($options, "y", 0);
+        $image->crop($width, $height, $left, $top, false);
         $image->toFile($imageFile, IMAGETYPE_PNG);
+
+        // Load parameters.
+        $params     = JComponentHelper::getParams($this->option);
+        /** @var  $params Joomla\Registry\Registry */
 
         // Create small image
         $width  = $params->get("image_small_width", 100);
@@ -470,8 +474,8 @@ class CrowdFundingModelProject extends JModelForm
         );
 
         // Remove the temporary file.
-        if (is_file($tmpDestFile)) {
-            JFile::delete($tmpDestFile);
+        if (is_file($file)) {
+            JFile::delete($file);
         }
 
         return $names;
@@ -527,5 +531,90 @@ class CrowdFundingModelProject extends JModelForm
         $row->set("image_small", "");
         $row->set("image_square", "");
         $row->store();
+    }
+
+    /**
+     * Store the temporary images to project record.
+     * Remove the old images and move the new ones from temporary folder to the images folder.
+     *
+     * @param int $projectId
+     * @param array $images The names of the pictures.
+     * @param string $source Path to the temporary folder.
+     */
+    public function updateImages($projectId, $images, $source)
+    {
+        jimport("crowdfunding.project");
+        $project = CrowdFundingProject::getInstance(JFactory::getDbo(), $projectId);
+        if (!$project->getId()) {
+            throw new InvalidArgumentException(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"));
+        }
+
+        // Prepare the path to the pictures.
+        $fileImage  = $source .DIRECTORY_SEPARATOR. $images["image"];
+        $fileSmall  = $source .DIRECTORY_SEPARATOR. $images["image_small"];
+        $fileSquare = $source .DIRECTORY_SEPARATOR. $images["image_square"];
+
+        if (is_file($fileImage) and is_file($fileSmall) and is_file($fileSquare)) {
+
+            // Get the folder where the pictures are stored.
+            $imagesFolder = CrowdFundingHelper::getImagesFolder();
+
+            // Remove an image from the filesystem
+            $oldFileImage  = $imagesFolder .DIRECTORY_SEPARATOR. $project->getImage();
+            $oldFileSmall  = $imagesFolder .DIRECTORY_SEPARATOR. $project->getSmallImage();
+            $oldFileSquare = $imagesFolder .DIRECTORY_SEPARATOR. $project->getSquareImage();
+
+            if (is_file($oldFileImage)) {
+                JFile::delete($oldFileImage);
+            }
+
+            if (is_file($oldFileSmall)) {
+                JFile::delete($oldFileSmall);
+            }
+
+            if (is_file($oldFileSquare)) {
+                JFile::delete($oldFileSquare);
+            }
+
+            // Move the new files to the images folder.
+            $newFileImage  = $imagesFolder .DIRECTORY_SEPARATOR. $images["image"];
+            $newFileSmall  = $imagesFolder .DIRECTORY_SEPARATOR. $images["image_small"];
+            $newFileSquare = $imagesFolder .DIRECTORY_SEPARATOR. $images["image_square"];
+
+            JFile::move($fileImage, $newFileImage);
+            JFile::move($fileSmall, $newFileSmall);
+            JFile::move($fileSquare, $newFileSquare);
+
+            // Store the newest pictures.
+            $project->bind($images);
+            $project->store();
+        }
+
+    }
+
+    /**
+     * Remove the temporary images that have been stored in the temporary folder,
+     * during the process of cropping.
+     *
+     * @param array $images The names of the pictures.
+     * @param string $sourceFolder Path to the temporary folder.
+     */
+    public function removeTemporaryImages($images, $sourceFolder)
+    {
+        $temporaryImage       = JPath::clean($sourceFolder . "/" . basename($images["image"]));
+        $temporaryImageSmall  = JPath::clean($sourceFolder . "/" . basename($images["image_small"]));
+        $temporaryImageSquare = JPath::clean($sourceFolder . "/" . basename($images["image_square"]));
+        if (JFile::exists($temporaryImage)) {
+            JFile::delete($temporaryImage);
+        }
+
+        if (JFile::exists($temporaryImageSmall)) {
+            JFile::delete($temporaryImageSmall);
+        }
+
+        if (JFile::exists($temporaryImageSquare)) {
+            JFile::delete($temporaryImageSquare);
+        }
+
     }
 }

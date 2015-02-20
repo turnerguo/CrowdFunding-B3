@@ -4,7 +4,7 @@ jQuery(document).ready(function() {
 
 	// Validation script
     Joomla.submitbutton = function(task){
-        if (task == 'project.cancel' || document.formvalidator.isValid(document.id('adminForm'))) {
+        if (task == 'project.cancel' || document.formvalidator.isValid(document.getElementById('adminForm'))) {
             Joomla.submitform(task, document.getElementById('adminForm'));
         }
     };
@@ -32,7 +32,7 @@ jQuery(document).ready(function() {
 	});
 	
 	
-	// Event for label dayse
+	// Event for label days
 	jQuery("#jform_funding_days-lbl").on("click", function() {
 		jQuery('#js-funding-duration-days').prop("checked", true);
 		disableDate();
@@ -98,7 +98,7 @@ jQuery(document).ready(function() {
             }
         },
         onSelect: function(item) {
-            jQuery("#jform_location").attr("value", item.value);
+            jQuery("#jform_location_id").attr("value", item.value);
         }
 
     });

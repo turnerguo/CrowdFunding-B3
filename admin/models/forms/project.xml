@@ -84,7 +84,7 @@
                description="COM_CROWDFUNDING_PROJECT_IMAGE_DESC"
                />
 
-        <field name="location" type="hidden" filter="int"/>
+        <field name="location_id" type="hidden" filter="int"/>
 
     </fieldset>
 

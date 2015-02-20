@@ -283,6 +283,10 @@ div.reward:hover  {
 
 /* Padding and Margin */
 
+.p5 {
+	padding: 5px;
+}
+
 .pl5 {
 	padding-left: 5px;
 }
@@ -325,6 +329,10 @@ div.reward:hover  {
 
 .mt_0 {
 	margin-top: 0;
+}
+
+.mb_15 {
+	margin-bottom: 15px;
 }
 
 /* Backing */
@@ -451,9 +459,17 @@ form.bs-docs-example {
     transition: all 0.2s ease-in-out 0s;
 }
 
-.cf-font-small {
+/* Fonts */
+
+.font-xxsmall {
+	font-size: xx-small;
+}
+
+.font-smaller {
 	font-size: smaller;
 }
+
+
 .cf-bg-color-yellow {
 	background-color: #fffacd;
 }
@@ -597,7 +613,7 @@ form.bs-docs-example {
 }
 
 /* Heights */
-.cf-height-150px {
+.height-150px {
 	height: 150px;
 }
 
@@ -636,6 +652,14 @@ form.bs-docs-example {
 #cf-categories-list .cf-category-content {
 	float: left;
 	display: block;
-	padding-left: 20px;
-	width: 80%; 
+	padding-left: 5px;
+	width: 79%; 
+}
+
+.cursor_pointer {
+	cursor: pointer;
+}
+
+#js-fixed-dragger-cropper{
+	text-align: center;
 }

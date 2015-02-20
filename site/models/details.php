@@ -81,7 +81,7 @@ class CrowdFundingModelDetails extends JModelItem
 
             $query
                 ->select(
-                    "a.id, a.title, a.short_desc, a.description, a.image, a.location, " .
+                    "a.id, a.title, a.short_desc, a.description, a.image, a.location_id, " .
                     "a.funded, a.goal, a.pitch_video, a.pitch_image, " .
                     "a.funding_start, a.funding_end, a.funding_days, a.funding_type,  " .
                     "a.catid, a.user_id, a.published, a.approved, a.hits, " .

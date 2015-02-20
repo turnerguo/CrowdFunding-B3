@@ -25,7 +25,7 @@ class CrowdFundingProject
     protected $image;
     protected $image_square;
     protected $image_small;
-    protected $location;
+    protected $location_id;
     protected $goal;
     protected $funded;
     protected $funding_type;
@@ -144,7 +144,7 @@ class CrowdFundingProject
         $query
             ->select(
                 "a.id, a.title, a.alias, a.short_desc, a.description, a.image, a.image_square, a.image_small, " .
-                "a.location, a.goal, a.funded, a.funding_type, a.funding_start, a.funding_end, a.funding_days, " .
+                "a.location_id, a.goal, a.funded, a.funding_type, a.funding_start, a.funding_end, a.funding_days, " .
                 "a.pitch_video, a.pitch_image, a.hits, a.created, a.featured, a.published, a.approved, " .
                 "a.ordering, a.catid, a.type_id, a.user_id, " .
                 $query->concatenate(array("a.id", "a.alias"), ":") . " AS slug, " .
@@ -253,7 +253,7 @@ class CrowdFundingProject
             ->set($this->db->quoteName("image") . "=" . $this->db->quote($this->image))
             ->set($this->db->quoteName("image_square") . "=" . $this->db->quote($this->image_square))
             ->set($this->db->quoteName("image_small") . "=" . $this->db->quote($this->image_small))
-            ->set($this->db->quoteName("location") . "=" . $this->db->quote($this->location))
+            ->set($this->db->quoteName("location_id") . "=" . $this->db->quote($this->location_id))
             ->set($this->db->quoteName("goal") . "=" . $this->db->quote($this->goal))
             ->set($this->db->quoteName("funded") . "=" . $this->db->quote($this->funded))
             ->set($this->db->quoteName("funding_type") . "=" . $this->db->quote($this->funding_type))
@@ -290,7 +290,7 @@ class CrowdFundingProject
             ->set($this->db->quoteName("image") . "=" . $this->db->quote($this->image))
             ->set($this->db->quoteName("image_square") . "=" . $this->db->quote($this->image_square))
             ->set($this->db->quoteName("image_small") . "=" . $this->db->quote($this->image_small))
-            ->set($this->db->quoteName("location") . "=" . $this->db->quote($this->location))
+            ->set($this->db->quoteName("location_id") . "=" . $this->db->quote($this->location_id))
             ->set($this->db->quoteName("goal") . "=" . $this->db->quote($this->goal))
             ->set($this->db->quoteName("funded") . "=" . $this->db->quote($this->funded))
             ->set($this->db->quoteName("funding_type") . "=" . $this->db->quote($this->funding_type))
