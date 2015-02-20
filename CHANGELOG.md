@@ -2,12 +2,12 @@ CrowdFunding Release Notes
 ==========================
 
 ###v1.11
-* Added functionality to users to report projects.
+* Added functionality users to report projects.
 * Now, the featured projects will be displayed first on the discover page and on the category view.
-* Changed the method of image resizing. Now, the method of resizing will be used for pitch_image, extra images and reward images.
-* Added new scale method "Fit".
+* Changed the method for image resizing. Method for resizing will be used for pitch_image, extra images and reward images.
+* Added new scale method "Fit" for image resizing.
 * Added functionality the project owner to crop project picture on the first step of the project wizard.
-* Improved categories options and it was added options for ordering results.
+* Improved categories options. It was added options for sorting results.
 
 ###v1.10.1
 * Fixed bugs on views "Projects" and "Transactions".
