@@ -79,7 +79,7 @@ echo $layout->render($this->layoutData);
                 <?php echo JText::_("COM_CROWDFUNDING_REMOVE_IMAGE");?>
             </a>
 
-            <img src="/media/com_crowdfunding/images/ajax-loader.gif" width="16" height="16" id="js-thumb-fileupload-loader" style="display: none;" />
+            <img src="media/com_crowdfunding/images/ajax-loader.gif" width="16" height="16" id="js-thumb-fileupload-loader" style="display: none;" />
 
             <div class="clearfix"></div>
             <div id="js-image-tools" class="mt10" style="display: none;">

@@ -178,7 +178,7 @@ class CrowdFundingControllerProject extends JControllerLegacy
             $imageName  = basename($image);
 
             // Prepare URL to temporary image.
-            $temporaryUrl = CrowdFundingHelper::getTemporaryImagesFolderUri() . "/". $imageName;
+            $temporaryUrl = JUri::base(). CrowdFundingHelper::getTemporaryImagesFolderUri() . "/". $imageName;
 
             // Remove an old image if it exists.
             $oldImage = $app->getUserState(CrowdFundingConstants::TEMPORARY_IMAGE_CONTEXT);
@@ -326,12 +326,12 @@ class CrowdFundingControllerProject extends JControllerLegacy
                 $app->setUserState(CrowdFundingConstants::CROPPED_IMAGES_CONTEXT, null);
 
                 // Get the folder of the images where the pictures will be stored.
-                $imageUrl = CrowdFundingHelper::getImagesFolderUri() ."/". $imageName;
+                $imageUrl = JUri::base() . CrowdFundingHelper::getImagesFolderUri() ."/". $imageName;
             } else {
                 $app->setUserState(CrowdFundingConstants::CROPPED_IMAGES_CONTEXT, $images);
 
                 // Get the temporary folder where the images will be stored.
-                $imageUrl = CrowdFundingHelper::getTemporaryImagesFolderUri() ."/". $imageName;
+                $imageUrl = JUri::base() . CrowdFundingHelper::getTemporaryImagesFolderUri() ."/". $imageName;
             }
 
         } catch (RuntimeException $e) {

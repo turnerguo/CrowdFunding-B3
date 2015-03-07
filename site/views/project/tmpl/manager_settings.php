@@ -11,7 +11,7 @@
 defined('_JEXEC') or die;
 ?>
 <?php if (!$this->item->published) { ?>
-    <a class="btn btn-large" href="<?php echo JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug)); ?>">
+    <a class="btn btn-large" href="<?php echo JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug)); ?>" target="_blank">
         <i class="icon-eye-open icon-white"></i>
         <?php echo JText::_("COM_CROWDFUNDING_PREVIEW");?>
     </a>

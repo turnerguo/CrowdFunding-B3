@@ -6,8 +6,8 @@
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <authorEmail>todor@itprism.com</authorEmail>
     <authorUrl>http://itprism.com</authorUrl>
-    <version>1.11</version>
-    <creationDate>20 February, 2015</creationDate>
+    <version>1.11.1</version>
+    <creationDate>07 March, 2015</creationDate>
     <description><![CDATA[
     <p>CrowdFunding Payment - PayPal is a plugin that provides ability for making payments via PayPal Payments Standard method.</p>
     <p><a href='http://itprism.com/' target='_blank'>Subscribe for the newsletter</a> to receive information about updates and new ITPrism extensions.</p>
