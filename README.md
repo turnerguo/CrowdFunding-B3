@@ -1,5 +1,5 @@
 ##CrowdFunding-B3 is a extension for Joomla! with bootstrop 3.
-==========================
+
 ( Version 1.11 )
 - - -
 
